@@ -18,7 +18,7 @@ setup(
     name=NAME,
     version=VERSION,
     description="PDS federated API",
-    author_email="pds_operator@jpl.nasa.gov",
+    author_email="pds-operator@jpl.nasa.gov",
     url="",
     keywords=["Swagger", "PDS federated API"],
     install_requires=REQUIRES,

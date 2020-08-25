@@ -6,7 +6,7 @@ info:
     between the different nodes.
   termsOfService: http://pds.nasa.gov
   contact:
-    email: pds_operator@jpl.nasa.gov
+    email: pds-operator@jpl.nasa.gov
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
