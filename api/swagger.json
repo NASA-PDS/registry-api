@@ -44,10 +44,10 @@
                   "version" : 0.1
                 }, {
                   "action" : "collections",
-                  "version" : 0.4
+                  "version" : 0.1
                 }, {
-                  "action" : "records",
-                  "version" : 0.2
+                  "action" : "products",
+                  "version" : 0.1
                 }, {
                   "action" : "routes",
                   "version" : 0.1
@@ -333,10 +333,10 @@
           "version" : 0.1
         }, {
           "action" : "collections",
-          "version" : 0.4
+          "version" : 0.1
         }, {
           "action" : "records",
-          "version" : 0.2
+          "version" : 0.1
         }, {
           "action" : "routes",
           "version" : 0.1
