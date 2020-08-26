@@ -335,7 +335,7 @@
           "action" : "collections",
           "version" : 0.1
         }, {
-          "action" : "records",
+          "action" : "products",
           "version" : 0.1
         }, {
           "action" : "routes",
@@ -353,12 +353,12 @@
           "url" : "https://pds.nasa/gov/v1/api",
           "version" : "0.1"
         }, {
-          "resource" : "/records",
+          "resource" : "/products",
           "query" : "urn:nasa:pds:insight_rad:*",
           "url" : "https://pds-geosciences.wustl.edu/v0/api",
           "version" : "0.2"
         }, {
-          "resource" : "/records",
+          "resource" : "/products",
           "query" : "urn:nasa:pds:insight_rad:*",
           "url" : "https://pds-geosciences.wustl.edu/v0.3/api",
           "version" : "0.3"
