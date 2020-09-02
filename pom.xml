@@ -9,11 +9,19 @@
        <jackson-version>2.10.0</jackson-version>
        <springfox-version>2.7.0</springfox-version>
   </properties>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
-    </parent>
+  <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>2.3.1.RELEASE</version>
+      <!-- >version>1.5.9.RELEASE</version-->
+  </parent>
+  <distributionManagement>
+  <snapshotRepository>
+    <id>ossrh</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+  </snapshotRepository>
+</distributionManagement>
+    
   <build>
       <sourceDirectory>.</sourceDirectory>
 	  <plugins>
@@ -32,144 +40,148 @@
 		                <configOptions>
 		                   <sourceFolder>src/gen/java/main</sourceFolder>
 		                   <dateLibrary>joda</dateLibrary>
-		                   
-		                   <!--  interfaceOnly>true</interfaceOnly-->>
+		                   <modelPackage>gov.nasa.pds.model</modelPackage>
+		                   <apiPackage>gov.nasa.pds.api.base</apiPackage>
+		                   <generateSupportingFiles>false</generateSupportingFiles>
+		                   <interfaceOnly>false</interfaceOnly>  		                   
 		                </configOptions>
 		            </configuration>
 		        </execution>
 		    </executions>
 		</plugin>
-        <plugin>
-               <groupId>org.springframework.boot</groupId>
-               <artifactId>spring-boot-maven-plugin</artifactId>
-               <executions>
-                   <execution>
-                       <goals>
-                           <goal>repackage</goal>
-                       </goals>
-                   </execution>
-               </executions>
-           </plugin>
+		<plugin>
+	      <groupId>org.sonatype.plugins</groupId>
+	      <artifactId>nexus-staging-maven-plugin</artifactId>
+	      <version>1.6.7</version>
+	      <extensions>true</extensions>
+	      <configuration>
+	        <serverId>ossrh</serverId>
+	        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+	        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+	      </configuration>
+	    </plugin>
      </plugins>
+     
 	
   </build>
-     <dependencies>
-         <!-- dependencies are needed for the client being generated -->
-               <!--SpringFox dependencies -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox-version}</version>
-        </dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-web</artifactId>
-		    </dependency>
+    <dependencies>
+        <!-- dependencies are needed for the client being generated -->
+              <!--SpringFox dependencies -->
+       <dependency>
+           <groupId>io.springfox</groupId>
+           <artifactId>springfox-swagger2</artifactId>
+           <version>${springfox-version}</version>
+       </dependency>
+       <dependency>
+           <groupId>io.springfox</groupId>
+           <artifactId>springfox-swagger-ui</artifactId>
+           <version>${springfox-version}</version>
+       </dependency>
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-web</artifactId>
+	    </dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-context</artifactId>
-		    </dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
-		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-web</artifactId>
-		    </dependency>
-		
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            </dependency>
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-context</artifactId>
+	    </dependency>
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+	<dependency>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-web</artifactId>
+	    </dependency>
+	
+	<dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-thymeleaf</artifactId>
+           </dependency>
+       
+        <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-test</artifactId>
+       </dependency>
+       
+       <!-- https://mvnrepository.com/artifact/junit/junit -->
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	</dependency>
+	
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
+	<dependency>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-autoconfigure</artifactId>
+	</dependency>
+
+
+	<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+	<dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>servlet-api</artifactId>
+	    <version>2.5</version>
+	    <scope>provided</scope>
+	</dependency>
+	
         
-         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/junit/junit -->
-		<dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		</dependency>
-		
-		
-		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
-		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-autoconfigure</artifactId>
-		</dependency>
+        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+	<dependency>
+	    <groupId>javax.validation</groupId>
+	    <artifactId>validation-api</artifactId>
+	    </dependency>
 
 
-		<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>servlet-api</artifactId>
-		    <version>2.5</version>
-		    <scope>provided</scope>
-		</dependency>
-		
-         
-         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
-		<dependency>
-		    <groupId>javax.validation</groupId>
-		    <artifactId>validation-api</artifactId>
-		    </dependency>
-
- 
-  		<dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-base</artifactId>
-            </dependency>
-        <dependency>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-core</artifactId>
-          </dependency>
-        <dependency>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-annotations</artifactId>
-          </dependency>
-        <dependency>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-          </dependency>
-        <dependency>
-          <groupId>com.fasterxml.jackson.jaxrs</groupId>
-          <artifactId>jackson-jaxrs-json-provider</artifactId>
-          </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
-		<dependency>
-		    <groupId>com.github.joschi.jackson</groupId>
-		    <artifactId>jackson-datatype-threetenbp</artifactId>
-		    <version>${jackson-version}</version>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+ 		<dependency>
+           <groupId>com.fasterxml.jackson.jaxrs</groupId>
+           <artifactId>jackson-jaxrs-base</artifactId>
+           </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+         </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.jaxrs</groupId>
+         <artifactId>jackson-jaxrs-json-provider</artifactId>
+         </dependency>
+       
+       <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
+	<dependency>
+	    <groupId>com.github.joschi.jackson</groupId>
+	    <artifactId>jackson-datatype-threetenbp</artifactId>
+	    <version>${jackson-version}</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
 		<dependency>
 		    <groupId>joda-time</groupId>
 		    <artifactId>joda-time</artifactId>
-		    </dependency>   
-        
-
-		
-		<!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
-		<dependency>
-		    <groupId>org.threeten</groupId>
-		    <artifactId>threetenbp</artifactId>
-		    <version>1.4.4</version>
+		    <version>2.10.6</version>
 		</dependency>
-				
- 
-    </dependencies>
-    
+
+
+	
+	<!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
+	<dependency>
+	    <groupId>org.threeten</groupId>
+	    <artifactId>threetenbp</artifactId>
+	    <version>1.4.4</version>
+	</dependency>
+			
+
+   </dependencies>
+   
    
 </project>

@@ -7,7 +7,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: "0.0.1"
+  version: "0.0.1-SNAPSHOT"
   title: PDS federated API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -81,12 +81,15 @@ paths:
       responses:
         '200':
           description: Succesful request
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+              description: Total number of records maching the request.
           content:
             application/json:
               schema: 
-                type: array
-                items:
-                  type: string
+                $ref: '#/components/schemas/collections'
         '400':
           description: Bad request
           content:
@@ -200,19 +203,8 @@ components:
     routes:
       type: array
       items:
-        type: object
-        required:
-          - resource
-          - query
-          - url
-        properties:
-          resource:
-            type: string
-          query:
-            type: string
-          url:
-            type: string
-        example: [
+        $ref: '#/components/schemas/route'
+      example: [
           { resource: '/routes',
             query: '*',
             url: 'https://pds.nasa/gov/v1/api',
@@ -230,7 +222,54 @@ components:
             url: 'https://pds-geosciences.wustl.edu/v0.3/api',
             version: '0.3'
           }
-          ]
+      ]
+
+    route:
+      type: object
+      required:
+        - resource
+        - query
+        - url
+      properties:
+        resource:
+          type: string
+        query:
+          type: string
+        url:
+          type: string
+    
+    collections:
+      type: object
+      required:
+        - metadata
+        - data
+      properties:
+        metadata:
+          type: object
+        data:
+          type: array 
+          items:
+            $ref: '#/components/schemas/collection'
+    collection:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: string
+          description: identifier lidvid of the collection
+        title:
+          type: string
+        description:
+          type: string
+        instrument: 
+          type: string
+          description: identifier lidvid of the instrument or procedure generating the data
+        target: 
+          type: string
+          description: typeidentifier lidvid of the target of the observation
+        
     PDS4Label:
       type: object
     errorMessage:
