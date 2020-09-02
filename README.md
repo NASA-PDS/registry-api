@@ -1,9 +1,10 @@
-clean install deploy# PDS-API-BASE
+# PDS-API-BASE
 
-Contains the swagger.yml reference files and the procedures to generate the client and server stubs  in JAVA
+1. Stores the swagger.yml reference file for the PDS federated API 
+2. provide the procedure and configuration to generate JAVA libraries used by API servers and clients implementation.
 
 
-# Prerequisite
+# Prerequisites
 
 - JDDK 1.8
 - MAVEN
