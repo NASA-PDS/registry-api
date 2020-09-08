@@ -2,16 +2,17 @@ openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: https://cae-swaggerhub.jpl.nasa.gov/virts/PDS/federated_api/0.0.1
+    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
+    
 info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: "0.0.1-SNAPSHOT"
-  title: PDS federated API
+  version: "0.0"
+  title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
-    email: pds_operator@jpl.nasa.gov
+    email: pds-operator@jpl.nasa.gov
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
@@ -25,12 +26,12 @@ paths:
   /capabilities:
     get:
       tags:
-        - capablities
+        - capabilities
       summary: capabilities api entry point, list the resources provided by the current API end-point.
       operationId: capabilities
       responses:
         '200':
-          description: Succesful request
+          description: Successful request
           content:
             application/json:
               schema:
@@ -39,24 +40,77 @@ paths:
                 - action: capabilities
                   version: 0.1
                 - action: collections
-                  version: 0.4
-                - action: records 
-                  version: 0.2
+                  version: 0.1
+                - action: products 
+                  version: 0.1
                 - action: routes
                   version: 0.1
         '404':
           description: capabilities not available
         '500':
           description: Internal server error
-  /records/{lidvid}:
+  /products:
     get:
       tags:
-        - records
-      summary: URN resolver for lidvid
-      operationId: record
+        - products
+      summary: search across all PDS data products, including bundles, collections, documentation, and observational products,
+      operationId: products
       responses:
         '200':
-          description: Succesful request
+          description: Successful request
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PDS4Label'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+      parameters:
+        - name: start
+          in: query
+          description: offset in matching result list, for pagination
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: maximum number of matching results returned, for pagination
+          required: false
+          schema:
+            type: integer
+        - name: q
+          in: query
+          description: search query
+          required: false
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: returned fields, syntax field0,field1
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: sort
+          in: query
+          description: sort results, syntax asc(field0),desc(field1)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+
+  /products/{lidvid}:
+    get:
+      tags:
+        - products
+      summary: URN resolver for lidvid
+      operationId: products-by-lidvid
+      responses:
+        '200':
+          description: Successful request
           content:
             application/xml:
               schema:
@@ -72,6 +126,7 @@ paths:
         required: true
         schema:
           type: string
+
   /collections:
     get:
       tags:
@@ -80,7 +135,7 @@ paths:
       operationId: get collection
       responses:
         '200':
-          description: Succesful request
+          description: Successful request
           headers:
             X-Total-Count:
               schema:
@@ -123,7 +178,7 @@ paths:
             type: array
             items:
               type: string
-        - name: sort-by
+        - name: sort
           in: query
           description: sort results, syntax asc(field0),desc(field1)
           required: false
@@ -139,11 +194,12 @@ paths:
       operationId: allRoutes
       responses:
         '200':
-          description: Succesful request
+          description: Successful request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/routes'
+
   /routes/{resource}:
     get:
       tags:
@@ -175,8 +231,8 @@ paths:
   
 
 externalDocs:
-  description: Find out more about Swagger
-  url: 'http://swagger.io'
+  description: Find out more information on the PDS API Specification
+  url: 'https://github.com/NASA-PDS/pds-api-core'
 components:
   schemas:
     capabilities:
@@ -195,9 +251,9 @@ components:
           - action: capabilities
             version: 0.1
           - action: collections
-            version: 0.4
-          - action: records 
-            version: 0.2
+            version: 0.1
+          - action: products 
+            version: 0.1
           - action: routes
             version: 0.1
     routes:
@@ -211,13 +267,13 @@ components:
             version: '0.1'
           },
           {
-            resource: '/records',
+            resource: '/products',
             query: 'urn:nasa:pds:insight_rad:*',
             url: 'https://pds-geosciences.wustl.edu/v0/api',
             version: '0.2'
           },
           {
-            resource: '/records',
+            resource: '/products',
             query: 'urn:nasa:pds:insight_rad:*',
             url: 'https://pds-geosciences.wustl.edu/v0.3/api',
             version: '0.3'
@@ -250,8 +306,13 @@ components:
           type: array 
           items:
             $ref: '#/components/schemas/collection'
+
     collection:
       type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
       required:
         - id
         - title
@@ -268,7 +329,7 @@ components:
           description: identifier lidvid of the instrument or procedure generating the data
         target: 
           type: string
-          description: typeidentifier lidvid of the target of the observation
+          description: identifier lidvid of the target of the observation
         
     PDS4Label:
       type: object
