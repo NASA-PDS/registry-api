@@ -301,12 +301,23 @@ components:
         - data
       properties:
         metadata:
-          type: object
+          $ref: '#/components/schemas/metadata'
         data:
-          type: array 
           items:
             $ref: '#/components/schemas/collection'
-
+    metadata:
+      type: object
+      properties:
+        q:
+          type: string
+        start:
+          type: integer
+        limit:
+          type: integer
+        sort:
+          type: array
+          items:
+            type: string
     collection:
       type: object
       required:
