@@ -2,6 +2,7 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
+
 import gov.nasa.pds.model.Collections;
 import gov.nasa.pds.model.Collection;
 import gov.nasa.pds.model.ErrorMessage;
@@ -27,6 +28,7 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 
 
@@ -61,8 +63,17 @@ public class MyCollectionsApiController implements CollectionsApi {
         	collection.id("urn:nasa:pds:orex.ocams:data_raw");
         	collection.title("OSIRIS-REx OCAMS raw science image data products");
         	collection.description("This collection contains the raw (processing level 0) science image data products produced by the OCAMS instrument onboard the OSIRIS-REx spacecraft.");
-        	collection.instrument("urn:nasa:pds:context:instrument:ocams.orex");
-        	collection.target("(101955) BENNU");
+
+        	List<String> intruments = Arrays.asList("urn:nasa:pds:context:instrument:ocams.orex");
+        	collection.instruments(intruments);
+        	
+        	List<String> targets = Arrays.asList("(101955) BENNU");        	
+        	collection.targets(targets);
+        	
+        	
+        	List<String> imgResolutions = Arrays.asList("12px");        	        	
+        	collection.putOptionalPropertiesItem("img:resolution", imgResolutions);
+        	
         	collections.addDataItem(collection);
         	
         			

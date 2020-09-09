@@ -14,3 +14,17 @@ It implements a very simple collections end-point complying with the specificati
     mvn clean
     mvn install
     mvn spring-boot:run -Dserver.port=8080
+    
+    
+## Usage
+
+Go to rest api documentation:
+
+    http://localhost:8080/
+    
+    
+Test the simple collection end-point:
+
+    http://localhost:8080/collections
+    
+
