@@ -320,12 +320,12 @@ components:
           type: string
         description:
           type: string
-        instrument: 
+        instruments: 
           type: array
           description: identifier lidvid of the instrument or procedure generating the data
           items:
             type: string
-        target: 
+        targets: 
           type: array
           description: identifier lidvid of the target of the observation
           items:
