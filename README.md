@@ -6,7 +6,7 @@
 
 # Prerequisites
 
-- JDDK 1.8
+- JDK 1.8
 - MAVEN
 
 To deploy the generated java code on the maven artifcatory you need a configuration in ~/.m2/Settings.xml
