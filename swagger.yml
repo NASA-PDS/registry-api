@@ -236,26 +236,31 @@ externalDocs:
 components:
   schemas:
     capabilities:
-        type: array
-        items: 
-          type: object
-          required:
-            - action
-            - version
-          properties:
-            action:
-              type: string
-            version:
-              type: string
-        example:
-          - action: capabilities
-            version: 0.1
-          - action: collections
-            version: 0.1
-          - action: products 
-            version: 0.1
-          - action: routes
-            version: 0.1
+      type: array
+      items:
+        $ref: '#/components/schemas/capability'
+      example:
+        - action: capabilities
+          version: 0.1
+        - action: collections
+          version: 0.1
+        - action: products 
+          version: 0.1
+        - action: routes
+          version: 0.1
+    capability:
+      type: object
+      required:
+        - action
+        - version
+      properties:
+        action:
+          type: string
+        version:
+          type: string
+      example:
+        - action: collections
+          version: 0.1
     routes:
       type: array
       items:
