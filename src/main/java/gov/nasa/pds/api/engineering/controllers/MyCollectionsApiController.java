@@ -4,6 +4,7 @@ package gov.nasa.pds.api.engineering.controllers;
 import gov.nasa.pds.api.base.CollectionsApi;
 
 import gov.nasa.pds.model.Collections;
+import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.Collection;
 import gov.nasa.pds.model.ErrorMessage;
 
@@ -59,6 +60,17 @@ public class MyCollectionsApiController implements CollectionsApi {
         		&& (accept.contains("application/json") || accept.contains("text/html"))) {
             	
         	Collections collections = new Collections();
+        	
+        	Metadata metadata = new Metadata();
+        	
+        	metadata.setQ("");
+        	metadata.setStart(0);
+        	metadata.setLimit(100);
+        	List<String> sortFields = Arrays.asList();
+        	metadata.setSort(sortFields);
+        	
+        	collections.setMetadata(metadata);
+        	
         	Collection collection = new Collection();
         	collection.id("urn:nasa:pds:orex.ocams:data_raw");
         	collection.title("OSIRIS-REx OCAMS raw science image data products");
