@@ -9,11 +9,12 @@ It implements a very simple collections end-point complying with the specificati
 
 ## Deployment
 
+If needed change port in `src/main/resources/applications.properties`
 
 
     mvn clean
     mvn install
-    mvn spring-boot:run -Dserver.port=8080
+    mvn spring-boot:run
     
     
 ## Usage

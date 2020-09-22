@@ -50,6 +50,7 @@ public class MyCapabilitiesApiController implements CapabilitiesApi {
         	
             try {
             	Capabilities capabilities = new Capabilities();
+            	Capability 
             		
                 return new ResponseEntity<Capabilities>(objectMapper.readValue("[ {\n  \"action\" : \"capabilities\",\n  \"version\" : 0.1\n}, {\n  \"action\" : \"collections\",\n  \"version\" : 0.1\n}, {\n  \"action\" : \"products\",\n  \"version\" : 0.1\n}, {\n  \"action\" : \"routes\",\n  \"version\" : 0.1\n} ]", Capabilities.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
