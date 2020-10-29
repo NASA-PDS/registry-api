@@ -3,7 +3,7 @@ openapi: 3.0.0
 servers:
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
-    
+ 
 info:
   description: |
     Federated PDS API which provides actionable end points standardized
@@ -61,7 +61,7 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/PDS4Label'
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '500':
@@ -114,7 +114,7 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/PDS4Label'
+                $ref: '#/components/schemas/product'
         '404':
           description: lidvid not found
         '500':
@@ -144,10 +144,10 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/collections'
+                $ref: '#/components/schemas/products'
             text/html:
               schema: 
-                $ref: '#/components/schemas/collections'
+                $ref: '#/components/schemas/products'
 
         '400':
           description: Bad request
@@ -303,7 +303,7 @@ components:
         url:
           type: string
     
-    collections:
+    products:
       type: object
       required:
         - metadata
@@ -313,7 +313,7 @@ components:
           $ref: '#/components/schemas/metadata'
         data:
           items:
-            $ref: '#/components/schemas/collection'
+            $ref: '#/components/schemas/product'
     metadata:
       type: object
       properties:
@@ -327,7 +327,7 @@ components:
           type: array
           items:
             type: string
-    collection:
+    product:
       type: object
       required:
         - id
@@ -350,14 +350,14 @@ components:
           description: identifier lidvid of the target of or feature of interest the observation (for concept see https://en.wikipedia.org/wiki/Observations_and_Measurements)
           items:
             type: string
+        pds4_label_url:
+          type: string
         properties:
           type: object
           additionalProperties:
             type: array
             items:
               type: string
-    PDS4Label:
-      type: object
     errorMessage:
       type: object
       required:
