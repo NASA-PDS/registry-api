@@ -357,9 +357,7 @@ components:
         properties:
           type: object
           additionalProperties:
-            type: array
-            items:
-              type: string
+            type: object
     reference:
       type: object
       description: object describing a reference to a different product. TODO The properties should be defined by a standard (xlink, json-ld) to be chosen
