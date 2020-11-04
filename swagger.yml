@@ -331,7 +331,7 @@ components:
       type: object
       required:
         - id
-        - update_time
+        - update_date_time
       properties:
         id:
           type: string
@@ -342,6 +342,15 @@ components:
           type: string
         description:
           type: string
+        start_date_time:
+          type: string
+          description: start date time of the observations in ISO8601
+        stop_date_time:
+          type: string
+          description: stop date time of the observations in ISO8601
+        update_date_time:
+          type: string
+          description: update date time of the observationin ISO8601
         observing_system_components: 
           type: array
           description: list of instruments or procedures generating the data (for concept see https://en.wikipedia.org/wiki/Observations_and_Measurements)
