@@ -331,12 +331,12 @@ components:
       type: object
       required:
         - id
-        - update_date_time
+        - metadata
       properties:
         id:
           type: string
           description: identifier lidvid of the collection
-        type:
+        class:
           type: string
         title:
           type: string
