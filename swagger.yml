@@ -336,7 +336,7 @@ components:
         id:
           type: string
           description: identifier lidvid of the collection
-        class:
+        type:
           type: string
         title:
           type: string
