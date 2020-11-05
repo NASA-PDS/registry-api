@@ -4,6 +4,7 @@ import gov.nasa.pds.api.base.CapabilitiesApi;
 
 
 import gov.nasa.pds.model.Capabilities;
+import gov.nasa.pds.model.Capability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -48,15 +49,20 @@ public class MyCapabilitiesApiController implements CapabilitiesApi {
         if (accept != null 
         		&& (accept.contains("application/json") || accept.contains("text/html"))) {
         	
-            try {
-            	Capabilities capabilities = new Capabilities();
-            	Capability 
-            		
-                return new ResponseEntity<Capabilities>(objectMapper.readValue("[ {\n  \"action\" : \"capabilities\",\n  \"version\" : 0.1\n}, {\n  \"action\" : \"collections\",\n  \"version\" : 0.1\n}, {\n  \"action\" : \"products\",\n  \"version\" : 0.1\n}, {\n  \"action\" : \"routes\",\n  \"version\" : 0.1\n} ]", Capabilities.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Capabilities>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        	Capabilities capabilities = new Capabilities();
+        	
+        	Capability capabilityCapabilities = new Capability();
+        	capabilityCapabilities.action("/capabilities");
+        	capabilityCapabilities.version("0.1");
+        	capabilities.add(capabilityCapabilities);
+        	
+        	Capability capabilityCollections = new Capability();
+        	capabilityCollections.action("/collections");
+        	capabilityCollections.version("0.1");
+        	capabilities.add(capabilityCollections);
+        	
+        	
+            return new ResponseEntity<Capabilities>(capabilities, HttpStatus.NOT_IMPLEMENTED);
         }
 
         return new ResponseEntity<Capabilities>(HttpStatus.NOT_IMPLEMENTED);

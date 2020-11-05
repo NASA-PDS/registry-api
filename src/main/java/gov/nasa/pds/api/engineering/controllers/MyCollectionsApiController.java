@@ -3,9 +3,11 @@ package gov.nasa.pds.api.engineering.controllers;
 
 import gov.nasa.pds.api.base.CollectionsApi;
 
-import gov.nasa.pds.model.Collections;
+import gov.nasa.pds.model.Products;
+import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.Metadata;
-import gov.nasa.pds.model.Collection;
+import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.Reference;
 import gov.nasa.pds.model.ErrorMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +50,7 @@ public class MyCollectionsApiController implements CollectionsApi {
         this.request = request;
     }
 
-    public ResponseEntity<Collections> getCollection(
+    public ResponseEntity<Products> getCollection(
     		@ApiParam(value = "offset in matching result list, for pagination") @Valid @RequestParam(value = "start", required = false) Integer start,
     		@ApiParam(value = "maximum number of matching results returned, for pagination") @Valid @RequestParam(value = "limit", required = false) Integer limit,
     		@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q,
@@ -59,41 +61,47 @@ public class MyCollectionsApiController implements CollectionsApi {
         if (accept != null 
         		&& (accept.contains("application/json") || accept.contains("text/html"))) {
             	
-        	Collections collections = new Collections();
+        	Products collections = new Products();
         	
-        	Metadata metadata = new Metadata();
+        	Summary summary = new Summary();
         	
-        	metadata.setQ("");
-        	metadata.setStart(0);
-        	metadata.setLimit(100);
+        	summary.setQ("");
+        	summary.setStart(0);
+        	summary.setLimit(100);
         	List<String> sortFields = Arrays.asList();
-        	metadata.setSort(sortFields);
+        	summary.setSort(sortFields);
         	
-        	collections.setMetadata(metadata);
+        	collections.setSummary(summary);
         	
-        	Collection collection = new Collection();
+        	Product collection = new Product();
         	collection.id("urn:nasa:pds:orex.ocams:data_raw");
         	collection.title("OSIRIS-REx OCAMS raw science image data products");
         	collection.description("This collection contains the raw (processing level 0) science image data products produced by the OCAMS instrument onboard the OSIRIS-REx spacecraft.");
 
-        	List<String> intruments = Arrays.asList("urn:nasa:pds:context:instrument:ocams.orex");
-        	collection.instruments(intruments);
+        		
+        	Reference instrumentReference = new Reference();
+        	instrumentReference.setTitle("OREX Camera");
+        	instrumentReference.setType("Instrument");
+        	instrumentReference.setRef("urn:nasa:pds:context:instrument:ocams.orex");
         	
-        	List<String> targets = Arrays.asList("(101955) BENNU");        	
-        	collection.targets(targets);
+        	collection.addObservingSystemComponentsItem(instrumentReference);
+
+        	
+        	Reference target = new Reference();
+        	target.setTitle("(101955) BENNU");
+        	target.setRef("urn:nasa:pds:context:target:asteroid.101955_bennu");
+        	collection.addTargetsItem(target);
         	
         	
         	List<String> imgResolutions = Arrays.asList("12px");        	        	
-        	collection.putOptionalPropertiesItem("img:resolution", imgResolutions);
+        	collection.putPropertiesItem("img:resolution", imgResolutions);
         	
-        	collections.addDataItem(collection);
+        	collections.addDataItem(collection);      			
         	
-        			
-        	
-            return new ResponseEntity<Collections>(collections, HttpStatus.OK);
+            return new ResponseEntity<Products>(collections, HttpStatus.OK);
         
         }
-        else return new ResponseEntity<Collections>(HttpStatus.NOT_IMPLEMENTED);
+        else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
     }
 
 }

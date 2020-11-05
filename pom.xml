@@ -8,6 +8,7 @@
    <properties>
        <jackson-version>2.10.0</jackson-version>
        <springfox-version>2.7.0</springfox-version>
+       <elasticsearch.version>7.9.3</elasticsearch.version>
   </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -163,7 +164,26 @@
 		  <artifactId>api</artifactId>
 		  <version>0.0.1-SNAPSHOT</version>
 		</dependency>
-				
+		
+		<dependency>
+		  <groupId>org.elasticsearch</groupId>
+		  <artifactId>elasticsearch</artifactId>
+		  <version>${elasticsearch.version}</version>
+		</dependency>
+		
+		<dependency>
+		   <groupId>org.elasticsearch.client</groupId>
+		   <artifactId>elasticsearch-rest-high-level-client</artifactId>
+		   <version>${elasticsearch.version}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5</version>
+		</dependency>
+
  
     </dependencies>
     <repositories>
