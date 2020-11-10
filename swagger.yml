@@ -145,10 +145,6 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
-            text/html:
-              schema: 
-                $ref: '#/components/schemas/products'
-
         '400':
           description: Bad request
           content:
