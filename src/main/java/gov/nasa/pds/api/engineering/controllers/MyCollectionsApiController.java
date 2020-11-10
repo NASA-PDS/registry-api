@@ -56,10 +56,13 @@ public class MyCollectionsApiController implements CollectionsApi {
     		@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q,
     		@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
     		@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort-by", required = false) List<String> sortBy) {
+    	
         String accept = request.getHeader("Accept");
         log.info("accept value is " + accept);
         if (accept != null 
-        		&& (accept.contains("application/json") || accept.contains("text/html"))) {
+        		&& (accept.contains("application/json") 
+        				|| accept.contains("text/html")
+        				|| accept.contains("*/*"))) {
             	
         	Products collections = new Products();
         	

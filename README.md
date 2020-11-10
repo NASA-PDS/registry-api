@@ -9,8 +9,8 @@ It implements a very simple collections end-point complying with the specificati
 
 ## Deployment
 
-If needed change port in `src/main/resources/applications.properties`
-
+If needed change server port and elasticSearch parameters in `src/main/resources/applications.properties`.
+Note, the registry index in elasticSearch is hard-coded. It need to be `registry`.
 
     mvn clean
     mvn install
