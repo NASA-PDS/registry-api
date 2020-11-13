@@ -73,12 +73,14 @@ paths:
           required: false
           schema:
             type: integer
+            default: 0
         - name: limit
           in: query
           description: maximum number of matching results returned, for pagination
           required: false
           schema:
             type: integer
+            default: 20
         - name: q
           in: query
           description: search query
