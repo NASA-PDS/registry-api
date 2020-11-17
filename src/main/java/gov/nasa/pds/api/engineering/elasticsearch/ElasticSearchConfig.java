@@ -1,32 +1,31 @@
-package gov.nasa.pds.api.engineering;
+package gov.nasa.pds.api.engineering.elasticsearch;
 
-import java.io.IOException;
 
-import org.apache.http.HttpHost;
-
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-import org.elasticsearch.client.RestClient;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
 
 @Configuration 
 public class ElasticSearchConfig { 
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchConfig.class);
 	  
-	@Value("elasticSearch.host:localhost")
+	@Value("${elasticSearch.host:localhost}")
 	private String host;
 	
-	@Value("elasticSearch.port:9200")
+	@Value("${elasticSearch.port:9200}")
 	private int port;
 	
-	@Value("elasticSearch.registryIndex:registry")
+	@Value("${elasticSearch.registryIndex:registry}")
 	private String registryIndex;
+	
+	@Value("${elasticSearch.timeOutSeconds:60}")
+	private int timeOutSeconds;
    
 	public String getHost() {
 		return host;
@@ -53,18 +52,13 @@ public class ElasticSearchConfig {
 	}
 		
 	@Bean
-    public RestHighLevelClient restHighLevelClient() {
+    public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
      
+		return new ElasticSearchRegistryConnectionImpl(this.host,
+				this.port,
+				this.registryIndex,
+				this.timeOutSeconds);
 
-    	this.log.info("Connecting elasticSearch db " + this.host + ":" + Integer.toString(this.port));
-    	RestHighLevelClient restHighLevelClient = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(this.host, 
-                        		this.port, 
-                        		"http")));
-   
-     
-        return restHighLevelClient;
     }
     
 

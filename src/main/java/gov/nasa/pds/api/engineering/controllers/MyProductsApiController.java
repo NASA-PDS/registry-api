@@ -1,11 +1,12 @@
 package gov.nasa.pds.api.engineering.controllers;
 
-import gov.nasa.pds.api.engineering.ElasticSearchConfig;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Reference;
 import gov.nasa.pds.model.Metadata;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchConfig;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
 import gov.nasa.pds.api.engineering.entities.EntityProduct;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchConfig;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
+
+
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-10-29T11:01:11.991-07:00[America/Los_Angeles]")
 @Controller
 public class MyProductsApiController implements ProductsApi {
@@ -59,12 +65,12 @@ public class MyProductsApiController implements ProductsApi {
     }
     
    
-    public ResponseEntity<Products> products(@ApiParam(value = "offset in matching result list, for pagination") @Valid @RequestParam(value = "start", required = false) Integer start
-,@ApiParam(value = "maximum number of matching results returned, for pagination") @Valid @RequestParam(value = "limit", required = false) Integer limit
-,@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q
-,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
-,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
-) {
+    public ResponseEntity<Products> products(@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
+    		,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
+    		,@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q
+    		,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
+    		,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
+    		)  {
         String accept = request.getHeader("Accept");
         if (accept != null 
         		&& (accept.contains("application/json") || accept.contains("text/html"))) {
@@ -119,7 +125,7 @@ public class MyProductsApiController implements ProductsApi {
     }
     
     @Autowired
-    RestHighLevelClient restHighLevelClient;
+    ElasticSearchRegistryConnection esRegistryConnection;
     
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
         String accept = request.getHeader("Accept");
@@ -127,8 +133,10 @@ public class MyProductsApiController implements ProductsApi {
         		&& (accept.contains("application/json") || accept.contains("text/html"))) {
             try {
             			
-            	GetRequest getProductRequest = new GetRequest("registry", lidvid);
+            	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
                 GetResponse getResponse = null;
+                
+                RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
                  
             	getResponse = restHighLevelClient.get(getProductRequest, 
             			RequestOptions.DEFAULT);

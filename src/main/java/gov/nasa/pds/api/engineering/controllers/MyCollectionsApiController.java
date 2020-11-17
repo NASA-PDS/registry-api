@@ -2,7 +2,8 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
-
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
+import gov.nasa.pds.api.engineering.entities.EntityProduct;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.Metadata;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.common.unit.TimeValue;
+import java.util.concurrent.TimeUnit;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.client.RequestOptions;
+
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +46,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Map;
+
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 
 
 @Controller
@@ -49,13 +64,16 @@ public class MyCollectionsApiController implements CollectionsApi {
         this.objectMapper = objectMapper;
         this.request = request;
     }
+    
+    @Autowired
+    ElasticSearchRegistryConnection esRegistryConnection;
 
-    public ResponseEntity<Products> getCollection(
-    		@ApiParam(value = "offset in matching result list, for pagination") @Valid @RequestParam(value = "start", required = false) Integer start,
-    		@ApiParam(value = "maximum number of matching results returned, for pagination") @Valid @RequestParam(value = "limit", required = false) Integer limit,
-    		@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q,
-    		@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
-    		@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort-by", required = false) List<String> sortBy) {
+    public ResponseEntity<Products> getCollection(@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
+    		,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
+    		,@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q
+    		,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
+    		,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
+    		) {
     	
         String accept = request.getHeader("Accept");
         log.info("accept value is " + accept);
@@ -63,46 +81,63 @@ public class MyCollectionsApiController implements CollectionsApi {
         		&& (accept.contains("application/json") 
         				|| accept.contains("text/html")
         				|| accept.contains("*/*"))) {
-            	
-        	Products collections = new Products();
         	
-        	Summary summary = new Summary();
-        	
-        	summary.setQ("");
-        	summary.setStart(0);
-        	summary.setLimit(100);
-        	List<String> sortFields = Arrays.asList();
-        	summary.setSort(sortFields);
-        	
-        	collections.setSummary(summary);
-        	
-        	Product collection = new Product();
-        	collection.id("urn:nasa:pds:orex.ocams:data_raw");
-        	collection.title("OSIRIS-REx OCAMS raw science image data products");
-        	collection.description("This collection contains the raw (processing level 0) science image data products produced by the OCAMS instrument onboard the OSIRIS-REx spacecraft.");
+        	try {
+	        	SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+	        	searchSourceBuilder.query(QueryBuilders.termQuery( "orex/OCAMS_Instrument_Attributes/orex/detector_mode", "13")); 
+	        	searchSourceBuilder.from(start); 
+	        	searchSourceBuilder.size(limit); 
+	        	searchSourceBuilder.timeout(new TimeValue(this.esRegistryConnection.getTimeOutSeconds(), 
+	        			TimeUnit.SECONDS)); 
+	        	
+	        	SearchRequest searchRequest = new SearchRequest();
+	        	searchRequest.source(searchSourceBuilder);
+	        	searchRequest.indices(this.esRegistryConnection.getRegistryIndex());
+	        	
+	        	SearchResponse searchResponse = null;
+	             
+	        	searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
+	        			RequestOptions.DEFAULT);
+	        	
+	        	Products products = new Products();
+	        	
+	          	Summary summary = new Summary();
+	        	
 
-        		
-        	Reference instrumentReference = new Reference();
-        	instrumentReference.setTitle("OREX Camera");
-        	instrumentReference.setType("Instrument");
-        	instrumentReference.setRef("urn:nasa:pds:context:instrument:ocams.orex");
-        	
-        	collection.addObservingSystemComponentsItem(instrumentReference);
-
-        	
-        	Reference target = new Reference();
-        	target.setTitle("(101955) BENNU");
-        	target.setRef("urn:nasa:pds:context:target:asteroid.101955_bennu");
-        	collection.addTargetsItem(target);
-        	
-        	
-        	List<String> imgResolutions = Arrays.asList("12px");        	        	
-        	collection.putPropertiesItem("img:resolution", imgResolutions);
-        	
-        	collections.addDataItem(collection);      			
-        	
-            return new ResponseEntity<Products>(collections, HttpStatus.OK);
-        
+	          	summary.setQ((q != null)?q:"" );
+	        	summary.setStart(start);
+	        	summary.setLimit(limit);
+	        	
+	        	if (sort == null) {
+	        		sort = Arrays.asList();
+	        	}	
+	        	summary.setSort(sort);
+	        	
+	        	products.setSummary(summary);
+	        	
+	        	if (searchResponse != null) {
+	        		
+	        		for (SearchHit searchHit : searchResponse.getHits()) {
+	        	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
+	
+		        
+	        	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+	        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityProduct);
+	        	        
+	        	        products.addDataItem(product);
+	        	        
+	        	    }
+	         
+	                
+	        	}
+	        	
+	        	return new ResponseEntity<Products>(products, HttpStatus.OK);
+	        	
+    	  } catch (IOException e) {
+              log.error("Couldn't serialize response for content type application/json", e);
+              return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+          }
+            
         }
         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
     }
