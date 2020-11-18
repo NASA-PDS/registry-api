@@ -74,7 +74,9 @@ public class MyProductsApiController implements ProductsApi {
 )  {
         String accept = request.getHeader("Accept");
         if (accept != null 
-        		&& (accept.contains("application/json") || accept.contains("text/html"))) {
+        		&& (accept.contains("application/json") 
+        				|| accept.contains("text/html")
+        				|| accept.contains("*/*"))) {
             try {
             	
             	
@@ -131,7 +133,9 @@ public class MyProductsApiController implements ProductsApi {
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
         String accept = request.getHeader("Accept");
         if (accept != null 
-        		&& (accept.contains("application/json") || accept.contains("text/html"))) {
+        		&& (accept.contains("application/json") 
+        				|| accept.contains("text/html")
+        				|| accept.contains("*/*"))) {
             try {
             			
             	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
