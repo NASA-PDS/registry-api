@@ -3,6 +3,7 @@ package gov.nasa.pds.api.engineering.controllers;
 
 import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
+import gov.nasa.pds.api.engineering.entities.EntityCollection;
 import gov.nasa.pds.api.engineering.entities.EntityProduct;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
@@ -138,8 +139,8 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
 	
 		        
-	        	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-	        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityProduct);
+	        	        EntityCollection entityCollection = objectMapper.convertValue(sourceAsMap, EntityCollection.class);
+	        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityCollection);
 	        	        product.setProperties(sourceAsMap);
 	        	        
 	        	        products.addDataItem(product);

@@ -118,7 +118,7 @@ public class MyProductsApiController implements ProductsApi {
 		Metadata meta = new Metadata();
 		meta.setVersion(ep.getVersion());
 		meta.setCreationDateTime(ep.getCreationDate());
-		meta.setUpdateDateTime(ep.getModificationDates().get(0));
+		meta.setUpdateDateTime(ep.getModificationDate());
 		meta.setLabelUrl(ep.getPDS4FileRef());
 		product.setMetadata(meta);
 

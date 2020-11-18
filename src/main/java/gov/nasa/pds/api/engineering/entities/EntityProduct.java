@@ -45,7 +45,7 @@ public class EntityProduct {
 	private String stop_date_time;
 
 	@JsonProperty("pds/Modification_Detail/pds/modification_date")
-    private List<String> modification_dates;
+    private String modification_date;
 	
 	@JsonProperty("pds/File/pds/creation_date_time")
     private String creation_date;
@@ -174,8 +174,8 @@ public class EntityProduct {
 		return stop_date_time;
 	}
 
-	public List<String> getModificationDates() {
-		return modification_dates;
+	public String getModificationDate() {
+		return modification_date;
 	}
 	
 	public String getCreationDate() {
