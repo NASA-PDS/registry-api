@@ -2,8 +2,11 @@ package gov.nasa.pds.api.engineering.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import gov.nasa.pds.model.Reference;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -42,7 +45,7 @@ public class EntityProduct {
 	private String stop_date_time;
 
 	@JsonProperty("pds/Modification_Detail/pds/modification_date")
-    private String modification_date;
+    private List<String> modification_dates;
 	
 	@JsonProperty("pds/File/pds/creation_date_time")
     private String creation_date;
@@ -87,9 +90,15 @@ public class EntityProduct {
 		return this.referenceRoles;
 	}
 	
+	public static <T> Iterable<T> emptyIfNull(Iterable<T> iterable) {
+	    return iterable == null ? Collections.<T>emptyList() : iterable;
+	}
+	
+	
+	
 	public String getReferenceLidVid(String role) {
 		int i=0;
-		for (String t : this.referenceRoles) {
+		for (String t : EntityProduct.emptyIfNull(this.referenceRoles)) {
 			if (t.equalsIgnoreCase(role))
 				return this.referenceLidVid.get(i);
 			i+=1;
@@ -122,7 +131,7 @@ public class EntityProduct {
 			int i=0;
 			String type = this.getReferenceType(role);
 			
-			for (String t : this.observingSystemTypes) {
+			for (String t : EntityProduct.emptyIfNull(this.observingSystemTypes)) {
 				if (t.equalsIgnoreCase(type)){
 					return this.observingSystemNames.get(i);
 				}
@@ -138,6 +147,20 @@ public class EntityProduct {
 		
 	}
 	
+	public Reference geReference(String reference_role) {
+    	Reference ref = null;
+    	String name;
+    	if ((name = this.getReferenceName(reference_role)) !=  null) {
+	    	ref = new Reference();
+			ref.setTitle(name);
+			ref.setType(this.getReferenceType(reference_role));
+			ref.setRef(this.getReferenceLidVid(reference_role));
+			// TO DO: add description
+    	}
+    	
+    	return ref;
+    }
+
 	
 	public String getPDS4FileRef() {
 		return this.pds4FileReference;
@@ -151,8 +174,8 @@ public class EntityProduct {
 		return stop_date_time;
 	}
 
-	public String getModificationDate() {
-		return modification_date;
+	public List<String> getModificationDates() {
+		return modification_dates;
 	}
 	
 	public String getCreationDate() {

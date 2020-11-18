@@ -66,11 +66,12 @@ public class MyProductsApiController implements ProductsApi {
     
    
     public ResponseEntity<Products> products(@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
-    		,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
-    		,@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q
-    		,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
-    		,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
-    		)  {
+,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
+,@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q
+,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
+,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
+,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+)  {
         String accept = request.getHeader("Accept");
         if (accept != null 
         		&& (accept.contains("application/json") || accept.contains("text/html"))) {
@@ -88,6 +89,8 @@ public class MyProductsApiController implements ProductsApi {
     }
 
     
+   
+    
     static public Product ESentityProductToAPIProduct(EntityProduct ep) {
 		Product product = new Product();
 		product.setId(ep.getLidVid());
@@ -96,26 +99,24 @@ public class MyProductsApiController implements ProductsApi {
 		product.setStartDateTime(ep.getStartDateTime());
 		product.setStopDateTime(ep.getStopDateTime());
 		for (String reference_role: ep.PROCEDURE_REFERENCE_ROLES) {
-			Reference observingSystemComponentRef = new Reference();
-			observingSystemComponentRef.setTitle(ep.getReferenceName(reference_role));
-			observingSystemComponentRef.setType(ep.getReferenceType(reference_role));
-			observingSystemComponentRef.setRef(ep.getReferenceLidVid(reference_role));
-			// TO DO: add description
-			product.addObservingSystemComponentsItem(observingSystemComponentRef);
+			Reference observingSystemComponentRef = ep.geReference(reference_role);
+			if (observingSystemComponentRef != null) {
+				product.addObservingSystemComponentsItem(observingSystemComponentRef);
+			}
+			
 		}
 		
 		for (String reference_role : ep.TARGET_ROLES) {
-			Reference targetReference = new Reference();
-			targetReference.setTitle(ep.getReferenceName(reference_role));
-			targetReference.setType(ep.getReferenceType(reference_role));
-			targetReference.setRef(ep.getReferenceLidVid(reference_role));
-			product.addTargetsItem(targetReference);
+			Reference targetReference = ep.geReference(reference_role);
+			if (targetReference != null) {
+				product.addTargetsItem(targetReference);
+			}
 		}
 		
 		Metadata meta = new Metadata();
 		meta.setVersion(ep.getVersion());
 		meta.setCreationDateTime(ep.getCreationDate());
-		meta.setUpdateDateTime(ep.getModificationDate());
+		meta.setUpdateDateTime(ep.getModificationDates().get(0));
 		meta.setLabelUrl(ep.getPDS4FileRef());
 		product.setMetadata(meta);
 
@@ -143,10 +144,11 @@ public class MyProductsApiController implements ProductsApi {
             	
 	        	if (getResponse != null) {
 	        		log.info("get response " + getResponse.toString());
-	        		EntityProduct entityProduct = objectMapper.convertValue(getResponse.getSourceAsMap(), EntityProduct.class);
+	        		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
+	        		EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	        		
 	        		Product product = MyProductsApiController.ESentityProductToAPIProduct(entityProduct);
-	        		product.setProperties(getResponse.getSourceAsMap());
+	        		product.setProperties(sourceAsMap);
 	        		
 	        		return new ResponseEntity<Product>(product, HttpStatus.OK);
 	        		

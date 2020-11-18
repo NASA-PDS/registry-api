@@ -32,6 +32,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 import java.util.concurrent.TimeUnit;
 import org.elasticsearch.action.search.SearchResponse;
@@ -73,6 +75,7 @@ public class MyCollectionsApiController implements CollectionsApi {
     		,@ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q
     		,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
+    		,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
     		) {
     	
         String accept = request.getHeader("Accept");
@@ -84,7 +87,21 @@ public class MyCollectionsApiController implements CollectionsApi {
         	
         	try {
 	        	SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-	        	searchSourceBuilder.query(QueryBuilders.termQuery( "orex/OCAMS_Instrument_Attributes/orex/detector_mode", "13")); 
+	        	
+	        	BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+	        	boolQuery.must(QueryBuilders.termQuery( "pds/Identification_Area/pds/product_class", "Product_Collection"));
+	        	if (q != null) {
+	        		String qMembers[] = q.split("=");
+	        		if (qMembers.length == 2) {
+	        			TermQueryBuilder qTerm = QueryBuilders.termQuery( qMembers[0], qMembers[1]);
+	        			boolQuery.must(qTerm);
+	        			
+	        		}else {
+	        			// raise exception, error 400
+	        		}
+	        	}
+	        	
+	        	searchSourceBuilder.query(boolQuery);
 	        	searchSourceBuilder.from(start); 
 	        	searchSourceBuilder.size(limit); 
 	        	searchSourceBuilder.timeout(new TimeValue(this.esRegistryConnection.getTimeOutSeconds(), 
@@ -123,6 +140,7 @@ public class MyCollectionsApiController implements CollectionsApi {
 		        
 	        	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityProduct);
+	        	        product.setProperties(sourceAsMap);
 	        	        
 	        	        products.addDataItem(product);
 	        	        
