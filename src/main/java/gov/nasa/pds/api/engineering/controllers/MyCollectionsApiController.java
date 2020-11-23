@@ -37,6 +37,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.client.RequestOptions;
@@ -47,8 +49,10 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.HashSet;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 
@@ -119,6 +123,8 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        	
 	        	Products products = new Products();
 	        	
+	        	HashSet<String> uniqueProperties = new HashSet<String>();
+	        	
 	          	Summary summary = new Summary();
 	        	
 
@@ -137,18 +143,25 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        		
 	        		for (SearchHit searchHit : searchResponse.getHits()) {
 	        	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
-	
-		        
-	        	        EntityCollection entityCollection = objectMapper.convertValue(sourceAsMap, EntityCollection.class);
-	        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityCollection);
-	        	        product.setProperties(sourceAsMap);
 	        	        
-	        	        products.addDataItem(product);
+	        	        Map<String, Object> sourceAsMapJsonProperties =	MyProductsApiController.elasticHashMapToJsonHashMap(sourceAsMap);
+	        	        uniqueProperties.addAll(sourceAsMapJsonProperties.keySet());
+	
+	        	        if (!onlySummary) {
+		        	        EntityCollection entityCollection = objectMapper.convertValue(sourceAsMap, EntityCollection.class);
+		        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityCollection);
+		        	        product.setProperties(sourceAsMapJsonProperties);
+		        	        
+		        	        products.addDataItem(product);
+	        	        }
 	        	        
 	        	    }
 	         
 	                
 	        	}
+	        	
+	        	
+	        	summary.setProperties(new ArrayList<String>(uniqueProperties));
 	        	
 	        	return new ResponseEntity<Products>(products, HttpStatus.OK);
 	        	
