@@ -97,9 +97,22 @@ public class MyProductsApiController implements ProductsApi {
 		Product product = new Product();
 		product.setId(ep.getLidVid());
 		product.setType(ep.getProductClass());
-		product.setTitle(ep.getTitle());
-		product.setStartDateTime(ep.getStartDateTime());
-		product.setStopDateTime(ep.getStopDateTime());
+		
+		String title = ep.getTitle();
+		if (title != null) {
+			product.setTitle(ep.getTitle());
+		}
+		
+		String startDateTime = ep.getStartDateTime();
+		if (startDateTime != null) {
+			product.setStartDateTime(startDateTime);
+		}
+		
+		String stopDateTime = ep.getStopDateTime();
+		if (stopDateTime != null) {
+			product.setStopDateTime(ep.getStopDateTime());
+		}
+		
 		for (String reference_role: ep.PROCEDURE_REFERENCE_ROLES) {
 			Reference observingSystemComponentRef = ep.geReference(reference_role);
 			if (observingSystemComponentRef != null) {
@@ -116,10 +129,28 @@ public class MyProductsApiController implements ProductsApi {
 		}
 		
 		Metadata meta = new Metadata();
-		meta.setVersion(ep.getVersion());
-		meta.setCreationDateTime(ep.getCreationDate());
-		meta.setUpdateDateTime(ep.getModificationDate());
-		meta.setLabelUrl(ep.getPDS4FileRef());
+		
+		
+		String version = ep.getVersion();
+		if (version != null) {
+			meta.setVersion(ep.getVersion());
+		}
+		
+		String creationDateTime = ep.getCreationDate();
+		if (creationDateTime != null) {
+			meta.setCreationDateTime(ep.getCreationDate());
+		}
+		
+		String updateDateTime = ep.getModificationDate();
+		if (updateDateTime != null) {
+			meta.setUpdateDateTime(updateDateTime);
+		}
+		
+		String labelUrl = ep.getPDS4FileRef();
+		if (labelUrl != null) {		
+			meta.setLabelUrl(labelUrl);
+		}
+		
 		product.setMetadata(meta);
 
 		return product;

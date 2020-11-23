@@ -152,9 +152,19 @@ public class EntityProduct {
     	String name;
     	if ((name = this.getReferenceName(reference_role)) !=  null) {
 	    	ref = new Reference();
+	    
 			ref.setTitle(name);
-			ref.setType(this.getReferenceType(reference_role));
-			ref.setRef(this.getReferenceLidVid(reference_role));
+			
+			String referenceType = this.getReferenceType(reference_role);
+			if (referenceType != null) {
+				ref.setType(referenceType);
+			}
+			
+			String refUri = this.getReferenceLidVid(reference_role);
+			if (refUri != null) {
+				ref.setRef(refUri);
+			}
+			
 			// TO DO: add description
     	}
     	
