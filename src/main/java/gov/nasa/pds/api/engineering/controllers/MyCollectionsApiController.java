@@ -30,15 +30,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.common.unit.TimeValue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.client.RequestOptions;
@@ -55,6 +50,7 @@ import java.util.Map;
 import java.util.HashSet;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 
 
 @Controller
@@ -91,30 +87,11 @@ public class MyCollectionsApiController implements CollectionsApi {
         				|| accept.contains("*/*"))) {
         	
         	try {
-	        	SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-	        	
-	        	BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-	        	boolQuery.must(QueryBuilders.termQuery( "pds/Identification_Area/pds/product_class", "Product_Collection"));
-	        	if (q != null) {
-	        		String qMembers[] = q.split("=");
-	        		if (qMembers.length == 2) {
-	        			TermQueryBuilder qTerm = QueryBuilders.termQuery( qMembers[0], qMembers[1]);
-	        			boolQuery.must(qTerm);
-	        			
-	        		}else {
-	        			// raise exception, error 400
-	        		}
-	        	}
-	        	
-	        	searchSourceBuilder.query(boolQuery);
-	        	searchSourceBuilder.from(start); 
-	        	searchSourceBuilder.size(limit); 
-	        	searchSourceBuilder.timeout(new TimeValue(this.esRegistryConnection.getTimeOutSeconds(), 
-	        			TimeUnit.SECONDS)); 
-	        	
-	        	SearchRequest searchRequest = new SearchRequest();
-	        	searchRequest.source(searchSourceBuilder);
-	        	searchRequest.indices(this.esRegistryConnection.getRegistryIndex());
+	        		
+	        	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(this.esRegistryConnection.getRegistryIndex(),
+	        			this.esRegistryConnection.getTimeOutSeconds());
+	        		
+	        	SearchRequest searchRequest = searchRequestBuilder.getSearchRequest(q, start, limit);
 	        	
 	        	SearchResponse searchResponse = null;
 	             
