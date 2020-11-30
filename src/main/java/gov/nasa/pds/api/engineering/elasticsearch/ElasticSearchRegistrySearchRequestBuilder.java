@@ -33,9 +33,14 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		
 		this.registryIndex = registryIndex;
 		this.timeOutSeconds = timeOutSeconds;
+	
+	}
+	
+	public ElasticSearchRegistrySearchRequestBuilder() {
 		
-		
-	  
+		this.registryIndex = "registry";
+		this.timeOutSeconds = 60;
+	
 	}
 
 	public SearchRequest getSearchRequest(String queryString, int start, int limit) {

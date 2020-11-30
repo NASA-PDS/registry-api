@@ -92,6 +92,7 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        			this.esRegistryConnection.getTimeOutSeconds());
 	        		
 	        	SearchRequest searchRequest = searchRequestBuilder.getSearchRequest(q, start, limit);
+	        	this.log.info("request elasticSearch :" + searchRequest.toString());
 	        	
 	        	SearchResponse searchResponse = null;
 	             
