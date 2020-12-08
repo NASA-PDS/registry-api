@@ -61,7 +61,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	        ParseTreeWalker walker = new ParseTreeWalker();
 	        Antlr4SearchListener listener = new Antlr4SearchListener(boolQuery);
 	        walker.walk(listener, tree);
-	        
+	        	        
 	        boolQuery = listener.getBoolQuery();
 		}
         
@@ -76,6 +76,9 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	SearchRequest searchRequest = new SearchRequest();
     	searchRequest.source(searchSourceBuilder);
     	searchRequest.indices(this.registryIndex);
+    	
+        this.log.info("q value: " + queryString);
+    	this.log.info("request elasticSearch :" + searchRequest.toString());
     	
     	return searchRequest;
 	}

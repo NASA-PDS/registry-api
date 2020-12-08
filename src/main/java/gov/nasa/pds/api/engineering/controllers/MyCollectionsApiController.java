@@ -51,6 +51,7 @@ import java.util.HashSet;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 
 
 @Controller
@@ -90,13 +91,10 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        		
 	        	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(this.esRegistryConnection.getRegistryIndex(),
 	        			this.esRegistryConnection.getTimeOutSeconds());
-	        		
-	        	SearchRequest searchRequest = searchRequestBuilder.getSearchCollectionRequest(q, start, limit);
-	        	this.log.info("request elasticSearch :" + searchRequest.toString());
 	        	
-	        	SearchResponse searchResponse = null;
-	             
-	        	searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
+	        	SearchRequest searchRequest = searchRequestBuilder.getSearchCollectionRequest(q, start, limit);
+	        	
+	        	SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
 	        			RequestOptions.DEFAULT);
 	        	
 	        	Products products = new Products();
@@ -122,12 +120,12 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        		for (SearchHit searchHit : searchResponse.getHits()) {
 	        	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
 	        	        
-	        	        Map<String, Object> sourceAsMapJsonProperties =	MyProductsApiController.elasticHashMapToJsonHashMap(sourceAsMap);
+	        	        Map<String, Object> sourceAsMapJsonProperties =	ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
 	        	        uniqueProperties.addAll(sourceAsMapJsonProperties.keySet());
 	
 	        	        if (!onlySummary) {
 		        	        EntityCollection entityCollection = objectMapper.convertValue(sourceAsMap, EntityCollection.class);
-		        	        Product product = MyProductsApiController.ESentityProductToAPIProduct(entityCollection);
+		        	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
 		        	        product.setProperties(sourceAsMapJsonProperties);
 		        	        
 		        	        products.addDataItem(product);

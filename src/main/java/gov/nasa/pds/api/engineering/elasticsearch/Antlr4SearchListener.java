@@ -181,7 +181,8 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
 		try {
 			
-			String comparisonLeftArg = ctx.FIELD().getSymbol().getText();
+			String comparisonLeftArg = 
+					ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
 			Object comparisonRightArg = null; 
 			
 			Method method;
