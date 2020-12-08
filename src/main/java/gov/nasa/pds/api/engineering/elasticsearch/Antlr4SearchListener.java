@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import gov.nasa.pds.api.engineering.lexer.SearchBaseListener;
@@ -19,12 +20,26 @@ public class Antlr4SearchListener extends SearchBaseListener {
 	private static final Logger log = LoggerFactory.getLogger(Antlr4SearchListener.class);
 	
 	private BoolQueryBuilder boolQuery;
-	private QueryBuilder queryBuilder;
+	private BoolQueryBuilder comparisonBoolQB;
 	
 	
 	private String elasticQuery;
+	
 	private String termQueryLeftArgument;
-	private String termQueryRightArgument;
+	private String termQueryRightStringArgument = null;
+	private float termQueryRightFloatArgument;
+	private Boolean comparisonBoolean = true;
+	
+	private String rangeOperator;
+	private Boolean includeBoundary;
+	
+	public Antlr4SearchListener(BoolQueryBuilder boolQuery) {
+		
+		super();
+		this.boolQuery = boolQuery;
+		
+	}
+	
 	
 	 @Override
 	 public void enterQuery(SearchParser.QueryContext ctx) {
@@ -42,7 +57,9 @@ public class Antlr4SearchListener extends SearchBaseListener {
 	 @Override
 	 public void exitQueryTerm(SearchParser.QueryTermContext ctx) {
 		 Antlr4SearchListener.log.debug("exit query term: " + ctx.getText());
-		 this.boolQuery.must(this.queryBuilder);
+		 if (this.comparisonBoolQB != null) {
+			 this.boolQuery.must(this.comparisonBoolQB);
+		 }
      }
 	 
 	 
@@ -52,27 +69,51 @@ public class Antlr4SearchListener extends SearchBaseListener {
      }
 
 	 
-	 @Override
-	 public void enterComparison(SearchParser.ComparisonContext ctx) {
-		Antlr4SearchListener.log.debug("enter comparison: " + ctx.getText());
-		
-		this.termQueryLeftArgument = ctx.FIELD().getSymbol().getText();
-		
-		String rightArg = ctx.STRINGVAL().getSymbol().getText();
-		this.termQueryRightArgument = rightArg.substring(1, rightArg.length() - 1);
-			
-	 }
-
+	
+	 
 	@Override
 	public void exitComparison(SearchParser.ComparisonContext ctx) {
 		Antlr4SearchListener.log.debug("exit comparison: " + ctx.getText());
 
 		try {
 			
-			//Class<?> QueryBuildersClass = Class.forName("QueryBuilders");
-			Method method = QueryBuilders.class.getDeclaredMethod(this.elasticQuery, String.class, String.class);
+			String termQueryLeftArgument = ctx.FIELD().getSymbol().getText();
 			
-			this.queryBuilder = (QueryBuilder) method.invoke(null, this.termQueryLeftArgument, this.termQueryRightArgument);
+			Method method;
+			QueryBuilder comparisonQB = null;
+			
+			if (ctx.STRINGVAL() != null) {
+				this.log.debug("parse string");
+				String rightArg = ctx.STRINGVAL().getSymbol().getText();
+				String termQueryRightStringArgument = rightArg.substring(1, rightArg.length() - 1);
+			
+				if (this.elasticQuery == "termQuery") {					
+					comparisonQB = (QueryBuilder) QueryBuilders.termQuery(termQueryLeftArgument, termQueryRightStringArgument);
+				}
+				else if (this.elasticQuery == "rangeQuery") {
+					comparisonQB = (RangeQueryBuilder) QueryBuilders.rangeQuery(termQueryLeftArgument);
+					Method methodRangeOperator = RangeQueryBuilder.class.getDeclaredMethod(this.rangeOperator, Object.class, boolean.class);
+					comparisonQB = (QueryBuilder) methodRangeOperator.invoke(comparisonQB, 
+							termQueryRightStringArgument,
+							this.includeBoundary);
+				}
+			} else if (ctx.NUMBER() != null){
+				this.log.debug("parse number");
+				method = QueryBuilders.class.getDeclaredMethod(this.elasticQuery, String.class, float.class);
+				float termQueryRightFloatArgument = Float.parseFloat(ctx.NUMBER().getSymbol().getText());
+				comparisonQB = (QueryBuilder) method.invoke(null, termQueryLeftArgument, termQueryRightFloatArgument);
+			}
+
+			this.comparisonBoolQB = QueryBuilders.boolQuery();
+			if (comparisonQB != null) {
+				if (this.comparisonBoolean) {
+					this.comparisonBoolQB.must(comparisonQB);
+				}
+				else {
+					this.comparisonBoolQB.mustNot(comparisonQB);
+				}
+			}
+			
 		
 		} catch (SecurityException e) { 
 			Antlr4SearchListener.log.error("SecurityException " + e.getMessage());
@@ -96,9 +137,35 @@ public class Antlr4SearchListener extends SearchBaseListener {
 				Antlr4SearchListener.log.info("Operator is EQ " + ctx.getText());
 				this.elasticQuery = "termQuery";
 		}
-		else {
-			Antlr4SearchListener.log.info("Operator is NOT EQ ");
+		else if (ctx.NE() != null)  {
+			Antlr4SearchListener.log.info("Operator is NE ");
+			this.elasticQuery = "termQuery";
+			this.comparisonBoolean = false;
 			
+		}
+		else if (ctx.GT() != null) {
+			Antlr4SearchListener.log.info("Operator is GT ");
+			this.elasticQuery = "rangeQuery";
+			this.rangeOperator = "from";
+			this.includeBoundary = false;
+		}
+		else if (ctx.GE() != null) {
+			Antlr4SearchListener.log.info("Operator is GE ");
+			this.elasticQuery = "rangeQuery";
+			this.rangeOperator = "from";
+			this.includeBoundary = true;
+		}
+		else if (ctx.LT() != null) {
+			Antlr4SearchListener.log.info("Operator is LT ");
+			this.elasticQuery = "rangeQuery";
+			this.rangeOperator = "to";
+			this.includeBoundary = false;
+		}
+		else if (ctx.LE() != null) {
+			Antlr4SearchListener.log.info("Operator is LE ");
+			this.elasticQuery = "rangeQuery";
+			this.rangeOperator = "to";
+			this.includeBoundary = true;
 		}
 		
 	}

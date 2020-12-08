@@ -43,22 +43,27 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	
 	}
 
-	public SearchRequest getSearchRequest(String queryString, int start, int limit) {
-		CodePointCharStream input = CharStreams.fromString(queryString);
-        SearchLexer lex = new SearchLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-
-        SearchParser par = new SearchParser(tokens);
-        ParseTree tree = par.query();
-        
-        ElasticSearchRegistrySearchRequestBuilder.log.info(tree.toStringTree(par));
-                
-        // Walk it and attach our listener
-        ParseTreeWalker walker = new ParseTreeWalker();
-        Antlr4SearchListener listener = new Antlr4SearchListener();
-        walker.walk(listener, tree);
-        
-        BoolQueryBuilder boolQuery = listener.getBoolQuery();
+	public SearchRequest getSearchCollectionRequest(String queryString, int start, int limit) {
+		
+		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+		
+		if (queryString != null) {
+			CodePointCharStream input = CharStreams.fromString(queryString);
+	        SearchLexer lex = new SearchLexer(input);
+	        CommonTokenStream tokens = new CommonTokenStream(lex);
+	
+	        SearchParser par = new SearchParser(tokens);
+	        ParseTree tree = par.query();
+	        
+	        ElasticSearchRegistrySearchRequestBuilder.log.info(tree.toStringTree(par));
+	                
+	        // Walk it and attach our listener
+	        ParseTreeWalker walker = new ParseTreeWalker();
+	        Antlr4SearchListener listener = new Antlr4SearchListener(boolQuery);
+	        walker.walk(listener, tree);
+	        
+	        boolQuery = listener.getBoolQuery();
+		}
         
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         boolQuery.must(QueryBuilders.termQuery( "pds/Identification_Area/pds/product_class", "Product_Collection"));
