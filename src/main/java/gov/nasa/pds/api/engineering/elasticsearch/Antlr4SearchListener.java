@@ -46,23 +46,20 @@ public class Antlr4SearchListener extends SearchBaseListener {
 	
 	 @Override
 	 public void enterQuery(SearchParser.QueryContext ctx) {
-		 Antlr4SearchListener.log.debug("enterQuery: " + ctx.getText());
-		 
+		 Antlr4SearchListener.log.debug("enterQuery: " + ctx.getText()); 
 		 this.queryQB = QueryBuilders.boolQuery(); 	
-		 
      }
 	 
 	 @Override
 	 public void exitQuery(SearchParser.QueryContext ctx) {
 		Antlr4SearchListener.log.debug("exitQuery: " + ctx.getText());	 
 		this.queryQB.must(this.queryTermQBs.pollLast());
-	}
+	 }
 	 
 	 @Override
 	 public void enterQueryTerm(SearchParser.QueryTermContext ctx) {
 		 Antlr4SearchListener.log.debug("enter queryterm: " + ctx.getText());
-		 this.queryTermQBs.add(QueryBuilders.boolQuery());
-		 
+		 this.queryTermQBs.add(QueryBuilders.boolQuery());	 
 		  
      }
 	 
@@ -74,7 +71,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
 		}
 		 else if (ctx.group() != null) {
 			 this.queryTermQBs.getLast().must(this.groupQBs.pollLast());
-		 }
+		}
      }
 	 
 	 
@@ -122,16 +119,14 @@ public class Antlr4SearchListener extends SearchBaseListener {
 	 public void enterAndStatement(SearchParser.AndStatementContext ctx) {
 		 Antlr4SearchListener.log.debug("enter andStatement: " + ctx.getText());
 		 this.andStatementQBs.add(QueryBuilders.boolQuery());
-		 
-		 
+		  
 	 }
 	 
 	 @Override
 	 public void enterOrStatement(SearchParser.OrStatementContext ctx) {
 		 Antlr4SearchListener.log.debug("enter orStatement: " + ctx.getText());
 		 this.orStatementQBs.add(QueryBuilders.boolQuery());
-		 
-		 
+		 	 
 	 }
 	 
 	 @Override
