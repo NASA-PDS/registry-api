@@ -1,6 +1,6 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
-
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,12 +14,9 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectio
 public class ElasticSearchConfig { 
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchConfig.class);
-	  
-	@Value("${elasticSearch.host:localhost}")
-	private String host;
-	
-	@Value("${elasticSearch.port:9200}")
-	private int port;
+	 
+	@Value("#{'${elasticSearch.host}'.split(',')}:localhost:9200") 
+	private List<String> hosts;
 	
 	@Value("${elasticSearch.registryIndex:registry}")
 	private String registryIndex;
@@ -27,22 +24,14 @@ public class ElasticSearchConfig {
 	@Value("${elasticSearch.timeOutSeconds:60}")
 	private int timeOutSeconds;
    
-	public String getHost() {
-		return host;
+	public List<String> getHosts() {
+		return hosts;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
+	public void setHost(List<String> hosts) {
+		this.hosts = hosts;
 	}
-	
-	public int getPort() {
-		return port;
-	}
-	
-	public void setPort(int port) {
-		this.port = port;
-	}
-	
+		
 	public String getRegistryIndex() {
 		return registryIndex;
 	}
@@ -54,8 +43,7 @@ public class ElasticSearchConfig {
 	@Bean
     public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
      
-		return new ElasticSearchRegistryConnectionImpl(this.host,
-				this.port,
+		return new ElasticSearchRegistryConnectionImpl(this.hosts,
 				this.registryIndex,
 				this.timeOutSeconds);
 

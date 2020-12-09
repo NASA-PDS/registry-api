@@ -1,5 +1,7 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
+import java.util.List;
+import java.util.ArrayList;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -17,18 +19,24 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	private int timeOutSeconds;
 	
 
-	public ElasticSearchRegistryConnectionImpl(String host, 
-			int port, 
+	public ElasticSearchRegistryConnectionImpl(List<String> hosts, 
 			String registryIndex,
 			int timeOutSeconds) {
 		
-		this.log.info("Connecting elasticSearch db " + host + ":" + Integer.toString(port));
+		HttpHost[] httpHosts = new HttpHost[hosts.size()];
+		int i=0;
+		for (String host : hosts) {
+			String hostPort[] = host.split(":");
+			this.log.info("Connecting elasticSearch db " + hostPort[0] + ":" + hostPort[1]);
+			httpHosts[i] = new HttpHost(hostPort[0], 
+            		Integer.parseInt(hostPort[1]), 
+            		"http");
+	    	
+			}
 		
-    	this.restHighLevelClient = new RestHighLevelClient(
+		this.restHighLevelClient = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost(host, 
-                        		port, 
-                        		"http")));
+                        httpHosts));
     	
     	this.registryIndex = registryIndex;
     	this.timeOutSeconds = timeOutSeconds;
