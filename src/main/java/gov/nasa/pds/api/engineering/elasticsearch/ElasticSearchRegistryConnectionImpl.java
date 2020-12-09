@@ -23,20 +23,20 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			String registryIndex,
 			int timeOutSeconds) {
 		
-		HttpHost[] httpHosts = new HttpHost[hosts.size()];
-		int i=0;
+		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
+		
 		for (String host : hosts) {
 			String hostPort[] = host.split(":");
 			this.log.info("Connecting elasticSearch db " + hostPort[0] + ":" + hostPort[1]);
-			httpHosts[i] = new HttpHost(hostPort[0], 
+			httpHosts.add(new HttpHost(hostPort[0], 
             		Integer.parseInt(hostPort[1]), 
-            		"http");
+            		"http"));
 	    	
 			}
 		
 		this.restHighLevelClient = new RestHighLevelClient(
                 RestClient.builder(
-                        httpHosts));
+                		httpHosts.toArray(new HttpHost[httpHosts.size()])));
     	
     	this.registryIndex = registryIndex;
     	this.timeOutSeconds = timeOutSeconds;
