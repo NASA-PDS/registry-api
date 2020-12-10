@@ -109,7 +109,7 @@ public class MyProductsApiController implements ProductsApi {
             	getResponse = restHighLevelClient.get(getProductRequest, 
             			RequestOptions.DEFAULT);
             	
-	        	if (getResponse != null) {
+	        	if (getResponse.isExists()) {
 	        		log.info("get response " + getResponse.toString());
 	        		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
 	        		EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
