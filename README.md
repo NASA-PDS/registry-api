@@ -38,18 +38,20 @@ You can browse self documented server or you can use postman to test it.
 
 Postman is a tool which enable to manage collection of HTTP API requests, share and run them.
 
-Install postman desktop application https://www.postman.com/downloads/
+1. Install postman desktop application https://www.postman.com/downloads/
 
-Download the latest request collection from TBD
+2. Download the latest request collection from TBD
 
-Then you import the collection file, on the top-left: Import > File
+3. Then you import the collection file, on the top-left: Import > File
 
-You also need to set an environment variable setting the base url of the demo API:
+4. You also need to set an environment variable the base url of the demo API:
 
-<screenshots>
+    baseUrl = https://pds-gamma.jpl.nasa.gov/api
+
+See guidelines on https://learning.postman.com/docs/sending-requests/variables/
 
 
-You can browse the collection and run the requests one by one or run the full collection at once.
+5. You can browse the collection and run the requests one by one or run the full collection at once.
 
     
 
