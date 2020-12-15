@@ -15,12 +15,7 @@
       <version>2.3.1.RELEASE</version>
       <!-- >version>1.5.9.RELEASE</version-->
   </parent>
-  <distributionManagement>
-  <snapshotRepository>
-    <id>ossrh</id>
-    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-  </snapshotRepository>
-</distributionManagement>
+ 
     
   <build>
       <sourceDirectory>.</sourceDirectory>
