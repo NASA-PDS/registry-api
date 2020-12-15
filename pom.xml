@@ -63,6 +63,36 @@
      
 	
   </build>
+  
+    <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+  
+  <scm>
+    <url>https://github.com/NASA-PDS/registry-api-service/tree/master</url>
+    <connection>scm:git:git://github.com/NASA-PDS/registry-api-service.git</connection>
+    <developerConnection>scm:git:ssh://github.com:NASA-PDS/registry-api-service.git</developerConnection>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>snapshots-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
      <dependencies>
          
