@@ -81,19 +81,7 @@
     <developerConnection>scm:git:ssh://github.com:NASA-PDS/registry-api-service.git</developerConnection>
   </scm>
 
-  <repositories>
-    <repository>
-      <id>snapshots-repo</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
+ 
      <dependencies>
          
          <!--SpringFox dependencies -->
