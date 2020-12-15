@@ -60,10 +60,30 @@
 	        <autoReleaseAfterClose>true</autoReleaseAfterClose>
 	      </configuration>
 	    </plugin>
+	    <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-site-plugin</artifactId>
+	        <version>3.8.2</version>
+	      </plugin>
+         <plugin>
      </plugins>
      
 	
   </build>
+  
+   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+  
+  
+  
     <dependencies>
         <!-- dependencies are needed for the client being generated -->
               <!--SpringFox dependencies -->
@@ -182,6 +202,19 @@
 			
 
    </dependencies>
+   
+    <repositories>
+    <repository>
+      <id>oss.sonatype.org-snapshot</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories> 
    
    
 </project>
