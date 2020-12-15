@@ -3,12 +3,12 @@ openapi: 3.0.0
 servers:
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
-    
+ 
 info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: "0.0"
+  version: 0.1.dev
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -61,9 +61,11 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/PDS4Label'
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
+        '408':
+          description: request time out
         '500':
           description: Internal server error
       parameters:
@@ -73,12 +75,14 @@ paths:
           required: false
           schema:
             type: integer
+            default: 0
         - name: limit
           in: query
           description: maximum number of matching results returned, for pagination
           required: false
           schema:
             type: integer
+            default: 100
         - name: q
           in: query
           description: search query
@@ -101,6 +105,12 @@ paths:
             type: array
             items:
               type: string
+        - name: only-summary
+          in: query
+          description: only return the summary, useful to get the list of available properties
+          schema:
+            type: boolean
+            default: false
 
   /products/{lidvid}:
     get:
@@ -112,9 +122,9 @@ paths:
         '200':
           description: Successful request
           content:
-            application/xml:
+            application/json:
               schema:
-                $ref: '#/components/schemas/PDS4Label'
+                $ref: '#/components/schemas/product'
         '404':
           description: lidvid not found
         '500':
@@ -144,13 +154,15 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/collections'
+                $ref: '#/components/schemas/products'
         '400':
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorMessage'
+        '408':
+          description: request time out
       parameters:
         - name: start
           in: query
@@ -158,15 +170,18 @@ paths:
           required: false
           schema:
             type: integer
+            default: 0
         - name: limit
           in: query
           description: maximum number of matching results returned, for pagination
           required: false
           schema:
             type: integer
+            default: 100
         - name: q
           in: query
-          description: search query
+          description: search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers.
+          example: ((pds/Primary_Result_Summary/pds/processing_level eq "Raw") or not (_file_size le 8942))
           required: false
           schema:
             type: string
@@ -186,6 +201,13 @@ paths:
             type: array
             items:
               type: string
+        - name: only-summary
+          in: query
+          description: only return the summary, useful to get the list of available properties
+          required: false
+          schema:
+            type: boolean
+            default: false
           
   /routes:
     get:
@@ -299,18 +321,17 @@ components:
         url:
           type: string
     
-    collections:
+    products:
       type: object
       required:
-        - metadata
-        - data
+        - summary
       properties:
-        metadata:
-          $ref: '#/components/schemas/metadata'
+        summary:
+          $ref: '#/components/schemas/summary'
         data:
           items:
-            $ref: '#/components/schemas/collection'
-    metadata:
+            $ref: '#/components/schemas/product'
+    summary:
       type: object
       properties:
         q:
@@ -323,37 +344,80 @@ components:
           type: array
           items:
             type: string
-    collection:
+        properties:
+          type: array
+          items:
+            type: string
+    product:
       type: object
       required:
         - id
-        - title
+        - metadata
       properties:
         id:
           type: string
           description: identifier lidvid of the collection
+        type:
+          type: string
         title:
           type: string
         description:
           type: string
-        instruments: 
+        start_date_time:
+          type: string
+          description: start date time of the observations in ISO8601
+        stop_date_time:
+          type: string
+          description: stop date time of the observations in ISO8601
+        observing_system_components: 
           type: array
-          description: identifier lidvid of the instrument or procedure generating the data
+          description: list of instruments or procedures generating the data (for concept see https://en.wikipedia.org/wiki/Observations_and_Measurements)
           items:
-            type: string
+            $ref: '#/components/schemas/reference'
         targets: 
           type: array
-          description: identifier lidvid of the target of the observation
+          description: identifier lidvid of the target of or feature of interest the observation (for concept see https://en.wikipedia.org/wiki/Observations_and_Measurements)
           items:
-            type: string
-        optional_properties:
+            $ref: '#/components/schemas/reference'
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        properties:
           type: object
+          description: properties extracted from pds4 model, syntax for property name is <namespace>:<property>[/<namespace>:<property>]*
           additionalProperties:
-            type: array
-            items:
-              type: string
-    PDS4Label:
+            type: object
+    reference:
       type: object
+      description: object describing a reference to a different product. TODO The properties should be defined by a standard (xlink, json-ld) to be chosen
+      required:
+          - name
+          - ref
+      properties:
+        title:
+          type: string
+          description: name to display for the external reference
+        ref:
+          type: string
+          description: external reference, here lidvid urn
+        type:
+          type: string
+          description: type of the external reference, can be displayed as an icon for example
+        description:
+          type: string
+          description: longer description for the external reference, can be displayed in a tooltip
+    metadata:
+      type: object
+      required:
+        - label_url
+      properties:
+        creation_date_time:
+          type: string
+        update_date_time:
+          type: string
+        version:
+          type: string
+        label_url:
+          type: string
     errorMessage:
       type: object
       required:
