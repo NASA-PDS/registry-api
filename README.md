@@ -9,8 +9,8 @@ It implements a very simple collections end-point complying with the specificati
 
 ## Deployment
 
-If needed change port in `src/main/resources/applications.properties`
-
+If needed change server port and elasticSearch parameters in `src/main/resources/applications.properties`.
+Note, the registry index in elasticSearch is hard-coded. It need to be `registry`.
 
     mvn clean
     mvn install
@@ -40,7 +40,7 @@ Postman is a tool which enable to manage collection of HTTP API requests, share 
 
 1. Install postman desktop application https://www.postman.com/downloads/
 
-2. Download the latest request collection from TBD
+2. Download the latest request collection from [postman collection](https://raw.githubusercontent.com/NASA-PDS/pds-api-service/elasticsearch/src/test/resources/postman_collection.json)
 
 3. Then you import the collection file, on the top-left: Import > File
 
@@ -54,4 +54,3 @@ See guidelines on https://learning.postman.com/docs/sending-requests/variables/
 5. You can browse the collection and run the requests one by one or run the full collection at once.
 
     
-
