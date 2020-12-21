@@ -2,16 +2,29 @@ package gov.nasa.pds.api.engineering.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
 import gov.nasa.pds.model.Reference;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 
 public class EntityProduct {
-	
+	private static final Logger log = LoggerFactory.getLogger(EntityProduct.class);
 	
 	public final String PROCEDURE_INSTRUMENT_TYPE = "Instrument";
 	public final String PROCEDURE_INSTRUMENT_HOST_TYPE = "Spacecraft";
@@ -50,29 +63,32 @@ public class EntityProduct {
 	@JsonProperty("pds/File/pds/creation_date_time")
     private String creation_date;
 	
-	@JsonProperty("pds/Internal_Reference/pds/reference_type")
-	private List<String> referenceRoles;
+	//@JsonProperty("pds/Internal_Reference/pds/reference_type")
+	//private List<String> referenceRoles;
 	
-	@JsonProperty("pds/Internal_Reference/pds/lid_reference")
-	private List<String> referenceLidVid;
+	//@JsonProperty("pds/Internal_Reference/pds/lid_reference")
+	//private List<String> referenceLidVid;
 	
-	@JsonProperty("pds/Observing_System_Component/pds/name")
-	private List<String> observingSystemNames;
+	//@JsonProperty("pds/Observing_System_Component/pds/name")
+	//private List<String> observingSystemNames;
 	
-	@JsonProperty("pds/Observing_System_Component/pds/type")
-	private List<String> observingSystemTypes;
+	//@JsonProperty("pds/Observing_System_Component/pds/type")
+	//private List<String> observingSystemTypes;
 	
-	@JsonProperty("pds/Target_Identification/pds/type")
-	private String targetType;
+	//@JsonProperty("pds/Target_Identification/pds/type")
+	//private String targetType;
 	
-	@JsonProperty("pds/Target_Identification/pds/name")
-	private String targetName;
+	//@JsonProperty("pds/Target_Identification/pds/name")
+	//private String targetName;
 	
 	@JsonProperty("vid")
 	private String version; 
 	
 	@JsonProperty("_file_ref")
 	private String pds4FileReference;
+	
+	@JsonProperty("_file_blob")
+	private String fileBlob;
 	
 	public String getLidVid() {
 		return this.lidvid;
@@ -86,14 +102,14 @@ public class EntityProduct {
 		return this.productClass;
 	}
 
-	public List<String> getReferenceRoles() {
-		return this.referenceRoles;
-	}
-	
 	public static <T> Iterable<T> emptyIfNull(Iterable<T> iterable) {
 	    return iterable == null ? Collections.<T>emptyList() : iterable;
 	}
 	
+	/*
+	public List<String> getReferenceRoles() {
+		return this.referenceRoles;
+	}
 	
 	
 	public String getReferenceLidVid(String role) {
@@ -171,6 +187,7 @@ public class EntityProduct {
     	return ref;
     }
 
+    */
 	
 	public String getPDS4FileRef() {
 		return this.pds4FileReference;
@@ -195,6 +212,30 @@ public class EntityProduct {
 	public String getVersion() {
 		return version;
 	}
+	
+	public Document getPDS4XML() {
+		
+		
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	    factory.setNamespaceAware(true);
+	    
+	    try {
+	    	
+	    	DocumentBuilder builder = factory.newDocumentBuilder();
+	    	return builder.parse(new ByteArrayInputStream(this.fileBlob.getBytes())).getOwnerDocument();
+	    	
+	    } catch (ParserConfigurationException e) {
+	    	EntityProduct.log.error(e.getMessage());
+	    } catch (SAXException e) {
+	    	EntityProduct.log.error(e.getMessage());
+	    } catch (IOException e) {
+	    	EntityProduct.log.error(e.getMessage());
+	    } 
+	    
+	    return null;
+	}
+		
+	
 
 	
 }

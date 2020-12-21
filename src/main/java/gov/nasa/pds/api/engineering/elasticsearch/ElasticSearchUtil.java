@@ -93,6 +93,7 @@ public class ElasticSearchUtil {
 			product.setStopDateTime(ep.getStopDateTime());
 		}
 		
+		/*
 		for (String reference_role: ep.PROCEDURE_REFERENCE_ROLES) {
 			Reference observingSystemComponentRef = ep.geReference(reference_role);
 			if (observingSystemComponentRef != null) {
@@ -107,6 +108,7 @@ public class ElasticSearchUtil {
 				product.addTargetsItem(targetReference);
 			}
 		}
+		*/
 		
 		Metadata meta = new Metadata();
 		

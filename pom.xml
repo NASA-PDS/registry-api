@@ -172,6 +172,11 @@
           <groupId>com.fasterxml.jackson.jaxrs</groupId>
           <artifactId>jackson-jaxrs-json-provider</artifactId>
           </dependency>
+          
+          <dependency>
+			 <groupId>com.fasterxml.jackson.dataformat</groupId>
+			 <artifactId>jackson-dataformat-xml</artifactId>
+		  </dependency>
         
         <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
 		<dependency>

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -75,7 +76,8 @@ public class MyProductsApiController implements ProductsApi {
         if (accept != null 
         		&& (accept.contains("application/json") 
         				|| accept.contains("text/html")
-        				|| accept.contains("*/*"))) {
+        				|| accept.contains("*/*")
+        				|| accept.contains("application/xml"))) {
             try {
             	
             	
@@ -95,10 +97,12 @@ public class MyProductsApiController implements ProductsApi {
     
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
         String accept = request.getHeader("Accept");
-        if (accept != null 
+        if ((accept != null) 
         		&& (accept.contains("application/json") 
-        				|| accept.contains("text/html")
-        				|| accept.contains("*/*"))) {
+				|| accept.contains("text/html")
+				|| accept.contains("*/*")
+				|| accept.contains("application/xml"))) {
+        	
             try {
             			
             	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
@@ -114,14 +118,16 @@ public class MyProductsApiController implements ProductsApi {
 	        		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
 	        		EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	        		
-	        		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
 
-	        		Map<String, Object> sourceAsMapJsonProperties = ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
-	        		product.setProperties(sourceAsMapJsonProperties);
 	        		
-	        		return new ResponseEntity<Product>(product, HttpStatus.OK);
-	        		
-	        	}
+		        		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+	
+		        		Map<String, Object> sourceAsMapJsonProperties = ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
+		        		product.setProperties(sourceAsMapJsonProperties);
+		        		
+		        		return new ResponseEntity<Product>(product, HttpStatus.OK);
+	        	}		        		
+	   
 	        	else {
 	        		// TO DO send error 404, or 302 redirection to the correct server
 	        		return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
