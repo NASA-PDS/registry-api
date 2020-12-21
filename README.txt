@@ -15,5 +15,13 @@ Update `application.properties` as needed
 
 Launch server
 
-$java -jar registry-api-service-<version>.jar &
+    $java -jar registry-api-service-<version>.jar &
+
+
+Test the server and see documentation in your browser:
+
+    http://localhost:8080/
+
+
+
 
