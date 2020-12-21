@@ -66,7 +66,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		}
         
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        boolQuery.must(QueryBuilders.termQuery( "pds/Identification_Area/pds/product_class", "Product_Collection"));
+        boolQuery.must(QueryBuilders.termQuery( "product_class", "Product_Collection"));
     	searchSourceBuilder.query(boolQuery);
     	searchSourceBuilder.from(start); 
     	searchSourceBuilder.size(limit); 

@@ -9,7 +9,12 @@ public class EntityCollection extends EntityProduct {
     private List<String> modification_date;
 	
 	public String getModificationDate() {
-		return modification_date.get(0);
+		if (modification_date != null) {
+			return modification_date.get(0);
+		}
+		else {
+			return null;
+		}
 	}
 	
 
