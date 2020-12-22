@@ -152,7 +152,7 @@
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-base</artifactId>
             <version>${jackson-version}</version>
-            </dependency>
+        </dependency>
         <dependency>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-core</artifactId>
@@ -161,23 +161,24 @@
         <dependency>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-annotations</artifactId>
-          <version>${jackson-version}</version>
           </dependency>
         <dependency>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-databind</artifactId>
-          <version>${jackson-version}</version>
+          		    <version>${jackson-version}</version>
           </dependency>
         <dependency>
           <groupId>com.fasterxml.jackson.jaxrs</groupId>
           <artifactId>jackson-jaxrs-json-provider</artifactId>
+          <version>${jackson-version}</version>
           </dependency>
           
           <dependency>
 			 <groupId>com.fasterxml.jackson.dataformat</groupId>
 			 <artifactId>jackson-dataformat-xml</artifactId>
+			 <version>${jackson-version}</version>
 		  </dependency>
-        
+		  
         <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
 		<dependency>
 		    <groupId>com.github.joschi.jackson</groupId>
