@@ -128,7 +128,6 @@ paths:
             application/xml:
               schema:
                 type: object
-                  
         '404':
           description: lidvid not found
         '500':
