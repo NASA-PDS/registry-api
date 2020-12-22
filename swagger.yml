@@ -59,7 +59,7 @@ paths:
         '200':
           description: Successful request
           content:
-            application/xml:
+            application/json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -125,6 +125,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: object
+                  
         '404':
           description: lidvid not found
         '500':
