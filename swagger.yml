@@ -421,6 +421,8 @@ components:
           type: string
         label_url:
           type: string
+        label:
+          type: string
     errorMessage:
       type: object
       required:
