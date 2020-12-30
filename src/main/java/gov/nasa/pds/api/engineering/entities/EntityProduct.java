@@ -6,12 +6,15 @@ import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
 import gov.nasa.pds.model.Reference;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -87,7 +90,7 @@ public class EntityProduct {
 	@JsonProperty("_file_ref")
 	private String pds4FileReference;
 	
-	@JsonProperty("_file_blob")
+	@JsonProperty("ops/Label_File_Info/ops/blob")
 	private String fileBlob;
 	
 	public String getLidVid() {
@@ -213,29 +216,42 @@ public class EntityProduct {
 		return version;
 	}
 	
-	public Document getPDS4XML() {
+	public String getPDS4XML() {
 		
+		if (this.fileBlob == null) {
+    		return "no xml available";
+    	}
 		
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    factory.setNamespaceAware(true);
-	    
-	    try {
-	    	
-	    	DocumentBuilder builder = factory.newDocumentBuilder();
-	    	return builder.parse(new ByteArrayInputStream(this.fileBlob.getBytes())).getOwnerDocument();
-	    	
-	    } catch (ParserConfigurationException e) {
-	    	EntityProduct.log.error(e.getMessage());
-	    } catch (SAXException e) {
-	    	EntityProduct.log.error(e.getMessage());
-	    } catch (IOException e) {
-	    	EntityProduct.log.error(e.getMessage());
-	    } 
-	    
-	    return null;
-	}
-		
-	
+    	Inflater iflr = new Inflater();
+    	ByteArrayOutputStream baos = null;
+    	
+    	byte[] decodedCompressedBytes = Base64.getDecoder().decode(this.fileBlob);
+    	
+    	iflr.setInput(decodedCompressedBytes);
+    	baos = new ByteArrayOutputStream();
+        byte[] tmp = new byte[4*1024];
+      
+        try{
+        	
+       
+            while(!iflr.finished()){
+                int size = iflr.inflate(tmp);
+                baos.write(tmp, 0, size);
+            }
+            
+            return baos.toString("utf-8");
+            
+        } catch (Exception ex){
+             
+        } finally {
+            try{
+                if(baos != null) baos.close();
+            } catch(Exception ex){}
+        }
+        
+        return "no xml available";
+    	
+    }
 
 	
 }

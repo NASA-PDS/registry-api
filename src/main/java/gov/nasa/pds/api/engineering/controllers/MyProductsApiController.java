@@ -77,7 +77,8 @@ public class MyProductsApiController implements ProductsApi {
         		&& (accept.contains("application/json") 
         				|| accept.contains("text/html")
         				|| accept.contains("*/*")
-        				|| accept.contains("application/xml"))) {
+        				|| accept.contains("application/xml")
+        				)) {
             try {
             	
             	
@@ -101,11 +102,17 @@ public class MyProductsApiController implements ProductsApi {
         		&& (accept.contains("application/json") 
 				|| accept.contains("text/html")
 				|| accept.contains("*/*")
-				|| accept.contains("application/xml"))) {
+				|| accept.contains("application/xml")
+				|| accept.contains("application/pds4"))) {
         	
             try {
-            			
-            	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
+            	
+ 
+            	
+            	MyProductsApiController.log.info("request lidvdid: " + lidvid + " Headers, Accept=" + accept);
+               	
+            	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
+            			lidvid);
                 GetResponse getResponse = null;
                 
                 RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();

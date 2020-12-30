@@ -37,5 +37,7 @@ public class SwaggerDocumentationConfig {
                 .directModelSubstitute(org.joda.time.DateTime.class, java.util.Date.class)
                 .apiInfo(apiInfo());
     }
+    
+   
 
 }

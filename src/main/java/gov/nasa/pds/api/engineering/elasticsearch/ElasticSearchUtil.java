@@ -133,6 +133,8 @@ public class ElasticSearchUtil {
 			meta.setLabelUrl(labelUrl);
 		}
 		
+		meta.setLabelXml(ep.getPDS4XML());
+		
 		product.setMetadata(meta);
 	
 		return product;
