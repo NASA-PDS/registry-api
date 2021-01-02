@@ -128,7 +128,7 @@ paths:
             application/xml:
               schema:
                 type: object
-            application/pds4:
+            application/pds4+xml:
               schema:
                 type: object
         '404':
