@@ -161,6 +161,12 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
         '400':
           description: Bad request
           content:
