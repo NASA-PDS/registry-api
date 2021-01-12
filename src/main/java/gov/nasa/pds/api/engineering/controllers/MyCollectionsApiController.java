@@ -74,7 +74,7 @@ public class MyCollectionsApiController implements CollectionsApi {
 
     public ResponseEntity<Products> getCollection(@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
     		,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
-    		,@ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \\\" or numbers.") @Valid @RequestParam(value = "q", required = false) String q
+    		,@ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q
     		,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
     		,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
@@ -85,6 +85,8 @@ public class MyCollectionsApiController implements CollectionsApi {
         if (accept != null 
         		&& (accept.contains("application/json") 
         				|| accept.contains("text/html")
+        				|| accept.contains("application/xml")
+        				|| accept.contains("application/pds4+xml")
         				|| accept.contains("*/*"))) {
         	
         	try {
@@ -128,7 +130,7 @@ public class MyCollectionsApiController implements CollectionsApi {
 		        	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
 		        	        product.setProperties(sourceAsMapJsonProperties);
 		        	        
-		        	        products.addDataItem(product);
+		        	        //products.addDataItem(product);
 	        	        }
 	        	        
 	        	    }

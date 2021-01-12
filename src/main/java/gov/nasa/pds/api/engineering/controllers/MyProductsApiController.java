@@ -103,7 +103,7 @@ public class MyProductsApiController implements ProductsApi {
 				|| accept.contains("text/html")
 				|| accept.contains("*/*")
 				|| accept.contains("application/xml")
-				|| accept.contains("application/pds4"))) {
+				|| accept.contains("application/pds4+xml"))) {
         	
             try {
             	

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.engineering.serializer;
+package main.java.gov.nasa.pds.api.engineering.serializer;
 
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Metadata;
@@ -20,10 +20,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 
-public class Pds4XmlSerializer extends AbstractHttpMessageConverter<Product> {
+public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Product> {
 
-		  public Pds4XmlSerializer() {
-		      super(new MediaType("application", "pds4"));
+		  public Pds4XmlProductSerializer() {
+		      super(new MediaType("application", "xml"),
+		    		new MediaType("application", "pds4+xml"));
 		  }
 
 		  @Override
