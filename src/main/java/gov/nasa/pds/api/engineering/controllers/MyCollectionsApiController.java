@@ -82,12 +82,13 @@ public class MyCollectionsApiController implements CollectionsApi {
     	
         String accept = request.getHeader("Accept");
         log.info("accept value is " + accept);
-        if (accept != null 
+        if ((accept != null 
         		&& (accept.contains("application/json") 
         				|| accept.contains("text/html")
         				|| accept.contains("application/xml")
         				|| accept.contains("application/pds4+xml")
-        				|| accept.contains("*/*"))) {
+        				|| accept.contains("*/*")))
+        	|| (accept == null)) {
         	
         	try {
 	        		
@@ -123,14 +124,30 @@ public class MyCollectionsApiController implements CollectionsApi {
 	        	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
 	        	        
 	        	        Map<String, Object> sourceAsMapJsonProperties =	ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
-	        	        uniqueProperties.addAll(sourceAsMapJsonProperties.keySet());
+	        	         
+	        	        Map<String, Object> filteredMapJsonProperties;
+	        	        
+	        	        
+	        	        if ((fields == null) || (fields.size() ==0)) {
+	        	        	filteredMapJsonProperties = sourceAsMapJsonProperties;
+	        	        }
+	        	        else {
+	        	        	filteredMapJsonProperties = sourceAsMapJsonProperties.entrySet() 
+			        	          .stream() 
+			        	          .filter(map -> fields.contains(map.getKey()) ) 
+			        	          .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));  
+	        	        }
+	        	        
+	        	        
+	        	        
+	        	        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 	
 	        	        if (!onlySummary) {
 		        	        EntityCollection entityCollection = objectMapper.convertValue(sourceAsMap, EntityCollection.class);
 		        	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
-		        	        product.setProperties(sourceAsMapJsonProperties);
+		        	        product.setProperties(filteredMapJsonProperties);
 		        	        
-		        	        //products.addDataItem(product);
+		        	        products.addDataItem(product);
 	        	        }
 	        	        
 	        	    }

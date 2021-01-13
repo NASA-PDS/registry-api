@@ -22,13 +22,16 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
+import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductsSerializer;
 
 @Configuration
 @EnableWebMvc
@@ -66,12 +69,20 @@ public class WebMVCConfig implements WebMvcConfigurer {
   
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+
+	  MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(Include.NON_NULL);
+      jsonConverter.setObjectMapper(mapper);
+     
 	  
-	  //converters.add(new MappingJackson2HttpMessageConverter());
-	  WebMvcConfigurer.super.configureMessageConverters(converters);
+	  converters.add(jsonConverter);
+	 
 	  converters.add(new Pds4XmlProductSerializer());
+	  converters.add(new Pds4XmlProductsSerializer());
 	  
   }
+
   
   
   

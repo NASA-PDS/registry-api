@@ -1,4 +1,4 @@
-package main.java.gov.nasa.pds.api.engineering.serializer;
+package gov.nasa.pds.api.engineering.serializer;
 
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Metadata;
