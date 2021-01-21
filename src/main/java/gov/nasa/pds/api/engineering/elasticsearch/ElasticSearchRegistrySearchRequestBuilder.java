@@ -1,5 +1,7 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -14,7 +16,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 
 import gov.nasa.pds.api.engineering.lexer.SearchLexer;
@@ -43,8 +44,10 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	
 	}
 
-	public SearchRequest getSearchCollectionRequest(String queryString, int start, int limit) {
-		
+
+	
+	public SearchRequest getSearchProductsRequest(String queryString, int start, int limit, Map<String,String> presetCriteria) {
+
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 		
 		if (queryString != null) {
@@ -66,7 +69,10 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		}
         
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        boolQuery.must(QueryBuilders.termQuery( "product_class", "Product_Collection"));
+        for (Map.Entry<String, String> e : presetCriteria.entrySet()) {
+        	//example "product_class", "Product_Collection"
+        	boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue() ));
+        }
     	searchSourceBuilder.query(boolQuery);
     	searchSourceBuilder.from(start); 
     	searchSourceBuilder.size(limit); 
@@ -77,10 +83,25 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	searchRequest.source(searchSourceBuilder);
     	searchRequest.indices(this.registryIndex);
     	
-        this.log.info("q value: " + queryString);
-    	this.log.info("request elasticSearch :" + searchRequest.toString());
+        ElasticSearchRegistrySearchRequestBuilder.log.info("q value: " + queryString);
+    	ElasticSearchRegistrySearchRequestBuilder.log.info("request elasticSearch :" + searchRequest.toString());
     	
     	return searchRequest;
+
+		
+	}
+	
+	public SearchRequest getSearchProductRequest(String queryString, int start, int limit) {
+		Map<String, String> presetCriteria = new HashMap<String, String>();
+		return getSearchProductsRequest(queryString, start, limit, presetCriteria);		
+	}
+	
+	public SearchRequest getSearchCollectionRequest(String queryString, int start, int limit) {
+		
+		Map<String, String> presetCriteria = new HashMap<String, String>();
+		presetCriteria.put("product_class", "Product_Collection");
+		return getSearchProductsRequest(queryString, start, limit, presetCriteria);
+		
 	}
 	
 }

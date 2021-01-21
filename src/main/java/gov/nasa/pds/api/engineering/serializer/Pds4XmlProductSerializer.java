@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -44,6 +47,10 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Produ
 		          throws IOException, HttpMessageNotWritableException {
 		      try {
 		          OutputStream outputStream = outputMessage.getBody();
+		          
+		          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
+		          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
+		   
 		          String body = product.getMetadata().getLabelXml();
 		          outputStream.write(body.getBytes());
 		          outputStream.close();

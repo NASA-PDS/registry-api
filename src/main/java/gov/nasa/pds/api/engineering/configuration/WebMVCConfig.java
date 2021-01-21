@@ -82,6 +82,7 @@ public class WebMVCConfig implements WebMvcConfigurer {
 	  converters.add(new Pds4XmlProductsSerializer());
 	  
   }
+  
 
   
   
