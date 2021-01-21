@@ -368,7 +368,7 @@ components:
             type: string
       xml:
         prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/pds_api'
+        namespace: 'http://pds.nasa.gov/api'
     product:
       type: object
       required:
