@@ -354,18 +354,33 @@ components:
       properties:
         q:
           type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         start:
           type: integer
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         limit:
           type: integer
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         sort:
           type: array
           items:
             type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         properties:
           type: array
           items:
             type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
