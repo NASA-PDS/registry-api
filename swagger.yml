@@ -459,8 +459,6 @@ components:
           type: string
         label_url:
           type: string
-        label_xml:
-          type: string
     errorMessage:
       type: object
       required:
