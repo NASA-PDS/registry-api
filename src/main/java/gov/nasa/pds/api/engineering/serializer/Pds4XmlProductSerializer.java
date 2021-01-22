@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.engineering.serializer;
 
 import gov.nasa.pds.model.Product;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Metadata;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +52,14 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Produ
 		          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 		          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
 		   
-		          String body = product.getMetadata().getLabelXml();
+		          String body = ((ProductWithXmlLabel)product).getLabelXml();
+		          
 		          outputStream.write(body.getBytes());
 		          outputStream.close();
-		      } catch (Exception e) {
+		      } catch (ClassCastException e) {
+		    	  this.logger.error("For XML serialization, the Product object must be extended as ProductWithXmlLabel: " + e.getMessage());
+		      }
+		        catch (Exception e) {
 		      }
 		  }
 

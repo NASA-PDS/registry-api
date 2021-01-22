@@ -1,13 +1,16 @@
 package gov.nasa.pds.api.engineering.controllers;
 
-import gov.nasa.pds.api.base.ProductsApi;
-import gov.nasa.pds.model.Products;
-import gov.nasa.pds.model.Product;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.entities.EntityProduct;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,17 +18,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.RequestOptions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.validation.Valid;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import gov.nasa.pds.api.base.ProductsApi;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.Products;
+import io.swagger.annotations.ApiParam;
+
 
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-10-29T11:01:11.991-07:00[America/Los_Angeles]")
@@ -57,7 +60,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
         String accept = request.getHeader("Accept");
         if ((accept != null) 
-        		&& (accept.contains("application/json") 
+        		&& (accept.contains("application/json")
 				|| accept.contains("text/html")
 				|| accept.contains("*/*")
 				|| accept.contains("application/xml")
@@ -83,14 +86,12 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	        		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
 	        		EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	        		
+	        		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
 
+	        		Map<String, Object> sourceAsMapJsonProperties = ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
+	        		product.setProperties(sourceAsMapJsonProperties);
 	        		
-		        		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-	
-		        		Map<String, Object> sourceAsMapJsonProperties = ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
-		        		product.setProperties(sourceAsMapJsonProperties);
-		        		
-		        		return new ResponseEntity<Product>(product, HttpStatus.OK);
+	        		return new ResponseEntity<Product>(product, HttpStatus.OK);
 	        	}		        		
 	   
 	        	else {

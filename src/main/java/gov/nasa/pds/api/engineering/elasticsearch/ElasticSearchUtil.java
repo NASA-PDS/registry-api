@@ -9,12 +9,10 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.engineering.controllers.MyProductsApiController;
-import gov.nasa.pds.api.engineering.entities.EntityProduct;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.model.Metadata;
-import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.Reference;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
 
 public class ElasticSearchUtil {
 	
@@ -73,8 +71,8 @@ public class ElasticSearchUtil {
 
 
 
-	static public Product ESentityProductToAPIProduct(EntityProduct ep) {
-		Product product = new Product();
+	static public ProductWithXmlLabel ESentityProductToAPIProduct(EntityProduct ep) {
+		ProductWithXmlLabel product = new ProductWithXmlLabel();
 		product.setId(ep.getLidVid());
 		product.setType(ep.getProductClass());
 		
@@ -133,7 +131,7 @@ public class ElasticSearchUtil {
 			meta.setLabelUrl(labelUrl);
 		}
 		
-		meta.setLabelXml(ep.getPDS4XML());
+		product.setLabelXml(ep.getPDS4XML()); // value is injected to be used as-is in XML serialization
 		
 		product.setMetadata(meta);
 	

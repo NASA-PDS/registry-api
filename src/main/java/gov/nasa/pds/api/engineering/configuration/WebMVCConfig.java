@@ -3,6 +3,8 @@ package gov.nasa.pds.api.engineering.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
+import gov.nasa.pds.api.engineering.serializer.Pds4JsonProductSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductsSerializer;
 
@@ -37,6 +40,8 @@ import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductsSerializer;
 @EnableWebMvc
 @ComponentScan(basePackages = { "gov.nasa.pds.api.engineering.configuration ",  "gov.nasa.pds.api.engineering.controllers", "gov.nasa.pds.api.engineering.elasticsearch"})
 public class WebMVCConfig implements WebMvcConfigurer {
+	
+	private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -69,15 +74,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
   
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-
-	  MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.setSerializationInclusion(Include.NON_NULL);
-      jsonConverter.setObjectMapper(mapper);
-     
-	  
-	  converters.add(jsonConverter);
-	 
+   
+	  WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+	  converters.add(new Pds4JsonProductSerializer());	 
 	  converters.add(new Pds4XmlProductSerializer());
 	  converters.add(new Pds4XmlProductsSerializer());
 	  

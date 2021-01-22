@@ -35,6 +35,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
@@ -95,7 +96,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pro
 	          for (Product product : products.getData()) {
 	        	  writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "product");
 	        	  
-	        	  String productBody = product.getMetadata().getLabelXml();
+	        	  String productBody = ((ProductWithXmlLabel)product).getLabelXml();
 	        	  productBody = productBody.substring(productBody.lastIndexOf("?>")+2);
 	        	  
 	        	  /*
@@ -130,6 +131,8 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pro
 
 	          writer.close();     
 	          outputStream.close();
+	      } catch (ClassCastException e) {
+	    	  this.logger.error("For XML serialization, Product object must be extended to ProductWithXmlLabel: " + e.getMessage());
 	      } catch (Exception e) {
 	    	  
 	    	  Pds4XmlProductsSerializer.log.info("error while serializing products in xml " + e.getMessage());

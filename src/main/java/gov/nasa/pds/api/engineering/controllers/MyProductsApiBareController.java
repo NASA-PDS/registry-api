@@ -25,8 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.entities.EntityCollection;
-import gov.nasa.pds.model.Product;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityCollection;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -38,7 +38,7 @@ public class MyProductsApiBareController {
 
     protected final HttpServletRequest request;
     
-    protected static final String DEFAULT_NULL_VALUE = "N/A";    
+    protected static final String DEFAULT_NULL_VALUE = "null";    
 
 	protected Map<String, String> presetCriteria = new HashMap<String, String>();
 
@@ -122,9 +122,8 @@ public class MyProductsApiBareController {
 
     	        if (!onlySummary) {
         	        EntityCollection entityCollection = objectMapper.convertValue(sourceAsMap, EntityCollection.class);
-        	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
+        	        ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
         	        product.setProperties(filteredMapJsonProperties);
-        	        
         	        products.addDataItem(product);
     	        }
     	        
