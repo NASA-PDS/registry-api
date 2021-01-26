@@ -59,9 +59,15 @@ paths:
         '200':
           description: Successful request
           content:
-            application/xml:
+            application/json:
               schema:
                 $ref: '#/components/schemas/products'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
         '404':
           description: lidvid not found
         '408':
@@ -125,6 +131,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
         '404':
           description: lidvid not found
         '500':
@@ -155,6 +167,12 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
         '400':
           description: Bad request
           content:
@@ -180,7 +198,7 @@ paths:
             default: 100
         - name: q
           in: query
-          description: search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers.
+          description: search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between " or numbers. Detailed query specification is available at https://bit.ly/393i1af
           example: ((pds/Primary_Result_Summary/pds/processing_level eq "Raw") or not (_file_size le 8942))
           required: false
           schema:
@@ -336,18 +354,36 @@ components:
       properties:
         q:
           type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         start:
           type: integer
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         limit:
           type: integer
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         sort:
           type: array
           items:
             type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         properties:
           type: array
           items:
             type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+      xml:
+        prefix: 'pds_api'
+        namespace: 'http://pds.nasa.gov/api'
     product:
       type: object
       required:
@@ -369,14 +405,19 @@ components:
         stop_date_time:
           type: string
           description: stop date time of the observations in ISO8601
+        investigations:
+          type: array
+          description: list of missions or observing campaigns which produced the data
+          items:
+            $ref: '#/components/schemas/reference'
         observing_system_components: 
           type: array
-          description: list of instruments or procedures generating the data (for concept see https://en.wikipedia.org/wiki/Observations_and_Measurements)
+          description: list of instruments or platforms generating the data
           items:
             $ref: '#/components/schemas/reference'
         targets: 
           type: array
-          description: identifier lidvid of the target of or feature of interest the observation (for concept see https://en.wikipedia.org/wiki/Observations_and_Measurements)
+          description: list of targets or feature of interest the observation.
           items:
             $ref: '#/components/schemas/reference'
         metadata:

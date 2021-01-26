@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.pds</groupId>
   <artifactId>api</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2</version>
   <name>gov.nasa.api.lib</name>
   <description>client and server stubs for the PDS federated API</description>
    <properties>
@@ -16,7 +16,6 @@
       <!-- >version>1.5.9.RELEASE</version-->
   </parent>
  
-    
   <build>
       <sourceDirectory>.</sourceDirectory>
 	  <plugins>
@@ -32,6 +31,7 @@
 		            <configuration>
 		                <inputSpec>${project.basedir}/swagger.yml</inputSpec>
 		                <language>spring</language>
+		                <withXml>true</withXml> 
 		                <configOptions>
 		                   <sourceFolder>src/gen/java/main</sourceFolder>
 		                   <dateLibrary>joda</dateLibrary>
@@ -170,6 +170,11 @@
          <groupId>com.fasterxml.jackson.jaxrs</groupId>
          <artifactId>jackson-jaxrs-json-provider</artifactId>
          </dependency>
+         <dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>${jackson-version}</version>
+		</dependency>
        
        <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
 	<dependency>
