@@ -1,11 +1,17 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
 import java.util.List;
+
+import javax.net.ssl.SSLContext;
+
 import java.util.ArrayList;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
@@ -48,6 +54,8 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		
 		if ((username != null) && (username != ""))  {
 		
+			
+			
 			final CredentialsProvider credentialsProvider =
 				    new BasicCredentialsProvider();
 				credentialsProvider.setCredentials(AuthScope.ANY,
@@ -59,8 +67,22 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 				        @Override
 				        public HttpAsyncClientBuilder customizeHttpClient(
 				                HttpAsyncClientBuilder httpClientBuilder) {
-				            return httpClientBuilder
-				                .setDefaultCredentialsProvider(credentialsProvider);
+				        	
+				        	try {
+					        	
+					        	SSLContextBuilder sslBld = SSLContexts.custom(); 
+						        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
+						        SSLContext sslContext = sslBld.build();
+	
+						        httpClientBuilder.setSSLContext(sslContext);
+					        	
+					            return httpClientBuilder
+					                .setDefaultCredentialsProvider(credentialsProvider);
+				        	}
+				            catch(Exception ex)
+				            {
+				                throw new RuntimeException(ex);
+				            }
 				        }
 				    });
 		}
