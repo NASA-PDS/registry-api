@@ -23,7 +23,13 @@ public class ElasticSearchConfig {
 	
 	@Value("${elasticSearch.timeOutSeconds:60}")
 	private int timeOutSeconds;
-   
+	
+	@Value("${elasticSearch.username}")
+	private String username;
+	
+	@Value("${elasticSearch.password}")
+	private String password;
+    
 	public List<String> getHosts() {
 		return hosts;
 	}
@@ -45,7 +51,9 @@ public class ElasticSearchConfig {
      
 		return new ElasticSearchRegistryConnectionImpl(this.hosts,
 				this.registryIndex,
-				this.timeOutSeconds);
+				this.timeOutSeconds,
+				this.username,
+				this.password);
 
     }
     

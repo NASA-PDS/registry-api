@@ -3,7 +3,14 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import org.slf4j.Logger;
@@ -18,10 +25,13 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	private String registryIndex;
 	private int timeOutSeconds;
 	
+	
 
 	public ElasticSearchRegistryConnectionImpl(List<String> hosts, 
 			String registryIndex,
-			int timeOutSeconds) {
+			int timeOutSeconds,
+			String username,
+			String password) {
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
@@ -34,9 +44,35 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	    	
 			}
 		
-		this.restHighLevelClient = new RestHighLevelClient(
-                RestClient.builder(
-                		httpHosts.toArray(new HttpHost[httpHosts.size()])));
+		RestClientBuilder builder;
+		
+		if ((username != null) && (username != ""))  {
+		
+			final CredentialsProvider credentialsProvider =
+				    new BasicCredentialsProvider();
+				credentialsProvider.setCredentials(AuthScope.ANY,
+				    new UsernamePasswordCredentials(username, password));
+	
+				builder = RestClient.builder(
+						httpHosts.toArray(new HttpHost[httpHosts.size()]))
+				    .setHttpClientConfigCallback(new HttpClientConfigCallback() {
+				        @Override
+				        public HttpAsyncClientBuilder customizeHttpClient(
+				                HttpAsyncClientBuilder httpClientBuilder) {
+				            return httpClientBuilder
+				                .setDefaultCredentialsProvider(credentialsProvider);
+				        }
+				    });
+		}
+		else {
+			builder = RestClient.builder(
+            		httpHosts.toArray(new HttpHost[httpHosts.size()])); 
+		}
+		
+		
+		
+		
+		this.restHighLevelClient = new RestHighLevelClient(builder);
     	
     	this.registryIndex = registryIndex;
     	this.timeOutSeconds = timeOutSeconds;

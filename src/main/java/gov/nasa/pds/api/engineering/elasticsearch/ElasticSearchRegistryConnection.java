@@ -6,5 +6,6 @@ public interface ElasticSearchRegistryConnection {
 	public RestHighLevelClient getRestHighLevelClient();
 	public String getRegistryIndex();
 	public int getTimeOutSeconds();
+	
 
 }
