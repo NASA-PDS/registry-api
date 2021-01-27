@@ -37,16 +37,17 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			String registryIndex,
 			int timeOutSeconds,
 			String username,
-			String password) {
+			String password,
+			Boolean ssl) {
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
 		for (String host : hosts) {
 			String hostPort[] = host.split(":");
-			this.log.info("Connecting elasticSearch db " + hostPort[0] + ":" + hostPort[1]);
+			ElasticSearchRegistryConnectionImpl.log.info("Connecting elasticSearch db " + hostPort[0] + ":" + hostPort[1]);
 			httpHosts.add(new HttpHost(hostPort[0], 
             		Integer.parseInt(hostPort[1]), 
-            		"http"));
+            		ssl?"https":"http"));
 	    	
 			}
 		
@@ -55,36 +56,36 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		if ((username != null) && (username != ""))  {
 		
 			
-			
+			this.log.info("Set elasticSearch connection with username/password over ssl");
 			final CredentialsProvider credentialsProvider =
 				    new BasicCredentialsProvider();
-				credentialsProvider.setCredentials(AuthScope.ANY,
-				    new UsernamePasswordCredentials(username, password));
-	
-				builder = RestClient.builder(
-						httpHosts.toArray(new HttpHost[httpHosts.size()]))
-				    .setHttpClientConfigCallback(new HttpClientConfigCallback() {
-				        @Override
-				        public HttpAsyncClientBuilder customizeHttpClient(
-				                HttpAsyncClientBuilder httpClientBuilder) {
+			credentialsProvider.setCredentials(AuthScope.ANY,
+			    new UsernamePasswordCredentials(username, password));
+
+			builder = RestClient.builder(
+					httpHosts.toArray(new HttpHost[httpHosts.size()]))
+			    .setHttpClientConfigCallback(new HttpClientConfigCallback() {
+			        @Override
+			        public HttpAsyncClientBuilder customizeHttpClient(
+			                HttpAsyncClientBuilder httpClientBuilder) {
+			        	
+			        	try {
 				        	
-				        	try {
-					        	
-					        	SSLContextBuilder sslBld = SSLContexts.custom(); 
-						        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
-						        SSLContext sslContext = sslBld.build();
-	
-						        httpClientBuilder.setSSLContext(sslContext);
-					        	
-					            return httpClientBuilder
-					                .setDefaultCredentialsProvider(credentialsProvider);
-				        	}
-				            catch(Exception ex)
-				            {
-				                throw new RuntimeException(ex);
-				            }
-				        }
-				    });
+				        	SSLContextBuilder sslBld = SSLContexts.custom(); 
+					        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
+					        SSLContext sslContext = sslBld.build();
+
+					        httpClientBuilder.setSSLContext(sslContext);
+				        	
+				            return httpClientBuilder
+				                .setDefaultCredentialsProvider(credentialsProvider);
+			        	}
+			            catch(Exception ex)
+			            {
+			                throw new RuntimeException(ex);
+			            }
+			        }
+			    });
 		}
 		else {
 			builder = RestClient.builder(

@@ -60,12 +60,17 @@ public class EntityProduct {
 	@JsonProperty("pds/Time_Coordinates/pds/stop_date_time")
 	private String stop_date_time;
 
+	/* 	// TO TO read it manually
 	@JsonProperty("pds/Modification_Detail/pds/modification_date")
     private String modification_date;
+    */
 	
+
 	@JsonProperty("pds/File/pds/creation_date_time")
     private String creation_date;
 	
+	
+	// TO DO read it from xml
 	//@JsonProperty("pds/Internal_Reference/pds/reference_type")
 	//private List<String> referenceRoles;
 	
@@ -204,13 +209,16 @@ public class EntityProduct {
 		return stop_date_time;
 	}
 
+	/* TO DO: reactivate 
 	public String getModificationDate() {
 		return modification_date;
 	}
+	*/
 	
 	public String getCreationDate() {
 		return creation_date;
 	}
+	
 	
 	public String getVersion() {
 		return version;

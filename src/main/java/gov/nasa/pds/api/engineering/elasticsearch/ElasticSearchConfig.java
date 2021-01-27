@@ -29,6 +29,9 @@ public class ElasticSearchConfig {
 	
 	@Value("${elasticSearch.password}")
 	private String password;
+	
+	@Value("${elaticSearch.ssl:false}")
+	private Boolean ssl;
     
 	public List<String> getHosts() {
 		return hosts;
@@ -45,7 +48,16 @@ public class ElasticSearchConfig {
 	public void setRegistryIndex(String registryIndex) {
 		this.registryIndex = registryIndex;
 	}
+	
 		
+	public Boolean isSsl() {
+		return ssl;
+	}
+
+	public void setSsl(Boolean ssl) {
+		this.ssl = ssl;
+	}
+
 	@Bean
     public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
      
@@ -53,7 +65,8 @@ public class ElasticSearchConfig {
 				this.registryIndex,
 				this.timeOutSeconds,
 				this.username,
-				this.password);
+				this.password,
+				this.ssl);
 
     }
     

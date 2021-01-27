@@ -19,7 +19,8 @@ public class ElasticSearchUtil {
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchUtil.class);
     
 	static public String jsonPropertyToElasticProperty(String jsonProperty) {
-		return jsonProperty.replace(":", "/");
+		return jsonProperty.replace(":", "/").replace(".", "/");
+		
 	}
 	
 	static public String elasticPropertyToJsonProperty(String elasticProperty) throws UnsupportedElasticSearchProperty {
@@ -36,7 +37,7 @@ public class ElasticSearchUtil {
 		   		   		
 		   	   }
 		   	   
-		   	   return String.join("/", jsonPropertyTokens);
+		   	   return String.join(".", jsonPropertyTokens);
 		   	   
 		   }
 		   else if  (elasticPropertyTokens.length == 1) {
@@ -121,10 +122,13 @@ public class ElasticSearchUtil {
 			meta.setCreationDateTime(ep.getCreationDate());
 		}
 		
+		/* TO DO reactivate it 
 		String updateDateTime = ep.getModificationDate();
 		if (updateDateTime != null) {
 			meta.setUpdateDateTime(updateDateTime);
 		}
+		*/
+		
 		
 		String labelUrl = ep.getPDS4FileRef();
 		if (labelUrl != null) {		
