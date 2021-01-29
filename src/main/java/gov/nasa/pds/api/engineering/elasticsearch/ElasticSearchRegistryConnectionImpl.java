@@ -42,9 +42,10 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
+		ElasticSearchRegistryConnectionImpl.log.info("Connection to elastic search");
 		for (String host : hosts) {
 			String hostPort[] = host.split(":");
-			ElasticSearchRegistryConnectionImpl.log.info("Connecting elasticSearch db " + hostPort[0] + ":" + hostPort[1]);
+			ElasticSearchRegistryConnectionImpl.log.info("Host " + hostPort[0] + ":" + hostPort[1]);
 			httpHosts.add(new HttpHost(hostPort[0], 
             		Integer.parseInt(hostPort[1]), 
             		ssl?"https":"http"));
@@ -56,7 +57,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		if ((username != null) && (username != ""))  {
 		
 			
-			this.log.info("Set elasticSearch connection with username/password over ssl");
+			ElasticSearchRegistryConnectionImpl.log.info("Set elasticSearch connection with username/password");
 			final CredentialsProvider credentialsProvider =
 				    new BasicCredentialsProvider();
 			credentialsProvider.setCredentials(AuthScope.ANY,
@@ -71,11 +72,14 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			        	
 			        	try {
 				        	
-				        	SSLContextBuilder sslBld = SSLContexts.custom(); 
-					        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
-					        SSLContext sslContext = sslBld.build();
-
-					        httpClientBuilder.setSSLContext(sslContext);
+			        		if (ssl) {
+			        			ElasticSearchRegistryConnectionImpl.log.info("Connection over SSL");
+					        	SSLContextBuilder sslBld = SSLContexts.custom(); 
+						        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
+						        SSLContext sslContext = sslBld.build();
+	
+						        httpClientBuilder.setSSLContext(sslContext);
+			        		}
 				        	
 				            return httpClientBuilder
 				                .setDefaultCredentialsProvider(credentialsProvider);
@@ -88,6 +92,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			    });
 		}
 		else {
+			ElasticSearchRegistryConnectionImpl.log.info("Set elasticSearch connection");
 			builder = RestClient.builder(
             		httpHosts.toArray(new HttpHost[httpHosts.size()])); 
 		}
