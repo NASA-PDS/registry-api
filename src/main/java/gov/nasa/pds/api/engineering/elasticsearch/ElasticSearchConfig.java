@@ -30,8 +30,8 @@ public class ElasticSearchConfig {
 	@Value("${elasticSearch.password}")
 	private String password;
 	
-	@Value("${elaticSearch.ssl:false}")
-	private Boolean ssl;
+	@Value("${elasticSearch.ssl:false}")
+	private boolean ssl;
     
 	public List<String> getHosts() {
 		return hosts;
@@ -50,11 +50,11 @@ public class ElasticSearchConfig {
 	}
 	
 		
-	public Boolean isSsl() {
+	public boolean isSsl() {
 		return ssl;
 	}
 
-	public void setSsl(Boolean ssl) {
+	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
 	}
 

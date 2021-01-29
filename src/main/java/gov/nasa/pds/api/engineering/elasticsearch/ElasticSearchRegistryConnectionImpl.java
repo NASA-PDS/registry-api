@@ -38,7 +38,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			int timeOutSeconds,
 			String username,
 			String password,
-			Boolean ssl) {
+			boolean ssl) {
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
