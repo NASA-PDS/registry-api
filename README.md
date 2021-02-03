@@ -2,9 +2,9 @@
 
 ## Overview
 
-This project is a template implementation of the PDS federated API using the standard libraries automatically generated from the swagger definition of the API (see repository https://github.com/nasa-pds/pds-api-core/).
+This is the PDS API implementation which provides access to the PDS registries (see https://github.com/NASA-PDS/pds-registry-app). When operational the API service will be part of the registry application. 
 
-It implements a very simple collections end-point complying with the specification (see https://app.swaggerhub.com/organizations/PDS_APIs)
+It implements a very simple collections and product search end-point complying with the specification (see https://app.swaggerhub.com/organizations/PDS_APIs)
 
 
 ## Deployment
