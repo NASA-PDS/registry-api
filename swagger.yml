@@ -386,6 +386,12 @@ paths:
         '500':
           description: Internal server error
     parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
       - name: start
         in: query
         description: offset in matching result list, for pagination
@@ -400,7 +406,6 @@ paths:
         schema:
           type: integer
           default: 100
-
   /routes:
     get:
       tags:
