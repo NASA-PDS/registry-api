@@ -58,55 +58,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     
      
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
-        String accept = request.getHeader("Accept");
-        if ((accept != null) 
-        		&& (accept.contains("application/json")
-				|| accept.contains("text/html")
-				|| accept.contains("*/*")
-				|| accept.contains("application/xml")
-				|| accept.contains("application/pds4+xml"))) {
-        	
-            try {
-            	
- 
-            	
-            	MyProductsApiController.log.info("request lidvdid: " + lidvid + " Headers, Accept=" + accept);
-               	
-            	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
-            			lidvid);
-                GetResponse getResponse = null;
-                
-                RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
-                 
-            	getResponse = restHighLevelClient.get(getProductRequest, 
-            			RequestOptions.DEFAULT);
-            	
-	        	if (getResponse.isExists()) {
-	        		log.info("get response " + getResponse.toString());
-	        		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
-	        		EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-	        		
-	        		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-
-	        		Map<String, Object> sourceAsMapJsonProperties = ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
-	        		product.setProperties(sourceAsMapJsonProperties);
-	        		
-	        		return new ResponseEntity<Product>(product, HttpStatus.OK);
-	        	}		        		
-	   
-	        	else {
-	        		// TO DO send error 404, or 302 redirection to the correct server
-	        		return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
-	        	}
-	        		
-
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Product>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<Product>(HttpStatus.NOT_IMPLEMENTED);
+    	return this.getProductResponseEntity(lidvid);
     }
 
     

@@ -29,12 +29,14 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	
 	private RestHighLevelClient restHighLevelClient;
 	private String registryIndex;
+	private String registryRefIndex;
 	private int timeOutSeconds;
 	
 	
 
 	public ElasticSearchRegistryConnectionImpl(List<String> hosts, 
 			String registryIndex,
+			String registryRefIndex,
 			int timeOutSeconds,
 			String username,
 			String password,
@@ -103,6 +105,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		this.restHighLevelClient = new RestHighLevelClient(builder);
     	
     	this.registryIndex = registryIndex;
+    	this.registryRefIndex = registryRefIndex;
     	this.timeOutSeconds = timeOutSeconds;
    
 		
@@ -120,8 +123,16 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		return registryIndex;
 	}
 
-	public void setRegistryIndex(String registryIndex) {
-		this.registryIndex = registryIndex;
+	public void setRegistryIndex(String registryRefIndex) {
+		this.registryRefIndex = registryRefIndex;
+	}
+	
+	public String getRegistryRefIndex() {
+		return registryRefIndex;
+	}
+
+	public void setRegistryRefIndex(String registryRefIndex) {
+		this.registryRefIndex = registryRefIndex;
 	}
 
 	public int getTimeOutSeconds() {
