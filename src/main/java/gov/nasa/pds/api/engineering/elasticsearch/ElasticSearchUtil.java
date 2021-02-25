@@ -13,44 +13,21 @@ import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.model.Reference;
 
 public class ElasticSearchUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchUtil.class);
     
 	static public String jsonPropertyToElasticProperty(String jsonProperty) {
-		return jsonProperty.replace(":", "/").replace(".", "/");
+		return jsonProperty.replace(".", "/");
 		
 	}
 	
 	static public String elasticPropertyToJsonProperty(String elasticProperty) throws UnsupportedElasticSearchProperty {
-		   
-		   String elasticPropertyTokens[] = elasticProperty.split("/");
-		   ArrayList<String> jsonPropertyTokens = new ArrayList<String>();
-		   
-		   if (elasticPropertyTokens.length%2 == 0) {
-			   int propertyNamespaceNameCouplesNumber = elasticPropertyTokens.length/2;
-			   
-			   
-		   	   for (int i=0 ; i<propertyNamespaceNameCouplesNumber ; i++) {
-		   		jsonPropertyTokens.add(elasticPropertyTokens[2*i] + ":" + elasticPropertyTokens[2*i+1]);
-		   		   		
-		   	   }
-		   	   
-		   	   return String.join(".", jsonPropertyTokens);
-		   	   
-		   }
-		   else if  (elasticPropertyTokens.length == 1) {
-			   
-			   return elasticProperty;
-			   
-		   }
-		   else {
-		   
-			   throw new UnsupportedElasticSearchProperty("Invalid elasticSearch data property " + elasticProperty);
-		   }
-		   
-	   }
+		   		
+			return elasticProperty.replace('/', '.');
+	 }
 	
 	
 
@@ -127,6 +104,16 @@ public class ElasticSearchUtil {
 		if (updateDateTime != null) {
 			meta.setUpdateDateTime(updateDateTime);
 		}
+		*/
+		
+		/* skeleton on how to populate refs */
+		/*
+		String pds4string = ep.getPDS4XML();
+		Reference ref = new Reference();
+		ref.setTitle(title); // get title from pds4string
+		ArrayList<Reference> investigations = new ArrayList<Reference>();
+		investigations.add(ref);
+		product.setInvestigations(investigations);
 		*/
 		
 		

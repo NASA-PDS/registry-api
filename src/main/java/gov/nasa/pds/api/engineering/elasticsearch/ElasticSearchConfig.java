@@ -21,6 +21,9 @@ public class ElasticSearchConfig {
 	@Value("${elasticSearch.registryIndex:registry}")
 	private String registryIndex;
 	
+	@Value("${elasticSearch.registryRefIndex:registry-refs}")
+	private String registryRefIndex;
+	
 	@Value("${elasticSearch.timeOutSeconds:60}")
 	private int timeOutSeconds;
 	
@@ -49,6 +52,14 @@ public class ElasticSearchConfig {
 		this.registryIndex = registryIndex;
 	}
 	
+	public String getRegistryRefIndex() {
+		return registryRefIndex;
+	}
+	
+	public void setRegistryRefIndex(String registryRefIndex) {
+		this.registryRefIndex = registryRefIndex;
+	}
+	
 		
 	public boolean isSsl() {
 		return ssl;
@@ -63,6 +74,7 @@ public class ElasticSearchConfig {
      
 		return new ElasticSearchRegistryConnectionImpl(this.hosts,
 				this.registryIndex,
+				this.registryRefIndex,
 				this.timeOutSeconds,
 				this.username,
 				this.password,

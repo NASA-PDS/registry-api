@@ -1,6 +1,8 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -13,14 +15,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 
 import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.model.Products;
+import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.engineering.elasticsearch.Antlr4SearchListener;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 
 
 public class ElasticSearchRegistrySearchRequestBuilder {
@@ -28,24 +39,61 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilder.class);
 	
 	private String registryIndex;
+	private String registryRefIndex;
 	private int timeOutSeconds;
 	
-	public ElasticSearchRegistrySearchRequestBuilder(String registryIndex, int timeOutSeconds) {
+	public ElasticSearchRegistrySearchRequestBuilder(
+			String registryIndex, 
+			String registryRefindex, 
+			int timeOutSeconds) {
 		
 		this.registryIndex = registryIndex;
+		this.registryRefIndex = registryRefindex;
 		this.timeOutSeconds = timeOutSeconds;
 	
 	}
 	
+	
+	
 	public ElasticSearchRegistrySearchRequestBuilder() {
 		
 		this.registryIndex = "registry";
+		this.registryRefIndex = "registry-refs";
 		this.timeOutSeconds = 60;
 	
 	}
 
 
+	public SearchRequest getSearchProductRefsFromCollectionLidVid(String lidvid) {
+		MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("collection_lidvid", lidvid);
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(matchQueryBuilder);
+		SearchRequest searchRequest = new SearchRequest();
+    	searchRequest.source(searchSourceBuilder);
+    	searchRequest.indices(this.registryRefIndex);
+    	
+    	
+    	log.debug("search product ref request :" + searchRequest.toString());
+    	
+    	return searchRequest;
+		
+	}
 	
+	public SearchRequest getSearchProductRequestHasLidVidPrefix(String lidvid) {
+		PrefixQueryBuilder prefixQueryBuilder = QueryBuilders.prefixQuery("lidvid", lidvid);
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(prefixQueryBuilder);
+		SearchRequest searchRequest = new SearchRequest();
+    	searchRequest.source(searchSourceBuilder);
+    	searchRequest.indices(this.registryIndex);
+    	
+    	return searchRequest;
+    	
+    	
+		
+	}
+	
+		
 	public SearchRequest getSearchProductsRequest(String queryString, int start, int limit, Map<String,String> presetCriteria) {
 
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();

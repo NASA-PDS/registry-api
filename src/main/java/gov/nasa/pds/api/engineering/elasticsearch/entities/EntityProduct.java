@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.Inflater;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -54,10 +55,10 @@ public class EntityProduct {
 	@JsonProperty("product_class")
 	private String productClass;
 	
-	@JsonProperty("pds/Time_Coordinates/pds/start_date_time")
+	@JsonProperty("pds:Time_Coordinates/pds:start_date_time")
 	private String start_date_time;
 	
-	@JsonProperty("pds/Time_Coordinates/pds/stop_date_time")
+	@JsonProperty("pds:Time_Coordinates/pds:stop_date_time")
 	private String stop_date_time;
 
 	/* 	// TO TO read it manually
@@ -66,7 +67,7 @@ public class EntityProduct {
     */
 	
 
-	@JsonProperty("pds/File/pds/creation_date_time")
+	@JsonProperty("pds:File/pds:creation_date_time")
     private String creation_date;
 	
 	
@@ -95,9 +96,20 @@ public class EntityProduct {
 	@JsonProperty("_file_ref")
 	private String pds4FileReference;
 	
-	@JsonProperty("ops/Label_File_Info/ops/blob")
+	@JsonProperty("ops:Label_File_Info/ops:blob")
 	private String fileBlob;
 	
+
+	private Map<String, Object> properties;
+	
+	public void setProperties(Map<String, Object> properties) {
+		this.properties = properties;
+	}
+	
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
 	public String getLidVid() {
 		return this.lidvid;
 	}
@@ -223,6 +235,7 @@ public class EntityProduct {
 	public String getVersion() {
 		return version;
 	}
+	
 	
 	public String getPDS4XML() {
 		

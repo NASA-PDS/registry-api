@@ -3,6 +3,7 @@ package gov.nasa.pds.api.engineering.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +11,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.document.DocumentField;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +33,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityCollection;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -42,6 +48,8 @@ public class MyProductsApiBareController {
     protected static final String DEFAULT_NULL_VALUE = null;    
 
 	protected Map<String, String> presetCriteria = new HashMap<String, String>();
+	
+	static final String LIDVID_SEPARATOR = "::";
 
 	@Autowired
 	ElasticSearchRegistryConnection esRegistryConnection;
@@ -54,7 +62,7 @@ public class MyProductsApiBareController {
     }
     
     
-    private Map<String, Object> getFilteredProperties(Map<String, Object> sourceAsMap, List<String> fields){
+    protected Map<String, Object> getFilteredProperties(Map<String, Object> sourceAsMap, List<String> fields){
     	
     	Map<String, Object> sourceAsMapJsonProperties =	ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
 	         
@@ -86,7 +94,9 @@ public class MyProductsApiBareController {
     
     protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
     	
-     	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(this.esRegistryConnection.getRegistryIndex(),
+     	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
+     			this.esRegistryConnection.getRegistryIndex(),
+     			this.esRegistryConnection.getRegistryRefIndex(),
     			this.esRegistryConnection.getTimeOutSeconds());
     		        	
     	SearchRequest searchRequest = searchRequestBuilder.getSearchProductsRequest(q, start, limit, this.presetCriteria);
@@ -139,6 +149,44 @@ public class MyProductsApiBareController {
     	return products;
     }
     
+    public String getLatestLidVidFromLid(String lid) throws IOException {
+    	/*
+    	 * if lid is a lidvid then it return the same lidvid if available in the elasticsearch database
+    	 */
+    	
+    	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
+    			this.esRegistryConnection.getRegistryIndex(),
+    			this.esRegistryConnection.getRegistryRefIndex(),
+    			this.esRegistryConnection.getTimeOutSeconds());
+		
+    	lid = !(lid.contains(LIDVID_SEPARATOR))?lid+LIDVID_SEPARATOR:lid;
+		SearchRequest searchRequest = searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
+		
+		SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
+    			RequestOptions.DEFAULT);
+    	
+    	if (searchResponse != null) {
+    		
+    		ArrayList<String> lidvids = new ArrayList<String>();
+    		String lidvid;
+    		for (SearchHit searchHit : searchResponse.getHits()) {
+    	        lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
+    	        lidvids.add(lidvid);    	        
+    	    }    
+     
+    		Collections.sort(lidvids);
+        	
+    		return lidvids.get(lidvids.size() - 1);
+            
+    	}
+    	else {
+    		return null;
+    	}
+		
+	}
+
+    
+    
     protected ResponseEntity<Products> getProductsResponseEntity(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
         String accept = this.request.getHeader("Accept");
         log.info("accept value is " + accept);
@@ -164,6 +212,59 @@ public class MyProductsApiBareController {
             
         }
         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+    }
+    
+    
+    protected ResponseEntity<Product> getProductResponseEntity(String lidvid){
+    	String accept = request.getHeader("Accept");
+        if ((accept != null) 
+        		&& (accept.contains("application/json")
+				|| accept.contains("text/html")
+				|| accept.contains("*/*")
+				|| accept.contains("application/xml")
+				|| accept.contains("application/pds4+xml"))) {
+        	
+            try {
+            	
+ 
+            	
+            	MyProductsApiBareController.log.info("request lidvdid: " + lidvid + " Headers, Accept=" + accept);
+               	
+            	GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
+            			lidvid);
+                GetResponse getResponse = null;
+                
+                RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
+                 
+            	getResponse = restHighLevelClient.get(getProductRequest, 
+            			RequestOptions.DEFAULT);
+            	
+	        	if (getResponse.isExists()) {
+	        		log.info("get response " + getResponse.toString());
+	        		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
+	        		EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+	        		
+	        		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+
+	        		Map<String, Object> sourceAsMapJsonProperties = ElasticSearchUtil.elasticHashMapToJsonHashMap(sourceAsMap);
+	        		product.setProperties(sourceAsMapJsonProperties);
+	        		
+	        		return new ResponseEntity<Product>(product, HttpStatus.OK);
+	        	}		        		
+	   
+	        	else {
+	        		// TO DO send error 404, or 302 redirection to the correct server
+	        		return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+	        	}
+	        		
+
+            } catch (IOException e) {
+                log.error("Couldn't get or serialize response for content type " + accept, e);
+                return new ResponseEntity<Product>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        return new ResponseEntity<Product>(HttpStatus.NOT_IMPLEMENTED);
     }
     	
 
