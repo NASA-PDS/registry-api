@@ -93,7 +93,7 @@ public class EntityProduct {
 	@JsonProperty("vid")
 	private String version; 
 	
-	@JsonProperty("_file_ref")
+	@JsonProperty("ops:Data_File_Info/ops:file_ref")
 	private String pds4FileReference;
 	
 	@JsonProperty("ops:Label_File_Info/ops:blob")
