@@ -38,7 +38,7 @@
 		                   <modelPackage>gov.nasa.pds.model</modelPackage>
 		                   <apiPackage>gov.nasa.pds.api.base</apiPackage>
 		                   <generateSupportingFiles>false</generateSupportingFiles>
-		                   <interfaceOnly>true</interfaceOnly>  		                   
+		                   <interfaceOnly>false</interfaceOnly>  		                   
 		                </configOptions>
 		            </configuration>
 		        </execution>
