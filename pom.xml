@@ -56,10 +56,13 @@
 							<descriptors>
 								<descriptor>src/main/assembly/tar-assembly.xml</descriptor>
 								<descriptor>src/main/assembly/zip-assembly.xml</descriptor>
-							</descriptors>
+							</descriptors>     
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<tarLongFileMode>posix</tarLongFileMode>
+				</configuration>
 			</plugin>
 		</plugins>
 
