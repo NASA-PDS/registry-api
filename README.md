@@ -54,3 +54,43 @@ See guidelines on https://learning.postman.com/docs/sending-requests/variables/
 5. You can browse the collection and run the requests one by one or run the full collection at once.
 
     
+# Docker
+
+## Build
+
+### Local git version
+
+```
+docker build --build-arg version=$(git rev-parse HEAD) \
+             --file Dockerfile.local \
+             --tag registry-api-service:$(git rev-parse HEAD) \
+             .
+```
+
+## Run
+
+```
+docker run --name registry-api-service \
+           --network pds \
+           --publish 8080:8080 \
+           --rm \
+           --volume /absolute/path/to/my/properties.file:/usr/local/registry-api-service-$(git rev-parse HEAD)/src/main/resources/application.properties \
+           registry-api-service:$(git rev-parse HEAD)
+```
+
+### Develop
+
+1. build local git version
+1. run image as below and restart when code has changed and want to test again  
+```
+docker run --interactive \
+           --name registry-api-service \
+           --network pds \
+           --publish 8080:8080 \
+           --rm \
+           --tty \
+           --user $UID \
+           --volume $(realpath ${PWD}):/usr/local/registry-api-service-$(git rev-parse HEAD) \
+           registry-api-service:$(git rev-parse HEAD) bash
+```
+1. Run maven as desired such as `mvn spring-boot:run` to run your local copy or `mvn install` to build it. Rinse and repeat as needed.

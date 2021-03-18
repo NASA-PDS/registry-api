@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
@@ -29,7 +30,13 @@ public class ElasticSearchUtil {
 			return elasticProperty.replace('/', '.');
 	 }
 	
-	
+	static private void addReference (ArrayList<Reference> to, String ID, String baseURL)
+	{
+		Reference reference = new Reference();
+		reference.setId(ID);
+		reference.setHref(baseURL + "/products/" + reference.getId());
+		to.add(reference);
+	}
 
 	static public Map<String, Object> elasticHashMapToJsonHashMap(Map<String, Object> sourceAsMap){
 			 Map<String, Object> sourceAsMapJsonProperties = new HashMap<String, Object>();
@@ -86,9 +93,12 @@ public class ElasticSearchUtil {
 		}
 		*/
 		
+		ArrayList<Reference> investigations = new ArrayList<Reference>();
+		ArrayList<Reference> observationSystemComponent = new ArrayList<Reference>();
+		ArrayList<Reference> targets = new ArrayList<Reference>();
 		Metadata meta = new Metadata();
-		
-		
+		String baseURL = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+
 		String version = ep.getVersion();
 		if (version != null) {
 			meta.setVersion(ep.getVersion());
@@ -106,26 +116,20 @@ public class ElasticSearchUtil {
 		}
 		*/
 		
-		/* skeleton on how to populate refs */
-		/*
-		String pds4string = ep.getPDS4XML();
-		Reference ref = new Reference();
-		ref.setTitle(title); // get title from pds4string
-		ArrayList<Reference> investigations = new ArrayList<Reference>();
-		investigations.add(ref);
-		product.setInvestigations(investigations);
-		*/
-		
-		
 		String labelUrl = ep.getPDS4FileRef();
 		if (labelUrl != null) {		
 			meta.setLabelUrl(labelUrl);
 		}
-		
+
+		for (String id : ep.getRef_lid_instrument_host()) { ElasticSearchUtil.addReference (observationSystemComponent, id, baseURL); }
+		for (String id : ep.getRef_lid_instrument()) { ElasticSearchUtil.addReference (observationSystemComponent, id, baseURL); }
+		for (String id : ep.getRef_lid_investigation()) { ElasticSearchUtil.addReference (investigations, id, baseURL); }
+		for (String id : ep.getRef_lid_target()) { ElasticSearchUtil.addReference (targets, id, baseURL); }
 		product.setLabelXml(ep.getPDS4XML()); // value is injected to be used as-is in XML serialization
-		
+		product.setInvestigations(investigations);
 		product.setMetadata(meta);
-	
+		product.setObservingSystemComponents(observationSystemComponent);
+		product.setTargets(targets);
 		return product;
 	
 		
