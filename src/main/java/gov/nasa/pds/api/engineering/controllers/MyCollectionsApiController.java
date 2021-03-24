@@ -116,6 +116,8 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
          
     	try {
+    		if (!lidvid.contains("::")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    		
 	    	Products products = new Products();
 	    	
 	    	HashSet<String> uniqueProperties = new HashSet<String>();
