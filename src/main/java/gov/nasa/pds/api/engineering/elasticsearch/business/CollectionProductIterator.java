@@ -10,6 +10,7 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +36,11 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     // constructor 
 	CollectionProductIterator(CollectionProductRelationships collectionProductRelationships) { 
         this.collectionProductRelationships = collectionProductRelationships;
-        this.searchHitsIterator = this.collectionProductRelationships.getSearchHits().iterator();
-        this.productLidVidSetIterator = this.initProductIterator();
+        SearchHits searchHits = this.collectionProductRelationships.getSearchHits();
+
+    	this.searchHitsIterator = searchHits.iterator();
+    	this.productLidVidSetIterator = this.initProductIterator();
+      
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         
@@ -45,7 +49,8 @@ public class CollectionProductIterator<T> implements Iterator<T> {
       
     // Checks if the next element exists 
     public boolean hasNext() { 
-    	return searchHitsIterator.hasNext() || productLidVidSetIterator.hasNext();
+    	return searchHitsIterator.hasNext() 
+    			|| (productLidVidSetIterator!= null) && (productLidVidSetIterator.hasNext());
     } 
       
     // moves the cursor/iterator to next element 
@@ -107,11 +112,18 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     
     
     private Iterator<String> initProductIterator() {
-    	SearchHit searchHit = this.searchHitsIterator.next();
-    	ArrayList<String> productLidVidSet = (ArrayList<String>) searchHit
-    			.getSourceAsMap()
-    			.get("product_lidvid");
-    	return productLidVidSet.iterator();
+    	if (this.searchHitsIterator.hasNext()) {
+	    	SearchHit searchHit = this.searchHitsIterator.next();
+	    	ArrayList<String> productLidVidSet = (ArrayList<String>) searchHit
+	    			.getSourceAsMap()
+	    			.get("product_lidvid");
+	    	return productLidVidSet.iterator();
+    	} else {
+    		// TODO manage this edge case so that it triggers a 404 error 
+    		// (To Be confirmed, since actually real 404 would be if the lidvid of the collection is not available in registry index)
+    		// and here we are only seeing that there is not relationship found in the relationship collection
+    		return null;
+    	}
     }
 } 
 

@@ -7,7 +7,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,16 +43,16 @@ public class CollectionProductRelationships implements Iterable<EntityProduct> {
 					RequestOptions.DEFAULT);
     		
     		if (searchCollectionRefResponse != null) {
-    			searchHits = searchCollectionRefResponse.getHits();
+    			this.searchHits = searchCollectionRefResponse.getHits();
  
     		}
     		else {
-    			searchHits = null;
+    			this.searchHits = null;
     		}
     		
     		
 		} catch (IOException e) {
-			CollectionProductRelationships.log.error("Couldn't get bundle " + lidvid + " from elasticSearch", e);
+			CollectionProductRelationships.log.error("Couldn't get collection " + lidvid + " from elasticSearch", e);
             throw(e);
 		}
 
