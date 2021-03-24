@@ -151,9 +151,11 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	
 		        		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 	
-		        		product.setProperties(filteredMapJsonProperties);
-		        		
-		        		products.addDataItem(product);
+		        		if (!onlySummary) {
+			        		product.setProperties(filteredMapJsonProperties);
+			        		
+			        		products.addDataItem(product);
+		        		}
 		    		}
 		    		  else {
 		    			  MyCollectionsApiController.log.warn("Couldn't get one product child of collection " + lidvid + " in elasticSearch");
