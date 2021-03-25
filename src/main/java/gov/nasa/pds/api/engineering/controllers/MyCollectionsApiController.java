@@ -92,7 +92,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		 	
 		 		Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
 		    	
-		    	return new ResponseEntity<Products>(products, HttpStatus.OK);
+		 		if (products.getData() == null || products.getData().size() == 0)
+		 			return new ResponseEntity<Products>(products, HttpStatus.NOT_FOUND);
+		 		else
+		 			return new ResponseEntity<Products>(products, HttpStatus.OK);
 		    	
 		  } catch (IOException e) {
 		       log.error("Couldn't serialize response for content type " + accept, e);
@@ -116,7 +119,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
          
     	try {
-    		if (!lidvid.contains("::")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
     		
 	    	Products products = new Products();
 	    	
@@ -168,8 +171,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	    			    	
 	    	
 	    	summary.setProperties(new ArrayList<String>(uniqueProperties));
-	    	
-	    	return products;	
+	    	return products;
 			
 			
 		} catch (IOException e) {

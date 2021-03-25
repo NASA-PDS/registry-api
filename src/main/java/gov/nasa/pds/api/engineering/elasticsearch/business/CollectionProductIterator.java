@@ -107,10 +107,16 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     
     
     private Iterator<String> initProductIterator() {
-    	SearchHit searchHit = this.searchHitsIterator.next();
-    	ArrayList<String> productLidVidSet = (ArrayList<String>) searchHit
-    			.getSourceAsMap()
-    			.get("product_lidvid");
+    	ArrayList<String> productLidVidSet;
+    	
+    	if (!this.searchHitsIterator.hasNext()) { productLidVidSet = new ArrayList<String>(); }
+    	else
+    	{
+    		SearchHit searchHit = this.searchHitsIterator.next();
+    		productLidVidSet = (ArrayList<String>) searchHit
+    				.getSourceAsMap()
+    				.get("product_lidvid");
+    	}
     	return productLidVidSet.iterator();
     }
 } 

@@ -176,7 +176,8 @@ public class MyProductsApiBareController {
      
     		Collections.sort(lidvids);
         	
-    		return lidvids.get(lidvids.size() - 1);
+    		if (lidvids.size() == 0) return lid;
+    		else return lidvids.get(lidvids.size() - 1);
             
     	}
     	else {
@@ -226,7 +227,7 @@ public class MyProductsApiBareController {
         	
             try {
             	
-            	if (!lidvid.contains("::")) lidvid = this.getLatestLidVidFromLid(lidvid);
+            	if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
             	
             	MyProductsApiBareController.log.info("request lidvdid: " + lidvid + " Headers, Accept=" + accept);
                	
