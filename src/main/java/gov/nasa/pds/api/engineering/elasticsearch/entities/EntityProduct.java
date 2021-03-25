@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.engineering.elasticsearch.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
@@ -89,7 +90,23 @@ public class EntityProduct {
 	
 	//@JsonProperty("pds/Target_Identification/pds/name")
 	//private String targetName;
+
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonProperty("ref_lid_instrument_host")
+	private List<String> ref_lid_instrument_host = new ArrayList<String>();
+
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonProperty("ref_lid_instrument")
+	private List<String> ref_lid_instrument = new ArrayList<String>();
 	
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonProperty("ref_lid_investigation")
+	private List<String> ref_lid_investigation = new ArrayList<String>(); 
+	
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonProperty("ref_lid_target")
+	private List<String> ref_lid_target = new ArrayList<String>(); 
+
 	@JsonProperty("vid")
 	private String version; 
 	
@@ -126,12 +143,31 @@ public class EntityProduct {
 	    return iterable == null ? Collections.<T>emptyList() : iterable;
 	}
 	
+	public List<String> getRef_lid_instrument() {
+		return ref_lid_instrument;
+	}
+
+	public List<String> getRef_lid_instrument_host() {
+		return ref_lid_instrument_host;
+	}
+
+	public List<String> getRef_lid_investigation() {
+		return ref_lid_investigation;
+	}
+
+	public List<String> getRef_lid_target() {
+		return ref_lid_target;
+	}
+
 	/*
 	public List<String> getReferenceRoles() {
 		return this.referenceRoles;
 	}
-	
-	
+
+	public List<String> getReferenceLidVid() {
+		return referenceLidVid;
+	}
+
 	public String getReferenceLidVid(String role) {
 		int i=0;
 		for (String t : EntityProduct.emptyIfNull(this.referenceRoles)) {

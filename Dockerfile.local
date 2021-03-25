@@ -1,0 +1,36 @@
+FROM ubuntu:20.04
+
+# Get arguments from the build command line
+ARG version
+ENV VERSION=$version
+
+# Build up the OS
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
+    apt-get install -y curl \
+                       libtcnative-1 \
+                       maven \
+                       openjdk-11-jdk-headless \
+                       tar
+
+# Make room for the app
+RUN mkdir /usr/local/registry-api-service-${VERSION}
+
+# Copy the data into the building container
+COPY LICENSE.txt /usr/local/registry-api-service-${VERSION}
+COPY NOTICE.txt /usr/local/registry-api-service-${VERSION}
+COPY README.txt /usr/local/registry-api-service-${VERSION}
+COPY pom.xml /usr/local/registry-api-service-${VERSION}
+COPY src /usr/local/registry-api-service-${VERSION}/src
+
+# Resources shared with the rest of the world
+EXPOSE 8080
+
+# Build the application and deploy it inside the container
+RUN cd /usr/local/registry-api-service-${VERSION} && \
+    mvn clean && \
+    mvn install
+
+# Run the sevice by default
+WORKDIR /usr/local/registry-api-service-${VERSION}
+CMD ["mvn", "spring-boot:run"]
