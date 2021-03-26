@@ -138,7 +138,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	    	products.setSummary(summary);
 	    	
 	    	CollectionProductRefBusinessObject  collectionProductRefBO = new CollectionProductRefBusinessObject(this.esRegistryConnection);
-	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid);
+	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid, start, limit);
 	    	
 	    	int i = 0;
 	    	for (EntityProduct eProd : collectionProductRelationships) {

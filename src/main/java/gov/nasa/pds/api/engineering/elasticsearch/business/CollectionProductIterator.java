@@ -22,6 +22,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
 
+
 public class CollectionProductIterator<T> implements Iterator<T> { 
     
 	private static final Logger log = LoggerFactory.getLogger(MyCollectionsApiController.class);
@@ -30,7 +31,7 @@ public class CollectionProductIterator<T> implements Iterator<T> {
 	CollectionProductRelationships collectionProductRelationships;
 	Iterator<SearchHit> searchHitsIterator;
 	Iterator<String> productLidVidSetIterator;
-	
+	int numberOfReturnedResults = 0;
 	ObjectMapper objectMapper;
 	
     // constructor 
@@ -45,18 +46,27 @@ public class CollectionProductIterator<T> implements Iterator<T> {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         
         
+        // skip products before pagination start
+        int i =0;
+        int skippedRecords = this.collectionProductRelationships.getStart() % CollectionProductRefBusinessObject.PRODUCT_REFERENCES_BATCH_SIZE;
+        log.debug("Skipping " + skippedRecords + "in first product batch");
+        while (this.hasNext() 
+        		&& (i++<skippedRecords)) {
+        	this.nextProductLidVid();
+        }
+      
     } 
       
     // Checks if the next element exists 
     public boolean hasNext() { 
-    	return searchHitsIterator.hasNext() 
-    			|| (productLidVidSetIterator!= null) && (productLidVidSetIterator.hasNext());
+    	return (searchHitsIterator.hasNext() 
+    			|| (productLidVidSetIterator!= null) && (productLidVidSetIterator.hasNext()))
+    			&& (this.numberOfReturnedResults<this.collectionProductRelationships.getLimit());
     } 
-      
-    // moves the cursor/iterator to next element 
-    public T next() {
+     
+    
+    private String nextProductLidVid() {
 
-    	EntityProduct entityProduct;
     	if (!productLidVidSetIterator.hasNext()) {
     		if (this.searchHitsIterator.hasNext()) {
     			this.productLidVidSetIterator = this.initProductIterator();
@@ -66,7 +76,15 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     		}
     	}
     	
-    	String productLidVid = productLidVidSetIterator.next();
+    	return productLidVidSetIterator.next();
+    }
+    
+    
+    
+    // moves the cursor/iterator to next element 
+    public T next() {
+
+    	String productLidVid = this.nextProductLidVid();
     	
     	GetRequest getProductRequest = new GetRequest(this.collectionProductRelationships
     			.elasticSearchConnection
@@ -82,11 +100,13 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     	if (getResponse.isExists()) {
     		log.info("get response " + getResponse.toString());
     		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
-    		entityProduct = objectMapper.convertValue(
+        	EntityProduct entityProduct = objectMapper.convertValue(
     				sourceAsMap, 
     				EntityProduct.class);
     		
     		entityProduct.setProperties(sourceAsMap);
+    		
+    		this.numberOfReturnedResults++;
     		
     		return (T) entityProduct;
     		

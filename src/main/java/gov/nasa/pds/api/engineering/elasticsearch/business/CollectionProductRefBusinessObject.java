@@ -6,6 +6,8 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectio
 
 public class CollectionProductRefBusinessObject {
 	
+	public static final int PRODUCT_REFERENCES_BATCH_SIZE = 500;
+	
 	
 	ElasticSearchRegistryConnection elasticSearchConnection;
 	
@@ -13,10 +15,12 @@ public class CollectionProductRefBusinessObject {
 		this.elasticSearchConnection = elasticSearchConnection;
 	}
 	
-	public CollectionProductRelationships getCollectionProductsIterable(String lidvid) throws IOException {
+	public CollectionProductRelationships getCollectionProductsIterable(String lidvid, int start, int limit) throws IOException {
 		
 		return new CollectionProductRelationships(
 				lidvid,
+				start,
+				limit,
 				this.elasticSearchConnection);
 	}
 

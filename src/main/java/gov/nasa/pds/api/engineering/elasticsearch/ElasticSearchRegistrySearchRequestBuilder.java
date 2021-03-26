@@ -3,8 +3,10 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.lang.Math;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -25,14 +27,13 @@ import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 
+
 import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
-import gov.nasa.pds.api.engineering.elasticsearch.Antlr4SearchListener;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-
+import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
 
 public class ElasticSearchRegistrySearchRequestBuilder {
 	
@@ -64,14 +65,23 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	}
 
 
-	public SearchRequest getSearchProductRefsFromCollectionLidVid(String lidvid) {
+	public SearchRequest getSearchProductRefsFromCollectionLidVid(
+			String lidvid,
+			int start,
+			int limit) {
 		MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("collection_lidvid", lidvid);
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.query(matchQueryBuilder);
+		
+		int productRefStart = (int)Math.floor(start/(float)CollectionProductRefBusinessObject.PRODUCT_REFERENCES_BATCH_SIZE);
+		int productRefLimit = (int)Math.ceil(limit/(float)CollectionProductRefBusinessObject.PRODUCT_REFERENCES_BATCH_SIZE);
+		log.debug("Request product reference documents from " + Integer.toString(productRefStart) + " for size " + Integer.toString(productRefLimit) );
+		searchSourceBuilder.query(matchQueryBuilder)
+			.from(productRefStart)
+			.size(productRefLimit);
 		SearchRequest searchRequest = new SearchRequest();
     	searchRequest.source(searchSourceBuilder);
     	searchRequest.indices(this.registryRefIndex);
-    	
+
     	
     	log.debug("search product ref request :" + searchRequest.toString());
     	
@@ -124,6 +134,11 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	searchSourceBuilder.query(boolQuery);
     	searchSourceBuilder.from(start); 
     	searchSourceBuilder.size(limit); 
+    	
+    	/* TODO add the fetchsource to the request to reduce the payload being moved from elasticsearch
+    	List<String> fetched_fields = fields.addAll(c);
+    	searchSourceBuilder.fetchSource(fields., null);
+    	*/
     	searchSourceBuilder.timeout(new TimeValue(this.timeOutSeconds, 
     			TimeUnit.SECONDS)); 
     	

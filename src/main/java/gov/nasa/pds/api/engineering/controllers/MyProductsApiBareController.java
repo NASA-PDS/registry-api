@@ -227,7 +227,8 @@ public class MyProductsApiBareController {
         	
             try {
             	
-            	if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+            	// && !lidvid.endsWith(":"))
+            	if (!lidvid.contains("::")) lidvid = this.getLatestLidVidFromLid(lidvid);
             	
             	MyProductsApiBareController.log.info("request lidvdid: " + lidvid + " Headers, Accept=" + accept);
                	
