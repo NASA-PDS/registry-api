@@ -92,10 +92,13 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		 	
 		 		Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
 		    	
+		 		/* REMOVED since it breaks the result when only-smmary argument is set to true
 		 		if (products.getData() == null || products.getData().size() == 0)
 		 			return new ResponseEntity<Products>(products, HttpStatus.NOT_FOUND);
 		 		else
-		 			return new ResponseEntity<Products>(products, HttpStatus.OK);
+		 		*/
+		 		
+		 		return new ResponseEntity<Products>(products, HttpStatus.OK);
 		    	
 		  } catch (IOException e) {
 		       log.error("Couldn't serialize response for content type " + accept, e);
