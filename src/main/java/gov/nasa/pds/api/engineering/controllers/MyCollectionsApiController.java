@@ -140,34 +140,29 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	    	CollectionProductRefBusinessObject  collectionProductRefBO = new CollectionProductRefBusinessObject(this.esRegistryConnection);
 	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid, start, limit);
 	    	
-	    	int i = 0;
 	    	for (EntityProduct eProd : collectionProductRelationships) {
-	    		if ((i>=start) 
-	    		  && (i<=start+limit)) {
-		    		  if (eProd != null) {
-			        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
-			        	
-		        		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
+				  if (eProd != null) {
+		        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
+		        	
+		    		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
 		
-		        		Map<String, Object> sourceAsMapJsonProperties = 
-		        				ElasticSearchUtil.elasticHashMapToJsonHashMap(eProd.getProperties());
+		    		Map<String, Object> sourceAsMapJsonProperties = 
+		    				ElasticSearchUtil.elasticHashMapToJsonHashMap(eProd.getProperties());
+		    		
+		    		Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMapJsonProperties, fields);
+		
+		    		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+		
+		    		if (!onlySummary) {
+		        		product.setProperties(filteredMapJsonProperties);
 		        		
-		        		Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMapJsonProperties, fields);
-	
-		        		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-	
-		        		if (!onlySummary) {
-			        		product.setProperties(filteredMapJsonProperties);
-			        		
-			        		products.addDataItem(product);
-		        		}
+		        		products.addDataItem(product);
 		    		}
-		    		  else {
-		    			  MyCollectionsApiController.log.warn("Couldn't get one product child of collection " + lidvid + " in elasticSearch");
-		 	    	      
-		    		  }
-	    		}
-	    		i+=1;
+				}
+				  else {
+					  MyCollectionsApiController.log.warn("Couldn't get one product child of collection " + lidvid + " in elasticSearch");
+		    	      
+				  }
 	    	}
 	                   	
 	    			    	
