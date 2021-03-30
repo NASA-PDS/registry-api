@@ -23,6 +23,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.ExistsQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
@@ -103,34 +104,71 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		
 	}
 	
+	
+	private BoolQueryBuilder parseQueryString(String queryString) {
+		CodePointCharStream input = CharStreams.fromString(queryString);
+        SearchLexer lex = new SearchLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+
+        SearchParser par = new SearchParser(tokens);
+        ParseTree tree = par.query();
+        
+        ElasticSearchRegistrySearchRequestBuilder.log.info(tree.toStringTree(par));
+                
+        // Walk it and attach our listener
+        ParseTreeWalker walker = new ParseTreeWalker();
+        Antlr4SearchListener listener = new Antlr4SearchListener();
+        walker.walk(listener, tree);
+        	        
+        return listener.getBoolQuery();	
 		
-	public SearchRequest getSearchProductsRequest(String queryString, int start, int limit, Map<String,String> presetCriteria) {
+	}
+	
+	private BoolQueryBuilder parseFields(List<String> fields) {
+		BoolQueryBuilder fieldsBoolQuery = QueryBuilders.boolQuery();
+		String esField;
+		ExistsQueryBuilder existsQueryBuilder;
+		for (String field : fields) {
+			esField = ElasticSearchUtil.jsonPropertyToElasticProperty(field);
+			existsQueryBuilder = QueryBuilders.existsQuery(field);
+			fieldsBoolQuery.should(existsQueryBuilder);
+		}
+		fieldsBoolQuery.minimumShouldMatch(1);
+		
+		return fieldsBoolQuery;
+	}
+	
+	
+//	public SearchRequest getSearchProductsRequest(String queryString, int start, int limit, Map<String,String> presetCriteria) {
+//		return getSearchProductsRequest(queryString, null, start, limit, presetCriteria);
+//	}
+	
+	
+	public SearchRequest getSearchProductsRequest(
+			String queryString, 
+			List<String> fields, 
+			int start, int limit, 
+			Map<String,String> presetCriteria) {
 
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 		
 		if (queryString != null) {
-			CodePointCharStream input = CharStreams.fromString(queryString);
-	        SearchLexer lex = new SearchLexer(input);
-	        CommonTokenStream tokens = new CommonTokenStream(lex);
+			boolQuery.must(this.parseQueryString(queryString));
+		} 
 	
-	        SearchParser par = new SearchParser(tokens);
-	        ParseTree tree = par.query();
-	        
-	        ElasticSearchRegistrySearchRequestBuilder.log.info(tree.toStringTree(par));
-	                
-	        // Walk it and attach our listener
-	        ParseTreeWalker walker = new ParseTreeWalker();
-	        Antlr4SearchListener listener = new Antlr4SearchListener(boolQuery);
-	        walker.walk(listener, tree);
-	        	        
-	        boolQuery = listener.getBoolQuery();
-		}
         
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+       
         for (Map.Entry<String, String> e : presetCriteria.entrySet()) {
         	//example "product_class", "Product_Collection"
         	boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue() ));
         }
+        
+        
+		if (fields != null) {
+			boolQuery.must(this.parseFields(fields));
+		}
+		
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     	searchSourceBuilder.query(boolQuery);
     	searchSourceBuilder.from(start); 
     	searchSourceBuilder.size(limit); 
@@ -154,16 +192,16 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		
 	}
 	
-	public SearchRequest getSearchProductRequest(String queryString, int start, int limit) {
+	public SearchRequest getSearchProductRequest(String queryString, List<String> fields, int start, int limit) {
 		Map<String, String> presetCriteria = new HashMap<String, String>();
-		return getSearchProductsRequest(queryString, start, limit, presetCriteria);		
+		return getSearchProductsRequest(queryString, fields, start, limit, presetCriteria);		
 	}
 	
-	public SearchRequest getSearchCollectionRequest(String queryString, int start, int limit) {
+	public SearchRequest getSearchCollectionRequest(String queryString, List<String> fields, int start, int limit) {
 		
 		Map<String, String> presetCriteria = new HashMap<String, String>();
 		presetCriteria.put("product_class", "Product_Collection");
-		return getSearchProductsRequest(queryString, start, limit, presetCriteria);
+		return getSearchProductsRequest(queryString, fields, start, limit, presetCriteria);
 		
 	}
 	

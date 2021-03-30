@@ -99,7 +99,7 @@ public class MyProductsApiBareController {
      			this.esRegistryConnection.getRegistryRefIndex(),
     			this.esRegistryConnection.getTimeOutSeconds());
     		        	
-    	SearchRequest searchRequest = searchRequestBuilder.getSearchProductsRequest(q, start, limit, this.presetCriteria);
+    	SearchRequest searchRequest = searchRequestBuilder.getSearchProductsRequest(q, fields, start, limit, this.presetCriteria);
     	
     	SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
