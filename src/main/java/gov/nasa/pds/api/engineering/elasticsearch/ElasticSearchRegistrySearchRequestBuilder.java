@@ -130,7 +130,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		ExistsQueryBuilder existsQueryBuilder;
 		for (String field : fields) {
 			esField = ElasticSearchUtil.jsonPropertyToElasticProperty(field);
-			existsQueryBuilder = QueryBuilders.existsQuery(field);
+			existsQueryBuilder = QueryBuilders.existsQuery(esField);
 			fieldsBoolQuery.should(existsQueryBuilder);
 		}
 		fieldsBoolQuery.minimumShouldMatch(1);
