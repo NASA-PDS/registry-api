@@ -92,7 +92,13 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		 	
 		 		Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
 		    	
-		    	return new ResponseEntity<Products>(products, HttpStatus.OK);
+		 		/* REMOVED since it breaks the result when only-smmary argument is set to true
+		 		if (products.getData() == null || products.getData().size() == 0)
+		 			return new ResponseEntity<Products>(products, HttpStatus.NOT_FOUND);
+		 		else
+		 		*/
+		 		
+		 		return new ResponseEntity<Products>(products, HttpStatus.OK);
 		    	
 		  } catch (IOException e) {
 		       log.error("Couldn't serialize response for content type " + accept, e);
@@ -116,6 +122,8 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
          
     	try {
+    		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    		
 	    	Products products = new Products();
 	    	
 	    	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -133,43 +141,37 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	    	products.setSummary(summary);
 	    	
 	    	CollectionProductRefBusinessObject  collectionProductRefBO = new CollectionProductRefBusinessObject(this.esRegistryConnection);
-	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid);
+	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid, start, limit);
 	    	
-	    	int i = 0;
 	    	for (EntityProduct eProd : collectionProductRelationships) {
-	    		if ((i>=start) 
-	    		  && (i<=start+limit)) {
-		    		  if (eProd != null) {
-			        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
-			        	
-		        		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
+				  if (eProd != null) {
+		        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
+		        	
+		    		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
 		
-		        		Map<String, Object> sourceAsMapJsonProperties = 
-		        				ElasticSearchUtil.elasticHashMapToJsonHashMap(eProd.getProperties());
+		    		Map<String, Object> sourceAsMapJsonProperties = 
+		    				ElasticSearchUtil.elasticHashMapToJsonHashMap(eProd.getProperties());
+		    		
+		    		Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMapJsonProperties, fields);
+		
+		    		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+		
+		    		if (!onlySummary) {
+		        		product.setProperties(filteredMapJsonProperties);
 		        		
-		        		Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMapJsonProperties, fields);
-	
-		        		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-	
-		        		if (!onlySummary) {
-			        		product.setProperties(filteredMapJsonProperties);
-			        		
-			        		products.addDataItem(product);
-		        		}
+		        		products.addDataItem(product);
 		    		}
-		    		  else {
-		    			  MyCollectionsApiController.log.warn("Couldn't get one product child of collection " + lidvid + " in elasticSearch");
-		 	    	      
-		    		  }
-	    		}
-	    		i+=1;
+				}
+				  else {
+					  MyCollectionsApiController.log.warn("Couldn't get one product child of collection " + lidvid + " in elasticSearch");
+		    	      
+				  }
 	    	}
 	                   	
 	    			    	
 	    	
 	    	summary.setProperties(new ArrayList<String>(uniqueProperties));
-	    	
-	    	return products;	
+	    	return products;
 			
 			
 		} catch (IOException e) {

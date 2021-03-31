@@ -31,6 +31,10 @@ import org.xml.sax.SAXException;
 public class EntityProduct {
 	private static final Logger log = LoggerFactory.getLogger(EntityProduct.class);
 	
+
+	
+	
+	
 	public final String PROCEDURE_INSTRUMENT_TYPE = "Instrument";
 	public final String PROCEDURE_INSTRUMENT_HOST_TYPE = "Spacecraft";
 	
@@ -45,8 +49,9 @@ public class EntityProduct {
     public final String TARGET_ROLE = "data_to_target";
     public final List<String> TARGET_ROLES = new ArrayList<>(Arrays.asList(
     	    this.TARGET_ROLE));
-	
-	
+    
+   
+    
 	@JsonProperty("lidvid")
 	private String lidvid;
 	
@@ -62,10 +67,10 @@ public class EntityProduct {
 	@JsonProperty("pds:Time_Coordinates/pds:stop_date_time")
 	private String stop_date_time;
 
-	/* 	// TO TO read it manually
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	@JsonProperty("pds/Modification_Detail/pds/modification_date")
-    private String modification_date;
-    */
+    private List<String> modification_date;
+    
 	
 
 	@JsonProperty("pds:File/pds:creation_date_time")

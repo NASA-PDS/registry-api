@@ -99,7 +99,7 @@ public class MyProductsApiBareController {
      			this.esRegistryConnection.getRegistryRefIndex(),
     			this.esRegistryConnection.getTimeOutSeconds());
     		        	
-    	SearchRequest searchRequest = searchRequestBuilder.getSearchProductsRequest(q, start, limit, this.presetCriteria);
+    	SearchRequest searchRequest = searchRequestBuilder.getSearchProductsRequest(q, fields, start, limit, this.presetCriteria);
     	
     	SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
@@ -176,7 +176,8 @@ public class MyProductsApiBareController {
      
     		Collections.sort(lidvids);
         	
-    		return lidvids.get(lidvids.size() - 1);
+    		if (lidvids.size() == 0) return lid;
+    		else return lidvids.get(lidvids.size() - 1);
             
     	}
     	else {
@@ -226,7 +227,8 @@ public class MyProductsApiBareController {
         	
             try {
             	
- 
+            	// && !lidvid.endsWith(":"))
+            	if (!lidvid.contains("::")) lidvid = this.getLatestLidVidFromLid(lidvid);
             	
             	MyProductsApiBareController.log.info("request lidvdid: " + lidvid + " Headers, Accept=" + accept);
                	

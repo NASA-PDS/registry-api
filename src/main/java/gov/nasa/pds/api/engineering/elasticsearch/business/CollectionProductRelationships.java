@@ -25,15 +25,32 @@ public class CollectionProductRelationships implements Iterable<EntityProduct> {
 	RestHighLevelClient restHighLevelClient;
 	SearchRequest searchRequest;
 	SearchHits searchHits;
+	int start;
+	public int getStart() {
+		return start;
+	}
+
+
+	int limit;
 	
-	public CollectionProductRelationships(String lidvid, ElasticSearchRegistryConnection elasticSearchConnection) throws IOException {
+	public int getLimit() {
+		return limit;
+	}
+
+	public CollectionProductRelationships(
+			String lidvid, 
+			int start,
+			int limit,
+			ElasticSearchRegistryConnection elasticSearchConnection) throws IOException {
 		this.elasticSearchConnection = elasticSearchConnection;
+		this.start = start;
+		this.limit = limit;
 		
 		searchRequest = new ElasticSearchRegistrySearchRequestBuilder(
 				this.elasticSearchConnection.getRegistryIndex(),
     			this.elasticSearchConnection.getRegistryRefIndex(),
     			this.elasticSearchConnection.getTimeOutSeconds())
-    			.getSearchProductRefsFromCollectionLidVid(lidvid);
+				.getSearchProductRefsFromCollectionLidVid(lidvid, start, limit);
 		 SearchResponse searchCollectionRefResponse = null;
 	        
          restHighLevelClient = this.elasticSearchConnection.getRestHighLevelClient();
