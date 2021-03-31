@@ -2,7 +2,10 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -74,22 +77,29 @@ class ElasticSearchRegistrySearchRequestBuilderTest {
 	@Test
 	void testGetSearchRequest() {
 		
+		String queryString;
 		SearchRequest searchRequest;
 		
 		for (Entry<String, String> queryEntry : this.queryMap.entrySet()) {
 			
-			String queryString = queryEntry.getKey();
-			this.log.info("** Testing query: " + queryString);
-			searchRequest = this.requestBuilder.getSearchCollectionRequest(queryString, null, 0, 10); 
+			queryString = queryEntry.getKey();
+			List<String> fields = new ArrayList<String>(Arrays.asList("title","lidvid"));
+			searchRequest = this.requestBuilder.getSearchCollectionRequest(
+					queryString,
+					fields, 0, 10); 
 
+			log.info("{\"" + queryString + "\", \"" + searchRequest + "\"}\n");
 			/*
-			Assertions.assertArrayEquals(searchRequest.toString().toCharArray(), 
+			 * TODO reactivate unit test
+			Assertions.assertArrayEquals(
+					searchRequest.toString().toCharArray(), 
 					queryEntry.getValue().toCharArray(), 
 					"elasticSearch query is " 
 							+ searchRequest.toString());
 			*/
 			
 		}
+		Assertions.assertTrue(false);
 		
 	}
 
