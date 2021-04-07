@@ -7,7 +7,25 @@ This is the PDS API implementation which provides access to the PDS registries (
 It implements a very simple collections and product search end-point complying with the specification (see https://app.swaggerhub.com/organizations/PDS_APIs)
 
 
-## Deployment
+## Prerequisites
+
+This software requires open jdk 11.
+
+## Admimistrator
+
+### Deployent
+
+Get the latest stable release https://github.com/NASA-PDS/registry-api-service/releases
+
+Download the zip or tar.gz file.
+
+Follow instructions in README.txt in the decompressed folder
+
+## Developers
+
+### Deployment
+
+Get a development release by cloning the current repository.
 
 If needed change server port and elasticSearch parameters in `src/main/resources/applications.properties`.
 Note, the registry index in elasticSearch is hard-coded. It need to be `registry`.
@@ -17,7 +35,7 @@ Note, the registry index in elasticSearch is hard-coded. It need to be `registry
     mvn spring-boot:run
     
     
-## Usage
+### Usage
 
 Go to rest api documentation:
 
