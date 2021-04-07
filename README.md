@@ -13,7 +13,7 @@ This software requires open jdk 11.
 
 ## Admimistrator
 
-### Deployent
+### Deployment
 
 Get the latest stable release https://github.com/NASA-PDS/registry-api-service/releases
 
