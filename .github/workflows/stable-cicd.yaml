@@ -1,5 +1,5 @@
-# 🏃‍♀️ Continuous Integration and Delivery: Unstable
-# =================================================
+# 🏃‍♀️ Continuous Integration and Delivery: Stable
+# ===============================================
 #
 # Note: for this workflow to succeed, the following secrets must be installed
 # in the repository or inherited from the organization:
@@ -20,19 +20,20 @@
 
 ---
 
-name: 🤪 Unstable integration & delivery
+name: 😌 Stable integration & delivery
 
 
 # Driving Event
 # -------------
 #
-# What event starts this workflow: a push to ``main`` (or ``master`` in old
-# parlance).
+# What event starts this workflow: a push of a stable tag. Note: according to
+# https://git.io/JTLTf we have been doing our tag matching wrong. It's not
+# regexp, it's not glob…it's more like…glob++ 😮
 
 on:
     push:
-        branches:
-            -   master
+        tags:
+            -  'v[0-9]+.[0-9]+.[0-9]+'
 
 
 # What to Do
@@ -41,21 +42,25 @@ on:
 # Round up, yee-haw!
 
 jobs:
-    unstable-assembly:
-        name: 🧩 Unstable Assembly
+    stable-assembly:
+        name: 🐴 Stable Assembly
         runs-on: ubuntu-latest
-        if: github.actor != 'pdsen-ci'
         steps:
             -
                 name: 💳 Checkout
                 uses: actions/checkout@v2
                 with:
                     lfs: true
+                    fetch-depth: 0
+                    token: ${{secrets.ADMIN_GITHUB_TOKEN}}
+
             -
                 name: 🤠 Roundup
                 uses: NASA-PDS/roundup-action@master
                 with:
-                    assembly: unstable
+                    assembly: stable
+                    packages: openjdk11-jdk
+                    maven-stable-artifact-phases: clean,antlr4:antlr4,package,source:jar,javadoc:jar,gpg:sign,deploy
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
