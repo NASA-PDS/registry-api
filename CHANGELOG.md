@@ -1,12 +1,20 @@
 # Changelog
 
+## [Unreleased](https://github.com/NASA-PDS/api-search-query-lexer/tree/HEAD)
+
+[Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/v0.2.0-SNAPSHOT...HEAD)
+
+**Defects:**
+
+- parsing of string does not succeed [\#1](https://github.com/NASA-PDS/api-search-query-lexer/issues/1)
+
+## [v0.2.0-SNAPSHOT](https://github.com/NASA-PDS/api-search-query-lexer/tree/v0.2.0-SNAPSHOT) (2021-04-21)
+
+[Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/v0.1.0...v0.2.0-SNAPSHOT)
+
 ## [v0.1.0](https://github.com/NASA-PDS/api-search-query-lexer/tree/v0.1.0) (2021-04-21)
 
-[Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/v0.1.0-SNAPSHOT...v0.1.0)
-
-## [v0.1.0-SNAPSHOT](https://github.com/NASA-PDS/api-search-query-lexer/tree/v0.1.0-SNAPSHOT) (2021-04-21)
-
-[Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/f659ff7db23e43afb48fb1cc482fd8c9f8402eec...v0.1.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/f659ff7db23e43afb48fb1cc482fd8c9f8402eec...v0.1.0)
 
 
 
