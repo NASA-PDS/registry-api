@@ -30,7 +30,7 @@ import gov.nasa.pds.api.engineering.lexer.SearchParser.QueryTermContext;
 
 public class TestParsing implements ParseTreeListener,SearchListener
 {
-	TerminalNode number=null, strval=null, value=null;
+	TerminalNode field=null, number=null, strval=null, value=null;
 
 	@Test
 	public void isNumber()
@@ -79,9 +79,23 @@ public class TestParsing implements ParseTreeListener,SearchListener
         
         Assertions.assertNotEquals(this.value, null);
         Assertions.assertEquals(this.value.getSymbol().getText(), "*text*");
-        
 	}
 	
+	@Test void isParsable()
+	{
+		String queryString = "lid eq text";
+		CodePointCharStream input = CharStreams.fromString(queryString);
+        SearchLexer lex = new SearchLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        SearchParser par = new SearchParser(tokens);
+        ParseTree tree = par.query();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(this, tree);
+ 
+        Assertions.assertNotEquals(this.field, null);
+        Assertions.assertEquals(this.field.getSymbol().getText(), "text");
+	}
+
 	@Override
 	public void visitTerminal(TerminalNode node) {
 		// TODO Auto-generated method stub
@@ -177,6 +191,7 @@ public class TestParsing implements ParseTreeListener,SearchListener
 	@Override
 	public void enterComparison(ComparisonContext ctx) {
 		// TODO Auto-generated method stub
+		this.field = ctx.FIELD(1);
 		this.number = ctx.NUMBER();
 		this.strval = ctx.STRINGVAL();
 		this.value = ctx.VALUE();

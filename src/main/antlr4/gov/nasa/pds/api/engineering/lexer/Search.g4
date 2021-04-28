@@ -6,7 +6,7 @@ group : NOT? LPAREN expression RPAREN ;
 expression : andStatement | orStatement | queryTerm ;
 andStatement : queryTerm (AND queryTerm)+ ;
 orStatement : queryTerm (OR queryTerm)+ ;
-comparison : FIELD operator ( STRINGVAL | NUMBER | VALUE ) ;
+comparison : FIELD operator ( FIELD | NUMBER | STRINGVAL | VALUE ) ;
 operator : EQ | NE | GT | GE | LT | LE ;
 
 
