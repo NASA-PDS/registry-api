@@ -117,7 +117,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         		String collectionLidVid;
         		int i=0;
         		for (String collectionLid : collections ) {
-        			if ((i>=start) && (i<=start+limit)) {
+        			if ((i>=start) && (i<start+limit)) {
 	        			collectionLidVid = this.getLatestLidVidFromLid(collectionLid);
 	        			GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
 	        					collectionLidVid);
