@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -210,7 +211,10 @@ public class MyProductsApiBareController {
               log.error("Couldn't serialize response for content type " + accept, e);
               return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
           }
-            
+        	catch (ParseCancellationException pce) {
+        		log.error("Could not parse the query string: " + q);
+        		return new ResponseEntity<Products>(HttpStatus.BAD_REQUEST);
+        	}            
         }
         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
     }

@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.elasticsearch.action.search.SearchRequest;
 
 import org.junit.jupiter.api.Assertions;
@@ -143,7 +144,7 @@ class ElasticSearchRegistrySearchRequestBuilderTest {
 		} catch (IOException e) {
 			log.error("unable to write test results in unittest.txt");
 		}
-
+		catch (ParseCancellationException pce) { log.error("Could not parse input and this should be an error"); }
 		
 	}
 

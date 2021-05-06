@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -111,6 +112,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
         SearchParser par = new SearchParser(tokens);
+        par.setErrorHandler(new BailErrorStrategy());
         ParseTree tree = par.query();
         
         ElasticSearchRegistrySearchRequestBuilder.log.info(tree.toStringTree(par));
@@ -152,8 +154,9 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 
 		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 		
+
 		if (queryString != null) {
-			boolQuery.must(this.parseQueryString(queryString));
+			boolQuery = this.parseQueryString(queryString);
 		} 
 	
         
