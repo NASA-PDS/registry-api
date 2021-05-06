@@ -32,7 +32,8 @@ name: 🤪 Unstable integration & delivery
 on:
     push:
         branches:
-            -   master
+            -  master
+            -  swaggerhub-pds_federated_api-**.dev 
 
 
 # What to Do
