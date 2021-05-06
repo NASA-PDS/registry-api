@@ -33,7 +33,7 @@ on:
     push:
         branches:
             -  master
-            -  swaggerhub-pds_federated_api-**.dev 
+            -  swaggerhub-pds_federated_api**
 
 
 # What to Do
