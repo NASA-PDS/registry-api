@@ -153,7 +153,7 @@ paths:
       tags:
         - products containing bundles
       summary: get bundles containing product
-      operationId: bundles containing product
+      operationId: bundles-containing-product
       responses:
         '200':
           description: Successful request
@@ -220,7 +220,7 @@ paths:
       tags:
         - product containing collections
       summary: get collections containing product
-      operationId: collections containing product
+      operationId: collections-containing-product
       responses:
         '200':
           description: Successful request
@@ -394,7 +394,7 @@ paths:
       tags:
         - collection's containing bundles
       summary: get bundles containing this given collection
-      operationId: bundles containing collection
+      operationId: bundles-containing-collection
       responses:
         '200':
           description: Successful request
