@@ -53,7 +53,7 @@ paths:
     get:
       tags:
         - products
-      summary: search across all PDS data products, including bundles, collections, documentation, and observational products,
+      summary: search across all PDS data products, including bundles, collections, documentation, context and observational products,
       operationId: products
       responses:
         '200':
