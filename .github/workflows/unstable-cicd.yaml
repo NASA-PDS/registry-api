@@ -33,7 +33,7 @@ on:
     push:
         branches:
             - master
-            - 'swaggerhub-pds_federated_api-0.2.dev'
+            - '0.2.dev'
 
 
 
