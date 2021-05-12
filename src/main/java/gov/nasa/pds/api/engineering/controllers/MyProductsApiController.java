@@ -1,19 +1,12 @@
 package gov.nasa.pds.api.engineering.controllers;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.base.ProductsApi;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import io.swagger.annotations.ApiParam;
@@ -60,6 +50,22 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
     	return this.getProductResponseEntity(lidvid);
     }
+
+
+	@Override
+	public ResponseEntity<Products> bundlesContainingProduct(String arg0, @Valid Integer arg1, @Valid Integer arg2,
+			@Valid List<String> arg3, @Valid List<String> arg4, @Valid Boolean arg5) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public ResponseEntity<Products> collectionsContainingProduct(String arg0, @Valid Integer arg1, @Valid Integer arg2,
+			@Valid List<String> arg3, @Valid List<String> arg4, @Valid Boolean arg5) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     
  

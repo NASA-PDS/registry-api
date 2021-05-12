@@ -2,7 +2,6 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRelationships;
@@ -15,8 +14,6 @@ import gov.nasa.pds.model.Summary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -113,13 +110,6 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
     private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
     	MyCollectionsApiController.log.info("request bundle lidvid, collections children: " + lidvid);
-       	
-    	
-    
-    	
-        SearchResponse searchCollectionRefResponse = null;
-        
-        RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
          
     	try {
     		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
@@ -180,6 +170,14 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		}
     	
     }
+
+
+	@Override
+	public ResponseEntity<Products> bundlesContainingCollection(String arg0, @Valid Integer arg1, @Valid Integer arg2,
+			@Valid List<String> arg3, @Valid List<String> arg4, @Valid Boolean arg5) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 
 

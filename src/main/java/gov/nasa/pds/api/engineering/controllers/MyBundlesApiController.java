@@ -5,7 +5,6 @@ import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
-import gov.nasa.pds.model.ErrorMessage;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
@@ -22,15 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -198,6 +191,13 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
      
     }
+
+	@Override
+	public ResponseEntity<Products> productsOfABundle(String arg0, @Valid Integer arg1, @Valid Integer arg2,
+			@Valid List<String> arg3, @Valid List<String> arg4, @Valid Boolean arg5) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     
 }
