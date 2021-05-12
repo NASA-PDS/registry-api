@@ -63,6 +63,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>?/**</exclude>
+              <exclude>target/**</exclude>
+            </excludes>
+            <includes><include>**/*.java</include></includes>
+          </configuration>
           <executions>
             <execution>
               <id>attach-sources</id>
