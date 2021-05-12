@@ -527,7 +527,7 @@ paths:
     get:
       tags:
         - bundles
-      summary: request PDS bundles
+      summary: request all PDS bundles
       operationId: get bundles
       responses:
         '200':
@@ -604,7 +604,7 @@ paths:
     get:
       tags:
         - bundles
-      summary: bundles URN resolver for lidvid
+      summary: bundle URN resolver for lidvid, get one bundle
       operationId: bundle-by-lidvid
       responses:
         '200':
