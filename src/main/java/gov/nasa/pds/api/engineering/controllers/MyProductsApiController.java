@@ -1,12 +1,24 @@
 package gov.nasa.pds.api.engineering.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.base.ProductsApi;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
+import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
@@ -90,7 +105,12 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	{
 		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
     	MyProductsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
+    	HashSet<String> uniqueProperties = new HashSet<String>();
     	Products products = new Products();
+    	BoolQueryBuilder query = QueryBuilders.boolQuery();
+    	SearchRequest request = new SearchRequest(this.esRegistryConnection.getRegistryIndex());
+    	SearchResponse response;
+    	SearchSourceBuilder builder = new SearchSourceBuilder();
       	Summary summary = new Summary();
 
     	if (sort == null) { sort = Arrays.asList(); }
@@ -99,6 +119,28 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	summary.setLimit(limit);
     	summary.setSort(sort);
     	products.setSummary(summary);
+    	for (SearchHit hit : this.getCollections(lidvid))
+    	{
+    		query.should (QueryBuilders.matchQuery("ref_lid_collection", hit.getSourceAsMap().get("collection_lid")));
+    	}
+    	builder.query(query);
+    	request.source(builder);
+    	response = this.esRegistryConnection.getRestHighLevelClient().search(request,RequestOptions.DEFAULT);
+    	for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
+    	{
+	        Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
+	        Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
+	        
+	        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+
+	        if (!summaryOnly) {
+    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+    	        ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+    	        product.setProperties(filteredMapJsonProperties);
+    	        products.addDataItem(product);
+	        }
+    	}
+    	summary.setProperties(new ArrayList<String>(uniqueProperties));
     	return products;
 	}
 
@@ -131,6 +173,17 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
 
+	private SearchHits getCollections (String lidvid) throws IOException
+	{
+    	SearchRequest request = new SearchRequest(this.esRegistryConnection.getRegistryRefIndex());
+    	SearchResponse response;
+    	SearchSourceBuilder builder = new SearchSourceBuilder();
+
+    	builder.query(QueryBuilders.matchQuery("product_lidvid", lidvid));
+    	request.source(builder);
+    	response = this.esRegistryConnection.getRestHighLevelClient().search(request,RequestOptions.DEFAULT);
+    	return response.getHits();
+	}
 
 	private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
@@ -148,8 +201,4 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	products.setSummary(summary);
     	return products;
 	}
-
-    
- 
-    
 }
