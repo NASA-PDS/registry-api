@@ -1,5 +1,7 @@
 package gov.nasa.pds.api.engineering.controllers;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +9,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
+import gov.nasa.pds.model.Summary;
 import io.swagger.annotations.ApiParam;
 
 
@@ -53,18 +57,96 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
 
 	@Override
-	public ResponseEntity<Products> bundlesContainingProduct(String arg0, @Valid Integer arg1, @Valid Integer arg2,
-			@Valid List<String> arg3, @Valid List<String> arg4, @Valid Boolean arg5) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<Products> bundlesContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) {
+		String accept = this.request.getHeader("Accept");
+		MyProductsApiController.log.info("accept value is " + accept);
+
+		if ((accept != null 
+				&& (accept.contains("application/json") 
+						|| accept.contains("text/html")
+		 				|| accept.contains("application/xml")
+		 				|| accept.contains("application/pds4+xml")
+		 				|| accept.contains("*/*")))
+		 	|| (accept == null))
+		{
+			try
+			{
+		 		Products products = this.getContainingBundle(lidvid, start, limit, fields, sort, summaryOnly);		 		
+		 		return new ResponseEntity<Products>(products, HttpStatus.OK);
+			}
+			catch (IOException e)
+			{
+				log.error("Couldn't serialize response for content type " + accept, e);
+				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		 }
+		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+	}
+
+
+	private Products getContainingBundle(String lidvid, @Valid Integer start, @Valid Integer limit,
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
+	{
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    	MyProductsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
+    	Products products = new Products();
+      	Summary summary = new Summary();
+
+    	if (sort == null) { sort = Arrays.asList(); }
+
+    	summary.setStart(start);
+    	summary.setLimit(limit);
+    	summary.setSort(sort);
+    	products.setSummary(summary);
+    	return products;
 	}
 
 
 	@Override
-	public ResponseEntity<Products> collectionsContainingProduct(String arg0, @Valid Integer arg1, @Valid Integer arg2,
-			@Valid List<String> arg3, @Valid List<String> arg4, @Valid Boolean arg5) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<Products> collectionsContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) {
+		String accept = this.request.getHeader("Accept");
+		MyProductsApiController.log.info("accept value is " + accept);
+
+		if ((accept != null 
+				&& (accept.contains("application/json") 
+						|| accept.contains("text/html")
+		 				|| accept.contains("application/xml")
+		 				|| accept.contains("application/pds4+xml")
+		 				|| accept.contains("*/*")))
+		 	|| (accept == null))
+		{
+			try
+			{
+		 		Products products = this.getContainingCollection(lidvid, start, limit, fields, sort, summaryOnly);		 		
+		 		return new ResponseEntity<Products>(products, HttpStatus.OK);
+			}
+			catch (IOException e)
+			{
+				log.error("Couldn't serialize response for content type " + accept, e);
+				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		 }
+		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+	}
+
+
+	private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
+	{
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    	MyProductsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
+    	Products products = new Products();
+      	Summary summary = new Summary();
+
+    	if (sort == null) { sort = Arrays.asList(); }
+
+    	summary.setStart(start);
+    	summary.setLimit(limit);
+    	summary.setSort(sort);
+    	products.setSummary(summary);
+    	return products;
 	}
 
     
