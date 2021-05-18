@@ -14,7 +14,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -190,7 +189,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	{
 		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
     	MyProductsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
+    	HashSet<String> uniqueProperties = new HashSet<String>();
     	Products products = new Products();
+    	SearchHits hits = this.getCollections(lidvid);
       	Summary summary = new Summary();
 
     	if (sort == null) { sort = Arrays.asList(); }
@@ -199,6 +200,21 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	summary.setLimit(limit);
     	summary.setSort(sort);
     	products.setSummary(summary);
+    	for (int i = start ; start < limit && i < hits.getHits().length ; i++)
+    	{
+	        Map<String, Object> sourceAsMap = hits.getAt(i).getSourceAsMap();
+	        Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
+	        
+	        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+
+	        if (!summaryOnly) {
+    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+    	        ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+    	        product.setProperties(filteredMapJsonProperties);
+    	        products.addDataItem(product);
+	        }
+    	}
+    	summary.setProperties(new ArrayList<String>(uniqueProperties));
     	return products;
 	}
 }

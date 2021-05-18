@@ -25,6 +25,3 @@ for url,expectation,length in TEST_N_CRITERIA:
         else: print ('failed', length, '!=', this_length)
     else: print ('failed', expectation, '!=', result.status_code, url)
     pass
-
-
-# need fixin: 61
