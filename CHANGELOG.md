@@ -1,12 +1,24 @@
 # Changelog
 
-## [v0.2.0-SNAPSHOT](https://github.com/NASA-PDS/pds-api-javalib/tree/v0.2.0-SNAPSHOT) (2021-05-12)
+## [v0.1.0](https://github.com/NASA-PDS/pds-api-javalib/tree/v0.1.0) (2021-05-19)
 
-[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/0.0.2...v0.2.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/v0.2.0-SNAPSHOT...v0.1.0)
+
+## [v0.2.0-SNAPSHOT](https://github.com/NASA-PDS/pds-api-javalib/tree/v0.2.0-SNAPSHOT) (2021-05-19)
+
+[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/v0.1.0-SNAPSHOT...v0.2.0-SNAPSHOT)
+
+## [v0.1.0-SNAPSHOT](https://github.com/NASA-PDS/pds-api-javalib/tree/v0.1.0-SNAPSHOT) (2021-04-21)
+
+[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/0.0.2...v0.1.0-SNAPSHOT)
 
 ## [0.0.2](https://github.com/NASA-PDS/pds-api-javalib/tree/0.0.2) (2021-01-26)
 
-[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/b83a3ca5ce7e9663040f160fbcb8cee1554806e7...0.0.2)
+[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/0.0.1-SNAPSHOT...0.0.2)
+
+## [0.0.1-SNAPSHOT](https://github.com/NASA-PDS/pds-api-javalib/tree/0.0.1-SNAPSHOT) (2020-12-15)
+
+[Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/b83a3ca5ce7e9663040f160fbcb8cee1554806e7...0.0.1-SNAPSHOT)
 
 **Improvements:**
 
