@@ -1,20 +1,31 @@
 # Changelog
 
-## [v0.1.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.1.0) (2021-04-07)
+## [«unknown»](https://github.com/NASA-PDS/registry-api-service/tree/«unknown») (2021-05-19)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1-SNAPSHOT...v0.1.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1.0...«unknown»)
+
+**Requirements:**
+
+- As a node operators, I want to deploy the Registry API Service with the PDS Registry. [\#14](https://github.com/NASA-PDS/registry-api-service/issues/14)
+
+**Defects:**
+
+- error 500 on GET /collections/:lidvid:/products [\#17](https://github.com/NASA-PDS/registry-api-service/issues/17) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
+- API server crashes with OutOfMemoryError if invalid query is used [\#16](https://github.com/NASA-PDS/registry-api-service/issues/16) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
 
 **Other closed issues:**
+
+- As a developer, I don't want unused classes to stay in the code [\#28](https://github.com/NASA-PDS/registry-api-service/issues/28)
+- Employ budget alerts and if possible, rate/egress limits on AWS services [\#21](https://github.com/NASA-PDS/registry-api-service/issues/21)
+
+## [v0.1.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.1.0) (2021-04-07)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.0.2...v0.1.0)
+
+**Improvements:**
 
 - Implement a lid resolver [\#4](https://github.com/NASA-PDS/registry-api-service/issues/4)
 - implement the start/limit efficiently [\#3](https://github.com/NASA-PDS/registry-api-service/issues/3)
-
-## [v0.1-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.1-SNAPSHOT) (2021-03-24)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.0.2...v0.1-SNAPSHOT)
-
-**Other closed issues:**
-
 - Manage relationships bundle-collection-product in API [\#2](https://github.com/NASA-PDS/registry-api-service/issues/2)
 
 ## [v0.0.2](https://github.com/NASA-PDS/registry-api-service/tree/v0.0.2) (2021-02-03)
