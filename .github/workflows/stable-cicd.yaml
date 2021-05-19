@@ -41,8 +41,8 @@ on:
 # Round up, yee-haw!
 
 jobs:
-    unstable-assembly:
-        name: 🧩 Unstable Assembly
+    stable-assembly:
+        name: 🧩 Stable Assembly
         runs-on: ubuntu-latest
         if: github.actor != 'pdsen-ci'
         steps:
