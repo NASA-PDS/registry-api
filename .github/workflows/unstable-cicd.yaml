@@ -33,7 +33,6 @@ on:
     push:
         branches:
             - master
-            - '0.2.dev'
 
 
 
