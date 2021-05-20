@@ -55,17 +55,17 @@ jobs:
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@master
+                uses: NASA-PDS/roundup-action@documentation_dir
                 with:
                     assembly: stable
                     packages: openjdk11-jdk
+                    documentation-dir: target/apidocs
                     maven-stable-artifact-phases: clean,install,package,source:jar,javadoc:jar,gpg:sign,deploy
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
                     CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
                     ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
-                    GIT_DEPLOY_DIR: target/apidocs
 
 
 # -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
