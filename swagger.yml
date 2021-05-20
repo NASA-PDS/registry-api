@@ -8,7 +8,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: 0.1.0
+  version: 0.1.1
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
