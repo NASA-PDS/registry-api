@@ -65,6 +65,7 @@ jobs:
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
                     CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
                     ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
+                    GIT_DEPLOY_DIR: target/apidocs
 
 
 # -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
