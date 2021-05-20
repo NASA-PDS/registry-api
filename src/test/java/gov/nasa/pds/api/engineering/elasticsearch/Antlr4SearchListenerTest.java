@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.junit.Test;
@@ -136,7 +135,6 @@ public class Antlr4SearchListenerTest
 	@Test
 	public void testGroupedStatementAndInclusiveInequality()
 	{
-		boolean result = true;
 		String qs = "( timestamp_A ge 12 and timestamp_B le 27 )";
 		BoolQueryBuilder query = this.run(qs);
 
@@ -233,7 +231,7 @@ public class Antlr4SearchListenerTest
 	public void testNoWildcard()
 	{
 		String qs = "ref_lid_target eq urn:nasa:pds:context:target:planet.mercury";
-		BoolQueryBuilder nest, query = this.run(qs);
+		BoolQueryBuilder query = this.run(qs);
 
 		Assertions.assertEquals (query.must().size(), 1);
 		Assertions.assertEquals (query.mustNot().size(), 0);
@@ -247,7 +245,7 @@ public class Antlr4SearchListenerTest
 	public void testNoWildcardQuoted()
 	{
 		String qs = "ref_lid_target eq \"urn:nasa:pds:context:target:planet.mercury\"";
-		BoolQueryBuilder nest, query = this.run(qs);
+		BoolQueryBuilder query = this.run(qs);
 
 		Assertions.assertEquals (query.must().size(), 1);
 		Assertions.assertEquals (query.mustNot().size(), 0);

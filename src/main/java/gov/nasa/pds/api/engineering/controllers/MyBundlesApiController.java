@@ -5,7 +5,6 @@ import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
-import gov.nasa.pds.model.ErrorMessage;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
@@ -22,15 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -82,7 +75,9 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     		return this.getBundlesCollections(lidvid, start, limit, fields, sort, onlySummary);
     		           		    }
 
-    private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
+    private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
+    {
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
     	MyBundlesApiController.log.info("request bundle lidvid, collections children: " + lidvid);
        	
     	GetRequest getBundleRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(),
@@ -113,7 +108,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	    	
 	    	if (getBundleResponse.isExists()) {
 	    		MyBundlesApiController.log.info("get response " + getBundleResponse.toString());
-        		List<String> collections = (List<String>) getBundleResponse.getSourceAsMap().get("ref_lid_collection");
+        		@SuppressWarnings("unchecked")
+				List<String> collections = (List<String>) getBundleResponse.getSourceAsMap().get("ref_lid_collection");
         		String collectionLidVid;
         		int i=0;
         		for (String collectionLid : collections ) {
@@ -168,9 +164,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 		}
     	
     }
-    
-    
-    
+
     private ResponseEntity<Products> getBundlesCollections(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
 		 String accept = this.request.getHeader("Accept");
 		 MyBundlesApiController.log.info("accept value is " + accept);
@@ -196,8 +190,122 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 		     
 		 }
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
-     
     }
 
-    
+	@Override
+	public ResponseEntity<Products> productsOfABundle(String lidvid, @Valid Integer start, @Valid Integer limit,
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean onlySummary) {
+		 String accept = this.request.getHeader("Accept");
+		 MyBundlesApiController.log.info("accept value is " + accept);
+		 if ((accept != null 
+		 		&& (accept.contains("application/json") 
+		 				|| accept.contains("text/html")
+		 				|| accept.contains("application/xml")
+		 				|| accept.contains("application/pds4+xml")
+		 				|| accept.contains("*/*")))
+		 	|| (accept == null)) {
+		 	
+		 	try {
+		    	
+		 	
+		 		Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
+		    	
+		    	return new ResponseEntity<Products>(products, HttpStatus.OK);
+		    	
+		  } catch (IOException e) {
+		       log.error("Couldn't serialize response for content type " + accept, e);
+		       return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+		  }
+		     
+		 }
+		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+	}
+
+    @SuppressWarnings("unchecked")
+	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
+    {
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    	MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
+       	
+    	GetRequest getBundleRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
+    	HashSet<String> uniqueProperties = new HashSet<String>();
+    	List<String> productLidvids = new ArrayList<String>();
+    	Products products = new Products();
+        RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
+      	Summary summary = new Summary();
+
+    	if (sort == null) { sort = Arrays.asList(); }
+
+    	summary.setStart(start);
+    	summary.setLimit(limit);
+    	summary.setSort(sort);
+    	products.setSummary(summary);
+
+    	try
+    	{
+    		GetResponse getBundleResponse = restHighLevelClient.get(getBundleRequest, RequestOptions.DEFAULT);
+
+	    	if (getBundleResponse.isExists())
+	    	{
+	    		MyBundlesApiController.log.info("get response " + getBundleResponse.toString());
+				List<String> collections = (List<String>) getBundleResponse.getSourceAsMap().get("ref_lid_collection");
+        		String collectionLidVid;
+
+        		for (String collectionLid : collections )
+        		{
+        			collectionLidVid = this.getLatestLidVidFromLid(collectionLid) + "::P1";
+        			MyBundlesApiController.log.info("get collection with lidvid " + collectionLidVid);
+        			GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryRefIndex(), collectionLidVid);
+        			GetResponse getCollectionResponse = restHighLevelClient.get(getCollectionRequest, RequestOptions.DEFAULT);
+
+        			if (getCollectionResponse.isExists())
+        			{
+        				MyBundlesApiController.log.info("get ref response " + getCollectionResponse.toString());
+        				Object temp = getCollectionResponse.getSourceAsMap().get("product_lidvid");
+        				if (temp instanceof String) { productLidvids.add((String)temp); }
+        				else { productLidvids.addAll((List<String>) temp); }
+        			}
+        			else
+        			{
+        				MyBundlesApiController.log.warn("Couldn't get collection child " + collectionLidVid + " of bundle " + lidvid + " in elasticSearch");
+        			}
+        		}
+        		MyBundlesApiController.log.info("total number of product lidvids " + Integer.toString(productLidvids.size()));
+        		for (int i=start ;  i < start+limit && i < productLidvids.size() ;  i++)
+        		{
+        			MyBundlesApiController.log.info("fetch product from lidvid " + productLidvids.get(i));
+        			GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), productLidvids.get(i));
+        			GetResponse getProductResponse = restHighLevelClient.get(getProductRequest, RequestOptions.DEFAULT);
+        			
+        			if (getProductResponse.isExists())
+        			{
+        				Map<String, Object> sourceAsMap = getProductResponse.getSourceAsMap();
+        				Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
+
+        				uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+
+        				if (!onlySummary)
+        				{
+        					EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+        					ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+        					product.setProperties(filteredMapJsonProperties);
+        					products.addDataItem(product);
+        				}
+        			}
+        			else
+        			{
+        				MyBundlesApiController.log.warn("Couldn't get product child " + productLidvids.get(i) + " of bundle " + lidvid + " in elasticSearch");
+        			}
+        		}
+	    	}
+		}
+    	catch (IOException e)
+    	{
+    		MyBundlesApiController.log.error("Couldn't get bundle " + lidvid + " from elasticSearch", e);
+    		throw(e);
+		}
+
+    	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	return products;	
+    }
 }

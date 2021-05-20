@@ -2,7 +2,6 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRelationships;
@@ -15,8 +14,11 @@ import gov.nasa.pds.model.Summary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
@@ -112,18 +113,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	
     
     private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
     	MyCollectionsApiController.log.info("request bundle lidvid, collections children: " + lidvid);
-       	
-    	
-    
-    	
-        SearchResponse searchCollectionRefResponse = null;
-        
-        RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
          
     	try {
-    		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
-    		
 	    	Products products = new Products();
 	    	
 	    	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -180,7 +173,73 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		}
     	
     }
+
+
+	@Override
+	public ResponseEntity<Products> bundlesContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly)
+	{
+		String accept = this.request.getHeader("Accept");
+		MyCollectionsApiController.log.info("accept value is " + accept);
+
+		if ((accept != null 
+				&& (accept.contains("application/json") 
+						|| accept.contains("text/html")
+		 				|| accept.contains("application/xml")
+		 				|| accept.contains("application/pds4+xml")
+		 				|| accept.contains("*/*")))
+		 	|| (accept == null))
+		{
+			try
+			{
+		 		Products products = this.getContainingBundle(lidvid, start, limit, fields, sort, summaryOnly);		 		
+		 		return new ResponseEntity<Products>(products, HttpStatus.OK);
+			}
+			catch (IOException e)
+			{
+				log.error("Couldn't serialize response for content type " + accept, e);
+				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		 }
+		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+	}
     
+    private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException
+    {
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    	MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
+    	MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + lidvid.substring(0, lidvid.indexOf("::")));
+    	HashSet<String> uniqueProperties = new HashSet<String>();
+    	Products products = new Products();
+    	SearchRequest request = new SearchRequest(this.esRegistryConnection.getRegistryIndex());
+    	SearchResponse response;
+    	SearchSourceBuilder builder = new SearchSourceBuilder();
+      	Summary summary = new Summary();
 
+    	if (sort == null) { sort = Arrays.asList(); }
 
+    	summary.setStart(start);
+    	summary.setLimit(limit);
+    	summary.setSort(sort);
+    	products.setSummary(summary);
+    	builder.query(QueryBuilders.matchQuery("ref_lid_collection", lidvid.substring(0, lidvid.indexOf("::"))));
+    	request.source(builder);
+    	response = this.esRegistryConnection.getRestHighLevelClient().search(request,RequestOptions.DEFAULT);
+    	for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
+    	{
+	        Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
+	        Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
+	        
+	        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+
+	        if (!summaryOnly) {
+    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+    	        ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+    	        product.setProperties(filteredMapJsonProperties);
+    	        products.addDataItem(product);
+	        }
+    	}
+    	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	return products;
+    }
 }
