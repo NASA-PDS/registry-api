@@ -2,7 +2,7 @@ openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
+    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.1
  
 info:
   description: |
