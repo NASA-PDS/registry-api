@@ -68,7 +68,7 @@
 		            <configuration>
 		                <classifier>sources</classifier>
 		                <classesDirectory>${project.build.directory}/target/generated-sources/swagger/src/gen/java/main</classesDirectory>
-		                <includes>**/*</includes>
+		                <includes>**/*.java</includes>
 		            </configuration>
 		            <id>pack-docs</id>
 		            <phase>package</phase>

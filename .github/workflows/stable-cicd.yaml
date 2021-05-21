@@ -60,7 +60,7 @@ jobs:
                     assembly: stable
                     packages: openjdk11-jdk
                     documentation-dir: target/apidocs
-                    maven-stable-artifact-phases: clean,install,package,source:jar,javadoc:jar,gpg:sign,deploy
+                    maven-stable-artifact-phases: clean,install,javadoc:jar,package,gpg:sign,deploy
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
