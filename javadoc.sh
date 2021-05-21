@@ -1,1 +1,1 @@
-/Library/Java/JavaVirtualMachines/jdk-11.0.6.jdk/Contents/Home/bin/javadoc @options @packages
+/usr/lib/jvm/default-jvm/bin/javadoc @options @packages
