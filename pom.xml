@@ -28,13 +28,6 @@
     <version>1.7.0</version>
   </parent>
   
-  <distributionManagement>
-  <snapshotRepository>
-    <id>ossrh</id>
-    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-  </snapshotRepository>
-</distributionManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -78,6 +71,7 @@
 		<artifactId>junit-jupiter-engine</artifactId>
 		<version>5.7.0</version>
 	</dependency>
+	
 
   </dependencies>
 
@@ -115,7 +109,7 @@
 		    <executions>
 		        <execution>
 		            <configuration>
-		                <classifier>source</classifier>
+		                <classifier>sources</classifier>
 		                <classesDirectory>${project.build.directory}/target/generated-sources</classesDirectory>
 		                <includes>**/*</includes>
 		            </configuration>
@@ -145,17 +139,6 @@
            </executions>
          </plugin>
 			      
-	   <plugin>
-	      <groupId>org.sonatype.plugins</groupId>
-	      <artifactId>nexus-staging-maven-plugin</artifactId>
-	      <version>1.6.7</version>
-	      <extensions>true</extensions>
-	      <configuration>
-	        <serverId>ossrh</serverId>
-	        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-	        <autoReleaseAfterClose>true</autoReleaseAfterClose>
-	      </configuration>
-	    </plugin>
       
     </plugins>
   </build>
