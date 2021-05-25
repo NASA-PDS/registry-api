@@ -6,7 +6,7 @@
 
 **Defects:**
 
-- parsing right hand side of operator does not behave as desired [\#3](https://github.com/NASA-PDS/api-search-query-lexer/issues/3)
+- parsing right hand side of operator does not behave as desired [\#3](https://github.com/NASA-PDS/api-search-query-lexer/issues/3) [[s.medium](https://github.com/NASA-PDS/api-search-query-lexer/labels/s.medium)]
 - parsing of string does not succeed [\#1](https://github.com/NASA-PDS/api-search-query-lexer/issues/1)
 
 ## [v0.1.0](https://github.com/NASA-PDS/api-search-query-lexer/tree/v0.1.0) (2021-04-21)
