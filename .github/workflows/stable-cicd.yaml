@@ -60,6 +60,7 @@ jobs:
                 with:
                     assembly: stable
                     packages: openjdk11-jdk
+                    documentation-dir: target/apidocs
                     maven-stable-artifact-phases: clean,antlr4:antlr4,install,package,deploy
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
