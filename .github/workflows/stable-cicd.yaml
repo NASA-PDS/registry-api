@@ -55,7 +55,7 @@ jobs:
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@documentation_dir
+                uses: NASA-PDS/roundup-action@master
                 with:
                     assembly: stable
                     packages: openjdk11-jdk
