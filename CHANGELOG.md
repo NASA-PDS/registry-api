@@ -1,8 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api-service/tree/«unknown») (2021-05-20)
+## [v0.2.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.2.0) (2021-05-26)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1.0...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1.1...v0.2.0)
+
+## [v0.1.1](https://github.com/NASA-PDS/registry-api-service/tree/v0.1.1) (2021-05-25)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1.0...v0.1.1)
 
 **Requirements:**
 
@@ -10,7 +14,6 @@
 
 **Defects:**
 
-- error 500 on GET /collections/:lidvid:/products [\#17](https://github.com/NASA-PDS/registry-api-service/issues/17) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
 - API server crashes with OutOfMemoryError if invalid query is used [\#16](https://github.com/NASA-PDS/registry-api-service/issues/16) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
 
 **Other closed issues:**
@@ -20,12 +23,19 @@
 
 ## [v0.1.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.1.0) (2021-04-07)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.0.2...v0.1.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1-SNAPSHOT...v0.1.0)
 
 **Improvements:**
 
 - Implement a lid resolver [\#4](https://github.com/NASA-PDS/registry-api-service/issues/4)
 - implement the start/limit efficiently [\#3](https://github.com/NASA-PDS/registry-api-service/issues/3)
+
+## [v0.1-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.1-SNAPSHOT) (2021-03-17)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.0.2...v0.1-SNAPSHOT)
+
+**Improvements:**
+
 - Manage relationships bundle-collection-product in API [\#2](https://github.com/NASA-PDS/registry-api-service/issues/2)
 
 ## [v0.0.2](https://github.com/NASA-PDS/registry-api-service/tree/v0.0.2) (2021-02-03)
