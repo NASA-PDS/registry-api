@@ -2,13 +2,13 @@ openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.1
+    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
  
 info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: 0.2.1
+  version: 0.3.dev
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -37,9 +37,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/products'
             application/xml:
-              schema:
-                type: object
-            application/pds4+xml:
               schema:
                 type: object
         '404':
@@ -138,9 +135,6 @@ paths:
             application/xml:
               schema:
                 type: object
-            application/pds4+xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -203,9 +197,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/products'
             application/xml:
-              schema:
-                type: object
-            application/pds4+xml:
               schema:
                 type: object
         '404':
@@ -275,9 +266,6 @@ paths:
               schema: 
                 $ref: '#/components/schemas/products'
             application/xml:
-              schema:
-                type: object
-            application/pds4+xml:
               schema:
                 type: object
         '400':
@@ -446,9 +434,6 @@ paths:
             application/xml:
               schema:
                 type: object
-            application/pds4+xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -516,9 +501,6 @@ paths:
               schema: 
                 $ref: '#/components/schemas/products'
             application/xml:
-              schema:
-                type: object
-            application/pds4+xml:
               schema:
                 type: object
         '400':
@@ -620,9 +602,6 @@ paths:
             application/xml:
               schema:
                 type: object
-            application/pds4+xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -685,9 +664,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/products'
             application/xml:
-              schema:
-                type: object
-            application/pds4+xml:
               schema:
                 type: object
         '404':
