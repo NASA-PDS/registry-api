@@ -845,17 +845,12 @@ components:
         namespace: 'http://pds.nasa.gov/api'
     propertyValue:
       oneOf:
-        - $ref: '#/components/schema/propertyValueArray'
-        - $ref: '#/components/schema/propertyValueString'
+        - $ref: '#/components/schemas/propertyValueArray'
+        - type: string
     propertyValueArray:
       type: array 
       items:
         type: string
-      xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
-    propertyValueString:
-      type: string
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
