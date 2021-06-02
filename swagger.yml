@@ -844,10 +844,6 @@ components:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
     propertyValue:
-      oneOf:
-        - $ref: '#/components/schemas/propertyValueArray'
-        - type: string
-    propertyValueArray:
       type: array 
       items:
         type: string
