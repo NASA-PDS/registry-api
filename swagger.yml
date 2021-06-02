@@ -836,23 +836,26 @@ components:
           type: object
           description: properties extracted from pds4 model, syntax for property name is <namespace>:<property>[/<namespace>:<property>]*
           additionalProperties:
-            oneOf:
-              - type: array 
-                items:
-                  type: string
-                xml:
-                  prefix: 'pds_api'
-                  namespace: 'http://pds.nasa.gov/api'
-              - type: string
-                xml:
-                  prefix: 'pds_api'
-                  namespace: 'http://pds.nasa.gov/api'
-            xml:
-              prefix: 'pds_api'
-              namespace: 'http://pds.nasa.gov/api'
+            $ref: '#/components/schemas/propertyValue'
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
+      xml:
+        prefix: 'pds_api'
+        namespace: 'http://pds.nasa.gov/api'
+    propertyValue:
+      oneOf:
+        - $ref: '#/components/schema/propertyValueArray'
+        - $ref: '#/components/schema/propertyValueString'
+    propertyValueArray:
+      type: array 
+      items:
+        type: string
+      xml:
+        prefix: 'pds_api'
+        namespace: 'http://pds.nasa.gov/api'
+    propertyValueString:
+      type: string
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
