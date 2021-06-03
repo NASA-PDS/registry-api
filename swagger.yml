@@ -844,12 +844,20 @@ components:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
     propertyValues:
-      type: array 
-      items:
-        type: string
+      type: object
+      required:
+        - values
+      properties:
+        values:
+          type: array 
+          items:
+            type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+          prefix: 'pds_api'
+          namespace: 'http://pds.nasa.gov/api'
     reference:
       type: object
       description: object describing a reference to a different product. TODO The properties should be defined by a standard (xlink, json-ld) to be chosen
