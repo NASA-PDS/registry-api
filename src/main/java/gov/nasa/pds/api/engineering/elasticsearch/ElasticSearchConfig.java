@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
+import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 
 @Configuration 
 public class ElasticSearchConfig { 
@@ -68,19 +69,42 @@ public class ElasticSearchConfig {
 	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
 	}
+	
+	private ElasticSearchRegistryConnection esRegistryConnection = null;
 
-	@Bean
+	@Bean("esRegistryConnection")
     public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
      
-		return new ElasticSearchRegistryConnectionImpl(this.hosts,
-				this.registryIndex,
-				this.registryRefIndex,
-				this.timeOutSeconds,
-				this.username,
-				this.password,
-				this.ssl);
+		if (esRegistryConnection == null) {
+			this.esRegistryConnection = new ElasticSearchRegistryConnectionImpl(this.hosts,
+					this.registryIndex,
+					this.registryRefIndex,
+					this.timeOutSeconds,
+					this.username,
+					this.password,
+					this.ssl);
+		}
+		return this.esRegistryConnection;
 
     }
+	
+	@Bean("productBO")
+	public ProductBusinessObject ProductBusinessObject() {
+		
+		
+		return new ProductBusinessObject(this.ElasticSearchRegistryConnection());
+	}
+	
+	@Bean("searchRequestBuilder")
+	public ElasticSearchRegistrySearchRequestBuilder ElasticSearchRegistrySearchRequestBuilder() {
+		
+		ElasticSearchRegistryConnection esRegistryConnection = this.ElasticSearchRegistryConnection();
+		
+		return new ElasticSearchRegistrySearchRequestBuilder(
+     			esRegistryConnection.getRegistryIndex(),
+     			esRegistryConnection.getRegistryRefIndex(),
+    			esRegistryConnection.getTimeOutSeconds());
+	}
     
 
 }

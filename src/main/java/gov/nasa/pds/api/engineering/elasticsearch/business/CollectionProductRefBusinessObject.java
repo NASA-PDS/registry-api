@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 
+
 public class CollectionProductRefBusinessObject {
 	
 	public static final int PRODUCT_REFERENCES_BATCH_SIZE = 500;
@@ -15,7 +16,7 @@ public class CollectionProductRefBusinessObject {
 		this.elasticSearchConnection = elasticSearchConnection;
 	}
 	
-	public CollectionProductRelationships getCollectionProductsIterable(String lidvid, int start, int limit) throws IOException {
+	public CollectionProductRelationships getCollectionProductsIterable(String lidvid, int start, int limit) throws IOException, LidVidNotFoundException {
 		
 		return new CollectionProductRelationships(
 				lidvid,

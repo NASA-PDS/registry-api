@@ -1,8 +1,7 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -16,12 +15,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ExistsQueryBuilder;
@@ -32,10 +29,9 @@ import org.elasticsearch.common.unit.TimeValue;
 
 import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
-import gov.nasa.pds.model.Products;
-import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 
 public class ElasticSearchRegistrySearchRequestBuilder {
 	
@@ -145,6 +141,25 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 //		return getSearchProductsRequest(queryString, null, start, limit, presetCriteria);
 //	}
 	
+	public GetRequest getGetProductRequest(String lidvid, boolean withXMLBlob) {
+	   	
+    	GetRequest getProductRequest = new GetRequest(this.registryIndex, 
+    			lidvid);
+    	
+    	FetchSourceContext fetchSourceContext = new FetchSourceContext(true, null, withXMLBlob?null:new String[] {  EntitytProductWithBlob.BLOB_PROPERTY });
+    	
+    	getProductRequest.fetchSourceContext(fetchSourceContext);
+    	
+    	return getProductRequest;
+    	
+	}
+	
+	public GetRequest getGetProductRequest(String lidvid) {
+	   	
+		return this.getGetProductRequest(lidvid, false);
+    	
+	}
+	
 	
 	public SearchRequest getSearchProductsRequest(
 			String queryString, 
@@ -176,15 +191,28 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	searchSourceBuilder.from(start); 
     	searchSourceBuilder.size(limit); 
     	
-    	/* TODO add the fetchsource to the request to reduce the payload being moved from elasticsearch
-    	List<String> fetched_fields = fields.addAll(c);
-    	searchSourceBuilder.fetchSource(fields., null);
-    	*/
-    	searchSourceBuilder.timeout(new TimeValue(this.timeOutSeconds, 
+    	String[] esFields = null;
+    	if (fields != null) {
+	    	esFields = new String[fields.size()]; 
+	    	for (int i=0 ; i<fields.size() ; i++) {
+	    		esFields[i] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
+	    	}
+    	} 
+    	
+    	FetchSourceContext fetchSourceContext = new FetchSourceContext(
+    			true, 
+    			esFields, 
+    			new String[] {  EntitytProductWithBlob.BLOB_PROPERTY });
+     	
+    	searchSourceBuilder.fetchSource(fetchSourceContext);
+    	
+  	    searchSourceBuilder.timeout(new TimeValue(this.timeOutSeconds, 
     			TimeUnit.SECONDS)); 
     	
     	SearchRequest searchRequest = new SearchRequest();
     	searchRequest.source(searchSourceBuilder);
+	   
+    	
     	searchRequest.indices(this.registryIndex);
     	
         ElasticSearchRegistrySearchRequestBuilder.log.info("q value: " + queryString);

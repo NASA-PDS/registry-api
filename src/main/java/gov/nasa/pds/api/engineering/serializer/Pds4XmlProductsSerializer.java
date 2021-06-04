@@ -41,6 +41,10 @@ import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
 public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Products> {
+	/***
+	 * OBSOLETE since we don't want to use the label in blob anymore to provide the pds4 original label for a list of products
+	 * 
+	 */
 	
    	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);
 
@@ -49,8 +53,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pro
 	  static final private String NAMESPACE_URL = "http://pds.nasa.gov/api";
 	
 	  public Pds4XmlProductsSerializer() {
-	      super(new MediaType("application", "xml"),
-	    		new MediaType("application", "pds4+xml"));
+	      super(new MediaType("application", "pds4+xml"));
 	  }
 
 	  @Override
@@ -98,23 +101,6 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pro
 	        	  
 	        	  String productBody = ((ProductWithXmlLabel)product).getLabelXml();
 	        	  productBody = productBody.substring(productBody.lastIndexOf("?>")+2);
-	        	  
-	        	  /*
-	        	  StringReader stringReader = new StringReader(productBody);
-	        	  
-	        	  XMLInputFactory xif = XMLInputFactory.newInstance();
-	              XMLStreamReader xsr = xif.createXMLStreamReader(stringReader);
-	              xsr.nextTag(); // Advance to statements element
-
-	        	  
-	        	  
-	        	  Transformer transform = TransformerFactory.newInstance().newTransformer();
-	        	  while(xsr.nextTag() == XMLStreamConstants.START_ELEMENT) {
-	        		  transform.transform(new StAXSource(xsr), new StAXResult(writer));
-		        	  
-	        	  }
-	        	  */
-	        	  
 	        	  
 	        	  writer.writeCharacters("");
 	        	  writer.flush();

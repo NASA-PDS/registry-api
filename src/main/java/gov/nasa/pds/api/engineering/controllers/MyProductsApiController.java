@@ -31,9 +31,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
+import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.PropertyValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 import io.swagger.annotations.ApiParam;
@@ -103,7 +107,10 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	private Products getContainingBundle(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
 	{
-		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+		ProductBusinessObject productBO = new ProductBusinessObject(this.esRegistryConnection);
+    	
+    	if (!lidvid.contains("::")) lidvid = productBO.getLatestLidVidFromLid(lidvid);
+    	
 		boolean haveMatches = false;
     	MyProductsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
     	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -131,21 +138,31 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     		builder.query(query);
     		request.source(builder);
     		response = this.esRegistryConnection.getRestHighLevelClient().search(request,RequestOptions.DEFAULT);
-    		for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
-    		{
-    			Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
-    			Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
-
-    			uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-
-    			if (!summaryOnly)
-    			{
-    				EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-    				ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-    				product.setProperties(filteredMapJsonProperties);
-    				products.addDataItem(product);
-    			}
-    		}
+    		
+    		try {
+	    		
+	    		for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
+	    		{
+	    			Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
+	    			Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+	    					sourceAsMap, 
+	    					fields, 
+	    					new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
+	    					);
+	
+	    			uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+	
+	    			if (!summaryOnly)
+	    			{
+	    				EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+	    				Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+	    				product.setProperties(filteredMapJsonProperties);
+	    				products.addDataItem(product);
+	    			}
+	    		}
+    		} catch (UnsupportedElasticSearchProperty e) {
+	    		log.error("this should never happen " + e.getMessage());
+	    	}
     	}
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
     	return products;
@@ -195,8 +212,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
 	private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
-	{
-		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+	{	
+    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    	
     	MyProductsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
     	HashSet<String> uniqueProperties = new HashSet<String>();
     	Products products = new Products();
@@ -209,20 +227,30 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	summary.setLimit(limit);
     	summary.setSort(sort);
     	products.setSummary(summary);
-    	for (int i = start ; start < limit && i < hits.getHits().length ; i++)
-    	{
-    		GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), (String)hits.getAt(i).getSourceAsMap().get("collection_lidvid"));
-	        Map<String, Object> sourceAsMap = this.esRegistryConnection.getRestHighLevelClient().get(request, RequestOptions.DEFAULT).getSourceAsMap();
-	        Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
-	        
-	        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-
-	        if (!summaryOnly) {
-    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-    	        ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-    	        product.setProperties(filteredMapJsonProperties);
-    	        products.addDataItem(product);
-	        }
+    	
+    	try {
+	    	
+	    	for (int i = start ; start < limit && i < hits.getHits().length ; i++)
+	    	{
+	    		GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), (String)hits.getAt(i).getSourceAsMap().get("collection_lidvid"));
+		        Map<String, Object> sourceAsMap = this.esRegistryConnection.getRestHighLevelClient().get(request, RequestOptions.DEFAULT).getSourceAsMap();
+		        Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+		        		sourceAsMap, 
+		        		fields,
+		        		new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
+		        		);
+		        
+		        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+	
+		        if (!summaryOnly) {
+	    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+	    	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+	    	        product.setProperties(filteredMapJsonProperties);
+	    	        products.addDataItem(product);
+		        }
+	    	}
+    	} catch (UnsupportedElasticSearchProperty e) {
+    		log.error("this should never happen " + e.getMessage());
     	}
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
     	return products;

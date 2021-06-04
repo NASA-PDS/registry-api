@@ -13,12 +13,15 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
 
@@ -26,7 +29,6 @@ import gov.nasa.pds.api.model.ProductWithXmlLabel;
 public class CollectionProductIterator<T> implements Iterator<T> { 
     
 	private static final Logger log = LoggerFactory.getLogger(MyCollectionsApiController.class);
-	
 	
 	CollectionProductRelationships collectionProductRelationships;
 	Iterator<SearchHit> searchHitsIterator;
@@ -86,10 +88,8 @@ public class CollectionProductIterator<T> implements Iterator<T> {
 
     	String productLidVid = this.nextProductLidVid();
     	
-    	GetRequest getProductRequest = new GetRequest(this.collectionProductRelationships
-    			.elasticSearchConnection
-    			.getRegistryIndex(), 
-    			productLidVid);
+    	GetRequest getProductRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(productLidVid);
+    	
         GetResponse getResponse = null;
         
        	try {

@@ -2,10 +2,13 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.BundlesApi;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.PropertyValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -32,6 +35,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-02-16T16:35:42.434-08:00[America/Los_Angeles]")
 @Controller
 public class MyBundlesApiController extends MyProductsApiBareController implements BundlesApi {
@@ -77,11 +82,10 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
     private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
     {
-		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     	MyBundlesApiController.log.info("request bundle lidvid, collections children: " + lidvid);
        	
-    	GetRequest getBundleRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(),
-    			lidvid);
+    	GetRequest getBundleRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(lidvid);
         GetResponse getBundleResponse = null;
         
         RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
@@ -114,9 +118,14 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         		int i=0;
         		for (String collectionLid : collections ) {
         			if ((i>=start) && (i<start+limit)) {
-	        			collectionLidVid = this.getLatestLidVidFromLid(collectionLid);
-	        			GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
-	        					collectionLidVid);
+	        			collectionLidVid = this.productBO.getLatestLidVidFromLid(collectionLid);
+	        			
+	        			//this.productBO.getProduct(collectionLidVid);
+	        			GetRequest getCollectionRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(collectionLidVid);
+	        			
+	        			//GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
+	        			//		collectionLidVid);
+	        			
 	        			
 	        	        GetResponse getCollectionResponse = null;
 	        	        
@@ -127,7 +136,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	    	        		
 	    	        		MyBundlesApiController.log.info("get response " + getCollectionResponse.toString());
 	    	        		Map<String, Object> sourceAsMap = getCollectionResponse.getSourceAsMap();
-	    	        		Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
+	    	        		Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
 	
 	    	        		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 	
@@ -135,7 +144,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	    	     	        
 	    	     	        if (!onlySummary) {
 	    	     	        	EntityProduct entityCollection = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-	    	     	        	ProductWithXmlLabel collection = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
+	    	     	        	Product collection = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
 	    	     	        	collection.setProperties(filteredMapJsonProperties);
 	    	         	        products.addDataItem(collection);
 	    	     	        }
@@ -172,7 +181,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 		 		&& (accept.contains("application/json") 
 		 				|| accept.contains("text/html")
 		 				|| accept.contains("application/xml")
-		 				|| accept.contains("application/pds4+xml")
 		 				|| accept.contains("*/*")))
 		 	|| (accept == null)) {
 		 	
@@ -201,7 +209,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 		 		&& (accept.contains("application/json") 
 		 				|| accept.contains("text/html")
 		 				|| accept.contains("application/xml")
-		 				|| accept.contains("application/pds4+xml")
 		 				|| accept.contains("*/*")))
 		 	|| (accept == null)) {
 		 	
@@ -224,10 +231,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     @SuppressWarnings("unchecked")
 	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
     {
-		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
+    	
+    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    	
     	MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
-       	
-    	GetRequest getBundleRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
+    	GetRequest getBundleRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(lidvid);
     	HashSet<String> uniqueProperties = new HashSet<String>();
     	List<String> productLidvids = new ArrayList<String>();
     	Products products = new Products();
@@ -244,7 +252,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     	try
     	{
     		GetResponse getBundleResponse = restHighLevelClient.get(getBundleRequest, RequestOptions.DEFAULT);
-
+    		
+    		
 	    	if (getBundleResponse.isExists())
 	    	{
 	    		MyBundlesApiController.log.info("get response " + getBundleResponse.toString());
@@ -253,7 +262,10 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         		for (String collectionLid : collections )
         		{
-        			collectionLidVid = this.getLatestLidVidFromLid(collectionLid) + "::P1";
+        			
+        			collectionLidVid = productBO.getLatestLidVidFromLid(lidvid) + "::P1";
+
+        			// TODO change the request to get collections from their lidvid and not from the ID which is not right, we are missing packets 
         			MyBundlesApiController.log.info("get collection with lidvid " + collectionLidVid);
         			GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryRefIndex(), collectionLidVid);
         			GetResponse getCollectionResponse = restHighLevelClient.get(getCollectionRequest, RequestOptions.DEFAULT);
@@ -280,14 +292,14 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			if (getProductResponse.isExists())
         			{
         				Map<String, Object> sourceAsMap = getProductResponse.getSourceAsMap();
-        				Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
+        				Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
 
         				uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 
         				if (!onlySummary)
         				{
         					EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-        					ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+        					Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
         					product.setProperties(filteredMapJsonProperties);
         					products.addDataItem(product);
         				}
