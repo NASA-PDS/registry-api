@@ -240,7 +240,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     	summary.setLimit(limit);
     	summary.setSort(sort);
     	products.setSummary(summary);
-
     	try
     	{
     		GetResponse getBundleResponse = restHighLevelClient.get(getBundleRequest, RequestOptions.DEFAULT);
@@ -271,32 +270,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			}
         		}
         		MyBundlesApiController.log.info("total number of product lidvids " + Integer.toString(productLidvids.size()));
-        		for (int i=start ;  i < start+limit && i < productLidvids.size() ;  i++)
-        		{
-        			MyBundlesApiController.log.info("fetch product from lidvid " + productLidvids.get(i));
-        			GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), productLidvids.get(i));
-        			GetResponse getProductResponse = restHighLevelClient.get(getProductRequest, RequestOptions.DEFAULT);
-        			
-        			if (getProductResponse.isExists())
-        			{
-        				Map<String, Object> sourceAsMap = getProductResponse.getSourceAsMap();
-        				Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMap, fields);
-
-        				uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-
-        				if (!onlySummary)
-        				{
-        					EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-        					ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-        					product.setProperties(filteredMapJsonProperties);
-        					products.addDataItem(product);
-        				}
-        			}
-        			else
-        			{
-        				MyBundlesApiController.log.warn("Couldn't get product child " + productLidvids.get(i) + " of bundle " + lidvid + " in elasticSearch");
-        			}
-        		}
+        		products = this.getLIDVIDs(productLidvids.subList(start, start+limit < productLidvids.size() ? start+limit : productLidvids.size()), fields, uniqueProperties, onlySummary);
+            	products.setSummary(summary);
 	    	}
 		}
     	catch (IOException e)

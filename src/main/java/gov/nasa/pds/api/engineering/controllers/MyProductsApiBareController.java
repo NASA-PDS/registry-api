@@ -18,8 +18,10 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.document.DocumentField;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityCollection;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
@@ -41,7 +42,9 @@ import gov.nasa.pds.model.Summary;
 public class MyProductsApiBareController {
 	
 	private static final Logger log = LoggerFactory.getLogger(MyProductsApiBareController.class);  
-	
+	private final String[] DEFAULT_ALL_FIELDS = { "*" };
+	private final String[] DEFAULT_BLOB = { "ops:Label_File_Info/ops:blob" };
+
     protected final ObjectMapper objectMapper;
 
     protected final HttpServletRequest request;
@@ -58,8 +61,6 @@ public class MyProductsApiBareController {
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
-        
-        
     }
     
     
@@ -93,6 +94,36 @@ public class MyProductsApiBareController {
 	        
     }
     
+    protected Products getLIDVIDs(List<String> lidvids, List<String> fields, HashSet<String> uniqueFields, boolean onlySummary) throws IOException
+    {
+    	String[] aFields = new String[fields == null ? 0 : fields.size()];
+    	if (fields != null)
+    	{
+    		for (int i = 0 ;  i < fields.size(); i++) aFields[i] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
+    	}
+
+    	BoolQueryBuilder find_lidvids = QueryBuilders.boolQuery();
+    	Products results = new Products();
+    	SearchRequest request = new SearchRequest(this.esRegistryConnection.getRegistryIndex())
+    			.source(new SearchSourceBuilder().query(find_lidvids)
+    					.fetchSource(fields == null ? this.DEFAULT_ALL_FIELDS : aFields, this.DEFAULT_BLOB));
+
+    	for (String lidvid : lidvids) find_lidvids.should (QueryBuilders.termQuery ("lidvid", lidvid));
+    	for (SearchHit hit : this.esRegistryConnection.getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits())
+    	{
+    		Map<String, Object> response = ElasticSearchUtil.elasticHashMapToJsonHashMap(hit.getSourceAsMap());
+    		uniqueFields.addAll(response.keySet());
+    		
+    		if (!onlySummary)
+    		{
+    			results.addDataItem (ElasticSearchUtil.ESentityProductToAPIProduct(
+    					this.objectMapper.convertValue(response, EntityProduct.class)));
+    			results.getData().get(results.getData().size()-1).setProperties(response);
+    		}
+    	}
+    	return results;
+    }
+
     protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
     	
      	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
