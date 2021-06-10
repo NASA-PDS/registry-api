@@ -2,6 +2,7 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.BundlesApi;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
@@ -270,7 +271,10 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			}
         		}
         		MyBundlesApiController.log.info("total number of product lidvids " + Integer.toString(productLidvids.size()));
-        		products = this.getLIDVIDs(productLidvids.subList(start, start+limit < productLidvids.size() ? start+limit : productLidvids.size()), fields, uniqueProperties, onlySummary);
+        		products = this.getLIDVIDs(ElasticSearchRegistrySearchRequestBuilder.getQueryForLIDVIDs
+        				(productLidvids.subList(start, start+limit < productLidvids.size() ? start+limit : productLidvids.size()),
+        						fields, this.esRegistryConnection.getRegistryIndex()),
+        				uniqueProperties, onlySummary);
             	products.setSummary(summary);
 	    	}
 		}

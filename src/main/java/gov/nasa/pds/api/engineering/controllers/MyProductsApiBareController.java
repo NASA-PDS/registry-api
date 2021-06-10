@@ -42,8 +42,6 @@ import gov.nasa.pds.model.Summary;
 public class MyProductsApiBareController {
 	
 	private static final Logger log = LoggerFactory.getLogger(MyProductsApiBareController.class);  
-	private final String[] DEFAULT_ALL_FIELDS = { "*" };
-	private final String[] DEFAULT_BLOB = { "ops:Label_File_Info/ops:blob" };
 
     protected final ObjectMapper objectMapper;
 
@@ -94,21 +92,10 @@ public class MyProductsApiBareController {
 	        
     }
     
-    protected Products getLIDVIDs(List<String> lidvids, List<String> fields, HashSet<String> uniqueFields, boolean onlySummary) throws IOException
+    protected Products getLIDVIDs(SearchRequest request, HashSet<String> uniqueFields, boolean onlySummary) throws IOException
     {
-    	String[] aFields = new String[fields == null ? 0 : fields.size()];
-    	if (fields != null)
-    	{
-    		for (int i = 0 ;  i < fields.size(); i++) aFields[i] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
-    	}
-
-    	BoolQueryBuilder find_lidvids = QueryBuilders.boolQuery();
     	Products results = new Products();
-    	SearchRequest request = new SearchRequest(this.esRegistryConnection.getRegistryIndex())
-    			.source(new SearchSourceBuilder().query(find_lidvids)
-    					.fetchSource(fields == null ? this.DEFAULT_ALL_FIELDS : aFields, this.DEFAULT_BLOB));
 
-    	for (String lidvid : lidvids) find_lidvids.should (QueryBuilders.termQuery ("lidvid", lidvid));
     	for (SearchHit hit : this.esRegistryConnection.getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits())
     	{
     		Map<String, Object> response = ElasticSearchUtil.elasticHashMapToJsonHashMap(hit.getSourceAsMap());

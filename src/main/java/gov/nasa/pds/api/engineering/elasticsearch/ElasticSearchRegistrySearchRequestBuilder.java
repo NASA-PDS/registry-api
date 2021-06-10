@@ -1,8 +1,6 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -18,9 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -32,15 +27,14 @@ import org.elasticsearch.common.unit.TimeValue;
 
 import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
-import gov.nasa.pds.model.Products;
-import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
 
 public class ElasticSearchRegistrySearchRequestBuilder {
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilder.class);
-	
+	private static final String[] DEFAULT_ALL_FIELDS = { "*" };
+	private static final String[] DEFAULT_BLOB = { "ops:Label_File_Info/ops:blob" };
+
 	private String registryIndex;
 	private String registryRefIndex;
 	private int timeOutSeconds;
@@ -193,6 +187,23 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	return searchRequest;
 
 		
+	}
+	
+	static public SearchRequest getQueryForLIDVIDs (List<String> lidvids, List<String> fields, String index)
+	{
+    	String[] aFields = new String[fields == null ? 0 : fields.size()];
+    	if (fields != null)
+    	{
+    		for (int i = 0 ;  i < fields.size(); i++) aFields[i] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
+    	}
+
+    	BoolQueryBuilder find_lidvids = QueryBuilders.boolQuery();
+    	SearchRequest request = new SearchRequest(index)
+    			.source(new SearchSourceBuilder().query(find_lidvids)
+    					.fetchSource(fields == null ? DEFAULT_ALL_FIELDS : aFields, DEFAULT_BLOB));
+
+    	for (String lidvid : lidvids) find_lidvids.should (QueryBuilders.termQuery ("lidvid", lidvid));
+    	return request;
 	}
 	
 	public SearchRequest getSearchProductRequest(String queryString, List<String> fields, int start, int limit) {
