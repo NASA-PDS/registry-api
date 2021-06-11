@@ -1,16 +1,20 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api-service/tree/«unknown») (2021-06-09)
+## [«unknown»](https://github.com/NASA-PDS/registry-api-service/tree/«unknown») (2021-06-11)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.0-SNAPSHOT...«unknown»)
 
 **Defects:**
 
-- XML and PDS4+XML Response Formats are invalid [\#27](https://github.com/NASA-PDS/registry-api-service/issues/27) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
+- error 500 on GET /collections/:lidvid:/products [\#17](https://github.com/NASA-PDS/registry-api-service/issues/17) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
 
-## [v0.3.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.0-SNAPSHOT) (2021-05-26)
+## [v0.3.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.0-SNAPSHOT) (2021-06-09)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.2.0...v0.3.0-SNAPSHOT)
+
+**Defects:**
+
+- XML and PDS4+XML Response Formats are invalid [\#27](https://github.com/NASA-PDS/registry-api-service/issues/27) [[s.high](https://github.com/NASA-PDS/registry-api-service/labels/s.high)]
 
 ## [v0.2.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.2.0) (2021-05-26)
 
