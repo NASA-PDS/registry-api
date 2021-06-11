@@ -3,9 +3,11 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.assertj.core.util.Arrays;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -132,15 +134,27 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     
     
     private Iterator<String> initProductIterator() {
-    	ArrayList<String> productLidVidSet;
+    	ArrayList<String> productLidVidSet = null;
     	
     	if (!this.searchHitsIterator.hasNext()) { productLidVidSet = new ArrayList<String>(); }
     	else
     	{
+    		
     		SearchHit searchHit = this.searchHitsIterator.next();
-    		productLidVidSet = (ArrayList<String>) searchHit
+    		
+    		Object productLidVids = searchHit
     				.getSourceAsMap()
     				.get("product_lidvid");
+    		
+    		if (productLidVids instanceof String) {
+    			productLidVidSet = new ArrayList<String>() {{ add((String)productLidVids); }};
+    		}
+    		else if (productLidVids instanceof List<?>) {
+    			productLidVidSet = (ArrayList<String>)productLidVids;
+    		}
+    		else {
+    			log.error("product_lidvid attribute in index registry-refs type is unexpected " + productLidVids.getClass().getName());
+    		}
     	}
     	return productLidVidSet.iterator();
     }
