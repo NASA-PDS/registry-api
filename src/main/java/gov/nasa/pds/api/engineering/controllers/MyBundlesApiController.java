@@ -227,6 +227,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     {
 		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.getLatestLidVidFromLid(lidvid);
     	MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
+    	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
+     			this.esRegistryConnection.getRegistryIndex(),
+     			this.esRegistryConnection.getRegistryRefIndex(),
+    			this.esRegistryConnection.getTimeOutSeconds());
+    	
        	
     	GetRequest getBundleRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
     	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -271,9 +276,9 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			}
         		}
         		MyBundlesApiController.log.info("total number of product lidvids " + Integer.toString(productLidvids.size()));
-        		products = this.getLIDVIDs(ElasticSearchRegistrySearchRequestBuilder.getQueryForLIDVIDs
+        		products = this.getLIDVIDs(searchRequestBuilder.getQueryForLIDVIDs
         				(productLidvids.subList(start, start+limit < productLidvids.size() ? start+limit : productLidvids.size()),
-        						fields, this.esRegistryConnection.getRegistryIndex()),
+        						fields),
         				uniqueProperties, onlySummary);
             	products.setSummary(summary);
 	    	}

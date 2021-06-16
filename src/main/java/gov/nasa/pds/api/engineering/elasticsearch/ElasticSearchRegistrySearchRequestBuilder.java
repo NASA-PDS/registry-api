@@ -189,7 +189,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 		
 	}
 	
-	static public SearchRequest getQueryForLIDVIDs (List<String> lidvids, List<String> fields, String index)
+	public SearchRequest getQueryForLIDVIDs (List<String> lidvids, List<String> fields)
 	{
     	String[] aFields = new String[fields == null ? 0 : fields.size()];
     	if (fields != null)
@@ -198,7 +198,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	}
 
     	BoolQueryBuilder find_lidvids = QueryBuilders.boolQuery();
-    	SearchRequest request = new SearchRequest(index)
+    	SearchRequest request = new SearchRequest(this.registryIndex)
     			.source(new SearchSourceBuilder().query(find_lidvids)
     					.fetchSource(fields == null ? DEFAULT_ALL_FIELDS : aFields, DEFAULT_BLOB));
 

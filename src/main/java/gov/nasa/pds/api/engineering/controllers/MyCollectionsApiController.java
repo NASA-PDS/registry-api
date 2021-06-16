@@ -134,25 +134,17 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	    	products.setSummary(summary);
 	    	
 	    	CollectionProductRefBusinessObject  collectionProductRefBO = new CollectionProductRefBusinessObject(this.esRegistryConnection);
-	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid, start, limit);
+	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid, start, limit, fields);
 	    	
-	    	for (EntityProduct eProd : collectionProductRelationships) {
-				  if (eProd != null) {
-		        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
+	    	for (Product prod : collectionProductRelationships) {
+				  if (prod != null) {
+		        	MyCollectionsApiController.log.debug("request lidvdid: " + prod.getId() );
 		        	
-		    		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
-		
-		    		Map<String, Object> sourceAsMapJsonProperties = 
-		    				ElasticSearchUtil.elasticHashMapToJsonHashMap(eProd.getProperties());
-		    		
-		    		Map<String, Object> filteredMapJsonProperties = this.getFilteredProperties(sourceAsMapJsonProperties, fields);
-		
-		    		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+		    		uniqueProperties.addAll(prod.getProperties().keySet());
 		
 		    		if (!onlySummary) {
-		        		product.setProperties(filteredMapJsonProperties);
 		        		
-		        		products.addDataItem(product);
+		        		products.addDataItem(prod);
 		    		}
 				}
 				  else {

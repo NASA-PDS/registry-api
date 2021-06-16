@@ -2,6 +2,7 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -15,8 +16,9 @@ import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
+import gov.nasa.pds.model.Product;
 
-public class CollectionProductRelationships implements Iterable<EntityProduct> { 
+public class CollectionProductRelationships implements Iterable<Product> { 
 	
 	private static final Logger log = LoggerFactory.getLogger(MyCollectionsApiController.class);
 	  
@@ -26,6 +28,7 @@ public class CollectionProductRelationships implements Iterable<EntityProduct> {
 	SearchRequest searchRequest;
 	SearchHits searchHits;
 	int start;
+	
 	public int getStart() {
 		return start;
 	}
@@ -36,15 +39,23 @@ public class CollectionProductRelationships implements Iterable<EntityProduct> {
 	public int getLimit() {
 		return limit;
 	}
+	
+	List<String> fields;
+	
+	public List<String> getFields() {
+		return fields;
+	}
 
 	public CollectionProductRelationships(
 			String lidvid, 
 			int start,
 			int limit,
+			List<String> fields,
 			ElasticSearchRegistryConnection elasticSearchConnection) throws IOException {
 		this.elasticSearchConnection = elasticSearchConnection;
 		this.start = start;
 		this.limit = limit;
+		this.fields = fields;
 		
 		searchRequest = new ElasticSearchRegistrySearchRequestBuilder(
 				this.elasticSearchConnection.getRegistryIndex(),
@@ -77,8 +88,8 @@ public class CollectionProductRelationships implements Iterable<EntityProduct> {
 	}
 	
 	 // code for data structure 
-    public Iterator<EntityProduct> iterator() { 
-        return new CollectionProductIterator<EntityProduct>(this); 
+    public Iterator<Product> iterator() { 
+        return new CollectionProductIterator<Product>(this); 
     }
     
     public SearchHits getSearchHits() {

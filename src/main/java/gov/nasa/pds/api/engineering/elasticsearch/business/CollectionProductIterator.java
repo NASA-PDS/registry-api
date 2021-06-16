@@ -3,6 +3,7 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -13,6 +14,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +23,8 @@ import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.Products;
 
 
 public class CollectionProductIterator<T> implements Iterator<T> { 
@@ -34,13 +38,20 @@ public class CollectionProductIterator<T> implements Iterator<T> {
 	int numberOfReturnedResults = 0;
 	ObjectMapper objectMapper;
 	
+	@Autowired
+	private ProductsBusinessObject productsBO;
+	
+	private Iterator<Product> productsCache = null;
+	
+	
     // constructor 
 	CollectionProductIterator(CollectionProductRelationships collectionProductRelationships) { 
         this.collectionProductRelationships = collectionProductRelationships;
+         
         SearchHits searchHits = this.collectionProductRelationships.getSearchHits();
 
     	this.searchHitsIterator = searchHits.iterator();
-    	this.productLidVidSetIterator = this.initProductIterator();
+    	this.productsCache = this.initProductIterator();
       
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -60,16 +71,16 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     // Checks if the next element exists 
     public boolean hasNext() { 
     	return (searchHitsIterator.hasNext() 
-    			|| (productLidVidSetIterator!= null) && (productLidVidSetIterator.hasNext()))
+    			|| (this.productsCache != null) && (this.productsCache.hasNext()))
     			&& (this.numberOfReturnedResults<this.collectionProductRelationships.getLimit());
     } 
      
     
     private String nextProductLidVid() {
 
-    	if (!productLidVidSetIterator.hasNext()) {
+    	if (!this.productsCache.hasNext()) {
     		if (this.searchHitsIterator.hasNext()) {
-    			this.productLidVidSetIterator = this.initProductIterator();
+    			this.productsCache = this.initProductIterator();
     		}
     		else { // should not be called since this.hasNext will be false
     			throw new NoSuchElementException();
@@ -84,46 +95,22 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     // moves the cursor/iterator to next element 
     public T next() {
 
-    	String productLidVid = this.nextProductLidVid();
-    	
-    	GetRequest getProductRequest = new GetRequest(this.collectionProductRelationships
-    			.elasticSearchConnection
-    			.getRegistryIndex(), 
-    			productLidVid);
-        GetResponse getResponse = null;
-        
-       	try {
-			getResponse = collectionProductRelationships.getRestHighLevelClient().get(getProductRequest, 
-					RequestOptions.DEFAULT);
-		
-    	
-    	if (getResponse.isExists()) {
-    		log.info("get response " + getResponse.toString());
-    		Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
-        	EntityProduct entityProduct = objectMapper.convertValue(
-    				sourceAsMap, 
-    				EntityProduct.class);
-    		
-    		entityProduct.setProperties(sourceAsMap);
-    		
-    		this.numberOfReturnedResults++;
-    		
-    		return (T) entityProduct;
-    		
-    	}
-    	else {
-    		CollectionProductIterator.log.error("product lidvid " + productLidVid + " not found in elasticsearch (does not exists)");
-    		return null;
+    	if ((this.productsCache == null) || (!this.productsCache.hasNext())) {
+    		if (this.searchHitsIterator.hasNext()) {
+    			this.productsCache = this.initProductIterator();
+    		}
+    		else { // should not be called since this.hasNext will be false
+    			throw new NoSuchElementException();
+    		}	
     	}
     	
-       	} catch (IOException|NoSuchElementException e) {
-       		CollectionProductIterator.log.error("product lidvid " + productLidVid + " not found in elasticsearch");
-			e.printStackTrace();
-			return null;
-		}
-        
+    	
+    	return (T)this.productsCache.next();
+    	
+
     } 
       
+    
     // Used to remove an element. Implement only if needed 
     public void remove() { 
     	throw new UnsupportedOperationException(); 
@@ -131,18 +118,45 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     
     
     
-    private Iterator<String> initProductIterator() {
-    	ArrayList<String> productLidVidSet;
+    private Iterator<Product> initProductIterator() {
+    	List<Product> products;
     	
-    	if (!this.searchHitsIterator.hasNext()) { productLidVidSet = new ArrayList<String>(); }
-    	else
-    	{
-    		SearchHit searchHit = this.searchHitsIterator.next();
-    		productLidVidSet = (ArrayList<String>) searchHit
-    				.getSourceAsMap()
-    				.get("product_lidvid");
-    	}
-    	return productLidVidSet.iterator();
+    	
+
+		SearchHit searchHit = this.searchHitsIterator.next();
+		
+		Object productLidVids = searchHit
+				.getSourceAsMap()
+				.get("product_lidvid");
+		
+		ArrayList<String> productLidVidSet = null;
+		
+		if (productLidVids instanceof String) {
+			productLidVidSet = new ArrayList<String>() {{ add((String)productLidVids); }};
+		}
+		else if (productLidVids instanceof List<?>) {
+			productLidVidSet = (ArrayList<String>)productLidVids;
+		}
+		else {
+			log.error("product_lidvid attribute in index registry-refs type is unexpected " + productLidVids.getClass().getName());
+		}
+		
+		
+		try {
+			products  = this.productsBO
+					.getProductsFromLIDVIDs(
+							productLidVidSet, 
+							this.collectionProductRelationships.getFields());
+			return products.iterator();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			CollectionProductIterator.log.error("Error while getting products from their lidvids referenced in registry-refs ", e);
+			return null;
+			
+		}
+    	
+    	
     }
 } 
 
