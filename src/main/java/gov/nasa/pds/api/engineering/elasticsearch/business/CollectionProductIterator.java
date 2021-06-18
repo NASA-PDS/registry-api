@@ -4,29 +4,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.Products;
 
 
+@Component
 public class CollectionProductIterator<T> implements Iterator<T> { 
     
 	private static final Logger log = LoggerFactory.getLogger(MyCollectionsApiController.class);
@@ -34,7 +28,6 @@ public class CollectionProductIterator<T> implements Iterator<T> {
 	
 	CollectionProductRelationships collectionProductRelationships;
 	Iterator<SearchHit> searchHitsIterator;
-	Iterator<String> productLidVidSetIterator;
 	int numberOfReturnedResults = 0;
 	ObjectMapper objectMapper;
 	
@@ -57,13 +50,13 @@ public class CollectionProductIterator<T> implements Iterator<T> {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         
         
-        // skip products before pagination start
+        // skip products of in first relevant batch before pagination start
         int i =0;
         int skippedRecords = this.collectionProductRelationships.getStart() % CollectionProductRefBusinessObject.PRODUCT_REFERENCES_BATCH_SIZE;
         log.debug("Skipping " + skippedRecords + "in first product batch");
         while (this.hasNext() 
         		&& (i++<skippedRecords)) {
-        	this.nextProductLidVid();
+        	this.next();
         }
       
     } 
@@ -75,20 +68,6 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     			&& (this.numberOfReturnedResults<this.collectionProductRelationships.getLimit());
     } 
      
-    
-    private String nextProductLidVid() {
-
-    	if (!this.productsCache.hasNext()) {
-    		if (this.searchHitsIterator.hasNext()) {
-    			this.productsCache = this.initProductIterator();
-    		}
-    		else { // should not be called since this.hasNext will be false
-    			throw new NoSuchElementException();
-    		}
-    	}
-    	
-    	return productLidVidSetIterator.next();
-    }
     
     
     
@@ -104,6 +83,8 @@ public class CollectionProductIterator<T> implements Iterator<T> {
     		}	
     	}
     	
+    	
+    	this.numberOfReturnedResults++ ;
     	
     	return (T)this.productsCache.next();
     	
