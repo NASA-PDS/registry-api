@@ -31,10 +31,10 @@ jobs:
 
     # Build
     - name: Build Harvest
-      run: docker run --rm --name registry-build -v /tmp/build:/build tdddblog/pds_maven_build:1.0 harvest master
+      run: docker run --rm --name registry-build -v /tmp/build:/build tdddblog/pds_maven_build:1.0 harvest main
 
     - name: Build Registry Manager
-      run: docker run --rm --name registry-build -v /tmp/build:/build tdddblog/pds_maven_build:1.0 manager master
+      run: docker run --rm --name registry-build -v /tmp/build:/build tdddblog/pds_maven_build:1.0 manager main
 
     - name: Build API
       run: docker run --rm --name registry-build -v /tmp/build:/build tdddblog/pds_maven_build:1.0 api ${GITHUB_REF##*/}
