@@ -58,7 +58,7 @@ Postman is a tool which enable to manage collection of HTTP API requests, share 
 
 1. Install postman desktop application https://www.postman.com/downloads/
 
-2. Download the latest request collection from [postman collection](https://raw.githubusercontent.com/NASA-PDS/registry-api-service/master/src/test/resources/postman_collection.json)
+2. Download the latest request collection from [postman collection](https://raw.githubusercontent.com/NASA-PDS/registry-api-service/main/src/test/resources/postman_collection.json)
 
 3. Then you import the collection file, on the top-left: Import > File
 
