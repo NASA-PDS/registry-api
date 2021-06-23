@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nasa.pds</groupId>
 	<artifactId>registry-api-service</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.3.0</version>
 	<name>gov.nasa.pds.api.registry-service</name>
 	<description>registry api service contributing to the PDS federated API</description>
 	<properties>
@@ -86,7 +86,8 @@
 		<url>https://github.com/NASA-PDS/registry-api-service/</url>
 		<connection>scm:git:https://github.com/NASA-PDS/registry-api-service.git</connection>
 		<developerConnection>scm:git:https://github.com:NASA-PDS/registry-api-service.git</developerConnection>
-	</scm>
+	  <tag>v0.3.0</tag>
+  </scm>
 
 
 	<dependencies>
@@ -218,7 +219,7 @@
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>api</artifactId>
-			<version>0.3.0-SNAPSHOT</version>
+			<version>0.3.0</version>
 		</dependency>
 
 		<dependency>
