@@ -836,28 +836,20 @@ components:
           type: object
           description: properties extracted from pds4 model, syntax for property name is <namespace>:<property>[/<namespace>:<property>]*
           additionalProperties:
-            $ref: '#/components/schemas/propertyValues'
+            $ref: '#/components/schemas/propertyArrayValues'
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
-    propertyValues:
-      type: object
-      required:
-        - values
-      properties:
-        values:
-          type: array 
-          items:
-            type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+    propertyArrayValues:
+      type: array 
+      items:
+        type: string
       xml:
-          prefix: 'pds_api'
-          namespace: 'http://pds.nasa.gov/api'
+        prefix: 'pds_api'
+        namespace: 'http://pds.nasa.gov/api'
     reference:
       type: object
       description: object describing a reference to a different product. TODO The properties should be defined by a standard (xlink, json-ld) to be chosen
