@@ -36,9 +36,10 @@ import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyValues;
+import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -72,7 +73,8 @@ public class MyProductsApiBareController {
     
     
   
-    protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
+    @SuppressWarnings("unchecked")
+	protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
     	
 
     		        	
@@ -104,7 +106,7 @@ public class MyProductsApiBareController {
     		for (SearchHit searchHit : searchResponse.getHits()) {
     	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
     	        
-    	        Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+    	        Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
     	        		sourceAsMap, 
     	        		fields, 
     	        		null
@@ -115,7 +117,7 @@ public class MyProductsApiBareController {
     	        if (!onlySummary) {
         	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
         	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-        	        product.setProperties(filteredMapJsonProperties);
+        	        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
         	        products.addDataItem(product);
     	        }
     	        

@@ -8,9 +8,10 @@ import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRela
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyValues;
+import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -124,7 +125,8 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		
 	
     
-    private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException {
+    @SuppressWarnings("unchecked")
+	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException {
   	
     	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     	MyCollectionsApiController.log.info("request collection lidvid, collections children: " + lidvid);
@@ -155,7 +157,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		        	
 		    		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
 				    		
-		    		Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+		    		Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
 		    				eProd.getProperties(), 
 		    				fields,
 		    				null);
@@ -163,7 +165,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		    		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 		
 		    		if (!onlySummary) {
-		        		product.setProperties(filteredMapJsonProperties);
+		        		product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 		        		
 		        		products.addDataItem(product);
 		    		}
@@ -216,7 +218,8 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
     
-    private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException
+    @SuppressWarnings("unchecked")
+	private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException
     {
     		
     	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
@@ -245,7 +248,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	    	for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
 	    	{
 		        Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
-		        Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+		        Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
 		        		sourceAsMap, 
 		        		fields,
 		        		new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
@@ -256,7 +259,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 		        if (!summaryOnly) {
 	    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	    	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-	    	        product.setProperties(filteredMapJsonProperties);
+	    	        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 	    	        products.addDataItem(product);
 		        }
 	    	}

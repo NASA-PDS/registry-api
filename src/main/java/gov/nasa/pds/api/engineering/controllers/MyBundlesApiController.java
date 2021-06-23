@@ -6,9 +6,10 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchReq
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyValues;
+import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -80,7 +81,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     		return this.getBundlesCollections(lidvid, start, limit, fields, sort, onlySummary);
     		           		    }
 
-    private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
+    @SuppressWarnings("unchecked")
+	private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
     {
 		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     	MyBundlesApiController.log.info("request bundle lidvid, collections children: " + lidvid);
@@ -136,7 +138,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	    	        		
 	    	        		MyBundlesApiController.log.info("get response " + getCollectionResponse.toString());
 	    	        		Map<String, Object> sourceAsMap = getCollectionResponse.getSourceAsMap();
-	    	        		Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
+	    	        		Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
 	
 	    	        		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 	
@@ -145,7 +147,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	    	     	        if (!onlySummary) {
 	    	     	        	EntityProduct entityCollection = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	    	     	        	Product collection = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
-	    	     	        	collection.setProperties(filteredMapJsonProperties);
+	    	     	        	collection.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 	    	         	        products.addDataItem(collection);
 	    	     	        }
 	    	        		
@@ -292,7 +294,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			if (getProductResponse.isExists())
         			{
         				Map<String, Object> sourceAsMap = getProductResponse.getSourceAsMap();
-        				Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
+        				Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
 
         				uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 
@@ -300,7 +302,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         				{
         					EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
         					Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-        					product.setProperties(filteredMapJsonProperties);
+        					product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
         					products.addDataItem(product);
         				}
         			}

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.model;
+package gov.nasa.pds.api.model.xml;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class ProductWithXmlLabel extends Product {
 		    this.labelXml = labelXml;
 		    return this;
 	 }
-
+	 
 	 /**
 	   * Get labelXml
 	   * @return labelXml
@@ -36,6 +36,8 @@ public class ProductWithXmlLabel extends Product {
 	  public void setLabelXml(String labelXml) {
 	    this.labelXml = labelXml;
 	  }
+	  
+	  
 
 
 }

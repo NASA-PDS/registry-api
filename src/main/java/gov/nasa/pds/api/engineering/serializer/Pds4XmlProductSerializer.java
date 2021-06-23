@@ -1,7 +1,7 @@
 package gov.nasa.pds.api.engineering.serializer;
 
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Metadata;
 import java.io.IOException;
 import java.io.InputStream;

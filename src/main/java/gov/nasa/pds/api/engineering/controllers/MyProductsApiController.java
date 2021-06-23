@@ -35,9 +35,10 @@ import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyValues;
+import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 import io.swagger.annotations.ApiParam;
@@ -104,6 +105,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private Products getContainingBundle(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
 	{
@@ -144,7 +146,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	    		for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
 	    		{
 	    			Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
-	    			Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+	    			Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
 	    					sourceAsMap, 
 	    					fields, 
 	    					new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
@@ -156,7 +158,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	    			{
 	    				EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	    				Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-	    				product.setProperties(filteredMapJsonProperties);
+	    				product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 	    				products.addDataItem(product);
 	    			}
 	    		}
@@ -210,6 +212,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	return response.getHits();
 	}
 
+	@SuppressWarnings("unchecked")
 	private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
 	{	
@@ -234,7 +237,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	    	{
 	    		GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), (String)hits.getAt(i).getSourceAsMap().get("collection_lidvid"));
 		        Map<String, Object> sourceAsMap = this.esRegistryConnection.getRestHighLevelClient().get(request, RequestOptions.DEFAULT).getSourceAsMap();
-		        Map<String, PropertyValues> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
+		        Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
 		        		sourceAsMap, 
 		        		fields,
 		        		new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
@@ -245,7 +248,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 		        if (!summaryOnly) {
 	    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	    	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-	    	        product.setProperties(filteredMapJsonProperties);
+	    	        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 	    	        products.addDataItem(product);
 		        }
 	    	}

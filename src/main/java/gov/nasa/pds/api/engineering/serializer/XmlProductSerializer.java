@@ -1,29 +1,22 @@
 package gov.nasa.pds.api.engineering.serializer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
-import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
-import gov.nasa.pds.api.model.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
+import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
+import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Product;
 
 public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
@@ -59,6 +52,13 @@ public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 	protected void writeToResult(Object o, HttpHeaders headers, Result result) throws Exception {
 		
 		log.info(ClassUtils.getUserClass(o).getName());
+		
+		if (Product.class.isAssignableFrom(o.getClass())) {
+			//HashMap<String, XMLMashallableProperyValue> props = (HashMap<String, XMLMashallableProperyValue>)(HashMap<String, ?>)((Product)o).getProperties();
+			for (Entry<String, ?> e:  ((Product)o).getProperties().entrySet()) {
+				XmlProductSerializer.log.info("Class in hashmap value is" + e.getValue().getClass().getCanonicalName());
+			}
+		}
 		
 		if (ProductWithXmlLabel.class.isAssignableFrom(o.getClass())) {
 			o = ((ProductWithXmlLabel)o).labelXml(null);
