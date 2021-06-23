@@ -155,7 +155,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 				  if (eProd != null) {
 		        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
 		        	
-		    		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd);
+		    		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd, this.getBaseURL());
 				    		
 		    		Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
 		    				eProd.getProperties(), 
@@ -258,8 +258,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 	
 		        if (!summaryOnly) {
 	    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-	    	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-	    	        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
+	    	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
+					product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
 	    	        products.addDataItem(product);
 		        }
 	    	}

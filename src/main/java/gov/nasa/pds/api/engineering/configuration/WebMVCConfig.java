@@ -60,14 +60,26 @@ public class WebMVCConfig implements WebMvcConfigurer {
 	   public void configurePathMatch(PathMatchConfigurer configurer) {
 		 // this is important to avoid that parameters (e.g lidvid) are truncated after .
 	       configurer.setUseSuffixPatternMatch(false);
+	      
 	   }
 	
 	
   /**
    * Setup a simple strategy: use all the defaults and return XML by default when not sure. 
  */
-  public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+  @SuppressWarnings("deprecation")
+public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
     configurer.defaultContentType(MediaType.APPLICATION_JSON);
+    
+    /*
+    // For path content negociation , .json. .xml ...
+    // that does not work on its own, I guess I also need to update the swagger definition
+    configurer.favorParameter(false).
+    ignoreAcceptHeader(false).
+    defaultContentType(MediaType.APPLICATION_JSON).
+    mediaType("xml", MediaType.APPLICATION_XML).
+    mediaType("json", MediaType.APPLICATION_JSON);
+    */
     
     
   }

@@ -1,6 +1,8 @@
 package gov.nasa.pds.api.engineering.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +25,7 @@ import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -54,6 +57,12 @@ public class MyProductsApiBareController {
 
 	protected Map<String, String> presetCriteria = new HashMap<String, String>();
 	
+	@Value("${server.contextPath}")
+	protected String contextPath;
+	
+	@Autowired
+	protected HttpServletRequest context;
+	
 	// TODO remove and replace by BusinessObjects 
 	@Autowired
 	ElasticSearchRegistryConnection esRegistryConnection;
@@ -64,14 +73,46 @@ public class MyProductsApiBareController {
 	@Autowired
 	ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder;
 	
-	
-    public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest request) {
+
+    public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {
         this.objectMapper = objectMapper;
-        this.request = request;
+        this.request = context;
+        
+    	
+    	
          
     }
     
+
     
+    private boolean proxyRunsOnDefaultPort() {
+    	return (((this.context.getScheme() == "https")  && (this.context.getServerPort() == 443)) 
+    			|| ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));
+    }
+    
+    
+
+    protected URL getBaseURL() {
+    	try {
+    		MyProductsApiBareController.log.debug("contextPath is: " + this.contextPath);
+    		
+    		URL baseURL;
+    		if (this.proxyRunsOnDefaultPort()) {
+    			baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.contextPath);
+    		} 
+    		else {
+    			baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.context.getServerPort(), this.contextPath);
+    		}
+	      	
+	      	MyProductsApiBareController.log.info("baseUrl is " + baseURL.toString());
+	      	return baseURL;
+	      	
+
+    	} catch (MalformedURLException e) {
+    		log.error("Server URL was not retrieved");
+    		return null;
+    	}
+    }
   
     @SuppressWarnings("unchecked")
 	protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
@@ -88,7 +129,6 @@ public class MyProductsApiBareController {
     	HashSet<String> uniqueProperties = new HashSet<String>();
     	
       	Summary summary = new Summary();
-    	
 
       	summary.setQ((q != null)?q:"" );
     	summary.setStart(start);
@@ -115,9 +155,15 @@ public class MyProductsApiBareController {
     	        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
 
     	        if (!onlySummary) {
+    	        	
+    	        	
         	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-        	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-        	        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
+        	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(
+        	        		entityProduct, 
+        	        		this.getBaseURL());
+					product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
         	        products.addDataItem(product);
     	        }
     	        
@@ -179,7 +225,7 @@ public class MyProductsApiBareController {
             	
             	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
             	
-               	ProductWithXmlLabel product = this.productBO.getProductWithXml(lidvid);
+               	ProductWithXmlLabel product = this.productBO.getProductWithXml(lidvid, this.getBaseURL());
             	
                	if (product != null) {	
                    	

@@ -146,7 +146,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	    	     	        
 	    	     	        if (!onlySummary) {
 	    	     	        	EntityProduct entityCollection = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-	    	     	        	Product collection = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection);
+
+	    	     	        	Product collection = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection, this.getBaseURL());
 	    	     	        	collection.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 	    	         	        products.addDataItem(collection);
 	    	     	        }
@@ -301,8 +302,10 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         				if (!onlySummary)
         				{
         					EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-        					Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
-        					product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
+        					Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
+							product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
         					products.addDataItem(product);
         				}
         			}

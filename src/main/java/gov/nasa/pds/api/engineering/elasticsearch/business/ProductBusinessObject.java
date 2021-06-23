@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.engineering.elasticsearch.business;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -178,13 +179,15 @@ public class ProductBusinessObject {
 	    }
 	    
 	   
-	   public Product getProduct(String lidvid) throws IOException {
-		   return this.getProduct(lidvid, null);
+	   public Product getProduct(String lidvid, URL baseURL) throws IOException {
+		   return this.getProduct(lidvid, baseURL, null);
 	   }
 	   
 	   
+
 	   @SuppressWarnings("unchecked")
-	public Product getProduct(String lidvid, @Nullable List<String> fields) throws IOException {
+	   public Product getProduct(String lidvid, URL baseURL, @Nullable List<String> fields) throws IOException {
+
 		   GetRequest getProductRequest = this.searchRequestBuilder.getGetProductRequest(lidvid, false);
 		   
 		   GetResponse getResponse = null;
@@ -207,7 +210,7 @@ public class ProductBusinessObject {
 	       		
 	       		entityProduct = this.objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 	       		
-	       		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);
+	       		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);
 	       	
 	       		product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 	       		
@@ -220,13 +223,13 @@ public class ProductBusinessObject {
 	   }
 	   
 	   
-	   public ProductWithXmlLabel getProductWithXml(String lidvid)  throws IOException {
-		   return this.getProductWithXml(lidvid, null);
+	   public ProductWithXmlLabel getProductWithXml(String lidvid, URL baseURL)  throws IOException {
+		   return this.getProductWithXml(lidvid, baseURL, null);
 	   }
 	   
 	   // TODO make the method more generic by having the name of the class we want to cast the object into instead of a boolean, the code will be more neat also
 	   @SuppressWarnings("unchecked")
-	public ProductWithXmlLabel getProductWithXml(String lidvid, @Nullable List<String> field) throws IOException {
+	   public ProductWithXmlLabel getProductWithXml(String lidvid, URL baseURL, @Nullable List<String> field) throws IOException {
 		   
 		   GetRequest getProductRequest = this.searchRequestBuilder.getGetProductRequest(lidvid, true);
 		   
@@ -257,7 +260,8 @@ public class ProductBusinessObject {
 		       		
 		       		entityProduct = this.objectMapper.convertValue(sourceAsMap, EntitytProductWithBlob.class);
 		       		
-		       		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct);    		
+
+		       		ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);    		
 		       		product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 		       	
 		       		return product;

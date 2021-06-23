@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.engineering.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -8,9 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class HomeController {
+	
+	@Value("${server.contextPath}")
+	private String contextPath;
+	
     @RequestMapping(value = "/")
     public String index() {
-        System.out.println("swagger-ui.html");
-        return "redirect:swagger-ui.html";
+
+    	String contextPath = this.contextPath.endsWith("/")?this.contextPath:this.contextPath+"/";
+
+        System.out.println(contextPath+"swagger-ui.html");
+        return "redirect:"+contextPath+"swagger-ui.html";
     }
 }
