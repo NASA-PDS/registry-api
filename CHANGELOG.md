@@ -1,5 +1,14 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api-service/tree/«unknown») (2021-06-23)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.0-SNAPSHOT...«unknown»)
+
+**Requirements:**
+
+- As a user, I want the end-point /api to redirect to the API documentation [\#39](https://github.com/NASA-PDS/registry-api-service/issues/39)
+- As a SA, I want to deploy the API behind a proxy  [\#10](https://github.com/NASA-PDS/registry-api-service/issues/10)
+
 ## [v0.3.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.0-SNAPSHOT) (2021-06-23)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.2.0...v0.3.0-SNAPSHOT)
