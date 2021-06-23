@@ -266,7 +266,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         		for (String collectionLid : collections )
         		{
         			
-        			collectionLidVid = productBO.getLatestLidVidFromLid(lidvid) + "::P1";
+        			collectionLidVid = productBO.getLatestLidVidFromLid(collectionLid) + "::P1";
 
         			// TODO change the request to get collections from their lidvid and not from the ID which is not right, we are missing packets 
         			MyBundlesApiController.log.info("get collection with lidvid " + collectionLidVid);
