@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLContext;
 
+import java.util.Set;
 import java.util.ArrayList;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -18,22 +19,27 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
+import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistryConnection {
 	
+    // key for getting the remotes from cross cluster config
+	public static String CLUSTER_REMOTE_KEY = "cluster.remote";
+
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistryConnectionImpl.class);
 	
 	private RestHighLevelClient restHighLevelClient;
 	private String registryIndex;
 	private String registryRefIndex;
 	private int timeOutSeconds;
+	private ArrayList<String> crossClusterNodes;
 	
-	
-
 	public ElasticSearchRegistryConnectionImpl(List<String> hosts, 
 			String registryIndex,
 			String registryRefIndex,
@@ -100,14 +106,12 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		}
 		
 		
-		
-		
 		this.restHighLevelClient = new RestHighLevelClient(builder);
     	
-    	this.registryIndex = registryIndex;
-    	this.registryRefIndex = registryRefIndex;
+		this.crossClusterNodes = checkCCSConfig();
+		this.registryIndex = createCCSIndexString(registryIndex);
+		this.registryRefIndex = createCCSIndexString(registryRefIndex);
     	this.timeOutSeconds = timeOutSeconds;
-   
 		
 	}
 
@@ -142,4 +146,41 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	public void setTimeOutSeconds(int timeOutSeconds) {
 		this.timeOutSeconds = timeOutSeconds;
 	}
+	
+	private ArrayList<String> checkCCSConfig() {
+		ArrayList<String> result = null;
+		
+		try {
+			ClusterGetSettingsRequest request = new ClusterGetSettingsRequest();
+			ClusterGetSettingsResponse response = restHighLevelClient.cluster().getSettings(request, RequestOptions.DEFAULT); 
+		
+			Set<String> clusters = response.getPersistentSettings().getGroups(CLUSTER_REMOTE_KEY).keySet();
+			if (clusters.size() > 0) {
+				result = new ArrayList<String>(clusters);
+				ElasticSearchRegistryConnectionImpl.log.info("Cross cluster search is active: (" + result.toString() + ")");
+			} else {
+				ElasticSearchRegistryConnectionImpl.log.info("Cross cluster search is inactive");
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		return result;
+	}
+
+	// if CCS configuration has been detected, use nodes in consolidated index names, otherwise just return the index
+    private String createCCSIndexString(String indexName) {
+        String result = indexName;
+    	if (this.crossClusterNodes != null) {
+    		// start with the local index
+    		StringBuilder indexBuilder = new StringBuilder(indexName);
+    		for(String cluster : this.crossClusterNodes) {
+    			indexBuilder.append(",");
+    			indexBuilder.append(cluster + ":" + indexName);
+    		}
+    		result = indexBuilder.toString();
+    	}
+    	
+    	return result;
+    }
 }
