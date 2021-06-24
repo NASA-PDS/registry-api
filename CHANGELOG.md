@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.3.1](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.1) (2021-06-24)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.0...v0.3.1)
+
+**Requirements:**
+
+- As a user, I want to have a complete default fields \(for now at least\) [\#47](https://github.com/NASA-PDS/registry-api-service/issues/47)
+
 ## [v0.3.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.0) (2021-06-23)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.0-SNAPSHOT...v0.3.0)
