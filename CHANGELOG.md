@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.4.0-SNAPSHOT) (2021-06-24)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.1...v0.4.0-SNAPSHOT)
+
 ## [v0.3.1](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.1) (2021-06-24)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.0...v0.3.1)
@@ -10,11 +14,7 @@
 
 ## [v0.3.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.0) (2021-06-23)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.0-SNAPSHOT...v0.3.0)
-
-## [v0.3.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.3.0-SNAPSHOT) (2021-06-23)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.2.0...v0.3.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.2.0...v0.3.0)
 
 **Requirements:**
 
@@ -50,19 +50,12 @@
 
 ## [v0.1.0](https://github.com/NASA-PDS/registry-api-service/tree/v0.1.0) (2021-04-07)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.1-SNAPSHOT...v0.1.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.0.2...v0.1.0)
 
 **Improvements:**
 
 - Implement a lid resolver [\#4](https://github.com/NASA-PDS/registry-api-service/issues/4)
 - implement the start/limit efficiently [\#3](https://github.com/NASA-PDS/registry-api-service/issues/3)
-
-## [v0.1-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.1-SNAPSHOT) (2021-03-17)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.0.2...v0.1-SNAPSHOT)
-
-**Improvements:**
-
 - Manage relationships bundle-collection-product in API [\#2](https://github.com/NASA-PDS/registry-api-service/issues/2)
 
 ## [v0.0.2](https://github.com/NASA-PDS/registry-api-service/tree/v0.0.2) (2021-02-03)
