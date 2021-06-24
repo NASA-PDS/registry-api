@@ -1,7 +1,9 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +17,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+
+import ch.qos.logback.core.joran.util.beans.BeanDescription;
+
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -161,6 +169,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	}
 	
 	
+	
 	public SearchRequest getSearchProductsRequest(
 			String queryString, 
 			List<String> fields, 
@@ -181,9 +190,17 @@ public class ElasticSearchRegistrySearchRequestBuilder {
         	boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue() ));
         }
         
-        
+    
+        String[] includedFields = null;
 		if (fields != null) {
 			boolQuery.must(this.parseFields(fields));
+			HashSet<String> esFields =  new HashSet<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES)); 
+			for (int i=0 ; i<fields.size() ; i++) {
+				String includedField = ElasticSearchUtil.jsonPropertyToElasticProperty((String)fields.get(i));
+				ElasticSearchRegistrySearchRequestBuilder.log.info("add property " + includedField + " to search");
+	    		esFields.add(includedField);
+	    	}
+			includedFields = esFields.toArray(new String[esFields.size()]);
 		}
 		
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -191,17 +208,9 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	searchSourceBuilder.from(start); 
     	searchSourceBuilder.size(limit); 
     	
-    	String[] esFields = null;
-    	if (fields != null) {
-	    	esFields = new String[fields.size()]; 
-	    	for (int i=0 ; i<fields.size() ; i++) {
-	    		esFields[i] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
-	    	}
-    	} 
-    	
     	FetchSourceContext fetchSourceContext = new FetchSourceContext(
     			true, 
-    			esFields, 
+    			includedFields, 
     			new String[] {  EntitytProductWithBlob.BLOB_PROPERTY });
      	
     	searchSourceBuilder.fetchSource(fetchSourceContext);

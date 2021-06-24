@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nasa.pds</groupId>
 	<artifactId>registry-api-service</artifactId>
-	<version>0.3.0</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<name>gov.nasa.pds.api.registry-service</name>
 	<description>registry api service contributing to the PDS federated API</description>
 	<properties>
@@ -219,7 +219,7 @@
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>api</artifactId>
-			<version>0.3.0</version>
+			<version>0.4.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

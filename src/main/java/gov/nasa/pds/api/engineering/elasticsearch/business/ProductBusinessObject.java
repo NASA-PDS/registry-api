@@ -121,14 +121,14 @@ public class ProductBusinessObject {
 	   
 	   /**
 	 * @param sourceAsMap source map coming from elasticSearch
-	 * @param included_fields
-	 * @param excluded_fields is ignored is included_fields is not null and not empty
+	 * @param included_fields, in API syntax, with .
+	 * @param excluded_fields is ignored is included_fields is not null and not empty, in API syntax
 	 * @return
 	 */
 	public static Map<String, XMLMashallableProperyValue> getFilteredProperties(
-			   Map<String, Object> sourceAsMap, 
-			   List<String> included_fields, 
-			   List<String> excluded_fields){
+			   Map<String, Object> sourceAsMap, // in ES syntax 
+			   List<String> included_fields,    // in API syntax
+			   List<String> excluded_fields){   // in API syntax
 	    	
 	        Map<String, XMLMashallableProperyValue> filteredMapJsonProperties  = new HashMap<String, XMLMashallableProperyValue>();
 	        	        
@@ -152,13 +152,15 @@ public class ProductBusinessObject {
 	        }
 	        else {  	
 	        	
+	        	String esField;
 	        	for (String field : included_fields) {
 	        		
-	        			        		
-	        		if (sourceAsMap.containsKey(ElasticSearchUtil.jsonPropertyToElasticProperty(field))) {
+	        		esField = ElasticSearchUtil.jsonPropertyToElasticProperty(field);
+	        	
+	        		if (sourceAsMap.containsKey(esField)) {
 	        	   		filteredMapJsonProperties.put(
 	        	   				field, 
-	        	   				ProductBusinessObject.object2PropertyValue(sourceAsMap.get(field))
+	        	   				ProductBusinessObject.object2PropertyValue(sourceAsMap.get(esField))
 	        	   				);
 	        		}
 	        		else {

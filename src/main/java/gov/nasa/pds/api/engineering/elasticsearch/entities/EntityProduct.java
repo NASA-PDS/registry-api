@@ -30,7 +30,22 @@ import org.xml.sax.SAXException;
 
 public class EntityProduct {
 	private static final Logger log = LoggerFactory.getLogger(EntityProduct.class);
-		   
+	public static final String[] JSON_PROPERTIES = new String[] {
+			"lidvid", 
+			"title",
+			"product_class",
+			"pds:Time_Coordinates/pds:start_date_time",
+			"pds:Time_Coordinates/pds:stop_date_time",
+			"pds:Modification_Detail/pds:modification_date",
+			"pds:File/pds:creation_date_time",
+			"ref_lid_instrument_host",
+			"ref_lid_instrument",
+			"ref_lid_investigation",
+			"ref_lid_target",
+			"vid",
+			"ops:Label_File_Info/ops:file_ref"
+	};
+	
 	@JsonProperty("lidvid")
 	private String lidvid;
 	
