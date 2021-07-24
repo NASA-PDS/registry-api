@@ -1,6 +1,14 @@
 # Changelog
 
-## [v0.4.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.4.0-SNAPSHOT) (2021-07-03)
+## [«unknown»](https://github.com/NASA-PDS/registry-api-service/tree/«unknown») (2021-07-24)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.4.0-SNAPSHOT...«unknown»)
+
+**Defects:**
+
+- blob is returned in product results if fields to return are not specified [\#51](https://github.com/NASA-PDS/registry-api-service/issues/51)
+
+## [v0.4.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api-service/tree/v0.4.0-SNAPSHOT) (2021-07-08)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api-service/compare/v0.3.1...v0.4.0-SNAPSHOT)
 
