@@ -2,24 +2,15 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.BundlesApi;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
-import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -53,8 +44,9 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 	
     }
 
-    public ResponseEntity<Product> bundleByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid
-) {
+    @Override
+    public ResponseEntity<Product> bundleByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid)
+    {
     	return this.getProductResponseEntity(lidvid);
     }
 
@@ -81,100 +73,54 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     		return this.getBundlesCollections(lidvid, start, limit, fields, sort, onlySummary);
     		           		    }
 
-    @SuppressWarnings("unchecked")
-	private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
+ 	private List<String> getRefLidCollection (String lidvid) throws IOException
+    {
+ 		List<String> reflids = new ArrayList<String>();
+
+ 		for (final Map<String, Object> bundle : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
+				ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromLidvid(lidvid, "ref_lid_collection",
+						this.esRegistryConnection.getRegistryIndex())))
+ 		{
+ 			if (bundle.get("ref_lid_collection") instanceof String)
+ 			{ reflids.add(this.productBO.getLatestLidVidFromLid(bundle.get("ref_lid_collection").toString())); }
+ 			else
+ 			{
+ 				@SuppressWarnings("unchecked")
+ 				List<String> clids = (List<String>)bundle.get("ref_lid_collection");
+ 				for (String clid : clids)
+ 				{ reflids.add(this.productBO.getLatestLidVidFromLid(clid)); }
+ 			}
+ 		}
+ 		return reflids;
+    }
+    
+    private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
     {
 		if (!lidvid.contains("::") && !lidvid.endsWith(":")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     	MyBundlesApiController.log.info("request bundle lidvid, collections children: " + lidvid);
-       	
-    	GetRequest getBundleRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(lidvid);
-        GetResponse getBundleResponse = null;
-        
-        RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
-         
-    	try {
-			getBundleResponse = restHighLevelClient.get(getBundleRequest, 
-					RequestOptions.DEFAULT);
-			
-	    	Products products = new Products();
-	    	
-	    	HashSet<String> uniqueProperties = new HashSet<String>();
-	    	
-	      	Summary summary = new Summary();
-	    	
-	    	summary.setStart(start);
-	    	summary.setLimit(limit);
-	    	
-	    	if (sort == null) {
-	    		sort = Arrays.asList();
-	    	}	
-	    	summary.setSort(sort);
-	    	
-	    	products.setSummary(summary);
-	    	
-	    	if (getBundleResponse.isExists()) {
-	    		MyBundlesApiController.log.info("get response " + getBundleResponse.toString());
-        		@SuppressWarnings("unchecked")
-				List<String> collections = (List<String>) getBundleResponse.getSourceAsMap().get("ref_lid_collection");
-        		String collectionLidVid;
-        		int i=0;
-        		for (String collectionLid : collections ) {
-        			if ((i>=start) && (i<start+limit)) {
-	        			collectionLidVid = this.productBO.getLatestLidVidFromLid(collectionLid);
-	        			
-	        			//this.productBO.getProduct(collectionLidVid);
-	        			GetRequest getCollectionRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(collectionLidVid);
-	        			
-	        			//GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), 
-	        			//		collectionLidVid);
-	        			
-	        			
-	        	        GetResponse getCollectionResponse = null;
-	        	        
-	        	        getCollectionResponse = restHighLevelClient.get(getCollectionRequest, 
-	                			RequestOptions.DEFAULT);
-	                	
-	    	        	if (getCollectionResponse.isExists()) {
-	    	        		
-	    	        		MyBundlesApiController.log.info("get response " + getCollectionResponse.toString());
-	    	        		Map<String, Object> sourceAsMap = getCollectionResponse.getSourceAsMap();
-	    	        		Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
-	
-	    	        		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-	
-	    	        		    	        	    
-	    	     	        
-	    	     	        if (!onlySummary) {
-	    	     	        	EntityProduct entityCollection = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 
-	    	     	        	Product collection = ElasticSearchUtil.ESentityProductToAPIProduct(entityCollection, this.getBaseURL());
-	    	     	        	collection.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-	    	         	        products.addDataItem(collection);
-	    	     	        }
-	    	        		
-	    	        	
-	    	        	}
-	    	        	else {
-	    	        		MyBundlesApiController.log.warn("Couldn't get collection child " + collectionLidVid + " of bundle " + lidvid + " in elasticSearch");
-	    	        	}
-        			}
-        			i+=1; 
-        			
-        		}
-        	
-	    	}
-	    	
-	    	
-	    	summary.setProperties(new ArrayList<String>(uniqueProperties));
-	    	
-	    	return products;	
-			
-			
-		} catch (IOException e) {
-			  MyBundlesApiController.log.error("Couldn't get bundle " + lidvid + " from elasticSearch", e);
-              throw(e);
-		}
-    	
+    	HashSet<String> uniqueProperties = new HashSet<String>();
+    	List<String> clidvids = this.getRefLidCollection(lidvid);
+    	Products products = new Products();
+      	Summary summary = new Summary();
+
+    	if (sort == null) { sort = Arrays.asList(); }
+
+    	summary.setStart(start);
+    	summary.setLimit(limit);
+    	summary.setSort(sort);
+    	products.setSummary(summary);
+
+    	if (0 < clidvids.size())
+    	{
+    		this.fillProductsFromLidvids(products, uniqueProperties,
+    				clidvids.subList(start, clidvids.size() < start+limit ? clidvids.size(): start+limit),
+    				fields, onlySummary);
+    	}
+    	else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + lidvid);
+
+    	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	return products;	
     }
 
     private ResponseEntity<Products> getBundlesCollections(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
@@ -231,18 +177,17 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
 
-    @SuppressWarnings("unchecked")
 	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
     {
-    	
     	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
-    	
     	MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
-    	GetRequest getBundleRequest = new ElasticSearchRegistrySearchRequestBuilder().getGetProductRequest(lidvid);
+
+    	int iteration=0,wsize=0;
     	HashSet<String> uniqueProperties = new HashSet<String>();
-    	List<String> productLidvids = new ArrayList<String>();
+    	List<String> clidvids = this.getRefLidCollection(lidvid);
+    	List<String> plidvids = new ArrayList<String>();   
+    	List<String> wlidvids = new ArrayList<String>();
     	Products products = new Products();
-        RestHighLevelClient restHighLevelClient = this.esRegistryConnection.getRestHighLevelClient();
       	Summary summary = new Summary();
 
     	if (sort == null) { sort = Arrays.asList(); }
@@ -252,75 +197,43 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     	summary.setSort(sort);
     	products.setSummary(summary);
 
-    	try
+    	if (0 < clidvids.size())
     	{
-    		GetResponse getBundleResponse = restHighLevelClient.get(getBundleRequest, RequestOptions.DEFAULT);
-    		
-    		
-	    	if (getBundleResponse.isExists())
-	    	{
-	    		MyBundlesApiController.log.info("get response " + getBundleResponse.toString());
-				List<String> collections = (List<String>) getBundleResponse.getSourceAsMap().get("ref_lid_collection");
-        		String collectionLidVid;
+    		for (final Map<String,Object> hit : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
+    				ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", clidvids, "product_lidvid",
+    						this.esRegistryConnection.getRegistryRefIndex())))
+    		{
+    			wlidvids.clear();
+    			wsize = 0;
 
-        		for (String collectionLid : collections )
-        		{
-        			
-        			collectionLidVid = productBO.getLatestLidVidFromLid(collectionLid) + "::P1";
+    			if (hit.get("product_lidvid") instanceof String)
+    			{ wlidvids.add(this.productBO.getLatestLidVidFromLid(hit.get("product_lidvid").toString())); }
+    			else
+    			{
+    				@SuppressWarnings("unchecked")
+    				List<String> plids = (List<String>)hit.get("product_lidvid");
 
-        			// TODO change the request to get collections from their lidvid and not from the ID which is not right, we are missing packets 
-        			MyBundlesApiController.log.info("get collection with lidvid " + collectionLidVid);
-        			GetRequest getCollectionRequest = new GetRequest(this.esRegistryConnection.getRegistryRefIndex(), collectionLidVid);
-        			GetResponse getCollectionResponse = restHighLevelClient.get(getCollectionRequest, RequestOptions.DEFAULT);
+    				if (start <= iteration || start < iteration+plids.size()) { wlidvids.addAll(plids); }
+    				else { wsize = plids.size(); } 
+    			}
 
-        			if (getCollectionResponse.isExists())
-        			{
-        				MyBundlesApiController.log.info("get ref response " + getCollectionResponse.toString());
-        				Object temp = getCollectionResponse.getSourceAsMap().get("product_lidvid");
-        				if (temp instanceof String) { productLidvids.add((String)temp); }
-        				else { productLidvids.addAll((List<String>) temp); }
-        			}
-        			else
-        			{
-        				MyBundlesApiController.log.warn("Couldn't get collection child " + collectionLidVid + " of bundle " + lidvid + " in elasticSearch");
-        			}
-        		}
-        		MyBundlesApiController.log.info("total number of product lidvids " + Integer.toString(productLidvids.size()));
-        		for (int i=start ;  i < start+limit && i < productLidvids.size() ;  i++)
-        		{
-        			MyBundlesApiController.log.info("fetch product from lidvid " + productLidvids.get(i));
-        			GetRequest getProductRequest = new GetRequest(this.esRegistryConnection.getRegistryIndex(), productLidvids.get(i));
-        			GetResponse getProductResponse = restHighLevelClient.get(getProductRequest, RequestOptions.DEFAULT);
-        			
-        			if (getProductResponse.isExists())
-        			{
-        				Map<String, Object> sourceAsMap = getProductResponse.getSourceAsMap();
-        				Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(sourceAsMap, fields, null);
+    			if (start <= iteration || start < iteration+wlidvids.size())
+    			{ plidvids.addAll(wlidvids.subList(start <= iteration ? 0 : start-iteration, wlidvids.size())); }
 
-        				uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+    			if (limit <= plidvids.size()) { break; }
+    			else { iteration = iteration + wlidvids.size() + wsize; }
+    		}
+    	}
+    	else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + lidvid);
+    	
+    	MyBundlesApiController.log.info("found " + Integer.toString(plidvids.size()) + " products in this bundle");
 
-        				if (!onlySummary)
-        				{
-        					EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-
-        					Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
-							product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-
-        					products.addDataItem(product);
-        				}
-        			}
-        			else
-        			{
-        				MyBundlesApiController.log.warn("Couldn't get product child " + productLidvids.get(i) + " of bundle " + lidvid + " in elasticSearch");
-        			}
-        		}
-	    	}
-		}
-    	catch (IOException e)
+    	if (0 < plidvids.size())
     	{
-    		MyBundlesApiController.log.error("Couldn't get bundle " + lidvid + " from elasticSearch", e);
-    		throw(e);
-		}
+    		this.fillProductsFromLidvids(products, uniqueProperties,
+    				plidvids.subList(0, plidvids.size() < limit ? plidvids.size() : limit), fields, onlySummary);
+    	}
+    	else MyBundlesApiController.log.warn ("Did not find any products for bundle lidvid: " + lidvid);
 
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
     	return products;	

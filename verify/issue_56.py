@@ -28,6 +28,6 @@ for url,expectation,length in TEST_N_CRITERIA:
         this_length = len (result.json()['data']) if 'data' in result.json() else 0
         if this_length == length:
             print ('success', result.status_code, url)
-        else: print ('failed', length, '!=', this_length)
+        else: print ('failed', length, '!=', this_length, url)
     else: print ('failed', expectation, '!=', result.status_code, url)
     pass
