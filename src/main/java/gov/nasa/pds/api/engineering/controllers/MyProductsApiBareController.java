@@ -113,9 +113,9 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     }
 
     @SuppressWarnings("unchecked")
-	protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
+	protected Products getProducts(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
     		        	
-    	SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(q, fields, start, limit, this.presetCriteria);
+    	SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(q, keyword, fields, start, limit, this.presetCriteria);
     	
     	SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
@@ -178,7 +178,7 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
 
     
     
-    protected ResponseEntity<Products> getProductsResponseEntity(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
+    protected ResponseEntity<Products> getProductsResponseEntity(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
         String accept = this.request.getHeader("Accept");
         log.info("accept value is " + accept);
         if ((accept != null 
@@ -191,7 +191,7 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
         	try {
 	        	
         	
-        		Products products = this.getProducts(q, start, limit, fields, sort, onlySummary);
+        		Products products = this.getProducts(q, keyword, start, limit, fields, sort, onlySummary);
 	        	
 	        	return new ResponseEntity<Products>(products, HttpStatus.OK);
 	        	
