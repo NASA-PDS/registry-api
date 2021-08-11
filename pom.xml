@@ -17,7 +17,6 @@
 		<!-- >version>1.5.9.RELEASE</version -->
 	</parent>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
