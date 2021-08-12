@@ -8,7 +8,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: 0.3.dev
+  version: pds-api-68
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -737,6 +737,18 @@ components:
       properties:
         q:
           type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+        hits:
+          description: total number of possible responnses to the request
+          type: integer
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+        took:
+          description: Number of milliseconds it "took" to do request
+          type: integer
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
