@@ -741,7 +741,7 @@ components:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
         hits:
-          description: total number of possible responnses to the request
+          description: total number of possible responnses to the request with -1 indicating an excessive amount of resource required to compute it
           type: integer
           xml:
             prefix: 'pds_api'
