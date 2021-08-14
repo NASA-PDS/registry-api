@@ -106,7 +106,7 @@ paths:
           description: Successful request
           content:
             # Codegen doesn't support multiple schemas. Force generic object response type
-            dummy:
+            application/dummy:
               schema:
                 type: object
             application/json:
@@ -351,7 +351,7 @@ paths:
           description: Successful request
           content:
             # Codegen doesn't support multiple schemas. Force generic object response type
-            dummy:
+            application/dummy:
               schema:
                 type: object
             application/json:
@@ -599,7 +599,7 @@ paths:
           description: Successful request
           content:
             # Codegen doesn't support multiple schemas. Force generic object response type
-            dummy:
+            application/dummy:
               schema:
                 type: object
             application/json:
