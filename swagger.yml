@@ -105,6 +105,10 @@ paths:
         '200':
           description: Successful request
           content:
+            # Codegen doesn't support multiple schemas. Force generic object response type
+            dummy:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
@@ -346,6 +350,10 @@ paths:
         '200':
           description: Successful request
           content:
+            # Codegen doesn't support multiple schemas. Force generic object response type
+            dummy:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
@@ -355,6 +363,9 @@ paths:
             application/pds4+xml:
               schema:
                 type: object
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -587,6 +598,10 @@ paths:
         '200':
           description: Successful request
           content:
+            # Codegen doesn't support multiple schemas. Force generic object response type
+            dummy:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
@@ -596,6 +611,9 @@ paths:
             application/pds4+xml:
               schema:
                 type: object
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
