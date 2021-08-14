@@ -114,6 +114,10 @@ paths:
             application/pds4+xml:
               schema:
                 type: object
+            application/pds4+json:
+              schema:
+                type: object
+
         '404':
           description: lidvid not found
         '500':
