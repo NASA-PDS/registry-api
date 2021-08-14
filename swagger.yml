@@ -116,8 +116,7 @@ paths:
                 type: object
             application/pds4+json:
               schema:
-                type: object
-
+                $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -977,3 +976,19 @@ components:
           query: 'q=mission qt 12',
           message: 'query operator gt not supported on field mission'
         }
+    pds4Product:
+      type: object
+      required:
+        - id
+        - metadata
+      properties:
+        id:
+          type: string
+          description: LIDVID
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        pds4:
+          type: object
+          description: PDS4 JSON
+      description:
+        PDS4 Label
