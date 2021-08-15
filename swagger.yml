@@ -105,22 +105,22 @@ paths:
         '200':
           description: Successful request
           content:
-            # Codegen doesn't support multiple schemas. Force generic object response type
-            application/dummy:
-              schema:
-                type: object
+            # Copdegen Workaround: codegen doesn't support multiple schemas. 
+            # Force generic object to be the first response type
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                oneOf:
+                  - type: object
+                  - $ref: '#/components/schemas/product'
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/pds4Product'
             application/xml:
               schema:
                 type: object
             application/pds4+xml:
               schema:
                 type: object
-            application/pds4+json:
-              schema:
-                $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
