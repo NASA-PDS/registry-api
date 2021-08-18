@@ -992,15 +992,34 @@ components:
       type: object
       required:
         - id
-        - metadata
       properties:
         id:
           type: string
           description: LIDVID
         metadata:
-          $ref: '#/components/schemas/metadata'
+          $ref: '#/components/schemas/pds4Metadata'
         pds4:
           type: object
           description: PDS4 JSON
       description:
         PDS4 Label
+    pds4Metadata:
+      type: object
+      properties:
+        data_files:
+          type: array
+          items:
+            type: object
+            properties:
+              file_name:
+                type: string
+              file_ref:
+                type: string
+              creation_date:
+                type: string
+              file_size:
+                type: string
+              md5_checksum:
+                type: string
+              mime_type:
+                type: string
