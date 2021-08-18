@@ -1006,6 +1006,21 @@ components:
     pds4Metadata:
       type: object
       properties:
+        node_name:
+          type: string
+        label_file:
+          type: object
+          properties:
+            file_name:
+              type: string
+            file_ref:
+              type: string
+            creation_date:
+              type: string
+            file_size:
+              type: string
+            md5_checksum:
+              type: string        
         data_files:
           type: array
           items:
