@@ -276,12 +276,15 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/products'
             application/xml:
               schema:
                 type: object
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/pds4Products'
         '400':
           description: Bad request
           content:
@@ -522,12 +525,15 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/products'
             application/xml:
               schema:
                 type: object
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/pds4Products'
         '400':
           description: Bad request
           content:
