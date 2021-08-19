@@ -33,12 +33,15 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/products'
             application/xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/pds4Products'
         '404':
           description: lidvid not found
         '408':
@@ -1038,3 +1041,13 @@ components:
                 type: string
               mime_type:
                 type: string
+    pds4Products:
+      type: object
+      required:
+        - summary
+      properties:
+        summary:
+          $ref: '#/components/schemas/summary'
+        data:
+          items:
+            $ref: '#/components/schemas/pds4Product'
