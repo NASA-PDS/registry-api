@@ -114,8 +114,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		
 	
     
-	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException {
-    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
+	{
+    	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     	MyCollectionsApiController.log.info("request collection lidvid, collections children: " + lidvid);
 
     	int iteration=0,wsize=0;
@@ -198,15 +199,19 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 				log.error("Couldn't serialize response for content type " + accept, e);
 				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+			catch (LidVidNotFoundException e)
+			{
+				log.warn("Could not find lid(vid) in database: " + lidvid);
+				return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+			}
 		 }
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
     
-	private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException
+	private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException,LidVidNotFoundException
     {
     		
-    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
-
+    	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     	MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
     	MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + lidvid.substring(0, lidvid.indexOf("::")));
     	HashSet<String> uniqueProperties = new HashSet<String>();

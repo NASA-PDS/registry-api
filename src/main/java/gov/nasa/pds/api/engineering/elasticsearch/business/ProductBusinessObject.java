@@ -47,7 +47,8 @@ public class ProductBusinessObject {
 	
 	static final String LIDVID_SEPARATOR = "::";
 	
-	public ProductBusinessObject(ElasticSearchRegistryConnection esRegistryConnection) {
+	public ProductBusinessObject(ElasticSearchRegistryConnection esRegistryConnection)
+	{
 		this.elasticSearchConnection = esRegistryConnection;
 		
 	  	this.searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
@@ -57,44 +58,38 @@ public class ProductBusinessObject {
 	  	
 	  	this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      
 	}
 	
 	
-	   public String getLatestLidVidFromLid(String lid) throws IOException {
-	    	/*
-	    	 * if lid is a lidvid then it return the same lidvid if available in the elasticsearch database
-	    	 */
-	    	
+	public String getLatestLidVidFromLid(String lid) throws IOException,LidVidNotFoundException
+	{
+		/*
+		 * if lid is a lidvid then it return the same lidvid if available in the elasticsearch database
+		 */
 			
-	    	lid = !(lid.contains(LIDVID_SEPARATOR))?lid+LIDVID_SEPARATOR:lid;
-			SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
+		lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
+		SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
 			
-			SearchResponse searchResponse = this.elasticSearchConnection.getRestHighLevelClient().search(searchRequest, 
-	    			RequestOptions.DEFAULT);
-	    	
-	    	if (searchResponse != null) {
-	    		
-	    		ArrayList<String> lidvids = new ArrayList<String>();
-	    		String lidvid;
-	    		for (SearchHit searchHit : searchResponse.getHits()) {
-	    	        lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
-	    	        lidvids.add(lidvid);    	        
-	    	    }    
-	     
-	    		Collections.sort(lidvids);
-	        	
-	    		if (lidvids.size() == 0) return lid;
-	    		else return lidvids.get(lidvids.size() - 1);
-	            
-	    	}
-	    	else {
-	    		return null;
-	    	}
-			
+		SearchResponse searchResponse = this.elasticSearchConnection.getRestHighLevelClient().search(searchRequest, 
+				RequestOptions.DEFAULT);
+
+		if (searchResponse != null)
+		{
+			ArrayList<String> lidvids = new ArrayList<String>();
+			String lidvid;
+			for (SearchHit searchHit : searchResponse.getHits())
+			{
+				lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
+				lidvids.add(lidvid);    	        
+			}
+			Collections.sort(lidvids);
+
+			if (lidvids.size() == 0) throw new LidVidNotFoundException(lid);
+			else return lidvids.get(lidvids.size() - 1);
 		}
-	   
-	   
+		else throw new LidVidNotFoundException(lid);
+	}
+
 	private static XMLMashallableProperyValue object2PropertyValue(Object o) {
 		   XMLMashallableProperyValue pv = new XMLMashallableProperyValue();
 		   

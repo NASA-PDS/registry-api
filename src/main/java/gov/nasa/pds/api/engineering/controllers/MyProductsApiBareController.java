@@ -31,6 +31,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 
@@ -208,18 +209,19 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     }
     
     
-    protected ResponseEntity<Product> getProductResponseEntity(String lidvid){
+    protected ResponseEntity<Product> getProductResponseEntity(String lidvid)
+    {
     	String accept = request.getHeader("Accept");
         if ((accept != null) 
         		&& (accept.contains("application/json")
 				|| accept.contains("text/html")
 				|| accept.contains("*/*")
 				|| accept.contains("application/xml")
-				|| accept.contains("application/pds4+xml"))) {
-        	
-            try {
-            	
-            	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+				|| accept.contains("application/pds4+xml")))
+        {
+        	try
+        	{
+            	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
             	
                	ProductWithXmlLabel product = this.productBO.getProductWithXml(lidvid, this.getBaseURL());
             	
@@ -233,10 +235,17 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
 	        	}
 	        		
 
-            } catch (IOException e) {
+            }
+        	catch (IOException e)
+        	{
                 log.error("Couldn't get or serialize response for content type " + accept, e);
                 return new ResponseEntity<Product>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
+		     catch (LidVidNotFoundException e)
+			 {
+				 log.warn("Could not find lid(vid) in database: " + lidvid);
+				 return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+			 }
         }
 
         return new ResponseEntity<Product>(HttpStatus.NOT_IMPLEMENTED);

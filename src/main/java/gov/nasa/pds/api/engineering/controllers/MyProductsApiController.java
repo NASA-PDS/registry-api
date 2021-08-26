@@ -25,6 +25,7 @@ import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
@@ -87,15 +88,20 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 				log.error("Couldn't serialize response for content type " + accept, e);
 				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+			catch (LidVidNotFoundException e)
+			{
+				log.warn("Could not find lid(vid) in database: " + lidvid);
+				return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+			}
 		 }
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
 
 
 	private Products getContainingBundle(String lidvid, @Valid Integer start, @Valid Integer limit,
-			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException,LidVidNotFoundException
 	{    	
-    	if (!lidvid.contains("::")) lidvid = productBO.getLatestLidVidFromLid(lidvid);
+    	lidvid = productBO.getLatestLidVidFromLid(lidvid);
        	MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
 
        	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -152,6 +158,11 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 				log.error("Couldn't serialize response for content type " + accept, e);
 				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+			catch (LidVidNotFoundException e)
+			{
+				log.warn("Could not find lid(vid) in database: " + lidvid);
+				return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+			}
 		 }
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
@@ -179,9 +190,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 	}
 
 	private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
-			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException
+			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException,LidVidNotFoundException
 	{	
-    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
        	MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
 
        	HashSet<String> uniqueProperties = new HashSet<String>();
