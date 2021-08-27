@@ -1,8 +1,8 @@
-# 🏃‍♀️ Continuous Integration and Delivery: Unstable
-# =================================================
+# 🏃‍♀️ Continuous Integration and Delivery: Stable
+# ===============================================
 #
 # Note: for this workflow to succeed, the following secrets must be installed
-# in the repository or inherited from the organization:
+# in the repository:
 #
 # ``ADMIN_GITHUB_TOKEN``
 #     A personal access token of a user with collaborator or better access to
@@ -16,23 +16,25 @@
 #     Username for the Central Repository.
 # ``OSSRH_USERNAME``
 #     Password for the Central Repository.
+#
 
 
 ---
 
-name: 🤪 Stable integration & delivery
+name: 😌 Stable integration & delivery
 
 
 # Driving Event
 # -------------
 #
-# What event starts this workflow: a push to ``main`` (or ``master`` in old
-# parlance).
+# What event starts this workflow: a push of a release tag. Note: according to
+# https://git.io/JJZQt we have been doing our tag matching wrong. It's not
+# regexp, it's not glob…it's more like…glob++ 😮
 
 on:
     push:
-        tags:
-            -  'v[0-9]+.[0-9]+.[0-9]+'
+        branches:
+            - 'release/*'
 
 
 # What to Do
@@ -42,17 +44,28 @@ on:
 
 jobs:
     stable-assembly:
-        name: 🧩 Stable Assembly
+        name: 🐴 Stable Assembly
         runs-on: ubuntu-latest
-        if: github.actor != 'pdsen-ci'
         steps:
             -
                 name: 💳 Checkout
                 uses: actions/checkout@v2
                 with:
                     lfs: true
-                    fetch-depth: 0
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
+                    fetch-depth: 0
+            -
+                name: 💵 Maven Cache
+                uses: actions/cache@v2
+                with:
+                    path: ~/.m2/repository
+                    # The "key" used to indicate a set of cached files is the operating system runner
+                    # plus "mvn" for Maven-specific builds, plus a hash of the `pom.xml` files, which
+                    # should uniquely identify the dependent jars; plus "pds" because we pds-prefix
+                    # everything with "pds" in PDS—even when the context is obvious! 😅
+                    key: pds-${{runner.os}}-mvn-${{hashFiles('**/pom.xml')}}
+                    # To restore a set of files, we only need to match a prefix of the saved key.
+                    restore-keys: pds-${{runner.os}}-mvn-
             -
                 name: 🤠 Roundup
                 uses: NASA-PDS/roundup-action@main
@@ -67,5 +80,6 @@ jobs:
                     CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
                     ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
 
+...
 
 # -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
