@@ -8,7 +8,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: main
+  version: pds-api-74
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -125,6 +125,38 @@ paths:
         required: true
         schema:
           type: string
+
+  /products/{lidvid}/latest:
+    get:
+      tags:
+        - products
+      summary: URN resolver for lidvid
+      operationId: products-by-lidvid-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+
   /products/{lidvid}/bundles:
     get:
       tags:
@@ -333,6 +365,7 @@ paths:
           schema:
             type: boolean
             default: false
+  
   /collections/{lidvid}:
     get:
       tags:
@@ -363,6 +396,38 @@ paths:
         required: true
         schema:
           type: string
+
+  /collections/{lidvid}/latest:
+    get:
+      tags:
+        - collections
+      summary: collections URN resolver for lidvid
+      operationId: collections-by-lidvid-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+
   /collections/{lidvid}/bundles:
     get:
       tags:
@@ -574,6 +639,7 @@ paths:
           schema:
             type: boolean
             default: false
+  
   /bundles/{lidvid}:
     get:
       tags:
@@ -604,6 +670,38 @@ paths:
         required: true
         schema:
           type: string
+
+  /bundles/{lidvid}/latest:
+    get:
+      tags:
+        - bundles
+      summary: bundle URN resolver for lidvid, get one bundle
+      operationId: bundle-by-lidvid-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: object
+            application/pds4+xml:
+              schema:
+                type: object
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+  
   /bundles/{lidvid}/collections:
     get:
       tags:
