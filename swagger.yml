@@ -8,7 +8,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: main
+  version: pds-api-91
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -36,9 +36,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '404':
           description: lidvid not found
         '408':
@@ -108,9 +108,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
             application/pds4+xml:
               schema:
                 type: object
@@ -138,9 +138,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '404':
           description: lidvid not found
         '500':
@@ -202,9 +202,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '404':
           description: lidvid not found
         '500':
@@ -271,9 +271,9 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '400':
           description: Bad request
           content:
@@ -346,9 +346,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
             application/pds4+xml:
               schema:
                 type: object
@@ -376,9 +376,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
             application/pds4+xml:
               schema:
                 type: object
@@ -443,9 +443,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '404':
           description: lidvid not found
         '500':
@@ -512,9 +512,9 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '400':
           description: Bad request
           content:
@@ -587,9 +587,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
             application/pds4+xml:
               schema:
                 type: object
@@ -617,9 +617,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '404':
           description: lidvid not found
         '500':
@@ -681,9 +681,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
+            #application/xml:
+            #  schema:
+            #    type: object
         '404':
           description: lidvid not found
         '500':
