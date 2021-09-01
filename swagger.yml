@@ -161,7 +161,7 @@ paths:
     get:
       tags:
         - products
-      summary: URN resolver for lidvid
+      summary: Get one product by lidvid, or all versions of a product by lid
       operationId: products-by-lidvid-all
       responses:
         '200':
@@ -187,6 +187,20 @@ paths:
         required: true
         schema:
           type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 10
 
   /products/{lidvid}/bundles:
     get:
@@ -463,7 +477,7 @@ paths:
     get:
       tags:
         - collections
-      summary: collections URN resolver for lidvid
+      summary: Get one collection by lidvid, or all versions of a collection by lid
       operationId: collections-by-lidvid-all
       responses:
         '200':
@@ -489,6 +503,20 @@ paths:
         required: true
         schema:
           type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 10
 
   /collections/{lidvid}/bundles:
     get:
@@ -768,7 +796,7 @@ paths:
     get:
       tags:
         - bundles
-      summary: bundle URN resolver for lidvid, get one bundle
+      summary: Get one bundle by lidvid, or all versions of a bundle by lid
       operationId: bundle-by-lidvid-all
       responses:
         '200':
@@ -794,8 +822,21 @@ paths:
         required: true
         schema:
           type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 10
 
-  
   /bundles/{lidvid}/collections:
     get:
       tags:
