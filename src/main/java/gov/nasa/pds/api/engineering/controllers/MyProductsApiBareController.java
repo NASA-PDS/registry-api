@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -74,14 +76,11 @@ public class MyProductsApiBareController {
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {
         this.objectMapper = objectMapper;
         this.request = context;
-        
-    	
-    	
-         
     }
 
-  @SuppressWarnings("unchecked")
-protected void fillProductsFromLidvids (Products products, HashSet<String> uniqueProperties, List<String> lidvids, List<String> fields, boolean onlySummary) throws IOException
+    
+    @SuppressWarnings("unchecked")
+    protected void fillProductsFromLidvids (Products products, HashSet<String> uniqueProperties, List<String> lidvids, List<String> fields, boolean onlySummary) throws IOException
     {
     	for (final Map<String,Object> kvp : new ElasticSearchHitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
 				ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
@@ -95,9 +94,9 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
 				products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
 			}
 		}
-
     }
 
+  
     @SuppressWarnings("unchecked")
 	protected void fillProductsFromParents (Products products, HashSet<String> uniqueProperties, List<Map<String,Object>> results, boolean onlySummary) throws IOException
     {
@@ -176,9 +175,6 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     }
     
  
-
-    
-    
     protected ResponseEntity<Products> getProductsResponseEntity(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
         String accept = this.request.getHeader("Accept");
         log.info("accept value is " + accept);
@@ -209,7 +205,75 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     }
     
     
-    protected ResponseEntity<Product> getProductResponseEntity(String lidvid)
+    protected ResponseEntity<Products> getAllProductsResponseEntity(String lidvid, int start, int limit)
+    {
+        String accept = this.request.getHeader("Accept");
+        log.info("accept value is " + accept);
+        if ((accept != null && (accept.contains("application/json") || accept.contains("text/html")
+                || accept.contains("application/xml") || accept.contains("*/*"))) || (accept == null))
+        {
+            try
+            {
+                Products products = getProductsByLid(lidvid, start, limit);
+                return new ResponseEntity<Products>(products, HttpStatus.OK);
+            }
+            catch (IOException e)
+            {
+                log.error("Couldn't serialize response for content type " + accept, e);
+                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            catch (ParseCancellationException pce)
+            {
+                log.error("", pce);
+                return new ResponseEntity<Products>(HttpStatus.BAD_REQUEST);
+            }
+        }
+        else
+        {
+            return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+        }
+    }    
+    
+    
+    public Products getProductsByLid(String lid, int start, int limit) throws IOException 
+    {
+        SearchRequest req = searchRequestBuilder.getSearchProductsByLid(lid, start, limit);
+        SearchResponse resp = esRegistryConnection.getRestHighLevelClient().search(req, RequestOptions.DEFAULT);
+        
+        Products products = new Products();
+        
+        Summary summary = new Summary();
+        summary.setStart(start);
+        summary.setLimit(limit);
+        products.setSummary(summary);
+        
+        if(resp == null) return products;
+
+        Set<String> uniqueProperties = new TreeSet<>();
+
+        for(SearchHit searchHit : resp.getHits()) 
+        {
+            Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
+            
+            Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject
+                    .getFilteredProperties(sourceAsMap, null, null);
+            
+            uniqueProperties.addAll(filteredMapJsonProperties.keySet());
+
+            EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
+
+            Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
+            product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+
+            products.addDataItem(product);
+        }
+        
+        summary.setProperties(new ArrayList<String>(uniqueProperties));
+        return products;
+    }
+
+    
+    protected ResponseEntity<Product> getLatestProductResponseEntity(String lidvid)
     {
     	String accept = request.getHeader("Accept");
         if ((accept != null) 
@@ -233,8 +297,6 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
 	        		// TODO send 302 redirection to a different server if one exists
 	        		return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
 	        	}
-	        		
-
             }
         	catch (IOException e)
         	{
@@ -250,7 +312,9 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
 
         return new ResponseEntity<Product>(HttpStatus.NOT_IMPLEMENTED);
     }
-    	
+
+
+    
     private boolean proxyRunsOnDefaultPort() {
     	return (((this.context.getScheme() == "https")  && (this.context.getServerPort() == 443)) 
     			|| ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));

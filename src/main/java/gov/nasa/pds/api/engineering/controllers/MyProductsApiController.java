@@ -60,10 +60,28 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     
      
     public ResponseEntity<Product> productsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
-    	return this.getProductResponseEntity(lidvid);
+        return this.getLatestProductResponseEntity(lidvid);
     }
 
+    
+    @Override
+    public ResponseEntity<Product> productsByLidvidLatest(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid)
+    {
+        return this.getLatestProductResponseEntity(lidvid);
+    }    
 
+    
+    @Override
+    public ResponseEntity<Products> productsByLidvidAll(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
+    {
+        return getAllProductsResponseEntity(lidvid, start, limit);
+    }    
+    
+    
 	@Override
 	public ResponseEntity<Products> bundlesContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) {
