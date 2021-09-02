@@ -100,8 +100,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
 	private Products getContainingBundle(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException,LidVidNotFoundException
-	{    	
-    	lidvid = productBO.getLatestLidVidFromLid(lidvid);
+	{
+  		long begin = System.currentTimeMillis();
+    	if (!lidvid.contains("::")) lidvid = productBO.getLatestLidVidFromLid(lidvid);
        	MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
 
        	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -111,9 +112,11 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
     	if (sort == null) { sort = Arrays.asList(); }
 
-    	summary.setStart(start);
+    	summary.setHits(-1);
     	summary.setLimit(limit);
     	summary.setSort(sort);
+    	summary.setStart(start);
+    	summary.setTook(-1);
     	products.setSummary(summary);
 
     	if (0 < collectionLIDs.size())
@@ -124,12 +127,13 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     		request.source().from(start);
     		request.source().size(limit);
     		this.fillProductsFromParents(products, uniqueProperties,
-    				ElasticSearchUtil.collate(this.esRegistryConnection.getRestHighLevelClient(), request),
+    				ElasticSearchUtil.collate(this.esRegistryConnection.getRestHighLevelClient(), request, summary),
     				summaryOnly);
     	}
     	else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
 
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;
 	}
 
@@ -191,8 +195,10 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
 	private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
 			@Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException,LidVidNotFoundException
-	{	
-    	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+	{
+		  long begin = System.currentTimeMillis();
+    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    
        	MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
 
        	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -202,9 +208,11 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
     	if (sort == null) { sort = Arrays.asList(); }
 
-    	summary.setStart(start);
+    	summary.setHits(-1);
     	summary.setLimit(limit);
     	summary.setSort(sort);
+    	summary.setStart(start);
+    	summary.setTook(-1);
     	products.setSummary(summary);
     	
     	if (0 < collectionLidvids.size())
@@ -213,7 +221,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     			summaryOnly); }
     	else MyProductsApiController.log.warn("Did not find a product with lidvid: " + lidvid);
 
+    	summary.setHits(collectionLidvids.size());
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;
 	}
 }

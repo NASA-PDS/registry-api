@@ -13,6 +13,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Reference;
+import gov.nasa.pds.model.Summary;
 
 public class ElasticSearchUtil {
 	
@@ -144,11 +146,13 @@ public class ElasticSearchUtil {
 		return addPropertiesFromESEntity(product, ep, baseURL);
 	}
 	
-	static public List<Map<String,Object>> collate (RestHighLevelClient client, SearchRequest request) throws IOException
+	static public List<Map<String,Object>> collate (RestHighLevelClient client, SearchRequest request, Summary summary) throws IOException
 	{
     	List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
-
-    	for (SearchHit hit : client.search(request, RequestOptions.DEFAULT).getHits())
+    	SearchHits findings = client.search(request, RequestOptions.DEFAULT).getHits(); 
+    	
+    	summary.hits((int)findings.getTotalHits().value);
+    	for (SearchHit hit : findings)
     	{
     		results.add(hit.getSourceAsMap());
     	}

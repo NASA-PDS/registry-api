@@ -116,7 +116,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
 	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
 	{
-    	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+		  long begin = System.currentTimeMillis();
+    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    
     	MyCollectionsApiController.log.info("request collection lidvid, collections children: " + lidvid);
 
     	int iteration=0,wsize=0;
@@ -128,9 +130,11 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
     	if (sort == null) { sort = Arrays.asList(); }	
 
-    	summary.setStart(start);
+    	summary.setHits(-1);
     	summary.setLimit(limit);
       	summary.setSort(sort);	
+    	summary.setStart(start);
+    	summary.setTook(-1);
     	products.setSummary(summary);
 
     	for (final Map<String,Object> kvp : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
@@ -158,9 +162,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 			{ productLidvids.addAll(pageOfLidvids.subList(start <= iteration ? 0 : start-iteration, pageOfLidvids.size())); }
 
 			// if the limit of data has been found then break out of the loop
-			if (limit <= productLidvids.size()) { break; }
+			//if (limit <= productLidvids.size()) { break; }
 			// otherwise update all of hte indices for the next iteration
-			else { iteration = iteration + pageOfLidvids.size() + wsize; }
+			//else { iteration = iteration + pageOfLidvids.size() + wsize; }
+			iteration = iteration + pageOfLidvids.size() + wsize;
 		}
 
     	if (0 < productLidvids.size())
@@ -170,7 +175,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     	}
     	else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + lidvid);
 
+    	summary.setHits(iteration);
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;    	
     }
 
@@ -210,8 +217,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
 	private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException,LidVidNotFoundException
     {
-    		
-    	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    	long begin = System.currentTimeMillis();
+    	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+
     	MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
     	MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + lidvid.substring(0, lidvid.indexOf("::")));
     	HashSet<String> uniqueProperties = new HashSet<String>();
@@ -222,14 +230,17 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
     	if (sort == null) { sort = Arrays.asList(); }
 
-    	summary.setStart(start);
+    	summary.setHits(-1);
     	summary.setLimit(limit);
     	summary.setSort(sort);
+    	summary.setStart(start);
+    	summary.setTook(-1);
     	products.setSummary(summary);
     	request.source().size(limit);
     	request.source().from(start);
-    	this.fillProductsFromParents(products, uniqueProperties, ElasticSearchUtil.collate(this.esRegistryConnection.getRestHighLevelClient(), request), summaryOnly);
+    	this.fillProductsFromParents(products, uniqueProperties, ElasticSearchUtil.collate(this.esRegistryConnection.getRestHighLevelClient(), request, summary), summaryOnly);
 	    summary.setProperties(new ArrayList<String>(uniqueProperties));
+	    summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;
     }
 }

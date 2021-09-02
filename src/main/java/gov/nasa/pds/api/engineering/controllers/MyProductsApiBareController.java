@@ -114,8 +114,10 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     }
 
     @SuppressWarnings("unchecked")
-	protected Products getProducts(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
-    		        	
+	protected Products getProducts(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
+    {
+    	long begin = System.currentTimeMillis();
+
     	SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(q, keyword, fields, start, limit, this.presetCriteria);
     	
     	SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
@@ -127,10 +129,12 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     	
       	Summary summary = new Summary();
 
+      	summary.setHits(-1);
+    	summary.setLimit(limit);
       	summary.setQ((q != null)?q:"" );
     	summary.setStart(start);
-    	summary.setLimit(limit);
-    	
+    	summary.setTook(-1);
+
     	if (sort == null) {
     		sort = Arrays.asList();
     	}	
@@ -139,7 +143,7 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     	products.setSummary(summary);
     	
     	if (searchResponse != null) {
-    		
+    		summary.setHits((int)searchResponse.getHits().getTotalHits().value);
     		for (SearchHit searchHit : searchResponse.getHits()) {
     	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
     	        
@@ -171,7 +175,7 @@ protected void fillProductsFromLidvids (Products products, HashSet<String> uniqu
     	
     	
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
-    	
+    	summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;
     }
     
