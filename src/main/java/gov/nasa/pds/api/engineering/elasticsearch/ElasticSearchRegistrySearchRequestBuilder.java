@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 
@@ -18,20 +19,17 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-
-import ch.qos.logback.core.joran.util.beans.BeanDescription;
-
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ExistsQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 
 
@@ -44,6 +42,8 @@ import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlo
 public class ElasticSearchRegistrySearchRequestBuilder {
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilder.class);
+	private static final String[] DEFAULT_ALL_FIELDS = { "*" };
+	private static final String[] DEFAULT_BLOB = { "ops:Label_File_Info/ops:blob" };
 	
 	private String registryIndex;
 	private String registryRefIndex;
@@ -171,78 +171,227 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 	
 	
 	public SearchRequest getSearchProductsRequest(
-			String queryString, 
+			String queryString,
+			String keyword,
 			List<String> fields, 
 			int start, int limit, 
-			Map<String,String> presetCriteria) {
-
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-		
-
-		if (queryString != null) {
-			boolQuery = this.parseQueryString(queryString);
-		} 
-	
+			Map<String,String> presetCriteria) 
+	{
+        QueryBuilder query = null;
         
-       
-        for (Map.Entry<String, String> e : presetCriteria.entrySet()) {
-        	//example "product_class", "Product_Collection"
-        	boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue() ));
+        // "keyword" parameter provided. Run full-text query.
+        if(keyword != null && !keyword.isBlank())
+        {
+            query = createKeywordQuery(keyword, presetCriteria);
+        }
+        // Run PDS query language ("q" parameter) query
+        else
+        {
+            query = createPqlQuery(queryString, fields, presetCriteria);
         }
         
-    
-        String[] includedFields = null;
-		if (fields != null) {
-			boolQuery.must(this.parseFields(fields));
-			HashSet<String> esFields =  new HashSet<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES)); 
-			for (int i=0 ; i<fields.size() ; i++) {
-				String includedField = ElasticSearchUtil.jsonPropertyToElasticProperty((String)fields.get(i));
-				ElasticSearchRegistrySearchRequestBuilder.log.info("add property " + includedField + " to search");
-	    		esFields.add(includedField);
-	    	}
-			includedFields = esFields.toArray(new String[esFields.size()]);
-		}
-		
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-    	searchSourceBuilder.query(boolQuery);
-    	searchSourceBuilder.from(start); 
-    	searchSourceBuilder.size(limit); 
-    	
-    	FetchSourceContext fetchSourceContext = new FetchSourceContext(
-    			true, 
-    			includedFields, 
-    			new String[] {  EntitytProductWithBlob.BLOB_PROPERTY });
-     	
-    	searchSourceBuilder.fetchSource(fetchSourceContext);
-    	
-  	    searchSourceBuilder.timeout(new TimeValue(this.timeOutSeconds, 
-    			TimeUnit.SECONDS)); 
-    	
-    	SearchRequest searchRequest = new SearchRequest();
-    	searchRequest.source(searchSourceBuilder);
-	   
-    	
-    	searchRequest.indices(this.registryIndex);
-    	
-        ElasticSearchRegistrySearchRequestBuilder.log.info("q value: " + queryString);
-    	ElasticSearchRegistrySearchRequestBuilder.log.info("request elasticSearch :" + searchRequest.toString());
-    	
-    	return searchRequest;
+        String[] includedFields = createIncludedFields(fields);
+        
+        SearchRequest searchRequest = createSearchRequest(query, start, limit, includedFields);
 
-		
+        return searchRequest;
 	}
+
 	
-	public SearchRequest getSearchProductRequest(String queryString, List<String> fields, int start, int limit) {
+	public SearchRequest getSearchProductRequest(String queryString, String keyword, List<String> fields, int start, int limit) {
 		Map<String, String> presetCriteria = new HashMap<String, String>();
-		return getSearchProductsRequest(queryString, fields, start, limit, presetCriteria);		
+		return getSearchProductsRequest(queryString, keyword, fields, start, limit, presetCriteria);		
 	}
 	
-	public SearchRequest getSearchCollectionRequest(String queryString, List<String> fields, int start, int limit) {
-		
+	public SearchRequest getSearchCollectionRequest(String queryString, String keyword, List<String> fields, int start, int limit) {
 		Map<String, String> presetCriteria = new HashMap<String, String>();
 		presetCriteria.put("product_class", "Product_Collection");
-		return getSearchProductsRequest(queryString, fields, start, limit, presetCriteria);
-		
+		return getSearchProductsRequest(queryString, keyword, fields, start, limit, presetCriteria);
 	}
 	
+	static public SearchRequest getQueryFieldFromLidvid (String lidvid, String field, String es_index)
+	{
+		List<String> fields = new ArrayList<String>(), lidvids = new ArrayList<String>();
+		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+		fields.add(field);
+		lidvids.add(lidvid);
+		kvps.put("lidvid", lidvids);
+		return getQueryForKVPs (kvps, fields, es_index);
+	}
+
+	static public SearchRequest getQueryFieldFromKVP (String key, List<String>values, String field, String es_index)
+	{
+		List<String> fields = new ArrayList<String>();
+		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+		fields.add(field);
+		kvps.put(key, values);
+		return getQueryForKVPs (kvps, fields, es_index);		
+	}
+
+	static public SearchRequest getQueryFieldFromKVP (String key, String value, String field, String es_index)
+	{
+		List<String> fields = new ArrayList<String>(), values = new ArrayList<String>();
+		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+		fields.add(field);
+		values.add(value);
+		kvps.put(key, values);
+		return getQueryForKVPs (kvps, fields, es_index);
+	}
+
+	static public SearchRequest getQueryFieldsFromKVP (String key, String value, List<String> fields, String es_index, boolean term)
+	{
+		List<String> values = new ArrayList<String>();
+		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+		values.add(value);
+		kvps.put(key, values);
+		return getQueryForKVPs (kvps, fields, es_index, term);
+	}
+
+	static public SearchRequest getQueryFieldsFromKVP (String key, List<String> values, List<String> fields, String es_index)
+	{
+		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+		kvps.put(key, values);
+		return getQueryForKVPs (kvps, fields, es_index);		
+	}
+
+	static public SearchRequest getQueryFieldsFromKVP (String key, List<String> values, List<String> fields, String es_index, boolean term)
+	{
+		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+		kvps.put(key, values);
+		return getQueryForKVPs (kvps, fields, es_index, term);		
+	}
+
+	static public SearchRequest getQueryForKVPs (Map<String,List<String>> kvps, List<String> fields, String es_index)
+	{
+		return getQueryForKVPs (kvps, fields, es_index, true);
+	}
+
+	static public SearchRequest getQueryForKVPs (Map<String,List<String>> kvps, List<String> fields, String es_index, boolean term)
+	{
+    	String[] aFields = new String[fields == null ? 0 : fields.size() + EntityProduct.JSON_PROPERTIES.length];
+    	if (fields != null)
+    	{
+    		for (int i = 0 ; i < EntityProduct.JSON_PROPERTIES.length ; i++) aFields[i] = EntityProduct.JSON_PROPERTIES[i];
+    		for (int i = 0 ; i < fields.size(); i++) aFields[i+EntityProduct.JSON_PROPERTIES.length] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
+    	}
+
+    	BoolQueryBuilder find_kvps = QueryBuilders.boolQuery();
+    	SearchRequest request = new SearchRequest(es_index)
+    			.source(new SearchSourceBuilder().query(find_kvps)
+    					.fetchSource(fields == null ? DEFAULT_ALL_FIELDS : aFields, DEFAULT_BLOB));
+
+    	for (Entry<String,List<String>> key : kvps.entrySet())
+    	{
+    		for (String value : key.getValue())
+    		{
+    			if (term) find_kvps.should (QueryBuilders.termQuery (key.getKey(), value));
+    			else find_kvps.should (QueryBuilders.matchQuery (key.getKey(), value));
+    		}
+    	}
+    	return request;
+	}
+	
+	
+    /**
+     * Create full-text / keyword query (Uses Lucene query language for now)
+     * @param req request parameters
+     * @param presetCriteria preset criteria
+     * @return a query
+     */
+    private QueryBuilder createKeywordQuery(String keyword, Map<String, String> presetCriteria)
+    {
+        // Lucene query
+        QueryStringQueryBuilder luceneQuery = QueryBuilders.queryStringQuery(keyword);
+        // Search in following fields only
+        luceneQuery.field("title");
+        luceneQuery.field("description");
+        
+        // Boolean (root) query
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        boolQuery.must(luceneQuery);
+        
+        // Preset criteria filter
+        if(presetCriteria != null)
+        {
+            presetCriteria.forEach((key, value) -> 
+            {
+                boolQuery.filter(QueryBuilders.termQuery(key, value));
+            });
+        }
+        
+        return boolQuery;
+    }
+
+    
+    /**
+     * Create PDS query language query
+     * @param req request parameters
+     * @param presetCriteria preset criteria
+     * @return a query
+     */
+    private QueryBuilder createPqlQuery(String queryString, List<String> fields, Map<String, String> presetCriteria)
+    {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        if (queryString != null)
+        {
+            ElasticSearchRegistrySearchRequestBuilder.log.debug("q value: " + queryString);
+            boolQuery = this.parseQueryString(queryString);
+        }
+
+        for (Map.Entry<String, String> e : presetCriteria.entrySet())
+        {
+            // example "product_class", "Product_Collection"
+            boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue()));
+        }
+
+        if (fields != null)
+        {
+            boolQuery.must(this.parseFields(fields));
+        }
+        
+        return boolQuery;
+    }
+
+    
+    private String[] createIncludedFields(List<String> fields)
+    {
+        if(fields == null || fields.isEmpty()) return null;
+        
+        HashSet<String> esFields = new HashSet<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
+        for (int i = 0; i < fields.size(); i++)
+        {
+            String includedField = ElasticSearchUtil.jsonPropertyToElasticProperty((String) fields.get(i));
+            ElasticSearchRegistrySearchRequestBuilder.log.debug("add field " + includedField + " to search");
+            esFields.add(includedField);
+        }
+
+        String[] includedFields = esFields.toArray(new String[esFields.size()]);
+        
+        return includedFields;
+    }
+
+    
+    private SearchRequest createSearchRequest(QueryBuilder query, int from, int size, String[] includedFields)
+    {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(query);
+        searchSourceBuilder.from(from);
+        searchSourceBuilder.size(size);
+
+        String[] excludeFields = { EntitytProductWithBlob.BLOB_PROPERTY };
+        FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includedFields, excludeFields);
+        searchSourceBuilder.fetchSource(fetchSourceContext);
+
+        searchSourceBuilder.timeout(new TimeValue(this.timeOutSeconds, TimeUnit.SECONDS));
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.source(searchSourceBuilder);
+        searchRequest.indices(this.registryIndex);
+
+        ElasticSearchRegistrySearchRequestBuilder.log.debug("request elasticSearch :" + searchRequest.toString());
+    
+        return searchRequest;
+    }
+
 }

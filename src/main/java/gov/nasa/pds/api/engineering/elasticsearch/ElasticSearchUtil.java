@@ -1,19 +1,21 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
-
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
@@ -22,6 +24,7 @@ import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Reference;
+import gov.nasa.pds.model.Summary;
 
 public class ElasticSearchUtil {
 	
@@ -123,10 +126,8 @@ public class ElasticSearchUtil {
 		product.setMetadata(meta);
 		product.setObservingSystemComponents(observationSystemComponent);
 		product.setTargets(targets);
-		
-		return product;
-	
 
+		return product;
 	}
 	
 	static public ProductWithXmlLabel ESentityProductToAPIProduct(EntitytProductWithBlob ep, URL baseURL) {
@@ -134,7 +135,6 @@ public class ElasticSearchUtil {
 		ProductWithXmlLabel product = new ProductWithXmlLabel();
 		product.setLabelXml(ep.getPDS4XML());
 		return (ProductWithXmlLabel)addPropertiesFromESEntity(product, ep, baseURL);
-		
 	}
 	
 
@@ -144,8 +144,18 @@ public class ElasticSearchUtil {
 		Product product = new Product();
 		
 		return addPropertiesFromESEntity(product, ep, baseURL);
-		
-				
 	}
-
+	
+	static public List<Map<String,Object>> collate (RestHighLevelClient client, SearchRequest request, Summary summary) throws IOException
+	{
+    	List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
+    	SearchHits findings = client.search(request, RequestOptions.DEFAULT).getHits(); 
+    	
+    	summary.hits((int)findings.getTotalHits().value);
+    	for (SearchHit hit : findings)
+    	{
+    		results.add(hit.getSourceAsMap());
+    	}
+    	return results;
+	}
 }
