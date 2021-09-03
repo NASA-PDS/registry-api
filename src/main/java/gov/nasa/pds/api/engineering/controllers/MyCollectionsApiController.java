@@ -50,10 +50,27 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
     
     public ResponseEntity<Product> collectionsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
-    	return this.getProductResponseEntity(lidvid);
+        return this.getLatestProductResponseEntity(lidvid);
     }
 
-
+    
+    @Override
+    public ResponseEntity<Product> collectionsByLidvidLatest(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid)
+    {
+        return this.getLatestProductResponseEntity(lidvid);
+    }
+    
+    
+    public ResponseEntity<Products> collectionsByLidvidAll(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
+    {
+        return getAllProductsResponseEntity(lidvid, start, limit);                
+    }
+    
+    
     public ResponseEntity<Products> getCollection(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,

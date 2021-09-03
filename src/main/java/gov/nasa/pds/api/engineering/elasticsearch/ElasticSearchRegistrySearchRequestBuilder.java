@@ -25,6 +25,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.ExistsQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
@@ -104,12 +105,25 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     	searchRequest.indices(this.registryIndex);
     	
     	return searchRequest;
-    	
-    	
-		
 	}
 	
+
+    public SearchRequest getSearchProductsByLid(String lid, int from, int size) 
+    {
+        TermQueryBuilder termQuery = QueryBuilders.termQuery("lid", lid);
+        SearchSourceBuilder srcBuilder = new SearchSourceBuilder();
+        srcBuilder.query(termQuery);
+        srcBuilder.from(from);
+        srcBuilder.size(size);
+        
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.source(srcBuilder);
+        searchRequest.indices(this.registryIndex);
+        
+        return searchRequest;
+    }
 	
+    
 	private BoolQueryBuilder parseQueryString(String queryString) {
 		CodePointCharStream input = CharStreams.fromString(queryString);
         SearchLexer lex = new SearchLexer(input);
