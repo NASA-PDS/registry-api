@@ -17,13 +17,13 @@ TEST_N_CRITERIA=[
     ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube/products',200),
     ('http://localhost:8080/bundles/urn:nasa:pds:izenberg_pdart14_meap::1.0/collections',200),
     ('http://localhost:8080/bundles/urn:nasa:pds:izenberg_pdart14_meap/collections',200),
-    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::1.',404),
-    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::',404),
+    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::1.',200),
+    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::',200),
     ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube:',404),
     ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecub',404),
-    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::1./products',404),
-    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::1/products',404),
-    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::/products',404),
+    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::1./products',200),
+    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::1/products',200),
+    ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube::/products',200),
     ('http://localhost:8080/collections/urn:nasa:pds:izenberg_pdart14_meap:data_imagecube:/products',404),
     ]
 

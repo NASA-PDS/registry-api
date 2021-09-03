@@ -109,7 +109,7 @@ class ElasticSearchRegistrySearchRequestBuilderTest {
 				queryString = queryEntry.getKey();
 				List<String> fields = new ArrayList<String>(Arrays.asList("title","ops:Label_File_Info.ops:md5_checksum"));
 				searchRequest = this.requestBuilder.getSearchCollectionRequest(
-						queryString,
+						queryString, null,
 						fields, 0, 10);
 				
 				/* Write test input in a file */

@@ -2,16 +2,10 @@ package gov.nasa.pds.api.engineering.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
-import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRelationships;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
-import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
-import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -19,10 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -35,7 +25,6 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
-import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,18 +54,18 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
 
 
+    public ResponseEntity<Products> getCollection(
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q,
+            @ApiParam(value = "keyword search query") @Valid @RequestParam(value = "keyword", required = false) String keyword,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
+    {
+        return this.getProductsResponseEntity(q, keyword, start, limit, fields, sort, onlySummary);
+    }    
 
-    public ResponseEntity<Products> getCollection(@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
-    		,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
-    		,@ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q
-    		,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
-    		,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
-    		,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
-    		) {
-    	
-    	return this.getProductsResponseEntity(q, start, limit, fields, sort, onlySummary);
-    }
-    
     
     public ResponseEntity<Products> productsOfACollection(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid
     		,@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
@@ -125,68 +114,71 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		
 	
     
-    @SuppressWarnings("unchecked")
-	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException {
-  	
+	private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
+	{
+		  long begin = System.currentTimeMillis();
     	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+    
     	MyCollectionsApiController.log.info("request collection lidvid, collections children: " + lidvid);
-         
-    	try {
-	    	Products products = new Products();
-	    	
-	    	HashSet<String> uniqueProperties = new HashSet<String>();
-	    	
-	      	Summary summary = new Summary();
-	    	
-	    	summary.setStart(start);
-	    	summary.setLimit(limit);
-	    	
-	    	if (sort == null) {
-	    		sort = Arrays.asList();
-	    	}	
-	    	summary.setSort(sort);
-	    	
-	    	products.setSummary(summary);
-	    	
-	    	CollectionProductRefBusinessObject  collectionProductRefBO = new CollectionProductRefBusinessObject(this.esRegistryConnection);
-	    	CollectionProductRelationships collectionProductRelationships = collectionProductRefBO.getCollectionProductsIterable(lidvid, start, limit);
-	    	
-	    	for (EntityProduct eProd : collectionProductRelationships) {
-				  if (eProd != null) {
-		        	MyCollectionsApiController.log.info("request lidvdid: " + eProd.getLidVid() );
-		        	
-		    		Product product = ElasticSearchUtil.ESentityProductToAPIProduct(eProd, this.getBaseURL());
-				    		
-		    		Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
-		    				eProd.getProperties(), 
-		    				fields,
-		    				null);
-		
-		    		uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-		
-		    		if (!onlySummary) {
-		        		product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-		        		
-		        		products.addDataItem(product);
-		    		}
-				}
-				  else {
-					  MyCollectionsApiController.log.warn("Couldn't get one product child of collection " + lidvid + " in elasticSearch");
-		    	      
-				  }
-	    	}
-	                   	
-	    			    	
-	    	
-	    	summary.setProperties(new ArrayList<String>(uniqueProperties));
-	    	return products;
-			
-			
-		} catch (IOException e) {
-			MyCollectionsApiController.log.error("Couldn't get bundle " + lidvid + " from elasticSearch", e);
-            throw(e);
+
+    	int iteration=0,wsize=0;
+    	HashSet<String> uniqueProperties = new HashSet<String>();
+    	List<String> productLidvids = new ArrayList<String>();
+    	List<String> pageOfLidvids = new ArrayList<String>();
+    	Products products = new Products();
+      	Summary summary = new Summary();
+
+    	if (sort == null) { sort = Arrays.asList(); }	
+
+    	summary.setHits(-1);
+    	summary.setLimit(limit);
+      	summary.setSort(sort);	
+    	summary.setStart(start);
+    	summary.setTook(-1);
+    	products.setSummary(summary);
+
+    	for (final Map<String,Object> kvp : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
+				ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", lidvid, "product_lidvid",
+						this.esRegistryConnection.getRegistryRefIndex())))
+		{
+    		pageOfLidvids.clear();
+    		wsize = 0;
+
+    		if (kvp.get("product_lidvid") instanceof String)
+			{ pageOfLidvids.add(this.productBO.getLatestLidVidFromLid(kvp.get("product_lidvid").toString())); }
+			else
+			{
+				@SuppressWarnings("unchecked")
+				List<String> clids = (List<String>)kvp.get("product_lidvid");
+
+				// if we are working with data that we care about (between start and start + limit) then record them
+				if (start <= iteration || start < iteration+clids.size()) {pageOfLidvids.addAll(clids); }
+				// else just modify the counter to skip them without wasting CPU cycles processing them
+				else { wsize = clids.size(); }
+			}
+
+    		// if any data from the pages then add them to the complete roster
+			if (start <= iteration || start < iteration+pageOfLidvids.size())
+			{ productLidvids.addAll(pageOfLidvids.subList(start <= iteration ? 0 : start-iteration, pageOfLidvids.size())); }
+
+			// if the limit of data has been found then break out of the loop
+			//if (limit <= productLidvids.size()) { break; }
+			// otherwise update all of hte indices for the next iteration
+			//else { iteration = iteration + pageOfLidvids.size() + wsize; }
+			iteration = iteration + pageOfLidvids.size() + wsize;
 		}
-    	
+
+    	if (0 < productLidvids.size())
+    	{
+    		this.fillProductsFromLidvids(products, uniqueProperties,
+    				productLidvids.subList(0, productLidvids.size() < limit ? productLidvids.size() : limit), fields, onlySummary);
+    	}
+    	else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + lidvid);
+
+    	summary.setHits(iteration);
+    	summary.setProperties(new ArrayList<String>(uniqueProperties));
+    	summary.setTook((int)(System.currentTimeMillis() - begin));
+    	return products;    	
     }
 
 
@@ -214,61 +206,41 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 				log.error("Couldn't serialize response for content type " + accept, e);
 				return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+			catch (LidVidNotFoundException e)
+			{
+				log.warn("Could not find lid(vid) in database: " + lidvid);
+				return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+			}
 		 }
 		 else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
 	}
     
-    @SuppressWarnings("unchecked")
-	private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException
+	private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException,LidVidNotFoundException
     {
-    		
+    	long begin = System.currentTimeMillis();
     	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
 
     	MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
     	MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + lidvid.substring(0, lidvid.indexOf("::")));
     	HashSet<String> uniqueProperties = new HashSet<String>();
     	Products products = new Products();
-    	SearchRequest request = new SearchRequest(this.esRegistryConnection.getRegistryIndex());
-    	SearchResponse response;
-    	SearchSourceBuilder builder = new SearchSourceBuilder();
+    	SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("ref_lid_collection",
+    			lidvid.substring(0, lidvid.indexOf("::")), fields, this.esRegistryConnection.getRegistryIndex(), false);
       	Summary summary = new Summary();
 
     	if (sort == null) { sort = Arrays.asList(); }
 
-    	summary.setStart(start);
+    	summary.setHits(-1);
     	summary.setLimit(limit);
     	summary.setSort(sort);
+    	summary.setStart(start);
+    	summary.setTook(-1);
     	products.setSummary(summary);
-    	builder.query(QueryBuilders.matchQuery("ref_lid_collection", lidvid.substring(0, lidvid.indexOf("::"))));
-    	request.source(builder);
-    	response = this.esRegistryConnection.getRestHighLevelClient().search(request,RequestOptions.DEFAULT);
-    	
-    	try {
-	    	
-	    	for (int i = start ; start < limit && i < response.getHits().getHits().length ; i++)
-	    	{
-		        Map<String, Object> sourceAsMap = response.getHits().getAt(i).getSourceAsMap();
-		        Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
-		        		sourceAsMap, 
-		        		fields,
-		        		new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
-		        		);
-		        
-		        uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-	
-		        if (!summaryOnly) {
-	    	        EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-
-	    	        Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
-					product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-
-	    	        products.addDataItem(product);
-		        }
-	    	}
-    	} catch (UnsupportedElasticSearchProperty e) {
-    		log.error("This should never happen " + e.getMessage());
-    	}
+    	request.source().size(limit);
+    	request.source().from(start);
+    	this.fillProductsFromParents(products, uniqueProperties, ElasticSearchUtil.collate(this.esRegistryConnection.getRestHighLevelClient(), request, summary), summaryOnly);
 	    summary.setProperties(new ArrayList<String>(uniqueProperties));
+	    summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;
     }
 }

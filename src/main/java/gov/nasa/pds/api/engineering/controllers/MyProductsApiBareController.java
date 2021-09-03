@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,14 +13,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +27,17 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
-import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
+
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
+
 import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Products;
@@ -82,44 +79,46 @@ public class MyProductsApiBareController {
     	
          
     }
-    
 
-    
-    private boolean proxyRunsOnDefaultPort() {
-    	return (((this.context.getScheme() == "https")  && (this.context.getServerPort() == 443)) 
-    			|| ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));
+  @SuppressWarnings("unchecked")
+protected void fillProductsFromLidvids (Products products, HashSet<String> uniqueProperties, List<String> lidvids, List<String> fields, boolean onlySummary) throws IOException
+    {
+    	for (final Map<String,Object> kvp : new ElasticSearchHitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
+				ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
+						lidvids, fields, this.esRegistryConnection.getRegistryIndex())))
+		{
+			uniqueProperties.addAll(kvp.keySet());
+
+			if (!onlySummary)
+			{
+				products.addDataItem(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()));
+				products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+			}
+		}
+
     }
-    
-    
 
-    protected URL getBaseURL() {
-    	try {
-    		MyProductsApiBareController.log.debug("contextPath is: " + this.contextPath);
-    		
-    		URL baseURL;
-    		if (this.proxyRunsOnDefaultPort()) {
-    			baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.contextPath);
-    		} 
-    		else {
-    			baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.context.getServerPort(), this.contextPath);
-    		}
-	      	
-	      	MyProductsApiBareController.log.info("baseUrl is " + baseURL.toString());
-	      	return baseURL;
-	      	
+    @SuppressWarnings("unchecked")
+	protected void fillProductsFromParents (Products products, HashSet<String> uniqueProperties, List<Map<String,Object>> results, boolean onlySummary) throws IOException
+    {
+    	for (Map<String,Object> kvp : results)
+    	{
+			uniqueProperties.addAll(kvp.keySet());
 
-    	} catch (MalformedURLException e) {
-    		log.error("Server URL was not retrieved");
-    		return null;
+			if (!onlySummary)
+			{
+				products.addDataItem(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()));
+				products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+			}
     	}
     }
-  
-    @SuppressWarnings("unchecked")
-	protected Products getProducts(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException {
-    	
 
-    		        	
-    	SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(q, fields, start, limit, this.presetCriteria);
+    @SuppressWarnings("unchecked")
+	protected Products getProducts(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
+    {
+    	long begin = System.currentTimeMillis();
+
+    	SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(q, keyword, fields, start, limit, this.presetCriteria);
     	
     	SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
@@ -130,10 +129,12 @@ public class MyProductsApiBareController {
     	
       	Summary summary = new Summary();
 
+      	summary.setHits(-1);
+    	summary.setLimit(limit);
       	summary.setQ((q != null)?q:"" );
     	summary.setStart(start);
-    	summary.setLimit(limit);
-    	
+    	summary.setTook(-1);
+
     	if (sort == null) {
     		sort = Arrays.asList();
     	}	
@@ -142,7 +143,7 @@ public class MyProductsApiBareController {
     	products.setSummary(summary);
     	
     	if (searchResponse != null) {
-    		
+    		summary.setHits((int)searchResponse.getHits().getTotalHits().value);
     		for (SearchHit searchHit : searchResponse.getHits()) {
     	        Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
     	        
@@ -174,7 +175,7 @@ public class MyProductsApiBareController {
     	
     	
     	summary.setProperties(new ArrayList<String>(uniqueProperties));
-    	
+    	summary.setTook((int)(System.currentTimeMillis() - begin));
     	return products;
     }
     
@@ -182,7 +183,7 @@ public class MyProductsApiBareController {
 
     
     
-    protected ResponseEntity<Products> getProductsResponseEntity(String q, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
+    protected ResponseEntity<Products> getProductsResponseEntity(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) {
         String accept = this.request.getHeader("Accept");
         log.info("accept value is " + accept);
         if ((accept != null 
@@ -195,7 +196,7 @@ public class MyProductsApiBareController {
         	try {
 	        	
         	
-        		Products products = this.getProducts(q, start, limit, fields, sort, onlySummary);
+        		Products products = this.getProducts(q, keyword, start, limit, fields, sort, onlySummary);
 	        	
 	        	return new ResponseEntity<Products>(products, HttpStatus.OK);
 	        	
@@ -212,18 +213,19 @@ public class MyProductsApiBareController {
     }
     
     
-    protected ResponseEntity<Product> getProductResponseEntity(String lidvid){
+    protected ResponseEntity<Product> getProductResponseEntity(String lidvid)
+    {
     	String accept = request.getHeader("Accept");
         if ((accept != null) 
         		&& (accept.contains("application/json")
 				|| accept.contains("text/html")
 				|| accept.contains("*/*")
 				|| accept.contains("application/xml")
-				|| accept.contains("application/pds4+xml"))) {
-        	
-            try {
-            	
-            	if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+				|| accept.contains("application/pds4+xml")))
+        {
+        	try
+        	{
+            	lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
             	
                	ProductWithXmlLabel product = this.productBO.getProductWithXml(lidvid, this.getBaseURL());
             	
@@ -237,14 +239,47 @@ public class MyProductsApiBareController {
 	        	}
 	        		
 
-            } catch (IOException e) {
+            }
+        	catch (IOException e)
+        	{
                 log.error("Couldn't get or serialize response for content type " + accept, e);
                 return new ResponseEntity<Product>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
+		     catch (LidVidNotFoundException e)
+			 {
+				 log.warn("Could not find lid(vid) in database: " + lidvid);
+				 return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
+			 }
         }
 
         return new ResponseEntity<Product>(HttpStatus.NOT_IMPLEMENTED);
     }
     	
+    private boolean proxyRunsOnDefaultPort() {
+    	return (((this.context.getScheme() == "https")  && (this.context.getServerPort() == 443)) 
+    			|| ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));
+    }
+ 
+    protected URL getBaseURL() {
+    	try {
+    		MyProductsApiBareController.log.debug("contextPath is: " + this.contextPath);
+    		
+    		URL baseURL;
+    		if (this.proxyRunsOnDefaultPort()) {
+    			baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.contextPath);
+    		} 
+    		else {
+    			baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.context.getServerPort(), this.contextPath);
+    		}
+	      	
+	      	MyProductsApiBareController.log.info("baseUrl is " + baseURL.toString());
+	      	return baseURL;
+	      	
+
+    	} catch (MalformedURLException e) {
+    		log.error("Server URL was not retrieved");
+    		return null;
+    	}
+    }
 
 }

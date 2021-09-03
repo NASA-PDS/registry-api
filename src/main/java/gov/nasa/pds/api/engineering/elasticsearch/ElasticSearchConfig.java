@@ -3,10 +3,12 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import gov.nasa.pds.api.engineering.configuration.AWSSecretsAccess;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
@@ -28,12 +30,18 @@ public class ElasticSearchConfig {
 	@Value("${elasticSearch.timeOutSeconds:60}")
 	private int timeOutSeconds;
 	
-	@Value("${elasticSearch.username}")
+	@Value("${elasticSearch.username:}")
 	private String username;
 	
-	@Value("${elasticSearch.password}")
+	@Value("${elasticSearch.password:}")
 	private String password;
 	
+    @Value("${elasticSearch.userAWSSecretName:}")
+    private String userAWSSecretName;
+    
+    @Value("${elasticSearch.userAWSSecretRegion:}")
+    private String userAWSSecretRegion;
+
 	@Value("${elasticSearch.ssl:false}")
 	private boolean ssl;
     
@@ -74,8 +82,30 @@ public class ElasticSearchConfig {
 
 	@Bean("esRegistryConnection")
     public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
-     
+		
 		if (esRegistryConnection == null) {
+
+			// see if username is not set - if not, try to get from aws secrets manager
+			if (this.username == null || "".equals(this.username)) {
+				if (this.userAWSSecretName != null && !"".equals(userAWSSecretName)) {
+					log.info(String.format("elasticsearch.username is not set, retrieving from aws secret %s", this.userAWSSecretName));
+					AWSSecretsAccess secretsAccess = new AWSSecretsAccess();
+					DefaultKeyValue<String, String> secretLookup = secretsAccess.getSecret(this.userAWSSecretName, this.userAWSSecretRegion);
+					if (secretLookup != null) {
+		                this.username = secretLookup.getKey();
+		                this.password = secretLookup.getValue();
+					}
+				} else {
+					// nothing specified - warning only since unauthenticated ES may be in use
+					String message = "Neither elasticsearch.username/password nor elasticsearch.userAWSSecretName specified in config.";
+					log.warn(message);
+				}
+			} else if (this.userAWSSecretName != null && !"".equals(this.userAWSSecretName)) {
+				String message = "Both elasticsearch.username and elasticsearch.userSecretName are set in config";
+				log.error(message);
+				throw new RuntimeException(message);
+			}
+     
 			this.esRegistryConnection = new ElasticSearchRegistryConnectionImpl(this.hosts,
 					this.registryIndex,
 					this.registryRefIndex,
