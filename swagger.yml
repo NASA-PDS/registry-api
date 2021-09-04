@@ -33,7 +33,7 @@ paths:
         '200':
           description: Successful request
           content:
-            application/xml:
+            application/pds4+xml:
               schema:
                 type: object
             application/json:
@@ -119,9 +119,6 @@ paths:
             application/pds4+json:
               schema:
                 $ref: '#/components/schemas/pds4Product'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -133,6 +130,74 @@ paths:
         required: true
         schema:
           type: string
+  /products/{lidvid}/latest:
+    get:
+      tags:
+        - products
+      summary: URN resolver for lidvid
+      operationId: products-by-lidvid-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/pds4+xml:
+              schema:
+                type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+  /products/{lidvid}/all:
+    get:
+      tags:
+        - products
+      summary: Get one product by lidvid, or all versions of a product by lid
+      operationId: products-by-lidvid-all
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/pds4+xml:
+              schema:
+                type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 10
   /products/{lidvid}/bundles:
     get:
       tags:
@@ -146,9 +211,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -210,9 +272,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -276,7 +335,7 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
-            application/xml:
+            application/pds4+xml:
               schema:
                 type: object
             application/json:
@@ -365,9 +424,6 @@ paths:
             application/pds4+json:
               schema:
                 $ref: '#/components/schemas/pds4Product'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -379,6 +435,74 @@ paths:
         required: true
         schema:
           type: string
+  /collections/{lidvid}/latest:
+    get:
+      tags:
+        - collections
+      summary: collections URN resolver for lidvid
+      operationId: collections-by-lidvid-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/pds4+xml:
+              schema:
+                type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+  /collections/{lidvid}/all:
+    get:
+      tags:
+        - collections
+      summary: Get one collection by lidvid, or all versions of a collection by lid
+      operationId: collections-by-lidvid-all
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/pds4+xml:
+              schema:
+                type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 10
   /collections/{lidvid}/bundles:
     get:
       tags:
@@ -392,9 +516,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
             application/pds4+xml:
               schema:
                 type: object
@@ -459,9 +580,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -525,7 +643,7 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
-            application/xml:
+            application/pds4+xml:
               schema:
                 type: object
             application/json:
@@ -614,9 +732,6 @@ paths:
             application/pds4+json:
               schema:
                 $ref: '#/components/schemas/pds4Product'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -628,6 +743,74 @@ paths:
         required: true
         schema:
           type: string
+  /bundles/{lidvid}/latest:
+    get:
+      tags:
+        - bundles
+      summary: bundle URN resolver for lidvid, get one bundle
+      operationId: bundle-by-lidvid-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/pds4+xml:
+              schema:
+                type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+  /bundles/{lidvid}/all:
+    get:
+      tags:
+        - bundles
+      summary: Get one bundle by lidvid, or all versions of a bundle by lid
+      operationId: bundle-by-lidvid-all
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/pds4+xml:
+              schema:
+                type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 10
   /bundles/{lidvid}/collections:
     get:
       tags:
@@ -641,9 +824,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -705,9 +885,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
-            application/xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -779,6 +956,18 @@ components:
       properties:
         q:
           type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+        hits:
+          description: total number of matching results. -1 indicates an excessive amount of resource required to compute it
+          type: integer
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+        took:
+          description: Number of milliseconds it "took" to do request
+          type: integer
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
