@@ -33,6 +33,9 @@ paths:
         '200':
           description: Successful request
           content:
+            application/pds4+xml:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
@@ -105,15 +108,15 @@ paths:
         '200':
           description: Successful request
           content:
+            application/pds4+xml:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
             application/pds4+json:
               schema:
                 $ref: '#/components/schemas/pds4Product'
-            application/pds4+xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -135,12 +138,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/product'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
         '404':
           description: lidvid not found
         '500':
@@ -162,12 +165,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/products'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '500':
@@ -330,6 +333,9 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
+            application/pds4+xml:
+              schema:
+                type: object
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
@@ -405,15 +411,15 @@ paths:
         '200':
           description: Successful request
           content:
+            application/pds4+xml:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
             application/pds4+json:
               schema:
                 $ref: '#/components/schemas/pds4Product'
-            application/pds4+xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -435,12 +441,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/product'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
         '404':
           description: lidvid not found
         '500':
@@ -462,12 +468,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/products'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '500':
@@ -503,12 +509,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/products'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '500':
@@ -633,6 +639,9 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
+            application/pds4+xml:
+              schema:
+                type: object
             application/json:
               schema: 
                 $ref: '#/components/schemas/products'
@@ -708,15 +717,15 @@ paths:
         '200':
           description: Successful request
           content:
+            application/pds4+xml:
+              schema:
+                type: object
             application/json:
               schema:
                 $ref: '#/components/schemas/product'
             application/pds4+json:
               schema:
                 $ref: '#/components/schemas/pds4Product'
-            application/pds4+xml:
-              schema:
-                type: object
         '404':
           description: lidvid not found
         '500':
@@ -738,12 +747,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/product'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
         '404':
           description: lidvid not found
         '500':
@@ -765,12 +774,12 @@ paths:
         '200':
           description: Successful request
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/products'
             application/pds4+xml:
               schema:
                 type: object
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '500':
