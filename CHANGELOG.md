@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.4.0-SNAPSHOT](https://github.com/NASA-PDS/pds-api-javalib/tree/v0.4.0-SNAPSHOT) (2021-09-01)
+## [v0.4.0-SNAPSHOT](https://github.com/NASA-PDS/pds-api-javalib/tree/v0.4.0-SNAPSHOT) (2021-09-04)
 
 [Full Changelog](https://github.com/NASA-PDS/pds-api-javalib/compare/v0.3.0...v0.4.0-SNAPSHOT)
 
