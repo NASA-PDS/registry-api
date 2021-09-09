@@ -27,7 +27,7 @@ Follow instructions in README.txt in the decompressed folder
 
 Get a development release by cloning the current repository.
 
-If needed change server port and elasticSearch parameters in `src/main/resources/applications.properties`.
+If needed change server port and elasticSearch parameters in `src/main/resources/application.properties`.
 Note, the registry index in elasticSearch is hard-coded. It need to be `registry`.
 
     mvn clean
