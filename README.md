@@ -1,4 +1,4 @@
-# PDS-API-SERVICE
+# REGISTRY-API-SERVICE
 
 ## Overview
 
@@ -11,9 +11,7 @@ It implements a very simple collections and product search end-point complying w
 
 This software requires open jdk 11.
 
-## Admimistrator
-
-### Deployment
+## Administrator
 
 Get the latest stable release https://github.com/NASA-PDS/registry-api-service/releases
 
@@ -21,13 +19,14 @@ Download the zip or tar.gz file.
 
 Follow instructions in README.txt in the decompressed folder
 
+
 ## Developers
 
 ### Deployment
 
 Get a development release by cloning the current repository.
 
-If needed change server port and elasticSearch parameters in `src/main/resources/applications.properties`.
+If needed change server port and elasticSearch parameters in `src/main/resources/application.properties`.
 Note, the registry index in elasticSearch is hard-coded. It need to be `registry`.
 
     mvn clean
@@ -74,6 +73,10 @@ See guidelines on https://learning.postman.com/docs/sending-requests/variables/
     
 # Docker
 
+## Prerequisite
+
+Have a registry deployed, for example with docker as described in https://github.com/NASA-PDS/pds-registry-app/blob/main/README.md#docker 
+
 ## Build
 
 ### Local git version
@@ -86,6 +89,10 @@ docker build --build-arg version=$(git rev-parse HEAD) \
 ```
 
 ## Run
+
+
+The `/absolute/path/to/my/properties.file` should be configured to access your registry's elasticsearch instance with: `es:9200`.
+
 
 ```
 docker run --name registry-api-service \

@@ -9,9 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import gov.nasa.pds.api.engineering.configuration.AWSSecretsAccess;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectionImpl;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
+
 
 @Configuration 
 public class ElasticSearchConfig { 
@@ -120,11 +119,10 @@ public class ElasticSearchConfig {
 	
 	@Bean("productBO")
 	public ProductBusinessObject ProductBusinessObject() {
-		
-		
 		return new ProductBusinessObject(this.ElasticSearchRegistryConnection());
 	}
-	
+
+    
 	@Bean("searchRequestBuilder")
 	public ElasticSearchRegistrySearchRequestBuilder ElasticSearchRegistrySearchRequestBuilder() {
 		
