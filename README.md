@@ -1,4 +1,4 @@
-# PDS-API-SERVICE
+# REGISTRY-API-SERVICE
 
 ## Overview
 
