@@ -73,6 +73,10 @@ See guidelines on https://learning.postman.com/docs/sending-requests/variables/
     
 # Docker
 
+## Prerequisite
+
+Have a registry deployed, for example with docker as described in https://github.com/NASA-PDS/pds-registry-app/blob/main/README.md#docker 
+
 ## Build
 
 ### Local git version
@@ -85,6 +89,10 @@ docker build --build-arg version=$(git rev-parse HEAD) \
 ```
 
 ## Run
+
+
+The `/absolute/path/to/my/properties.file` should be configured to access your registry's elasticsearch instance with: `es:9200`.
+
 
 ```
 docker run --name registry-api-service \
