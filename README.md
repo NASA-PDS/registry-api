@@ -11,15 +11,14 @@ It implements a very simple collections and product search end-point complying w
 
 This software requires open jdk 11.
 
-## Admimistrator
-
-### Deployment
+## Administrator
 
 Get the latest stable release https://github.com/NASA-PDS/registry-api-service/releases
 
 Download the zip or tar.gz file.
 
 Follow instructions in README.txt in the decompressed folder
+
 
 ## Developers
 
