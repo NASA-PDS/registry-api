@@ -1,4 +1,4 @@
-# PDS-API-BASE
+# PDS-API-JAVALIB
 
 1. Stores the swagger.yml reference file for the PDS federated API (see https://app.swaggerhub.com/apis/PDS_APIs where the specification is edited by the PDS team)
 2. provide the procedure and configuration to generate JAVA libraries used by API servers and clients implementation.
