@@ -1,0 +1,39 @@
+FROM ubuntu:20.04
+
+# Get arguments from the build command line
+ARG version
+ENV VERSION=$version
+
+# Build up the OS
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
+    apt-get install -y curl \
+                       libtcnative-1 \
+                       maven \
+                       openjdk-11-jdk-headless \
+                       tar
+
+# Make room for the app and capture the version
+RUN mkdir /usr/local/registry-api-service \
+ && cd /usr/local/registry-api-service \
+ && echo ${VERSION} > version.txt
+
+# Copy the data into the building container
+COPY LICENSE.txt /usr/local/registry-api-service
+COPY NOTICE.txt /usr/local/registry-api-service
+COPY README.txt /usr/local/registry-api-service
+
+# Resources shared with the rest of the world
+EXPOSE 80
+
+# Load the local jar file and config - the config is in the jar file but this provides flexibility
+COPY target/registry-api-service-${VERSION}.jar /usr/local/registry-api-service/registry-api-service.jar
+COPY src/main/resources/application.properties /usr/local/registry-api-service
+
+# Run the sevice by default
+WORKDIR /usr/local/registry-api-service
+
+CMD ["java", \
+     "-cp", "/usr/local/registry-api-service", \
+     "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
+     "gov.nasa.pds.api.engineering.SpringBootMain"]
