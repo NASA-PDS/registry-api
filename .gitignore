@@ -30,6 +30,10 @@
 # Temporary files
 *~
 
+# Terraform generated files
+*.tfstate*
+terraform/.terraform
+
 # other stuff
 *.xpr
 *.swp
