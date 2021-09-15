@@ -4,8 +4,8 @@ query : queryTerm EOF ;
 queryTerm : comparison | group ;
 group : NOT? LPAREN expression RPAREN ;
 expression : andStatement | orStatement | queryTerm ;
-andStatement : queryTerm AND queryTerm ;
-orStatement : queryTerm OR queryTerm ;
+andStatement : queryTerm (AND queryTerm)+ ;
+orStatement : queryTerm (OR queryTerm)+ ;
 comparison : FIELD operator ( NUMBER | STRINGVAL | wildcardFunc ) ;
 operator : EQ | NE | GT | GE | LT | LE ;
 
