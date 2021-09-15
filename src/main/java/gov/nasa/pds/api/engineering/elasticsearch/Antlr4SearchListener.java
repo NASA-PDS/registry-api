@@ -118,25 +118,27 @@ public class Antlr4SearchListener extends SearchBaseListener
 	 @Override
 	 public void enterComparison(SearchParser.ComparisonContext ctx)
 	 {
-		 this.wildcard = ctx.VALUE() != null && (ctx.VALUE().getSymbol().getText().contains("*") || ctx.VALUE().getSymbol().getText().contains("?"));
  	 }
 
 	@Override
 	public void exitComparison(SearchParser.ComparisonContext ctx)
 	{
-		final String left = ElasticSearchUtil.jsonPropertyToElasticProperty (ctx.FIELD(0).getSymbol().getText());
+		final String left = ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
 		String right;
 		QueryBuilder comparator = null;
 
-		// the second term of the comparison can be first tokenized as FIELD (string without quote) since FIELD is before VALUE (string with optional wildcard, no quote) in the ANTLR4 grammar.
-		if (ctx.FIELD(1) != null) right = ctx.FIELD(1).getSymbol().getText();
-		else if (ctx.NUMBER() != null) right = ctx.NUMBER().getSymbol().getText();
+		if (ctx.NUMBER() != null) right = ctx.NUMBER().getSymbol().getText();
 		else if (ctx.STRINGVAL() != null)
 		{
 			right = ctx.STRINGVAL().getSymbol().getText();
 			right = right.substring(1, right.length()-1);
 		}
-		else if (ctx.VALUE() != null) right = ctx.VALUE().getSymbol().getText();
+		else if (ctx.wildcardFunc() != null) 
+		{
+		    this.wildcard = true;
+		    right = ctx.wildcardFunc().getChild(2).getText();
+		    right = right.substring(1, right.length()-1);
+		}
 		else
 		{
 			log.error("Panic, there are more data types than this version of the lexer knows about.");
