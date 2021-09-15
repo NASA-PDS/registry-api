@@ -45,6 +45,6 @@ RUN cd /usr/local/registry-api-service \
 WORKDIR /usr/local/registry-api-service
 
 CMD ["java", \
-     "-cp", "/usr/local/registry-api-service, \
+     "-cp", "/usr/local/registry-api-service", \
      "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
      "gov.nasa.pds.api.engineering.SpringBootMain"]

@@ -49,6 +49,6 @@ WORKDIR /usr/local/registry-api-service
 # TODO: the bind-dir needs to be added to the classpath as the first entry so the config file is assured to be picked up
 CMD ["java", \
      # "-cp", "<bind_dir>", \
-     "-cp", "/usr/local/registry-api-service, \
+     "-cp", "/usr/local/registry-api-service", \
      "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
      "gov.nasa.pds.api.engineering.SpringBootMain"]
