@@ -39,15 +39,16 @@ variable "aws_fg_subnets" {
   # default = ["subnet-005cbaf96a20adb30", "subnet-070c009607513d587"]
 }
 
-variable "aws_task_exec_role_name" {
-  description = "task execution role" 
+# This cannot be specified as a variable
+# variable "aws_task_exec_role_name" {
+  # description = "task execution role" 
   # default = "arn:aws:iam::445837347542:role/am-ecs-task-execution"
   # default = "ecs-task-execution"
-}
+# }
 
 variable "aws_fg_image" {
   description = "AWS image name for Fargate"
-  default = "445837347542.dkr.ecr.us-west-2.amazonaws.com/pds-registry-api-service:r0.3.1c_no_ssl"
+  default = "445837347542.dkr.ecr.us-west-2.amazonaws.com/pds-registry-api-service:0.4.0-SNAPSHOT.http"
 }
 
 variable "aws_fg_cpu_units" {
