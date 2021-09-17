@@ -21,7 +21,7 @@ public class ElasticSearchConfig {
 	// original behavior when the default was specified in the Value annotation.
 	private static final String DEFAULT_ES_HOST = "localhost:9200";
 	
-	@Value("#{'${elasticSearch.host}'.split(',')}:") 
+	@Value("#{'${elasticSearch.host:}'.split(',')}") 
 	private List<String> hosts;
 	
 	@Value("${elasticSearch.registryIndex:registry}")
@@ -87,8 +87,11 @@ public class ElasticSearchConfig {
 				this.trySetESCredsFromEnv();
 			}
 			
-			// do the same for ES hosts
-            if (this.hosts == null || this.hosts.size() == 0) {
+			// do the same for ES hosts - the defaulting mechanism causes a rather elaborate
+			// check
+			log.debug(String.format("this.hosts : %s (%d)", this.hosts, this.hosts.size()));
+            if (this.hosts == null || this.hosts.size() == 0 
+             || this.hosts.get(0) == null || "".equals(this.hosts.get(0))) {
             	setESHostsFromEnvOrDefault();
             }
 			
@@ -135,6 +138,7 @@ public class ElasticSearchConfig {
             	log.error(message);
             	throw new RuntimeException(message);
             }
+
             this.username = esCreds[0];
             this.password = esCreds[1];
 		}
@@ -151,8 +155,10 @@ public class ElasticSearchConfig {
 			log.info(String.format("ES hosts not set in config or environment, defaulting to %s", DEFAULT_ES_HOST));
 			esHosts = DEFAULT_ES_HOST;
 		}
+		
+		log.debug(String.format("esHosts : %s", esHosts));
 			
-		this.hosts = List.of(esHosts.split(":"));
+		this.hosts = List.of(esHosts.split(","));
 	}
 
 }
