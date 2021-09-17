@@ -10,15 +10,16 @@ public class SystemConstants {
 	// Those in this section are expected to be value-only.
 	// For AWS deployments they are set through the Systems Manager Parameter Store
 	
-	public static final String NODE_NAME_ENV_VAR = "node_name";            // node name or abbr
-    public static final String ES_HOSTS_ENV_VAR = "es_endpoint";        // es URL
+	public static final String NODE_NAME_ENV_VAR = "NODE_NAME";            // node name or abbr
+	public static final String ES_HOSTS_ENV_VAR = "ES_HOSTS";              // es URLs
     
-    // Those in this section are expected to have value in the key:value format.
-    // For AWS deployments they are set through the Secrets Manager
+	// Those in this section are expected to have value in the key:value format.
+	// For AWS deployments they are set through the Secrets Manager
     
-    public static final String ES_CREDENTIALS_ENV_VAR = "es_credentials";  // es user:pwd
+	public static final String ES_CREDENTIALS_ENV_VAR = "ES_CREDENTIALS";  // es user:pwd
 	
 	private SystemConstants() {
+		throw new IllegalStateException("Objects of this class cannot be instantiated.");
 	}
 
 }
