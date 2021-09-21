@@ -6,6 +6,8 @@ import javax.net.ssl.SSLContext;
 
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -39,6 +41,12 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	private String registryRefIndex;
 	private int timeOutSeconds;
 	private ArrayList<String> crossClusterNodes;
+	
+	
+	public ElasticSearchRegistryConnectionImpl()
+	{
+	    this(Arrays.asList("localhost:9200"), "registry", "registry-refs", 5, null, null, false);
+	}
 	
 	public ElasticSearchRegistryConnectionImpl(List<String> hosts, 
 			String registryIndex,
@@ -163,7 +171,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			}
 		}
 		catch(Exception ex) {
-			throw new RuntimeException(ex);
+		    log.warn("Could not get cluster information. Cross cluster search is inactive. " + ex.getMessage());
 		}
 		return result;
 	}
@@ -182,5 +190,18 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
     	}
     	
     	return result;
+    }
+    
+    
+    public void close()
+    {
+        try
+        {
+            restHighLevelClient.close();
+        }
+        catch(Exception ex)
+        {
+            // Ignore
+        }
     }
 }

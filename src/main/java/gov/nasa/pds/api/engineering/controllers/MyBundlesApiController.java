@@ -90,64 +90,53 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             ,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
             )
     {
-            return this.getBundlesCollections(lidvid, start, limit, fields, sort, onlySummary);
+            return this.getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary);
     }
 
-    private List<String> getRefLidCollection (String lidvid) throws IOException,LidVidNotFoundException
-    {
-        List<String> reflids = new ArrayList<String>();
-
-        for (final Map<String, Object> bundle : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromLidvid(lidvid, "ref_lid_collection",
-                        this.esRegistryConnection.getRegistryIndex())))
-        {
-            if (bundle.get("ref_lid_collection") instanceof String)
-            { reflids.add(this.productBO.getLatestLidVidFromLid(bundle.get("ref_lid_collection").toString())); }
-            else
-            {
-                @SuppressWarnings("unchecked")
-                List<String> clids = (List<String>)bundle.get("ref_lid_collection");
-                for (String clid : clids)
-                { reflids.add(this.productBO.getLatestLidVidFromLid(clid)); }
-            }
-        }
-        return reflids;
-    }
     
-    private Products getCollectionChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException,LidVidNotFoundException
+    private Products getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
+            List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
     {
         long begin = System.currentTimeMillis();
-        lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
-        MyBundlesApiController.log.info("request bundle lidvid, collections children: " + lidvid);
+        
+        lidvid = productBO.getLidVidDao().getLatestLidVidFromLid(lidvid);
+        MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + lidvid);
+        
+        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
 
         HashSet<String> uniqueProperties = new HashSet<String>();
-        List<String> clidvids = this.getRefLidCollection(lidvid);
         Products products = new Products();
         Summary summary = new Summary();
 
         if (sort == null) { sort = Arrays.asList(); }
 
         summary.setHits(clidvids.size());
+        summary.setStart(start);
         summary.setLimit(limit);
         summary.setSort(sort);
-        summary.setStart(start);
-        summary.setTook(-1);
         products.setSummary(summary);
 
-        if (0 < clidvids.size())
+        int size = clidvids.size();
+        if (size > 0 && start < size && limit > 0)
         {
-            this.fillProductsFromLidvids(products, uniqueProperties,
-                    clidvids.subList(start, clidvids.size() < start+limit ? clidvids.size(): start+limit),
-                    fields, onlySummary);
+            int end = start + limit;
+            if(end > size) end = size;
+            List<String> ids = clidvids.subList(start, end);
+            fillProductsFromLidvids(products, uniqueProperties, ids, fields, onlySummary);
         }
-        else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + lidvid);
+        else 
+        {
+            MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + lidvid);
+        }
 
         summary.setProperties(new ArrayList<String>(uniqueProperties));
         summary.setTook((int)(System.currentTimeMillis() - begin));
         return products;    
     }
 
-    private ResponseEntity<Products> getBundlesCollections(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary)
+    
+    private ResponseEntity<Products> getBundlesCollectionsEntity(String lidvid, int start, int limit, 
+            List<String> fields, List<String> sort, boolean onlySummary)
     {
          String accept = this.request.getHeader("Accept");
          MyBundlesApiController.log.info("accept value is " + accept);
@@ -160,7 +149,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
          {
              try
              {
-                 Products products = this.getCollectionChildren(lidvid, start, limit, fields, sort, onlySummary);
+                 Products products = getBundleCollections(lidvid, start, limit, fields, sort, onlySummary);
                  return new ResponseEntity<Products>(products, HttpStatus.OK);
              }
              catch (IOException e)
@@ -177,6 +166,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
          else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+    
     @Override
     public ResponseEntity<Products> productsOfABundle(String lidvid, @Valid Integer start, @Valid Integer limit,
             @Valid List<String> fields, @Valid List<String> sort, @Valid Boolean onlySummary)
@@ -217,7 +207,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         int iteration=0,wsize=0;
         HashSet<String> uniqueProperties = new HashSet<String>();
-        List<String> clidvids = this.getRefLidCollection(lidvid);
+        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();
         Products products = new Products();
@@ -264,7 +254,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         
         MyBundlesApiController.log.info("found " + Integer.toString(plidvids.size()) + " products in this bundle");
 
-        if (0 < plidvids.size())
+        if (plidvids.size() > 0 && limit > 0)
         {
             this.fillProductsFromLidvids(products, uniqueProperties,
                     plidvids.subList(0, plidvids.size() < limit ? plidvids.size() : limit), fields, onlySummary);

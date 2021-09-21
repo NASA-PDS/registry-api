@@ -3,33 +3,14 @@ package gov.nasa.pds.api.engineering.elasticsearch.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.nasa.pds.api.engineering.controllers.MyCollectionsApiController;
-import gov.nasa.pds.model.Reference;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 
 public class EntityProduct {
-	private static final Logger log = LoggerFactory.getLogger(EntityProduct.class);
 	public static final String[] JSON_PROPERTIES = new String[] {
 			"lidvid", 
 			"title",
@@ -65,8 +46,9 @@ public class EntityProduct {
 	@JsonProperty("pds:Modification_Detail/pds:modification_date")
     private List<String> modification_date;
     
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	@JsonProperty("pds:File/pds:creation_date_time")
-    private String creation_date;
+    private List<String> creation_date;
 
 	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	@JsonProperty("ref_lid_instrument_host")
@@ -150,7 +132,7 @@ public class EntityProduct {
 		return modification_date;
 	}
 	
-	public String getCreationDate() {
+	public List<String> getCreationDate() {
 		return creation_date;
 	}
 	
@@ -158,7 +140,5 @@ public class EntityProduct {
 	public String getVersion() {
 		return version;
 	}
-	
-	
 	
 }
