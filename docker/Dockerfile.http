@@ -1,0 +1,44 @@
+FROM openjdk:11-slim
+
+# Get arguments from the build command line
+ARG version
+ENV VERSION=$version
+
+# Build up the OS
+RUN apt-get update \
+ && apt-get install -y curl \
+                       libtcnative-1
+
+# Make room for the app and capture the version
+RUN mkdir /usr/local/registry-api-service \
+ && cd /usr/local/registry-api-service \
+ && echo ${VERSION} > version.txt
+
+# Copy the data into the building container
+COPY LICENSE.txt /usr/local/registry-api-service
+COPY NOTICE.txt /usr/local/registry-api-service
+COPY README.txt /usr/local/registry-api-service
+
+# Resources shared with the rest of the world
+EXPOSE 80
+
+# Use this if producing a Docker image from a release
+RUN set -ex \
+ && cd /usr/local/registry-api-service \
+ && curl -L \
+         https://github.com/NASA-PDS/registry-api-service/releases/download/v${VERSION}/registry-api-service-${VERSION}.jar \
+         -o registry-api-service.jar \
+ && rm -rf /var/lib/apt/lists/*
+
+# TODO: Set-up bind dir for application.properties here...
+
+# Run the sevice by default
+WORKDIR /usr/local/registry-api-service
+
+# For release-based images 
+# TODO: the bind-dir needs to be added to the classpath as the first entry so the config file is assured to be picked up
+CMD ["java", \
+     # "-cp", "<bind_dir>", \
+     "-cp", "/usr/local/registry-api-service", \
+     "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
+     "gov.nasa.pds.api.engineering.SpringBootMain"]
