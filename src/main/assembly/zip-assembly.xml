@@ -44,12 +44,12 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>README.txt</source>
+			<source>README.md</source>
 			<outputDirectory></outputDirectory>
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>LICENSE.txt</source>
+			<source>LICENSE.md</source>
 			<outputDirectory>/</outputDirectory>
 			<fileMode>664</fileMode>
 			<lineEnding>unix</lineEnding>
