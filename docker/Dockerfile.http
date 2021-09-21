@@ -1,17 +1,13 @@
-FROM ubuntu:20.04
+FROM openjdk:11-slim
 
 # Get arguments from the build command line
 ARG version
 ENV VERSION=$version
 
 # Build up the OS
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \
-    apt-get install -y curl \
-                       libtcnative-1 \
-                       maven \
-                       openjdk-11-jdk-headless \
-                       tar
+RUN apt-get update \
+ && apt-get install -y curl \
+                       libtcnative-1
 
 # Make room for the app and capture the version
 RUN mkdir /usr/local/registry-api-service \
@@ -31,7 +27,8 @@ RUN set -ex \
  && cd /usr/local/registry-api-service \
  && curl -L \
          https://github.com/NASA-PDS/registry-api-service/releases/download/v${VERSION}/registry-api-service-${VERSION}.jar \
-         -o registry-api-service.jar
+         -o registry-api-service.jar \
+ && rm -rf /var/lib/apt/lists/*
 
 # TODO: Set-up bind dir for application.properties here...
 

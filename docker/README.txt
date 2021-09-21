@@ -16,8 +16,8 @@ The images are built from the base repository directory. An example build comman
 docker build --build-arg version=4.0.0-SNAPSHOT \
              --build-arg keystore_pass=MyDogHasFleas \
              --build-arg key_pass=SoDoesMyCat \
-             -t pds/registry-api-service:4.0.0-SNAPSHOT \
-             -f docker/Dockerfile.https .
+             --tag pds/registry-api-service:4.0.0-SNAPSHOT \
+             --file docker/Dockerfile.https .
 
 
 

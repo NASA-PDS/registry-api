@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM openjdk:11-slim
 
 # Get arguments from the build command line
 ARG version \
@@ -8,13 +8,9 @@ ARG version \
 ENV VERSION=$version
 
 # Build up the OS
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y curl \
-                       libtcnative-1 \
-                       maven \
-                       openjdk-11-jdk-headless \
-                       tar
+                       libtcnative-1
 
 # Make room for the app and capture the version
 RUN mkdir /usr/local/registry-api-service \
@@ -41,7 +37,8 @@ RUN set -ex \
 # Now generate/store the self signed cert.
 RUN cd /usr/local/registry-api-service \
  && keytool -genkeypair -keyalg RSA -alias registry -keystore keystore.p12 -storepass $keystore_pass -keypass $key_pass \
-            -dname "CN=Unknown" -keysize 2048 -validity 3650 -noprompt 
+            -dname "CN=Unknown" -keysize 2048 -validity 3650 -noprompt \
+ && rm -rf /var/lib/apt/lists/*
 
 # Run the sevice by default
 WORKDIR /usr/local/registry-api-service

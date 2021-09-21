@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM openjdk:11-slim
 
 # Get arguments from the build command line
 ARG version \
@@ -8,13 +8,9 @@ ARG version \
 ENV VERSION=$version
 
 # Build up the OS
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update && \
-    apt-get install -y curl \
-                       libtcnative-1 \
-                       maven \
-                       openjdk-11-jdk-headless \
-                       tar
+RUN apt-get update \
+ && apt-get install -y curl \
+                       libtcnative-1
 
 # Make room for the app and capture the version
 RUN mkdir /usr/local/registry-api-service \
@@ -29,9 +25,8 @@ COPY README.txt /usr/local/registry-api-service
 # Resources shared with the rest of the world
 EXPOSE 443
 
-# Load the local jar file and config - the config is in the jar file but this provides flexibility
+# Load the local jar file - the config is contained therein
 COPY target/registry-api-service-${VERSION}.jar /usr/local/registry-api-service
-COPY src/main/resources/application.properties /usr/local/registry-api-service
 
 # TODO: Set-up bind dir for application.properties here...
 
@@ -39,7 +34,8 @@ COPY src/main/resources/application.properties /usr/local/registry-api-service
 RUN cd /usr/local/registry-api-service \
  && keytool -genkeypair -keyalg RSA -alias registry -keystore keystore.p12 \
             -storepass $keystore_pass -keypass $key_pass \
-            -dname "CN=Unknown" -keysize 2048 -validity 3650 -noprompt 
+            -dname "CN=Unknown" -keysize 2048 -validity 3650 -noprompt \
+ && rm -rf /var/lib/apt/lists/*
 
 # Run the sevice by default
 WORKDIR /usr/local/registry-api-service
