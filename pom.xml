@@ -245,7 +245,7 @@
 		<dependency>
 			<groupId>gov.nasa.pds</groupId>
 			<artifactId>api-search-query-lexer</artifactId>
-			<version>0.2.0</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

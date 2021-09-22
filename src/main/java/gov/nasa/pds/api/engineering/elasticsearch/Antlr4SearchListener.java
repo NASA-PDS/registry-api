@@ -27,13 +27,14 @@ public class Antlr4SearchListener extends SearchBaseListener
 	private static final Logger log = LoggerFactory.getLogger(Antlr4SearchListener.class);
 	
 	private BoolQueryBuilder query = new BoolQueryBuilder();
-	private boolean wildcard = false;
+	
 	private conjunctions conjunction = conjunctions.AND;
 	final private Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>(); 
 	final private Deque<BoolQueryBuilder> stack_queries = new ArrayDeque<BoolQueryBuilder>();
 	final private Deque<List<QueryBuilder>> stack_musts = new ArrayDeque<List<QueryBuilder>>();
 	final private Deque<List<QueryBuilder>> stack_nots = new ArrayDeque<List<QueryBuilder>>();
 	final private Deque<List<QueryBuilder>> stack_shoulds = new ArrayDeque<List<QueryBuilder>>(); 
+	
 	int depth = 0;
 	private List<QueryBuilder> musts = new ArrayList<QueryBuilder>();
 	private List<QueryBuilder> nots = new ArrayList<QueryBuilder>();
@@ -115,70 +116,108 @@ public class Antlr4SearchListener extends SearchBaseListener
 		 this.conjunction = conjunctions.OR;
 	 }
 
-	 @Override
-	 public void enterComparison(SearchParser.ComparisonContext ctx)
-	 {
- 	 }
 
-	@Override
-	public void exitComparison(SearchParser.ComparisonContext ctx)
-	{
-		final String left = ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
-		String right;
-		QueryBuilder comparator = null;
+    @Override
+    public void enterComparison(SearchParser.ComparisonContext ctx)
+    {
+    }
 
-		if (ctx.NUMBER() != null) right = ctx.NUMBER().getSymbol().getText();
-		else if (ctx.STRINGVAL() != null)
-		{
-			right = ctx.STRINGVAL().getSymbol().getText();
-			right = right.substring(1, right.length()-1);
-		}
-		else if (ctx.wildcardFunc() != null) 
-		{
-		    this.wildcard = true;
-		    right = ctx.wildcardFunc().getChild(2).getText();
-		    right = right.substring(1, right.length()-1);
-		}
-		else
-		{
-			log.error("Panic, there are more data types than this version of the lexer knows about.");
-			throw new ParseCancellationException(); // PANIC: listener out of sync with the grammar
-		}
 
-		if (this.operator == operation.eq || this.operator == operation.ne)
-		{
-			if (this.wildcard) comparator = new WildcardQueryBuilder(left, right);
-			else comparator = new MatchQueryBuilder(left, right);
-		}
-		else
-		{
-			comparator = new RangeQueryBuilder(left);
-			
-			if (this.operator == operation.ge) ((RangeQueryBuilder)comparator).gte(right);
-			else if (this.operator == operation.gt) ((RangeQueryBuilder)comparator).gt(right);
-			else if (this.operator == operation.le) ((RangeQueryBuilder)comparator).lte(right);
-			else if (this.operator == operation.lt) ((RangeQueryBuilder)comparator).lt(right);
-			else
-			{
-				log.error("Panic, there are more range operators than this version of the lexer knows about");
-				throw new ParseCancellationException(); // PANIC: listener out of sync with the grammar
-			}
-		}
+    @Override
+    public void exitComparison(SearchParser.ComparisonContext ctx)
+    {
+        final String left = ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
+        
+        String right;
+        QueryBuilder comparator = null;
 
-		if (this.operator == operation.ne) this.nots.add(comparator);
-		else if (this.conjunction == conjunctions.AND) this.musts.add(comparator);	
-		else this.shoulds.add(comparator);
-	}
+        if (ctx.NUMBER() != null)
+        {
+             right = ctx.NUMBER().getSymbol().getText();
+        }
+        else if (ctx.STRINGVAL() != null)
+        {
+             right = ctx.STRINGVAL().getSymbol().getText();
+             right = right.substring(1, right.length() - 1);
+        }
+        else
+        {
+            log.error("Panic, there are more data types than this version of the lexer knows about.");
+            throw new ParseCancellationException(); // PANIC: listener out of sync with the grammar
+        }
+
+        if (this.operator == operation.eq || this.operator == operation.ne)
+        {
+            comparator = new MatchQueryBuilder(left, right);
+        }
+        else
+        {
+            comparator = new RangeQueryBuilder(left);
+
+            if (this.operator == operation.ge)
+                ((RangeQueryBuilder) comparator).gte(right);
+            else if (this.operator == operation.gt)
+                ((RangeQueryBuilder) comparator).gt(right);
+            else if (this.operator == operation.le)
+                ((RangeQueryBuilder) comparator).lte(right);
+            else if (this.operator == operation.lt)
+                ((RangeQueryBuilder) comparator).lt(right);
+            else
+            {
+                log.error("Panic, there are more range operators than this version of the lexer knows about");
+                throw new ParseCancellationException(); // PANIC: listener out of sync with the grammar
+            }
+        }
+
+        if (this.operator == operation.ne)
+        {
+            this.nots.add(comparator);
+        }
+        else if (this.conjunction == conjunctions.AND)
+        {
+            this.musts.add(comparator);
+        }
+        else
+        {
+            this.shoulds.add(comparator);
+        }
+    }
+
+     
+    @Override
+    public void enterLikeComparison(SearchParser.LikeComparisonContext ctx)
+    {
+    }
+
+
+    @Override
+    public void exitLikeComparison(SearchParser.LikeComparisonContext ctx)
+    {
+        final String left = ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getText());
+        
+        String right = ctx.STRINGVAL().getText();
+        right = right.substring(1, right.length() - 1);
+        
+        QueryBuilder comparator = new WildcardQueryBuilder(left, right);
+
+        if("not".equalsIgnoreCase(ctx.getChild(1).getText()))
+        {
+            this.nots.add(comparator);
+        }
+        else if(this.conjunction == conjunctions.AND)
+        {
+            this.musts.add(comparator);
+        }
+        else 
+        {
+            this.shoulds.add(comparator);
+        }
+    }
+
 
 	@Override
 	public void enterOperator(SearchParser.OperatorContext ctx)
 	{
-		if (this.wildcard && ctx.EQ() == null && ctx.NE() == null)
-		{
-			log.warn("Cannot use wildcards with <, <=, >=, or >");
-			throw new ParseCancellationException();
-		}
-		
 		if (ctx.EQ() != null) this.operator = operation.eq;
 		else if (ctx.GE() != null) this.operator = operation.ge;
 		else if (ctx.GT() != null) this.operator = operation.gt;

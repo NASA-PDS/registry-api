@@ -131,7 +131,7 @@ public class ElasticSearchUtil {
 	}
 	
 	static public ProductWithXmlLabel ESentityProductToAPIProduct(EntitytProductWithBlob ep, URL baseURL) {
-		ElasticSearchUtil.log.info("convert ES object to API object with XML label");
+		log.debug("convert ES object to API object with XML label");
 		ProductWithXmlLabel product = new ProductWithXmlLabel();
 		product.setLabelXml(ep.getPDS4XML());
 		return (ProductWithXmlLabel)addPropertiesFromESEntity(product, ep, baseURL);
@@ -139,7 +139,7 @@ public class ElasticSearchUtil {
 	
 
 	static public Product ESentityProductToAPIProduct(EntityProduct ep, URL baseURL) {
-		ElasticSearchUtil.log.info("convert ES object to API object without XML label");
+		log.debug("convert ES object to API object without XML label");
 		
 		Product product = new Product();
 		
