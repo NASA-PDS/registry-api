@@ -1,16 +1,14 @@
 grammar Search;
 
 query : queryTerm EOF ; 
-queryTerm : comparison | group ;
+queryTerm : comparison | likeComparison | group ;
 group : NOT? LPAREN expression RPAREN ;
 expression : andStatement | orStatement | queryTerm ;
 andStatement : queryTerm (AND queryTerm)+ ;
 orStatement : queryTerm (OR queryTerm)+ ;
-comparison : FIELD operator ( NUMBER | STRINGVAL | wildcardFunc ) ;
+comparison : FIELD operator ( NUMBER | STRINGVAL ) ;
+likeComparison : FIELD NOT? LIKE STRINGVAL ;
 operator : EQ | NE | GT | GE | LT | LE ;
-
-wildcardFunc : ('WILDCARD' | 'wildcard') LPAREN STRINGVAL RPAREN ;
-
 
 NOT : 'not' ;
 
@@ -20,6 +18,8 @@ GT : 'gt' ;
 GE : 'ge' ;
 LT : 'lt' ;
 LE : 'le' ;
+
+LIKE: 'like';
 
 LPAREN : '(' ;
 RPAREN : ')' ;
