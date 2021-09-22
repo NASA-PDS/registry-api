@@ -17,9 +17,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir /usr/local/registry-api-service-${VERSION}
 
 # Copy the data into the building container
-COPY LICENSE.txt /usr/local/registry-api-service-${VERSION}
+COPY LICENSE.md /usr/local/registry-api-service-${VERSION}
 COPY NOTICE.txt /usr/local/registry-api-service-${VERSION}
-COPY README.txt /usr/local/registry-api-service-${VERSION}
+COPY README.md /usr/local/registry-api-service-${VERSION}
 COPY pom.xml /usr/local/registry-api-service-${VERSION}
 COPY src /usr/local/registry-api-service-${VERSION}/src
 

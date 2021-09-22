@@ -18,9 +18,9 @@ RUN mkdir /usr/local/registry-api-service \
  && echo ${VERSION} > version.txt
 
 # Copy the data into the building container
-COPY LICENSE.txt /usr/local/registry-api-service
+COPY LICENSE.md /usr/local/registry-api-service
 COPY NOTICE.txt /usr/local/registry-api-service
-COPY README.txt /usr/local/registry-api-service
+COPY README.md /usr/local/registry-api-service
 
 # Resources shared with the rest of the world
 EXPOSE 443

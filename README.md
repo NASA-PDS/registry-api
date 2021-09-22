@@ -32,7 +32,23 @@ Note, the registry index in elasticSearch is hard-coded. It need to be `registry
     mvn clean
     mvn install
     mvn spring-boot:run
-    
+
+👉 **Note:** in order to run in this way, you will need to modify the `spring-boot-starter-thymeleaf` dependency by pinning it to version `1.5.1.RELEASE` and excluding the `logback-classic` artifact in the `pom.xml` file as follows:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    <version>1.5.1.RELEASE</version>
+    <exclusions>
+        <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
     
 ### Usage
 
@@ -83,7 +99,7 @@ Have a registry deployed, for example with docker as described in https://github
 
 ```
 docker image build --build-arg version=$(git rev-parse HEAD) \
-             --file Dockerfile.local \
+             --file docker/Dockerfile.local \
              --tag registry-api-service:$(git rev-parse HEAD) \
              .
 ```
