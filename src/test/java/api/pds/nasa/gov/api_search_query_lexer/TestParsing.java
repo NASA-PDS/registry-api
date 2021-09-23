@@ -21,17 +21,17 @@ import gov.nasa.pds.api.engineering.lexer.SearchParser.AndStatementContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.ComparisonContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.ExpressionContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.GroupContext;
+import gov.nasa.pds.api.engineering.lexer.SearchParser.LikeComparisonContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.OperatorContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.OrStatementContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.QueryContext;
 import gov.nasa.pds.api.engineering.lexer.SearchParser.QueryTermContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.WildcardFuncContext;
 
 
 public class TestParsing implements ParseTreeListener, SearchListener
 {
 	TerminalNode field=null, number=null, strval=null;
-	String wildcard=null;
+	boolean isNot = false;
 
 	@Test
 	public void testNumber()
@@ -73,26 +73,48 @@ public class TestParsing implements ParseTreeListener, SearchListener
 	}
 	
 	
-	@Test
-	public void testWildcard()
-	{
-		String queryString = "lid eq wildcard(\"*text*\")";
-		CodePointCharStream input = CharStreams.fromString(queryString);
+    @Test
+    public void testLike()
+    {
+        String queryString = "lid like \"*text*\"";
+        CodePointCharStream input = CharStreams.fromString(queryString);
         SearchLexer lex = new SearchLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
         SearchParser par = new SearchParser(tokens);
         ParseTree tree = par.query();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, tree);
-        
+
         Assertions.assertNotNull(this.field);
-        Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
+        Assertions.assertEquals(this.field.getText(), "lid");
 
-        Assertions.assertNotNull(this.wildcard);
-        Assertions.assertEquals(this.wildcard, "\"*text*\"");
-	}
-
+        Assertions.assertNotNull(this.strval);
+        Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
+    }
 	
+    
+    @Test
+    public void testNotLike()
+    {
+        String queryString = "lid not like \"*text*\"";
+        CodePointCharStream input = CharStreams.fromString(queryString);
+        SearchLexer lex = new SearchLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        SearchParser par = new SearchParser(tokens);
+        ParseTree tree = par.query();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(this, tree);
+
+        Assertions.assertNotNull(this.field);
+        Assertions.assertEquals(this.field.getText(), "lid");
+
+        Assertions.assertNotNull(this.strval);
+        Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
+        
+        Assertions.assertEquals(this.isNot, true);
+    }
+	
+    
 	@Test
 	void testTemporalRange()
 	{
@@ -225,19 +247,6 @@ public class TestParsing implements ParseTreeListener, SearchListener
     }
 
     @Override
-    public void enterWildcardFunc(WildcardFuncContext ctx)
-    {
-        wildcard = ctx.getChild(2).getText();
-    }
-
-    @Override
-    public void exitWildcardFunc(WildcardFuncContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public void enterEveryRule(ParserRuleContext arg0)
     {
         // TODO Auto-generated method stub
@@ -260,6 +269,23 @@ public class TestParsing implements ParseTreeListener, SearchListener
 
     @Override
     public void visitTerminal(TerminalNode arg0)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void enterLikeComparison(LikeComparisonContext ctx)
+    {
+        this.field = ctx.FIELD();
+        this.strval = ctx.STRINGVAL();
+        
+        String op = ctx.getChild(1).getText();
+        if("not".equals(op)) isNot = true;
+    }
+
+    @Override
+    public void exitLikeComparison(LikeComparisonContext ctx)
     {
         // TODO Auto-generated method stub
         
