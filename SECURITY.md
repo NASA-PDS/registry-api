@@ -1,16 +1,19 @@
-# Security Policy
+# 👮‍♀️ Security Policy
 
-## Supported Versions
+This document describes the security policy of the Registry API Service.
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+
+## 📀 Supported Versions
+
+The following table describes what versions are supported and which are not.
 
 | Version | Supported          |
-| ------- | ------------------ |
-| 1.18.2   | :white_check_mark: |
-| 1.17.5   | :white_check_mark: |
-| < 1.17.5   | :x: |
+|:--------|:------------------:|
+| 0.3.2   | ✅                 |
+| 0.3.0   | ❌                 |
+| <0.3    | ❌                 |
 
-## Reporting a Vulnerability
 
-Please create a new issue using the [Vulnerability Issue template](https://github.com/NASA-PDS-Incubator/validate/issues/new?assignees=jordanpadams&labels=triage-needed%2C+security&template=vulnerability-issue.md&title=%5BSECURITY%5D+Title+Here)
+## 🚨 Reporting a Vulnerability
+
+Please create a new issue using the [Vulnerability Issue template](https://github.com/NASA-PDS/registry-api-service/issues/new).

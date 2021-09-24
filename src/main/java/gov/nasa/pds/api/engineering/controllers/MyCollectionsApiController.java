@@ -183,7 +183,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
             iteration = iteration + pageOfLidvids.size() + wsize;
         }
 
-        if (0 < productLidvids.size())
+        if (productLidvids.size() > 0 && limit > 0)
         {
             this.fillProductsFromLidvids(products, uniqueProperties,
                     productLidvids.subList(0, productLidvids.size() < limit ? productLidvids.size() : limit), fields, onlySummary);

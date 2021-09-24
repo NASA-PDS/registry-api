@@ -2,9 +2,9 @@
 
 ## Overview
 
-This is the PDS API implementation which provides access to the PDS registries (see https://github.com/NASA-PDS/pds-registry-app). When operational the API service will be part of the registry application. 
+This is the PDS API implementation which provides access to the PDS registries (see https://github.com/NASA-PDS/pds-registry-app). When operational the API service will be part of the registry application. It implements a very simple collections and product search end-point complying with the specification (see https://app.swaggerhub.com/organizations/PDS_APIs).
 
-It implements a very simple collections and product search end-point complying with the specification (see https://app.swaggerhub.com/organizations/PDS_APIs)
+For more information, please visit https://nasa-pds.github.io/registry-api-service/
 
 
 ## Prerequisites
@@ -32,7 +32,23 @@ Note, the registry index in elasticSearch is hard-coded. It need to be `registry
     mvn clean
     mvn install
     mvn spring-boot:run
-    
+
+👉 **Note:** in order to run in this way, you will need to modify the `spring-boot-starter-thymeleaf` dependency by pinning it to version `1.5.1.RELEASE` and excluding the `logback-classic` artifact in the `pom.xml` file as follows:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    <version>1.5.1.RELEASE</version>
+    <exclusions>
+        <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
     
 ### Usage
 
@@ -82,8 +98,8 @@ Have a registry deployed, for example with docker as described in https://github
 ### Local git version
 
 ```
-docker build --build-arg version=$(git rev-parse HEAD) \
-             --file Dockerfile.local \
+docker image build --build-arg version=$(git rev-parse HEAD) \
+             --file docker/Dockerfile.local \
              --tag registry-api-service:$(git rev-parse HEAD) \
              .
 ```
@@ -95,7 +111,7 @@ The `/absolute/path/to/my/properties.file` should be configured to access your r
 
 
 ```
-docker run --name registry-api-service \
+docker container run --name registry-api-service \
            --network pds \
            --publish 8080:8080 \
            --rm \
@@ -106,9 +122,9 @@ docker run --name registry-api-service \
 ### Develop
 
 1. build local git version
-1. run image as below and restart when code has changed and want to test again  
+2. run image as below and restart when code has changed and want to test again  
 ```
-docker run --interactive \
+docker container run --interactive \
            --name registry-api-service \
            --network pds \
            --publish 8080:8080 \
@@ -118,4 +134,4 @@ docker run --interactive \
            --volume $(realpath ${PWD}):/usr/local/registry-api-service-$(git rev-parse HEAD) \
            registry-api-service:$(git rev-parse HEAD) bash
 ```
-1. Run maven as desired such as `mvn spring-boot:run` to run your local copy or `mvn install` to build it. Rinse and repeat as needed.
+3. Run maven as desired such as `mvn spring-boot:run` to run your local copy or `mvn install` to build it. Rinse and repeat as needed.

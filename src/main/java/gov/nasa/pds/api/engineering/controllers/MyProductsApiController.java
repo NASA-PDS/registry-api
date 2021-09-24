@@ -217,7 +217,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     private Products getContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
             @Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) throws IOException,LidVidNotFoundException
     {
-          long begin = System.currentTimeMillis();
+        long begin = System.currentTimeMillis();
         if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
     
         MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
@@ -236,12 +236,19 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         summary.setTook(-1);
         products.setSummary(summary);
         
-        if (0 < collectionLidvids.size())
-        { 
-            this.fillProductsFromLidvids(products, uniqueProperties,
-                collectionLidvids.subList(start, collectionLidvids.size() < start+limit ? collectionLidvids.size() : +limit), fields,
-                summaryOnly); }
-        else MyProductsApiController.log.warn("Did not find a product with lidvid: " + lidvid);
+        int size = collectionLidvids.size();
+        if (size > 0 && limit > 0 && start < size)
+        {
+            int end = start + limit;
+            if(end > size) end = size; 
+            List<String> ids = collectionLidvids.subList(start, end);
+            
+            this.fillProductsFromLidvids(products, uniqueProperties, ids, fields, summaryOnly); 
+        }
+        else 
+        {
+            MyProductsApiController.log.warn("Did not find a product with lidvid: " + lidvid);
+        }
 
         summary.setHits(collectionLidvids.size());
         summary.setProperties(new ArrayList<String>(uniqueProperties));

@@ -31,7 +31,6 @@ public class Pds4JsonSearchRequestBuilder
         };
 
     private String registryIndex;
-    private String registryRefIndex;
     private int timeOutSeconds;
 
     /**
@@ -40,10 +39,9 @@ public class Pds4JsonSearchRequestBuilder
      * @param registryRefindex Elasticsearch registry refs index
      * @param timeOutSeconds Elasticsearch request timeout
      */
-    public Pds4JsonSearchRequestBuilder(String registryIndex, String registryRefindex, int timeOutSeconds) 
+    public Pds4JsonSearchRequestBuilder(String registryIndex, int timeOutSeconds) 
     {
         this.registryIndex = registryIndex;
-        this.registryRefIndex = registryRefindex;
         this.timeOutSeconds = timeOutSeconds;
     }
     
@@ -53,7 +51,7 @@ public class Pds4JsonSearchRequestBuilder
      */
     public Pds4JsonSearchRequestBuilder() 
     {
-        this("registry", "registry-refs", 60);
+        this("registry", 10);
     }
 
     

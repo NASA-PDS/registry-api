@@ -101,17 +101,17 @@ public class ElasticSearchUtil {
 			meta.setVersion(ep.getVersion());
 		}
 		
-		String creationDateTime = ep.getCreationDate();
-		if (creationDateTime != null) {
-			meta.setCreationDateTime(ep.getCreationDate());
+		List<String> creationDateTime = ep.getCreationDate();
+		if (creationDateTime != null && !creationDateTime.isEmpty()) {
+			meta.setCreationDateTime(creationDateTime.get(0));
 		}
 		
 		List<String> updateDateTime = ep.getModificationDate();
-		if (updateDateTime != null) {
-			meta.setUpdateDateTime(updateDateTime.get(0)); // TODO check which modification time to use when there are more than one
+		if (updateDateTime != null && !updateDateTime.isEmpty()) {
+		    // TODO check which modification time to use when there are more than one
+			meta.setUpdateDateTime(updateDateTime.get(0));
 		}
-		
-		
+				
 		String labelUrl = ep.getPDS4FileRef();
 		if (labelUrl != null) {		
 			meta.setLabelUrl(labelUrl);
