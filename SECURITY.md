@@ -1,11 +1,11 @@
 # 👮‍♀️ Security Policy
 
-This document describes the security policy of PDS Validation Tool.
+This document describes the security policy of API Search Query Lexer.
 
 
 ## 📀 Supported Versions
 
-The following table describes which versions of the PDS4 Validation Tool are supported and which are not.
+The following table describes which versions of the API Search Query Lexer are supported and which are not.
 
 | Version | Supported  |
 |:--------|:----------:|
