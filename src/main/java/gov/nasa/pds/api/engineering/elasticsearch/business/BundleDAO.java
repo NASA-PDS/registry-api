@@ -44,13 +44,16 @@ public class BundleDAO
     }
 
 
-    public List<String> getBundleCollectionLidVids(String bundleLidVid) throws IOException, LidVidNotFoundException
+    public List<String> getBundleCollectionLidVids(String bundleLidVid, boolean latest) throws IOException, LidVidNotFoundException
     {
         // Get bundle by lidvid.
         GetRequest esRequest = new GetRequest(esConnection.getRegistryIndex(), bundleLidVid);
         
         // Fetch collection references only.
-        String[] includes = new String[] { "ref_lidvid_collection", "ref_lid_collection" };
+        String[] includes = { 
+                "ref_lidvid_collection", "ref_lidvid_collection_secondary",
+                "ref_lid_collection", "ref_lid_collection_secondary"
+        };
         FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includes, null);
         esRequest.fetchSourceContext(fetchSourceContext);
         
@@ -59,15 +62,31 @@ public class BundleDAO
         GetResponse esResponse = client.get(esRequest, RequestOptions.DEFAULT);
         if(!esResponse.isExists()) throw new LidVidNotFoundException(bundleLidVid);
 
+        // Get fields
         Map<String, Object> fieldMap = esResponse.getSourceAsMap();
-        
-        // LidVid references (e.g., OREX bundle)        
-        List<String> ids = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
-        if(ids != null) return ids;
+
+        if(!latest)
+        {
+            // LidVid references (e.g., OREX bundle)        
+            List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
+            List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
+
+            List<String> ids = new ArrayList<String>();
+            if(primaryIds != null) ids.addAll(primaryIds); 
+            if(secondaryIds != null) ids.addAll(secondaryIds);
+
+            if(!ids.isEmpty()) return ids;
+        }
 
         // Lid references (e.g., Kaguya bundle)
-        ids = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        if(ids != null)
+        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
+        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
+
+        List<String> ids = new ArrayList<String>();
+        if(primaryIds != null) ids.addAll(primaryIds); 
+        if(secondaryIds != null) ids.addAll(secondaryIds);
+        
+        if(!ids.isEmpty())
         {
             // Get the latest versions of LIDs (Return LIDVIDs)
             ids = LidVidUtils.getLatestLids(esConnection, ids);

@@ -82,17 +82,41 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }    
     
     
-    public ResponseEntity<Products> collectionsOfABundle(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid
-            ,@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
-            ,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
-            ,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
-            ,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
-            ,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
-            )
+    public ResponseEntity<Products> collectionsOfABundle(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
     {
-            return this.getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary);
+        return this.getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary);
     }
-
+    
+    
+    public ResponseEntity<Products> collectionsOfABundleAll(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
+    {
+        return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+    }    
+    
+    
+    public ResponseEntity<Products> collectionsOfABundleLatest(
+            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
+    {
+        return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+    }
+    
     
     private Products getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
             List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
@@ -102,7 +126,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         lidvid = productBO.getLidVidDao().getLatestLidVidFromLid(lidvid);
         MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + lidvid);
         
-        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
+        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid, false);
 
         HashSet<String> uniqueProperties = new HashSet<String>();
         Products products = new Products();
@@ -207,7 +231,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         int iteration=0,wsize=0;
         HashSet<String> uniqueProperties = new HashSet<String>();
-        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
+        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid, false);
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();
         Products products = new Products();
