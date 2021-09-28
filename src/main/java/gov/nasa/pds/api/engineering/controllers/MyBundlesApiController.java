@@ -5,6 +5,7 @@ import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
+import gov.nasa.pds.api.engineering.elasticsearch.business.ProductVersionSelector;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -90,7 +91,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
             @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
     {
-        return this.getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary);
+        return getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary, ProductVersionSelector.ORIGINAL);
     }
     
     
@@ -102,7 +103,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
             @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
     {
-        return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+        return getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary, ProductVersionSelector.ALL);
     }    
     
     
@@ -114,16 +115,17 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
             @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
     {
-        return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+        return getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary, ProductVersionSelector.LATEST);
     }
     
     
     private Products getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
-            List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
+            List<String> sort, boolean onlySummary, ProductVersionSelector versionSelector) 
+                    throws IOException, LidVidNotFoundException
     {
         long begin = System.currentTimeMillis();
         
-        lidvid = productBO.getLidVidDao().getLatestLidVidFromLid(lidvid);
+        lidvid = productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
         MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + lidvid);
         
         List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid, false);
@@ -160,7 +162,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
     
     private ResponseEntity<Products> getBundlesCollectionsEntity(String lidvid, int start, int limit, 
-            List<String> fields, List<String> sort, boolean onlySummary)
+            List<String> fields, List<String> sort, boolean onlySummary, ProductVersionSelector versionSelector)
     {
          String accept = this.request.getHeader("Accept");
          MyBundlesApiController.log.info("accept value is " + accept);
@@ -173,7 +175,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
          {
              try
              {
-                 Products products = getBundleCollections(lidvid, start, limit, fields, sort, onlySummary);
+                 Products products = getBundleCollections(lidvid, start, limit, fields, sort, onlySummary, versionSelector);
                  return new ResponseEntity<Products>(products, HttpStatus.OK);
              }
              catch (IOException e)

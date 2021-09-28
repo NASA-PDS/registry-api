@@ -39,7 +39,7 @@ public class LidVidUtils
      * @return list of LIDVIDs
      * @throws IOException
      */
-    public static List<String> getLatestLids(ElasticSearchRegistryConnection esConnection, Collection<String> lids) throws IOException
+    public static List<String> getLatestLidVidsByLids(ElasticSearchRegistryConnection esConnection, Collection<String> lids) throws IOException
     {
         // Create request
         SearchSourceBuilder src = buildGetLatestLidVidsRequest(lids);
