@@ -185,7 +185,7 @@ public class MyProductsApiBareController {
             List<String> fields, List<String> sort, boolean onlySummary)
     {
         String accept = this.request.getHeader("Accept");
-        log.info("accept value is " + accept);
+        log.debug("accept value is " + accept);
         if ((accept != null && 
                 (accept.contains("application/json")
                         || accept.contains("application/pds4+json")
@@ -236,7 +236,7 @@ public class MyProductsApiBareController {
     protected ResponseEntity<Object> getAllProductsResponseEntity(String lidvid, int start, int limit)
     {
         String accept = this.request.getHeader("Accept");
-        log.info("accept value is " + accept);
+        log.debug("accept value is " + accept);
         if ((accept != null && (accept.contains("application/json") || accept.contains("text/html")
                 || accept.contains("application/xml") || accept.contains("*/*"))) || (accept == null))
         {
@@ -370,10 +370,9 @@ public class MyProductsApiBareController {
                 baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.context.getServerPort(), this.contextPath);
             }
             
-            MyProductsApiBareController.log.info("baseUrl is " + baseURL.toString());
+            log.debug("baseUrl is " + baseURL.toString());
             return baseURL;
             
-
         } catch (MalformedURLException e) {
             log.error("Server URL was not retrieved");
             return null;

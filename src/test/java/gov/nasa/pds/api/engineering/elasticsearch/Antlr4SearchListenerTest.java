@@ -53,9 +53,9 @@ public class Antlr4SearchListenerTest
 	}
 
 	@Test
-	public void testEqualWildcard()
+	public void testLikeWildcard()
 	{
-		String qs = "lid eq *pdart14_meap";
+		String qs = "lid like \"*pdart14_meap\"";
 		BoolQueryBuilder query = this.run(qs);
 		
 		Assertions.assertEquals (query.must().size(), 1);
@@ -66,20 +66,22 @@ public class Antlr4SearchListenerTest
 		Assertions.assertEquals (((WildcardQueryBuilder)query.must().get(0)).value(), "*pdart14_meap");
 	}
 
-	@Test
-	public void testNotEqualWildchar()
-	{
-		String qs = "lid ne pdart14_meap?";
-		BoolQueryBuilder query = this.run(qs);
-		
-		Assertions.assertEquals (query.must().size(), 0);
-		Assertions.assertEquals (query.mustNot().size(), 1);
-		Assertions.assertEquals (query.should().size(), 0);
-		Assertions.assertTrue (query.mustNot().get(0) instanceof WildcardQueryBuilder);
-		Assertions.assertEquals (((WildcardQueryBuilder)query.mustNot().get(0)).fieldName(), "lid");
-		Assertions.assertEquals (((WildcardQueryBuilder)query.mustNot().get(0)).value(), "pdart14_meap?");
-	}
+	
+    @Test
+    public void testNotLikeWildchar()
+    {
+        String qs = "lid not like \"pdart14_meap?\"";
+        BoolQueryBuilder query = this.run(qs);
 
+        Assertions.assertEquals(query.must().size(), 0);
+        Assertions.assertEquals(query.mustNot().size(), 1);
+        Assertions.assertEquals(query.should().size(), 0);
+        Assertions.assertTrue(query.mustNot().get(0) instanceof WildcardQueryBuilder);
+        Assertions.assertEquals(((WildcardQueryBuilder) query.mustNot().get(0)).fieldName(), "lid");
+        Assertions.assertEquals(((WildcardQueryBuilder) query.mustNot().get(0)).value(), "pdart14_meap?");
+    }
+
+    
 	@Test
 	public void testEscape()
 	{
@@ -94,20 +96,6 @@ public class Antlr4SearchListenerTest
 		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).value(), "*pdart14_meap?");
 	}
 
-	@Test
-	public void testGroup()
-	{
-		String qs = "( lid eq *pdart14_meap* )";
-		BoolQueryBuilder query = this.run(qs);
-		
-		Assertions.assertEquals (query.must().size(), 1);
-		Assertions.assertEquals (query.mustNot().size(), 0);
-		Assertions.assertEquals (query.should().size(), 0);
-		Assertions.assertTrue (query.must().get(0) instanceof WildcardQueryBuilder);
-		Assertions.assertEquals (((WildcardQueryBuilder)query.must().get(0)).fieldName(), "lid");
-		Assertions.assertEquals (((WildcardQueryBuilder)query.must().get(0)).value(), "*pdart14_meap*");
-
-	}
 
 	@Test
 	public void testGroupedStatementAndExclusiveInequality()
@@ -227,19 +215,6 @@ public class Antlr4SearchListenerTest
 		Assertions.assertFalse (((RangeQueryBuilder)nest.must().get(1)).includeUpper());
 	}
 
-	@Test
-	public void testNoWildcard()
-	{
-		String qs = "ref_lid_target eq urn:nasa:pds:context:target:planet.mercury";
-		BoolQueryBuilder query = this.run(qs);
-
-		Assertions.assertEquals (query.must().size(), 1);
-		Assertions.assertEquals (query.mustNot().size(), 0);
-		Assertions.assertEquals (query.should().size(), 0);
-		Assertions.assertTrue (query.must().get(0) instanceof MatchQueryBuilder);
-		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).fieldName(), "ref_lid_target");
-		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).value(), "urn:nasa:pds:context:target:planet.mercury");
-	}
 	
 	@Test
 	public void testNoWildcardQuoted()
