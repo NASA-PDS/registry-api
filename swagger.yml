@@ -632,6 +632,132 @@ paths:
         schema:
           type: boolean
           default: false
+
+  /collections/{identifier}/products/latest:
+    get:
+      tags:
+        - collection's products
+      summary: get producs belonging to a given collection
+      operationId: products-of-a-collection-latest
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: identifier
+        in: path
+        description: lidvid or lid
+        required: true
+        schema:
+          type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 100
+      - name: fields
+        in: query
+        description: returned fields, syntax field0,field1
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: sort results, syntax asc(field0),desc(field1)
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: only-summary
+        in: query
+        description: only return the summary, useful to get the list of available properties
+        required: false
+        schema:
+          type: boolean
+          default: false
+
+  /collections/{identifier}/products/all:
+    get:
+      tags:
+        - collection's products
+      summary: get producs belonging to a given collection
+      operationId: products-of-a-collection-all
+      responses:
+        '200':
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: identifier
+        in: path
+        description: lidvid or lid
+        required: true
+        schema:
+          type: string
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        schema:
+          type: integer
+          default: 100
+      - name: fields
+        in: query
+        description: returned fields, syntax field0,field1
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort
+        in: query
+        description: sort results, syntax asc(field0),desc(field1)
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: only-summary
+        in: query
+        description: only return the summary, useful to get the list of available properties
+        required: false
+        schema:
+          type: boolean
+          default: false
+
+
   /bundles:
     get:
       tags:
