@@ -24,7 +24,7 @@ public class TestLidVidUtils
 
         
         BundleDAO dao = new BundleDAO(con);
-        List<String> ids = dao.getBundleCollectionLidVids("urn:nasa:pds:orex.spice::3.0", false);
+        List<String> ids = dao.getBundleCollectionLidVids("urn:nasa:pds:orex.spice::3.0");
         
         System.out.println();
         System.out.println(ids);

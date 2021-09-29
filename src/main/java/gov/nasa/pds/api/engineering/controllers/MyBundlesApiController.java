@@ -91,7 +91,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
             @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
     {
-        return getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary, ProductVersionSelector.ORIGINAL);
+        return getBundlesCollectionsEntity(lidvid, start, limit, fields, sort, onlySummary, ProductVersionSelector.LATEST);
     }
     
     
@@ -128,7 +128,15 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         lidvid = productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
         MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + lidvid);
         
-        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid, false);
+        List<String> clidvids = null;
+        if(versionSelector == ProductVersionSelector.ALL)
+        {
+            clidvids = productBO.getBundleDao().getAllBundleCollectionLidVids(lidvid);
+        }
+        else
+        {
+            clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
+        }
 
         HashSet<String> uniqueProperties = new HashSet<String>();
         Products products = new Products();
@@ -225,6 +233,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
          else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+    
     private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException,LidVidNotFoundException
     {
     long begin = System.currentTimeMillis();
@@ -233,7 +242,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         int iteration=0,wsize=0;
         HashSet<String> uniqueProperties = new HashSet<String>();
-        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid, false);
+        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();
         Products products = new Products();

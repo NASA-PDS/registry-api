@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -46,19 +48,14 @@ public class BundleDAO
 
     /**
      * Get collections of a bundle by bundle LIDVID. 
-     * <p>If latest flag is true, then only latest versions of collections are returned 
-     * even if LIDVID reference in a bundle points to previous version of a collection.
-     * <p> If latest flag is false, then if a bundle has LIDVID collection references, 
-     * then those collections are returned. If a bundle has LID collection references,
-     * then the latest versions of collections are returned.
+     * If a bundle has LIDVID collection references, then those collections are returned. 
+     * If a bundle has LID collection references, then the latest versions of collections are returned.
      * @param bundleLidVid bundle LIDVID (Could not pass LID here)
-     * @param latest if true, return latest collection versions, even if LIDVID collection
-     * references point to previous versions.
      * @return a list of collection LIDVIDs
      * @throws IOException IO exception
      * @throws LidVidNotFoundException LIDVID not found exception
      */
-    public List<String> getBundleCollectionLidVids(String bundleLidVid, boolean latest) 
+    public List<String> getBundleCollectionLidVids(String bundleLidVid) 
             throws IOException, LidVidNotFoundException
     {
         // Get bundle by lidvid.
@@ -80,39 +77,59 @@ public class BundleDAO
         // Get fields
         Map<String, Object> fieldMap = esResponse.getSourceAsMap();
 
-        if(!latest)
+        // LidVid references (e.g., OREX bundle)        
+        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
+        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
+
+        List<String> lidVids = new ArrayList<String>();
+        if(primaryIds != null) lidVids.addAll(primaryIds); 
+        if(secondaryIds != null) lidVids.addAll(secondaryIds);
+
+        // !!! NOTE !!! 
+        // Harvest converts LIDVID references to LID references and stores them in
+        // "ref_lid_collection" and "ref_lid_collection_secondary" fields.
+        // To get "real" LID references, we have to exclude LIDVID references from these fields.
+        Set<String> lidsToRemove = new TreeSet<String>();
+        for(String lidVid: lidVids)
         {
-            // LidVid references (e.g., OREX bundle)        
-            List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
-            List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
-
-            List<String> ids = new ArrayList<String>();
-            if(primaryIds != null) ids.addAll(primaryIds); 
-            if(secondaryIds != null) ids.addAll(secondaryIds);
-
-            if(!ids.isEmpty()) return ids;
-        }
-
-        // Lid references (e.g., Kaguya bundle)
-        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
-
-        List<String> ids = new ArrayList<String>();
-        if(primaryIds != null) ids.addAll(primaryIds); 
-        if(secondaryIds != null) ids.addAll(secondaryIds);
-        
-        if(!ids.isEmpty())
-        {
-            // Get the latest versions of LIDs (Return LIDVIDs)
-            ids = LidVidUtils.getLatestLidVidsByLids(esConnection, ids);
-            return ids;
+            int idx = lidVid.indexOf("::");
+            if(idx > 0)
+            {
+                String lid = lidVid.substring(0, idx);
+                lidsToRemove.add(lid);
+            }
         }
         
-        return new ArrayList<String>(0);
+        // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by Harvest
+        primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
+        secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
+
+        List<String> lids = new ArrayList<String>();
+        if(primaryIds != null) lids.addAll(primaryIds); 
+        if(secondaryIds != null) lids.addAll(secondaryIds);
+        
+        // Get "real" LIDs
+        if(!lidsToRemove.isEmpty())
+        {
+            lids.removeAll(lidsToRemove);
+        }
+
+        // Get the latest versions of LIDs
+        if(!lids.isEmpty())
+        {
+            List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(esConnection, lids);
+            if(latestLidVids != null && !latestLidVids.isEmpty())
+            {
+                // Combine LIDVID references and latest versions of "real" LID references
+                lidVids.addAll(latestLidVids);
+            }
+        }
+        
+        return lidVids;
     }
 
     
-    public List<String> getAllBundleCollectionLidVids(String bundleLidVid, boolean latest) 
+    public List<String> getAllBundleCollectionLidVids(String bundleLidVid) 
             throws IOException, LidVidNotFoundException
     {
         // Get bundle by lidvid.
