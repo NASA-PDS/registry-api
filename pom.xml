@@ -327,6 +327,9 @@ POSSIBILITY OF SUCH DAMAGE.
    
 
   <scm>
-    <tag>v0.4.0</tag>
+        <url>https://github.com/NASA-PDS/pds-api-javalib</url>
+        <connection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</developerConnection>
+        <tag>v3.4.1</tag>
   </scm>
 </project>
