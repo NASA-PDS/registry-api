@@ -1,6 +1,10 @@
 # Changelog
 
-## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/api-search-query-lexer/tree/v1.0.0-SNAPSHOT) (2021-09-23)
+## [v1.0.0](https://github.com/NASA-PDS/api-search-query-lexer/tree/v1.0.0) (2021-09-30)
+
+[Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/v1.0.0-SNAPSHOT...v1.0.0)
+
+## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/api-search-query-lexer/tree/v1.0.0-SNAPSHOT) (2021-09-30)
 
 [Full Changelog](https://github.com/NASA-PDS/api-search-query-lexer/compare/v0.2.0...v1.0.0-SNAPSHOT)
 
