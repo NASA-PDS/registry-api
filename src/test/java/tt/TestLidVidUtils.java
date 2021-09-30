@@ -24,10 +24,14 @@ public class TestLidVidUtils
 
         
         BundleDAO dao = new BundleDAO(con);
-        List<String> ids = dao.getBundleCollectionLidVids("urn:nasa:pds:orex.spice::3.0");
+        //List<String> ids = dao.getBundleCollectionLidVids("urn:nasa:pds:orex.spice::3.0");
+        List<String> ids = dao.getAllBundleCollectionLidVids("urn:nasa:pds:orex.spice::3.0");
         
         System.out.println();
-        System.out.println(ids);
+        for(String id: ids)
+        {
+            System.out.println(id);
+        }
         System.out.println();
         
         con.close();

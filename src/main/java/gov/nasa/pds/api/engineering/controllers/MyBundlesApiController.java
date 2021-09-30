@@ -25,9 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-02-16T16:35:42.434-08:00[America/Los_Angeles]")
@@ -46,7 +47,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }
 
     @Override
-    public ResponseEntity<Object> bundleByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid)
+    public ResponseEntity<Object> bundleByLidvid(
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
@@ -54,7 +56,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     
     @Override
     public ResponseEntity<Object> bundleByLidvidLatest(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid)
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
@@ -62,7 +64,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     
     @Override    
     public ResponseEntity<Object> bundleByLidvidAll(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
     {
@@ -84,7 +86,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     
     
     public ResponseEntity<Products> collectionsOfABundle(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
@@ -96,7 +98,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     
     
     public ResponseEntity<Products> collectionsOfABundleAll(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
@@ -108,7 +110,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     
     
     public ResponseEntity<Products> collectionsOfABundleLatest(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
@@ -138,7 +140,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
         }
 
-        HashSet<String> uniqueProperties = new HashSet<String>();
+        Set<String> uniqueProperties = new TreeSet<String>();
         Products products = new Products();
         Summary summary = new Summary();
 
@@ -160,7 +162,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         }
         else 
         {
-            MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + lidvid);
+            log.warn("Did not find any collections for bundle lidvid: " + lidvid);
         }
 
         summary.setProperties(new ArrayList<String>(uniqueProperties));
@@ -241,7 +243,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
 
         int iteration=0,wsize=0;
-        HashSet<String> uniqueProperties = new HashSet<String>();
+        Set<String> uniqueProperties = new TreeSet<String>();
         List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();

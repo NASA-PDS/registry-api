@@ -31,6 +31,25 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnectio
  */
 public class LidVidUtils
 {
+    /**
+     * Extract lid from lidvid.
+     * @param identifier LIDVID or LID.
+     * @return LID
+     */
+    public static String extractLidFromLidVid(String identifier)
+    {
+        if(identifier == null) return null;
+        
+        // If this is a LIDVID, extract LID. Otherwise return as is.
+        int idx = identifier.indexOf("::");
+        if(idx > 0)
+        {
+            return identifier.substring(0, idx);
+        }
+
+        return identifier;
+    }
+    
     
     /**
      * Get latest versions of LIDs
@@ -39,7 +58,8 @@ public class LidVidUtils
      * @return list of LIDVIDs
      * @throws IOException
      */
-    public static List<String> getLatestLidVidsByLids(ElasticSearchRegistryConnection esConnection, Collection<String> lids) throws IOException
+    public static List<String> getLatestLidVidsByLids(ElasticSearchRegistryConnection esConnection, 
+            Collection<String> lids) throws IOException
     {
         // Create request
         SearchSourceBuilder src = buildGetLatestLidVidsRequest(lids);
@@ -77,11 +97,38 @@ public class LidVidUtils
         return lidvids;
     }
     
+    
+    /**
+     * Get all LIDVIDs by LIDs
+     * @param esConnection Elasticsearch connection
+     * @param lids list of LIDs
+     * @return a list of LIDVIDs
+     * @throws IOException an exception
+     */
+    public static List<String> getAllLidVidsByLids(ElasticSearchRegistryConnection esConnection, 
+            Collection<String> lids) throws IOException
+    {
+        // Create request
+        SearchSourceBuilder src = buildGetAllLidVidsRequest(lids);
+        src.timeout(new TimeValue(esConnection.getTimeOutSeconds(), TimeUnit.SECONDS));
+        
+        SearchRequest esRequest = new SearchRequest(esConnection.getRegistryIndex()).source(src);
+        
+        // Call Elasticsearch
+        RestHighLevelClient client = esConnection.getRestHighLevelClient();
+        SearchResponse esResp = client.search(esRequest, RequestOptions.DEFAULT);
+        
+        // Parse response
+        List<String> lidvids = new ArrayList<>();
+        esResp.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
+        return lidvids;
+    }
 
+    
     /**
      * Build aggregation query to select latest versions of lids
      * @param lids list of LIDs
-     * @return list of LIDVIDs (latest versions)
+     * @return Elasticsearch query
      */
     public static SearchSourceBuilder buildGetLatestLidVidsRequest(Collection<String> lids)
     {
@@ -98,6 +145,21 @@ public class LidVidUtils
                     .fetchSource(false).size(1))
         );
 
+        return src;
+    }
+
+    
+    /**
+     * Build terms query to select all document ids by a list of LIDs.
+     * @param lids a list of LIDS
+     * @return Elasticsearch query
+     */
+    public static SearchSourceBuilder buildGetAllLidVidsRequest(Collection<String> lids)
+    {
+        if(lids == null || lids.isEmpty()) return null;
+        
+        SearchSourceBuilder src = new SearchSourceBuilder();
+        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(5000);
         return src;
     }
 }

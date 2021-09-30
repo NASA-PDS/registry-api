@@ -129,6 +129,13 @@ public class BundleDAO
     }
 
     
+    /**
+     * Get all versions of bundle's collections by bundle LIDVID.
+     * @param bundleLidVid bundle LIDVID (Could not pass LID here)
+     * @return a list of collection LIDVIDs
+     * @throws IOException IO exception 
+     * @throws LidVidNotFoundException LIDVID not found exception
+     */
     public List<String> getAllBundleCollectionLidVids(String bundleLidVid) 
             throws IOException, LidVidNotFoundException
     {
@@ -161,7 +168,7 @@ public class BundleDAO
         if(!ids.isEmpty())
         {
             // Get the latest versions of LIDs (Return LIDVIDs)
-            ids = LidVidUtils.getLatestLidVidsByLids(esConnection, ids);
+            ids = LidVidUtils.getAllLidVidsByLids(esConnection, ids);
             return ids;
         }
         
