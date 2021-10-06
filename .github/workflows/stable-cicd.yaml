@@ -2,7 +2,7 @@
 # ===============================================
 #
 # Note: for this workflow to succeed, the following secrets must be installed
-# in the repository:
+# in the repository or inherited from the organization:
 #
 # ``ADMIN_GITHUB_TOKEN``
 #     A personal access token of a user with collaborator or better access to
