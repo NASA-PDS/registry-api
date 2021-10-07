@@ -48,21 +48,22 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
     
     
-    public ResponseEntity<Object> collectionsByLidvid(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid) {
+    public ResponseEntity<Object> collectionsByLidvid(
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
+    {
         return this.getLatestProductResponseEntity(lidvid);
     }
 
-
     @Override
     public ResponseEntity<Object> collectionsByLidvidLatest(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid)
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
     
     
     public ResponseEntity<Object> collectionsByLidvidAll(
-            @ApiParam(value = "lidvid (urn)", required = true) @PathVariable("lidvid") String lidvid,
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
     {
@@ -83,52 +84,84 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }    
 
     
-    public ResponseEntity<Products> productsOfACollection(@ApiParam(value = "lidvid (urn)",required=true) @PathVariable("lidvid") String lidvid
-            ,@ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start
-            ,@ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit
-            ,@ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields
-            ,@ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort
-            ,@ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
-            ) {
-        
-         MyCollectionsApiController.log.info("Get productsOfACollection");
-        
-         String accept = this.request.getHeader("Accept");
-         MyCollectionsApiController.log.info("accept value is " + accept);
-         if ((accept != null 
-                && (accept.contains("application/json") 
-                        || accept.contains("text/html")
-                        || accept.contains("application/xml")
-                        || accept.contains("application/pds4+xml")
-                        || accept.contains("*/*")))
-            || (accept == null)) {
-            
-            try {
-                
-            
-                Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
-                
-                /* REMOVED since it breaks the result when only-smmary argument is set to true
-                if (products.getData() == null || products.getData().size() == 0)
-                    return new ResponseEntity<Products>(products, HttpStatus.NOT_FOUND);
-                else
-                */
-                
-                return new ResponseEntity<Products>(products, HttpStatus.OK);
-          } catch (LidVidNotFoundException e) {
-              log.error("Couldn't find the lidvid " + e.getMessage());
-              return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
-              
-          } catch (IOException e) {
-               log.error("Couldn't serialize response for content type " + accept, e);
-               return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
-          }
-             
-         }
-         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<Products> productsOfACollection(
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String identifier,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
+    {
+        return getProductsOfACollectionResponseEntity(identifier, start, limit, fields, sort, onlySummary);
     }
-            
-        
+
+    
+    public ResponseEntity<Products> productsOfACollectionLatest(
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String identifier,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
+    {
+        return getProductsOfACollectionResponseEntity(identifier, start, limit, fields, sort, onlySummary);
+    }
+
+    
+    public ResponseEntity<Products> productsOfACollectionAll(
+            @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String identifier,
+            @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
+            @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+            @ApiParam(value = "returned fields, syntax field0,field1") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
+            @ApiParam(value = "sort results, syntax asc(field0),desc(field1)") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
+            @ApiParam(value = "only return the summary, useful to get the list of available properties", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue = "false") Boolean onlySummary)
+    {
+        return getProductsOfACollectionResponseEntity(identifier, start, limit, fields, sort, onlySummary);
+    }    
+    
+    
+    ResponseEntity<Products> getProductsOfACollectionResponseEntity(String lidvid, int start, int limit, 
+            List<String> fields, List<String> sort, boolean onlySummary)
+    {
+        MyCollectionsApiController.log.info("Get productsOfACollection");
+
+        String accept = this.request.getHeader("Accept");
+        MyCollectionsApiController.log.info("accept value is " + accept);
+        if ((accept != null && (accept.contains("application/json") || accept.contains("text/html")
+                || accept.contains("application/xml") || accept.contains("application/pds4+xml")
+                || accept.contains("*/*"))) || (accept == null))
+        {
+            try
+            {
+                Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
+
+                /*
+                 * REMOVED since it breaks the result when only-smmary argument is set to true
+                 * if (products.getData() == null || products.getData().size() == 0) return new
+                 * ResponseEntity<Products>(products, HttpStatus.NOT_FOUND); else
+                 */
+
+                return new ResponseEntity<Products>(products, HttpStatus.OK);
+            }
+            catch (LidVidNotFoundException e)
+            {
+                log.error("Couldn't find the lidvid " + e.getMessage());
+                return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+
+            }
+            catch (IOException e)
+            {
+                log.error("Couldn't serialize response for content type " + accept, e);
+                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        else
+        {
+            return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+        }
+    }
+    
+    
     private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
     {
           long begin = System.currentTimeMillis();
