@@ -11,7 +11,7 @@ public class SystemConstants {
 	// For AWS deployments they are set through the Systems Manager Parameter Store
 	
 	public static final String NODE_NAME_ENV_VAR = "NODE_NAME";            // node name or abbr
-    public static final String ES_HOSTS_ENV_VAR = "ES_HOSTS";              // es URL
+    public static final String ES_HOSTS_ENV_VAR = "ES_HOSTS";              // es URLs
     
     // Those in this section are expected to have value in the key:value format.
     // For AWS deployments they are set through the Secrets Manager
