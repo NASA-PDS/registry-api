@@ -25,21 +25,21 @@ public class LidVidDAO
      * @throws IOException
      * @throws LidVidNotFoundException
      */
-    public String getLatestLidVidFromLid(String lid) throws IOException, LidVidNotFoundException
+    public String getLatestLidVidByLid(String lid) throws IOException, LidVidNotFoundException
     {
         if(lid == null) throw new LidVidNotFoundException("");
         if(lid.contains("::")) return lid;
         
-        List<String> lidvids = LidVidUtils.getLatestLids(esConnection, Arrays.asList(lid));
+        List<String> lidvids = LidVidUtils.getLatestLidVidsByLids(esConnection, Arrays.asList(lid));
         if(lidvids == null || lidvids.isEmpty()) throw new LidVidNotFoundException(lid);
         
         return lidvids.get(0);
     }
 
 
-    public List<String> getLatestLidVidsFromLids(Collection<String> lids) throws IOException
+    public List<String> getLatestLidVidsByLids(Collection<String> lids) throws IOException
     {
-        return LidVidUtils.getLatestLids(esConnection, lids);
+        return LidVidUtils.getLatestLidVidsByLids(esConnection, lids);
     }
 
 }

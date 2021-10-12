@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +34,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchReq
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.GetProductsRequest;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
+import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidUtils;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 
@@ -78,7 +78,7 @@ public class MyProductsApiBareController {
     }
 
     @SuppressWarnings("unchecked")
-    protected void fillProductsFromLidvids (Products products, HashSet<String> uniqueProperties, List<String> lidvids, List<String> fields, boolean onlySummary) throws IOException
+    protected void fillProductsFromLidvids (Products products, Set<String> uniqueProperties, List<String> lidvids, List<String> fields, boolean onlySummary) throws IOException
     {
         for (final Map<String,Object> kvp : new ElasticSearchHitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
                 ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
@@ -97,7 +97,7 @@ public class MyProductsApiBareController {
 
     
     @SuppressWarnings("unchecked")
-    protected void fillProductsFromParents (Products products, HashSet<String> uniqueProperties, List<Map<String,Object>> results, boolean onlySummary) throws IOException
+    protected void fillProductsFromParents (Products products, Set<String> uniqueProperties, List<Map<String,Object>> results, boolean onlySummary) throws IOException
     {
         for (Map<String,Object> kvp : results)
         {
@@ -123,7 +123,7 @@ public class MyProductsApiBareController {
         
         Products products = new Products();
         
-        HashSet<String> uniqueProperties = new HashSet<String>();
+        Set<String> uniqueProperties = new TreeSet<String>();
         
         Summary summary = new Summary();
 
@@ -165,27 +165,20 @@ public class MyProductsApiBareController {
 
                     products.addDataItem(product);
                 }
-                
             }
-     
-            
         }
-        
         
         summary.setProperties(new ArrayList<String>(uniqueProperties));
         summary.setTook((int)(System.currentTimeMillis() - begin));
         return products;
     }
-    
  
 
-    
-    
     protected ResponseEntity<Object> getProductsResponseEntity(String q, String keyword, int start, int limit,
             List<String> fields, List<String> sort, boolean onlySummary)
     {
         String accept = this.request.getHeader("Accept");
-        log.info("accept value is " + accept);
+        log.debug("accept value is " + accept);
         if ((accept != null && 
                 (accept.contains("application/json")
                         || accept.contains("application/pds4+json")
@@ -233,16 +226,26 @@ public class MyProductsApiBareController {
     }    
     
     
-    protected ResponseEntity<Object> getAllProductsResponseEntity(String lidvid, int start, int limit)
+    protected ResponseEntity<Object> getAllProductsResponseEntity(String identifier, int start, int limit)
     {
         String accept = this.request.getHeader("Accept");
-        log.info("accept value is " + accept);
+        log.debug("accept value is " + accept);
         if ((accept != null && (accept.contains("application/json") || accept.contains("text/html")
                 || accept.contains("application/xml") || accept.contains("*/*"))) || (accept == null))
         {
             try
             {
-                Products products = getProductsByLid(lidvid, start, limit);
+                long startTs = System.currentTimeMillis();
+                
+                String lid = LidVidUtils.extractLidFromLidVid(identifier);
+                Products products = getProductsByLid(lid, start, limit);
+                
+                long endTs = System.currentTimeMillis();
+                if(products != null)
+                {
+                    products.getSummary().setTook((int)(endTs - startTs));
+                }
+                
                 return new ResponseEntity<Object>(products, HttpStatus.OK);
             }
             catch (IOException e)
@@ -295,7 +298,9 @@ public class MyProductsApiBareController {
 
             products.addDataItem(product);
         }
+
         
+        summary.setHits((int)resp.getHits().getTotalHits().value);
         summary.setProperties(new ArrayList<String>(uniqueProperties));
         return products;
     }
@@ -314,7 +319,7 @@ public class MyProductsApiBareController {
             
             try 
             {
-                lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+                lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
                 
                 Object product = null;
                 
@@ -370,10 +375,9 @@ public class MyProductsApiBareController {
                 baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.context.getServerPort(), this.contextPath);
             }
             
-            MyProductsApiBareController.log.info("baseUrl is " + baseURL.toString());
+            log.debug("baseUrl is " + baseURL.toString());
             return baseURL;
             
-
         } catch (MalformedURLException e) {
             log.error("Server URL was not retrieved");
             return null;
