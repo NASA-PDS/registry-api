@@ -130,7 +130,7 @@ public class ElasticSearchConfig {
 		String esCredsFromEnv = System.getenv(SystemConstants.ES_CREDENTIALS_ENV_VAR);
 
 		if (esCredsFromEnv != null && !"".equals(esCredsFromEnv)) {
-			log.info(String.format("Received ES login from environment"));
+			log.info("Received ES login from environment");
             String[] esCreds = esCredsFromEnv.split(":");
             if (esCreds.length != 2) {
             	String message = String.format("Value of %s environment variable is not in appropriate <user>:<pass> format",
