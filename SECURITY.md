@@ -1,16 +1,20 @@
-# Security Policy
+# 👮‍♀️ Security Policy
 
-## Supported Versions
+This document describes the security policy of API Search Query Lexer.
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.18.2   | :white_check_mark: |
-| 1.17.5   | :white_check_mark: |
-| < 1.17.5   | :x: |
+## 📀 Supported Versions
 
-## Reporting a Vulnerability
+The following table describes which versions of the API Search Query Lexer are supported and which are not.
 
-Please create a new issue using the [Vulnerability Issue template](https://github.com/NASA-PDS-Incubator/validate/issues/new?assignees=jordanpadams&labels=triage-needed%2C+security&template=vulnerability-issue.md&title=%5BSECURITY%5D+Title+Here)
+| Version | Supported  |
+|:--------|:----------:|
+| 1.0.0   | ❌         |
+| 0.2.0   | ✅         |
+| <0.2    | ❌         |
+
+
+## 🚨 Reporting a Vulnerability
+
+To report a vulnerability, [please submit an issue on our tracker](https://github.com/NASA-PDS/api-search-query-lexer/issues/new?template=vulnerability-issue.md).
+
