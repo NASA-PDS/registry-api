@@ -18,6 +18,8 @@ public class SystemConstants {
     
 	public static final String ES_CREDENTIALS_ENV_VAR = "ES_CREDENTIALS";  // es user:pwd
 	
-	private SystemConstants() {}
+	private SystemConstants() {
+		throw new IllegalStateException("Objects of this class cannot be instantiated.");
+	}
 
 }
