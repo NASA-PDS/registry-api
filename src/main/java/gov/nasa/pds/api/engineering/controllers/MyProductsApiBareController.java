@@ -230,8 +230,12 @@ public class MyProductsApiBareController {
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
-        if ((accept != null && (accept.contains("application/json") || accept.contains("text/html")
-                || accept.contains("application/xml") || accept.contains("*/*"))) || (accept == null))
+        if ((accept != null && (accept.contains("application/json")
+                || accept.contains("application/pds4+json")
+        		|| accept.contains("text/html")
+                || accept.contains("application/xml")
+                || accept.contains("*/*")))
+        		|| (accept == null))
         {
             try
             {

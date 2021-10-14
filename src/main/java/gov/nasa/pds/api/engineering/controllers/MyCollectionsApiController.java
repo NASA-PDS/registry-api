@@ -127,8 +127,11 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         String accept = this.request.getHeader("Accept");
         MyCollectionsApiController.log.info("accept value is " + accept);
-        if ((accept != null && (accept.contains("application/json") || accept.contains("text/html")
-                || accept.contains("application/xml") || accept.contains("application/pds4+xml")
+        if ((accept != null && (accept.contains("application/json")
+        		|| accept.contains("text/html")
+                || accept.contains("application/xml")
+                || accept.contains("application/pds4+json")
+                || accept.contains("application/pds4+xml")
                 || accept.contains("*/*"))) || (accept == null))
         {
             try
@@ -239,6 +242,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         if ((accept != null 
                 && (accept.contains("application/json") 
+                        || accept.contains("application/pds4+json")
                         || accept.contains("text/html")
                         || accept.contains("application/xml")
                         || accept.contains("*/*")))
