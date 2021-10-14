@@ -3,12 +3,11 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import gov.nasa.pds.api.engineering.configuration.AWSSecretsAccess;
+import gov.nasa.pds.api.engineering.SystemConstants;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 
 
@@ -16,8 +15,13 @@ import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject
 public class ElasticSearchConfig { 
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchConfig.class);
-	 
-	@Value("#{'${elasticSearch.host}'.split(',')}:localhost:9200") 
+
+	// This default for ES hosts is set in the constructor since we first want to check
+	// the environment if not set in the application properties. This preserves the
+	// original behavior when the default was specified in the Value annotation.
+	private static final String DEFAULT_ES_HOST = "localhost:9200";
+	
+	@Value("#{'${elasticSearch.host:}'.split(',')}") 
 	private List<String> hosts;
 	
 	@Value("${elasticSearch.registryIndex:registry}")
@@ -35,12 +39,6 @@ public class ElasticSearchConfig {
 	@Value("${elasticSearch.password:}")
 	private String password;
 	
-    @Value("${elasticSearch.userAWSSecretName:}")
-    private String userAWSSecretName;
-    
-    @Value("${elasticSearch.userAWSSecretRegion:}")
-    private String userAWSSecretRegion;
-
 	@Value("${elasticSearch.ssl:false}")
 	private boolean ssl;
     
@@ -84,27 +82,19 @@ public class ElasticSearchConfig {
 		
 		if (esRegistryConnection == null) {
 
-			// see if username is not set - if not, try to get from aws secrets manager
+			// see if ES user name is not set - if not, try to get from environment
 			if (this.username == null || "".equals(this.username)) {
-				if (this.userAWSSecretName != null && !"".equals(userAWSSecretName)) {
-					log.info(String.format("elasticsearch.username is not set, retrieving from aws secret %s", this.userAWSSecretName));
-					AWSSecretsAccess secretsAccess = new AWSSecretsAccess();
-					DefaultKeyValue<String, String> secretLookup = secretsAccess.getSecret(this.userAWSSecretName, this.userAWSSecretRegion);
-					if (secretLookup != null) {
-		                this.username = secretLookup.getKey();
-		                this.password = secretLookup.getValue();
-					}
-				} else {
-					// nothing specified - warning only since unauthenticated ES may be in use
-					String message = "Neither elasticsearch.username/password nor elasticsearch.userAWSSecretName specified in config.";
-					log.warn(message);
-				}
-			} else if (this.userAWSSecretName != null && !"".equals(this.userAWSSecretName)) {
-				String message = "Both elasticsearch.username and elasticsearch.userSecretName are set in config";
-				log.error(message);
-				throw new RuntimeException(message);
+				this.trySetESCredsFromEnv();
 			}
-     
+			
+			// do the same for ES hosts - the defaulting mechanism causes a rather elaborate
+			// check
+			log.debug(String.format("this.hosts : %s (%d)", this.hosts, this.hosts.size()));
+            if (this.hosts == null || this.hosts.size() == 0 
+             || this.hosts.get(0) == null || "".equals(this.hosts.get(0))) {
+            	setESHostsFromEnvOrDefault();
+            }
+			
 			this.esRegistryConnection = new ElasticSearchRegistryConnectionImpl(this.hosts,
 					this.registryIndex,
 					this.registryRefIndex,
@@ -114,8 +104,8 @@ public class ElasticSearchConfig {
 					this.ssl);
 		}
 		return this.esRegistryConnection;
-
     }
+
 	
 	@Bean("productBO")
 	public ProductBusinessObject ProductBusinessObject() {
@@ -134,5 +124,41 @@ public class ElasticSearchConfig {
     			esRegistryConnection.getTimeOutSeconds());
 	}
     
+
+	private void trySetESCredsFromEnv() {
+
+		String esCredsFromEnv = System.getenv(SystemConstants.ES_CREDENTIALS_ENV_VAR);
+
+		if (esCredsFromEnv != null && !"".equals(esCredsFromEnv)) {
+			log.info("Received ES login from environment");
+            String[] esCreds = esCredsFromEnv.split(":");
+            if (esCreds.length != 2) {
+            	String message = String.format("Value of %s environment variable is not in appropriate <user>:<pass> format",
+            			                       SystemConstants.ES_CREDENTIALS_ENV_VAR);
+            	log.error(message);
+            	throw new RuntimeException(message);
+            }
+
+            this.username = esCreds[0];
+            this.password = esCreds[1];
+		}
+	}
+
+	
+	private void setESHostsFromEnvOrDefault() {
+
+		String esHosts = System.getenv(SystemConstants.ES_HOSTS_ENV_VAR);
+
+		if (esHosts != null && !"".equals(esHosts)) {
+			log.info("Received ES hosts from environment");
+		} else {
+			log.info(String.format("ES hosts not set in config or environment, defaulting to %s", DEFAULT_ES_HOST));
+			esHosts = DEFAULT_ES_HOST;
+		}
+		
+		log.debug(String.format("esHosts : %s", esHosts));
+			
+		this.hosts = List.of(esHosts.split(","));
+	}
 
 }
