@@ -17,12 +17,10 @@ server.ssl.key-store=classpath:keystore.p12
 server.ssl.key-store-type=PKCS12
 
 ## note the port is mandatory even when it is default :80 or :443
-elasticSearch.host=search-pds-dev-esext-kcq7xxa4lsrakjw33lywpjdyfy.us-west-2.es.amazonaws.com:443
+elasticSearch.host=
 elasticSearch.registryIndex=registry
 elasticSearch.registryRefIndex=registry-refs
 elasticSearch.timeOutSeconds=60
-# elasticSearch.username=
-# elasticSearch.password=
-elasticSearch.userAWSSecretName=en/registry/es/user
-# elasticSearch.userAWSSecretRegion=
+elasticSearch.username=
+elasticSearch.password=
 elasticSearch.ssl=true
