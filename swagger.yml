@@ -41,7 +41,7 @@ paths:
                 $ref: '#/components/schemas/products'
             application/pds4+json:
               schema:
-                $ref: '#/components/schemas/pds4Products'
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '408':
@@ -113,10 +113,14 @@ paths:
                 type: object
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pdsProduct'
             application/pds4+json:
               schema:
-                $ref: '#/components/schemas/pds4Product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -143,7 +147,14 @@ paths:
                 type: object
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pdsProduct'
+            application/pds4+json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -169,6 +180,9 @@ paths:
               schema:
                 type: object
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -207,6 +221,9 @@ paths:
           description: Successful request
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -268,6 +285,9 @@ paths:
           description: Successful request
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -341,7 +361,7 @@ paths:
                 $ref: '#/components/schemas/products'
             application/pds4+json:
               schema:
-                $ref: '#/components/schemas/pds4Products'
+                $ref: '#/components/schemas/products'
         '400':
           description: Bad request
           content:
@@ -416,10 +436,14 @@ paths:
                 type: object
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pdsProduct'
             application/pds4+json:
               schema:
-                $ref: '#/components/schemas/pds4Product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -446,7 +470,14 @@ paths:
                 type: object
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pdsProduct'
+            application/pds4+json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -472,6 +503,9 @@ paths:
               schema:
                 type: object
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -510,6 +544,9 @@ paths:
           description: Successful request
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
             application/pds4+xml:
@@ -574,6 +611,9 @@ paths:
           description: Successful request
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -769,7 +809,7 @@ paths:
                 $ref: '#/components/schemas/products'
             application/pds4+json:
               schema:
-                $ref: '#/components/schemas/pds4Products'
+                $ref: '#/components/schemas/products'
         '400':
           description: Bad request
           content:
@@ -844,10 +884,14 @@ paths:
                 type: object
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pdsProduct'
             application/pds4+json:
               schema:
-                $ref: '#/components/schemas/pds4Product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -874,7 +918,14 @@ paths:
                 type: object
             application/json:
               schema:
-                $ref: '#/components/schemas/product'
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pdsProduct'
+            application/pds4+json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/product'
+                  - $ref: '#/components/schemas/pds4Product'
         '404':
           description: lidvid not found
         '500':
@@ -900,6 +951,9 @@ paths:
               schema:
                 type: object
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -938,6 +992,9 @@ paths:
           description: Successful request
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -1001,6 +1058,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
+            application/pds4+json:
+              schema:
+                $ref: '#/components/schemas/products'
         '404':
           description: lidvid not found
         '500':
@@ -1060,6 +1120,9 @@ paths:
           description: Successful request
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+            application/pds4+json:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -1238,7 +1301,6 @@ components:
       type: object
       required:
         - id
-        - metadata
       properties:
         id:
           type: string
@@ -1246,30 +1308,76 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
-        type:
-          type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        title:
-          type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        description:
-          type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        start_date_time:
-          type: string
-          description: start date time of the observations in ISO8601
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        stop_date_time:
-          type: string
-          description: stop date time of the observations in ISO8601
+      description:
+        Basic product object for the varios types (PDS and PDS4)
+    pdsProduct:
+      allOf:
+        - $ref: '#/components/schemas/product'
+        - type: object
+          required:
+            - metadata
+          properties:
+            type:
+              type: string
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            title:
+              type: string
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            description:
+              type: string
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            start_date_time:
+              type: string
+              description: start date time of the observations in ISO8601
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            stop_date_time:
+              type: string
+              description: stop date time of the observations in ISO8601
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            investigations:
+              type: array
+              description: list of missions or observing campaigns which produced the data
+              items:
+                $ref: '#/components/schemas/reference'
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            observing_system_components: 
+              type: array
+              description: list of instruments or platforms generating the data
+              items:
+                $ref: '#/components/schemas/reference'
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            targets: 
+              type: array
+              description: list of targets or feature of interest the observation.
+              items:
+                $ref: '#/components/schemas/reference'
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
+            metadata:
+              $ref: '#/components/schemas/metadata'
+            properties:
+              type: object
+              description: properties extracted from pds4 model, syntax for property name is <namespace>:<property>[/<namespace>:<property>]*
+              additionalProperties:
+                $ref: '#/components/schemas/propertyArrayValues'
+              xml:
+                prefix: 'pds_api'
+                namespace: 'http://pds.nasa.gov/api'
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
@@ -1423,20 +1531,17 @@ components:
           message: 'query operator gt not supported on field mission'
         }
     pds4Product:
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          type: string
-          description: LIDVID
-        metadata:
-          $ref: '#/components/schemas/pds4Metadata'
-        pds4:
-          type: object
-          description: PDS4 JSON
-      description:
-        PDS4 Label
+      allOf:
+        - $ref: '#/components/schemas/product'
+        - type: object
+          properties:
+            metadata:
+              $ref: '#/components/schemas/pds4Metadata'
+            pds4:
+              type: object
+              description: PDS4 JSON
+          description:
+            PDS4 Label
     pds4Metadata:
       type: object
       properties:
@@ -1472,13 +1577,3 @@ components:
                 type: string
               mime_type:
                 type: string
-    pds4Products:
-      type: object
-      required:
-        - summary
-      properties:
-        summary:
-          $ref: '#/components/schemas/summary'
-        data:
-          items:
-            $ref: '#/components/schemas/pds4Product'
