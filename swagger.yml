@@ -8,7 +8,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: pds-api-115
+  version: pds-api-110-4
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -128,7 +128,6 @@ paths:
         required: true
         schema:
           type: string
-  
   /products/{identifier}/latest:
     get:
       tags:
@@ -156,7 +155,6 @@ paths:
         required: true
         schema:
           type: string
-  
   /products/{identifier}/all:
     get:
       tags:
@@ -198,7 +196,6 @@ paths:
         schema:
           type: integer
           default: 10
-  
   /products/{identifier}/bundles:
     get:
       tags:
@@ -260,7 +257,6 @@ paths:
         schema:
           type: boolean
           default: false
-  
   /products/{identifier}/collections:
     get:
       tags:
@@ -405,7 +401,6 @@ paths:
           schema:
             type: boolean
             default: false
-  
   /collections/{identifier}:
     get:
       tags:
@@ -463,7 +458,6 @@ paths:
         required: true
         schema:
           type: string
-  
   /collections/{identifier}/all:
     get:
       tags:
@@ -505,7 +499,6 @@ paths:
         schema:
           type: integer
           default: 10
-  
   /collections/{identifier}/bundles:
     get:
       tags:
@@ -570,7 +563,6 @@ paths:
         schema:
           type: boolean
           default: false
-
   /collections/{identifier}/products:
     get:
       tags:
@@ -632,7 +624,6 @@ paths:
         schema:
           type: boolean
           default: false
-
   /collections/{identifier}/products/latest:
     get:
       tags:
@@ -694,7 +685,6 @@ paths:
         schema:
           type: boolean
           default: false
-
   /collections/{identifier}/products/all:
     get:
       tags:
@@ -756,8 +746,6 @@ paths:
         schema:
           type: boolean
           default: false
-
-
   /bundles:
     get:
       tags:
@@ -939,7 +927,6 @@ paths:
         schema:
           type: integer
           default: 10
-  
   /bundles/{identifier}/collections:
     get:
       tags:
@@ -1001,7 +988,6 @@ paths:
         schema:
           type: boolean
           default: false
-
   /bundles/{identifier}/collections/latest:
     get:
       tags:
@@ -1063,7 +1049,6 @@ paths:
         schema:
           type: boolean
           default: false
-
   /bundles/{identifier}/collections/all:
     get:
       tags:
@@ -1125,7 +1110,6 @@ paths:
         schema:
           type: boolean
           default: false
-
   /bundles/{identifier}/products:
     get:
       tags:
@@ -1187,8 +1171,6 @@ paths:
         schema:
           type: boolean
           default: false
-          
-
 
 externalDocs:
   description: Find out more information on the PDS API Specification
