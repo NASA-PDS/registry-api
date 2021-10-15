@@ -113,14 +113,10 @@ paths:
                 type: object
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/product'
-                  - $ref: '#/components/schemas/pdsProduct'
+                $ref: '#/components/schemas/product'
             application/pds4+json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/product'
-                  - $ref: '#/components/schemas/pds4Product'
+                $ref: '#/components/schemas/product'
         '404':
           description: lidvid not found
         '500':
