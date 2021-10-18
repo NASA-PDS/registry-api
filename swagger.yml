@@ -1113,7 +1113,6 @@ components:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
     product:
-      type: object
       oneOf:
         - $ref: "#/components/schemas/pdsProduct"
         - $ref: "#/components/schemas/pds4Product"
