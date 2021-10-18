@@ -33,9 +33,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/products'
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
@@ -108,9 +105,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/product'
             application/json:
               schema:
                 allOf:
@@ -142,9 +136,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/product'
             application/json:
               schema:
                 allOf:
@@ -176,9 +167,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/products'
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
@@ -353,9 +341,6 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/product'
             application/json:
               schema:
                 allOf:
@@ -435,9 +420,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/product'
             application/json:
               schema:
                 allOf:
@@ -469,9 +451,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/products'
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
@@ -499,9 +478,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/products'
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
@@ -547,9 +523,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/products'
             application/pds4+json:
-              schema:
-                $ref: '#/components/schemas/products'
-            application/pds4+xml:
               schema:
                 $ref: '#/components/schemas/products'
         '404':
@@ -807,9 +780,6 @@ paths:
                 type: integer
               description: Total number of records maching the request.
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/product'
             application/json:
               schema:
                 allOf:
@@ -889,9 +859,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/product'
             application/json:
               schema:
                 allOf:
@@ -923,9 +890,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/products'
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
@@ -953,9 +917,6 @@ paths:
         '200':
           description: Successful request
           content:
-            application/pds4+xml:
-              schema:
-                $ref: '#/components/schemas/products'
             application/json:
               schema:
                 $ref: '#/components/schemas/products'
