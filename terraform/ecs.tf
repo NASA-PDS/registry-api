@@ -1,21 +1,26 @@
 # Define the cluster
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "pds-${var.node_name_abbr}-reg-cluster"
+  name = "pds-${var.node_name_abbr}-${var.venue}-reg-cluster"
+
+  tags = {
+    Foxtrot = "${var.node_name_abbr}-${var.venue}"
+    Charlie = "registry"
+  }
 }
 
-# An ECR repository is a private alternative to Docker Hub.
+# Do we need individual dev/test/prod repositories?
 data "aws_ecr_repository" "pds-registry-api-service" {
   name = "pds-registry-api-service"
 }
 
 # Log groups hold logs from our app.
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
-  name = "/ecs/pds-${var.node_name_abbr}-reg-api-svc-task"
+  name = "/ecs/pds-${var.node_name_abbr}-${var.venue}-reg-api-svc-task"
 }
 
 # The main service.
 resource "aws_ecs_service" "pds-registry-reg-service" {
-  name            = "pds-${var.node_name_abbr}-reg-service"
+  name            = "pds-${var.node_name_abbr}-${var.venue}-reg-service"
   task_definition = aws_ecs_task_definition.pds-registry-ecs-task.arn
   cluster         = aws_ecs_cluster.ecs_cluster.id
   launch_type     = "FARGATE"
@@ -35,11 +40,16 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
     subnets = var.aws_fg_subnets
   }
+
+  tags = {
+    Foxtrot = "${var.node_name_abbr}-${var.venue}"
+    Charlie = "registry"
+  }
 }
 
-# The task definition for our app.
+# The task definition for app.
 resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
-  family = "pds-${var.node_name_abbr}-reg-api-svc-task"
+  family = "pds-${var.node_name_abbr}-${var.venue}-reg-api-svc-task"
 
   container_definitions = <<EOF
   [
@@ -84,6 +94,11 @@ EOF
 
   # This is required for Fargate containers
   network_mode = "awsvpc"
+
+  tags = {
+    Foxtrot = "${var.node_name_abbr}-${var.venue}"
+    Charlie = "registry"
+  }
 }
 
 # role under which ECS will execute tasks.

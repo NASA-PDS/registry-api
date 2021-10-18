@@ -7,6 +7,11 @@ variable "node_name_abbr" {
   description = "Node name abbreviation"
 }
 
+variable "venue" {
+  description = "Deployment venue (prod, test, dev)"
+  default = "dev"
+}
+
 variable "aws_region" {
   description = "AWS Region"
   default = "us-west-2"
