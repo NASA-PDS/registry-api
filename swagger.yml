@@ -742,7 +742,7 @@ paths:
       operationId: bundle-by-lidvid-latest
       responses:
         '200':
-          $ref: "#/components/responses/Plural"
+          $ref: "#/components/responses/Singular"
         '404':
           description: lidvid not found
         '500':
