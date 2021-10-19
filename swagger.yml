@@ -1055,16 +1055,6 @@ components:
           schema:
             $ref: '#/components/schemas/product'
   schemas:
-    products:
-      type: object
-      required:
-        - summary
-      properties:
-        summary:
-          $ref: '#/components/schemas/summary'
-        data:
-          items:
-            $ref: '#/components/schemas/product'
     summary:
       type: object
       properties:
@@ -1113,9 +1103,25 @@ components:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
     product:
-      oneOf:
-        - $ref: "#/components/schemas/pdsProduct"
-        - $ref: "#/components/schemas/pds4Product"
+      description: Generic object that can contain any of the subtypes
+      properties:
+        pds_json:
+          $ref: "#/components/schemas/pdsProduct"
+        pds4_json:
+          $ref: "#/components/schemas/pds4Product"
+    products:
+      type: object
+      required:
+        - summary
+      properties:
+        summary:
+          $ref: '#/components/schemas/summary'
+        pds_json:
+          items:
+            $ref: '#/components/schemas/pdsProduct'
+        pds4_json:
+          items:
+            $ref: '#/components/schemas/pds4Product'
     pdsProduct:
       type: object
       required:
