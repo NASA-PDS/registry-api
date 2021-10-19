@@ -5,6 +5,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 
+import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUtil;
 
 
@@ -75,7 +76,7 @@ public class Pds4JsonSearchRequestBuilder
      * @param req Request parameters
      * @return Elasticsearch request
      */
-    public SearchRequest getSearchProductsRequest(GetProductsRequest req)
+    public SearchRequest getSearchProductsRequest(RequestAndResponseContext req)
     {
         QueryBuilder query = null;
         
@@ -87,7 +88,7 @@ public class Pds4JsonSearchRequestBuilder
         // Run PDS query language ("q" parameter) query
         else
         {
-            query = ProductQueryBuilderUtil.createPqlQuery(req.queryString, null, req.presetCriteria);
+            query = ProductQueryBuilderUtil.createPqlQuery(req.getQueryString(), null, req.presetCriteria);
         }
         
         SearchRequestBuilder bld = new SearchRequestBuilder(query, req.start, req.limit);

@@ -32,7 +32,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.GetProductsRequest;
+import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidUtils;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
@@ -192,7 +192,7 @@ public class MyProductsApiBareController {
                 Products products = new Products();
                 if("application/pds4+json".equals(accept))
                 {
-                    GetProductsRequest req = new GetProductsRequest();
+                    RequestAndResponseContext req = new RequestAndResponseContext();
                     req.setSearchCriteria(q, keyword);
                     req.setPageInfo(start, limit);
                     req.setFields(fields, sort);

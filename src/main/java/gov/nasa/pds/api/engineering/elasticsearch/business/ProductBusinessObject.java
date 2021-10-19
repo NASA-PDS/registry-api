@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.GetProductsRequest;
 import gov.nasa.pds.api.engineering.elasticsearch.Pds4JsonSearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
@@ -321,7 +320,7 @@ public class ProductBusinessObject {
         }
 
         
-        public Products getPds4Products(GetProductsRequest req) throws IOException 
+        public Products getPds4Products(RequestAndResponseContext req) throws IOException 
         {
             SearchRequest searchRequest = pds4SearchRequestBuilder.getSearchProductsRequest(req);
 
@@ -332,10 +331,10 @@ public class ProductBusinessObject {
             Products products = new Products();
             // Summary
             Summary summary = new Summary();
-            summary.setQ(req.queryString);
-            summary.setStart(req.start);
-            summary.setLimit(req.limit);
-            summary.setSort(req.sort);
+            summary.setQ(req.getQueryString());
+            summary.setStart(req.getStart());
+            summary.setLimit(req.getLimit());
+            summary.setSort(req.getSort());
             products.setSummary(summary);
             
             if(searchResponse == null) return products;
