@@ -1032,28 +1032,28 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/products'
+            $ref: '#/components/schemas/pdsProducts'
         application/pds4+json:
           schema:
-            $ref: '#/components/schemas/products'
+            $ref: '#/components/schemas/pds4Products'
     Plural:
       description: Successful request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/products'
+            $ref: '#/components/schemas/pdsProducts'
         application/pds4+json:
           schema:
-            $ref: '#/components/schemas/products'
+            $ref: '#/components/schemas/pds4Products'
     Singular:
       description: Successful request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/product'
+            $ref: '#/components/schemas/pdsProduct'
         application/pds4+json:
           schema:
-            $ref: '#/components/schemas/product'
+            $ref: '#/components/schemas/pds4Product'
   schemas:
     summary:
       type: object
@@ -1102,26 +1102,6 @@ components:
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
-    product:
-      description: Generic object that can contain any of the subtypes
-      properties:
-        pds_json:
-          $ref: "#/components/schemas/pdsProduct"
-        pds4_json:
-          $ref: "#/components/schemas/pds4Product"
-    products:
-      type: object
-      required:
-        - summary
-      properties:
-        summary:
-          $ref: '#/components/schemas/summary'
-        pds_json:
-          items:
-            $ref: '#/components/schemas/pdsProduct'
-        pds4_json:
-          items:
-            $ref: '#/components/schemas/pds4Product'
     pdsProduct:
       type: object
       required:
@@ -1198,6 +1178,17 @@ components:
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
+    pdsProducts:
+      type: object
+      required:
+        - summary
+        - data
+      properties:
+        summary:
+          $ref: '#/components/schemas/summary'
+        data:
+          items:
+            $ref: '#/components/schemas/pdsProduct'
     propertyArrayValues:
       type: array 
       items:
@@ -1325,6 +1316,17 @@ components:
           description: PDS4 JSON
       description:
         PDS4 Label
+    pds4Products:
+      type: object
+      required:
+        - summary
+        - data
+      properties:
+        summary:
+          $ref: '#/components/schemas/summary'
+        data:
+          items:
+            $ref: '#/components/schemas/pds4Product'
     pds4Metadata:
       type: object
       properties:
