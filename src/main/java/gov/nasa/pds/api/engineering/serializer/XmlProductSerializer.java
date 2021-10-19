@@ -55,7 +55,7 @@ public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 		
 		if (Product.class.isAssignableFrom(o.getClass())) {
 			//HashMap<String, XMLMashallableProperyValue> props = (HashMap<String, XMLMashallableProperyValue>)(HashMap<String, ?>)((Product)o).getProperties();
-			for (Entry<String, ?> e:  ((Product)o).getProperties().entrySet()) {
+			for (Entry<String, ?> e:  ((Product)o).getPdsJson().getProperties().entrySet()) {
 				XmlProductSerializer.log.info("Class in hashmap value is" + e.getValue().getClass().getCanonicalName());
 			}
 		}

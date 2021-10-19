@@ -33,8 +33,8 @@ import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlo
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Pds4Product;
-import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
@@ -233,7 +233,7 @@ public class ProductBusinessObject {
                 
                 Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);
             
-                product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+                product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
                 
                 return product;
                
@@ -283,7 +283,7 @@ public class ProductBusinessObject {
                     
 
                     ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);            
-                    product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+                    product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
                 
                     return product;
                     
@@ -302,7 +302,7 @@ public class ProductBusinessObject {
        }
        
        
-        public Pds4Product getPds4Product(String lidvid) throws IOException 
+        public Product getPds4Product(String lidvid) throws IOException 
         {
             GetRequest req = this.pds4SearchRequestBuilder.getProductRequest(lidvid);
             RestHighLevelClient client = this.elasticSearchConnection.getRestHighLevelClient();           
@@ -314,20 +314,22 @@ public class ProductBusinessObject {
             }
 
             Map<String, Object> fieldMap = resp.getSourceAsMap();
-            Pds4Product prod = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
+            Pds4Product prod4 = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
+            Product prod = new Product();
+            prod.setPds4Json(prod4);
             return prod;
         }
 
         
-        public Pds4Products getPds4Products(GetProductsRequest req) throws IOException 
+        public Products getPds4Products(GetProductsRequest req) throws IOException 
         {
             SearchRequest searchRequest = pds4SearchRequestBuilder.getSearchProductsRequest(req);
 
             SearchResponse searchResponse = elasticSearchConnection.getRestHighLevelClient().search(searchRequest,
                     RequestOptions.DEFAULT);
 
-            Pds4Products products = new Pds4Products();
-
+            List<Pds4Product> list = new ArrayList<Pds4Product>();
+            Products products = new Products();
             // Summary
             Summary summary = new Summary();
             summary.setQ(req.queryString);
@@ -344,9 +346,9 @@ public class ProductBusinessObject {
                 String id = hit.getId();
                 Map<String, Object> fieldMap = hit.getSourceAsMap();
                 Pds4Product prod = Pds4JsonProductFactory.createProduct(id, fieldMap);
-                products.addDataItem(prod);
+                list.add(prod);
             }
-
+            products.setPds4Json(list);
             return products;
         }
 

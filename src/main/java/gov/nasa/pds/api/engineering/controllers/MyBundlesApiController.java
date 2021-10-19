@@ -6,6 +6,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductVersionSelector;
+import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -47,7 +48,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }
 
     @Override
-    public ResponseEntity<Object> bundleByLidvid(
+    public ResponseEntity<Product> bundleByLidvid(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -55,7 +56,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
     
     @Override
-    public ResponseEntity<Object> bundleByLidvidLatest(
+    public ResponseEntity<Product> bundleByLidvidLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -63,16 +64,16 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
     
     @Override    
-    public ResponseEntity<Object> bundleByLidvidAll(
+    public ResponseEntity<Products> bundleByLidvidAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
     {
-        return getAllProductsResponseEntity(lidvid, start, limit);                
+        return this.getAllProductsResponseEntity(lidvid, start, limit);                
     }    
     
     
-    public ResponseEntity<Object> getBundles(
+    public ResponseEntity<Products> getBundles(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q,

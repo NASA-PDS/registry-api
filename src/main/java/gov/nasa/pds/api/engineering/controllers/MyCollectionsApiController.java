@@ -5,6 +5,7 @@ import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
@@ -48,21 +49,21 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
     
     
-    public ResponseEntity<Object> collectionsByLidvid(
+    public ResponseEntity<Product> collectionsByLidvid(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
 
     @Override
-    public ResponseEntity<Object> collectionsByLidvidLatest(
+    public ResponseEntity<Product> collectionsByLidvidLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
     
     
-    public ResponseEntity<Object> collectionsByLidvidAll(
+    public ResponseEntity<Products> collectionsByLidvidAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
@@ -71,7 +72,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
 
     
-    public ResponseEntity<Object> getCollection(
+    public ResponseEntity<Products> getCollection(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q,

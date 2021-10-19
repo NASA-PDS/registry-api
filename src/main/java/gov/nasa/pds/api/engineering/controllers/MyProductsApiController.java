@@ -26,6 +26,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
+import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 import io.swagger.annotations.ApiParam;
@@ -45,7 +46,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     }
     
    
-    public ResponseEntity<Object> products(
+    public ResponseEntity<Products> products(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q,
@@ -58,7 +59,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     }
     
      
-    public ResponseEntity<Object> productsByLidvid(
+    public ResponseEntity<Product> productsByLidvid(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -66,7 +67,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
     
     @Override
-    public ResponseEntity<Object> productsByLidvidLatest(
+    public ResponseEntity<Product> productsByLidvidLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -74,7 +75,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     
     
     @Override
-    public ResponseEntity<Object> productsByLidvidAll(
+    public ResponseEntity<Products> productsByLidvidAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)

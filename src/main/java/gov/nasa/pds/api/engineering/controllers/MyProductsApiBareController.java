@@ -88,8 +88,8 @@ public class MyProductsApiBareController {
 
             if (!onlySummary)
             {
-                products.addDataItem(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()));
-                products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+            	products.getPdsJson().add(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()).getPdsJson());
+                products.getPdsJson().get(products.getPdsJson().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
             }
         }
 
@@ -105,8 +105,8 @@ public class MyProductsApiBareController {
 
             if (!onlySummary)
             {
-                products.addDataItem(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()));
-                products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+                products.getPdsJson().add(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()).getPdsJson());
+                products.getPdsJson().get(products.getPdsJson().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
             }
         }
     }
@@ -161,9 +161,9 @@ public class MyProductsApiBareController {
                     Product product = ElasticSearchUtil.ESentityProductToAPIProduct(
                             entityProduct, 
                             this.getBaseURL());
-                    product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+                    product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 
-                    products.addDataItem(product);
+                    products.getPdsJson().add(product.getPdsJson());
                 }
             }
         }
@@ -174,7 +174,7 @@ public class MyProductsApiBareController {
     }
  
 
-    protected ResponseEntity<Object> getProductsResponseEntity(String q, String keyword, int start, int limit,
+    protected ResponseEntity<Products> getProductsResponseEntity(String q, String keyword, int start, int limit,
             List<String> fields, List<String> sort, boolean onlySummary)
     {
         String accept = this.request.getHeader("Accept");
@@ -189,7 +189,7 @@ public class MyProductsApiBareController {
         {
             try
             {
-                Object products = null;
+                Products products = new Products();
                 if("application/pds4+json".equals(accept))
                 {
                     GetProductsRequest req = new GetProductsRequest();
@@ -206,27 +206,27 @@ public class MyProductsApiBareController {
                     products = this.getProducts(q, keyword, start, limit, fields, sort, onlySummary);
                 }
                 
-                return new ResponseEntity<Object>(products, HttpStatus.OK);
+                return new ResponseEntity<Products>(products, HttpStatus.OK);
             }
             catch (IOException e)
             {
                 log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             catch (ParseCancellationException pce)
             {
                 log.error("Could not parse the query string: " + q);
-                return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<Products>(HttpStatus.BAD_REQUEST);
             }
         }
         else
         {
-            return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
         }
     }    
     
     
-    protected ResponseEntity<Object> getAllProductsResponseEntity(String identifier, int start, int limit)
+    protected ResponseEntity<Products> getAllProductsResponseEntity(String identifier, int start, int limit)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
@@ -250,22 +250,22 @@ public class MyProductsApiBareController {
                     products.getSummary().setTook((int)(endTs - startTs));
                 }
                 
-                return new ResponseEntity<Object>(products, HttpStatus.OK);
+                return new ResponseEntity<Products>(products, HttpStatus.OK);
             }
             catch (IOException e)
             {
                 log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             catch (ParseCancellationException pce)
             {
                 log.error("", pce);
-                return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<Products>(HttpStatus.BAD_REQUEST);
             }
         }
         else
         {
-            return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
         }
     }    
     
@@ -298,9 +298,9 @@ public class MyProductsApiBareController {
             EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
 
             Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
-            product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+            product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
 
-            products.addDataItem(product);
+            products.getPdsJson().add(product.getPdsJson());
         }
 
         
@@ -310,7 +310,7 @@ public class MyProductsApiBareController {
     }
 
     
-    protected ResponseEntity<Object> getLatestProductResponseEntity(String lidvid)
+    protected ResponseEntity<Product> getLatestProductResponseEntity(String lidvid)
     {
         String accept = request.getHeader("Accept");
         if ((accept != null) 
@@ -325,7 +325,7 @@ public class MyProductsApiBareController {
             {
                 lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
                 
-                Object product = null;
+                Product product = null;
                 
                 if("application/pds4+json".equals(accept))
                 {
@@ -338,27 +338,27 @@ public class MyProductsApiBareController {
                 
                 if (product != null) 
                 {   
-                    return new ResponseEntity<Object>(product, HttpStatus.OK);
+                    return new ResponseEntity<Product>(product, HttpStatus.OK);
                 }                   
                 else 
                 {
                     // TODO send 302 redirection to a different server if one exists
-                    return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
                 }
             } 
             catch (IOException e) 
             {
                 log.error("Couldn't get or serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<Product>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             catch (LidVidNotFoundException e)
             {
                 log.warn("Could not find lid(vid) in database: " + lidvid);
-                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<Product>(HttpStatus.NOT_FOUND);
             }
         }
 
-        return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<Product>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     
