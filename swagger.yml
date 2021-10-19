@@ -1032,10 +1032,10 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/product'
+            $ref: '#/components/schemas/products'
         application/pds4+json:
           schema:
-            $ref: '#/components/schemas/product'
+            $ref: '#/components/schemas/products'
     Plural:
       description: Successful request
       content:
