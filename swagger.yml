@@ -1030,6 +1030,9 @@ components:
             type: integer
           description: Total number of records maching the request.
       content:
+        application/unsupported:
+          schema:
+            type: object
         application/json:
           schema:
             $ref: '#/components/schemas/pdsProducts'
@@ -1039,6 +1042,9 @@ components:
     Plural:
       description: Successful request
       content:
+        application/unsupported:
+          schema:
+            type: object
         application/json:
           schema:
             $ref: '#/components/schemas/pdsProducts'
@@ -1048,6 +1054,9 @@ components:
     Singular:
       description: Successful request
       content:
+        application/unsupported:
+          schema:
+            type: object
         application/json:
           schema:
             $ref: '#/components/schemas/pdsProduct'
