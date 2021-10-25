@@ -32,8 +32,8 @@ import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlo
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Pds4Product;
-import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.Products;
+import gov.nasa.pds.model.Pds4Products;
+import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
@@ -199,14 +199,14 @@ public class ProductBusinessObject {
         }
         
        
-       public Product getProduct(String lidvid, URL baseURL) throws IOException {
+       public PdsProduct getProduct(String lidvid, URL baseURL) throws IOException {
            return this.getProduct(lidvid, baseURL, null);
        }
        
        
 
        @SuppressWarnings("unchecked")
-       public Product getProduct(String lidvid, URL baseURL, @Nullable List<String> fields) throws IOException {
+       public PdsProduct getProduct(String lidvid, URL baseURL, @Nullable List<String> fields) throws IOException {
 
            GetRequest getProductRequest = this.searchRequestBuilder.getGetProductRequest(lidvid, false);
            
@@ -230,9 +230,9 @@ public class ProductBusinessObject {
                 
                 entityProduct = this.objectMapper.convertValue(sourceAsMap, EntityProduct.class);
                 
-                Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);
+                PdsProduct product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);
             
-                product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+                product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
                 
                 return product;
                
@@ -282,7 +282,7 @@ public class ProductBusinessObject {
                     
 
                     ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);            
-                    product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
+                    product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
                 
                     return product;
                     
@@ -301,7 +301,7 @@ public class ProductBusinessObject {
        }
        
        
-        public Product getPds4Product(String lidvid) throws IOException 
+        public Pds4Product getPds4Product(String lidvid) throws IOException 
         {
             GetRequest req = this.pds4SearchRequestBuilder.getProductRequest(lidvid);
             RestHighLevelClient client = this.elasticSearchConnection.getRestHighLevelClient();           
@@ -313,14 +313,12 @@ public class ProductBusinessObject {
             }
 
             Map<String, Object> fieldMap = resp.getSourceAsMap();
-            Pds4Product prod4 = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
-            Product prod = new Product();
-            prod.setPds4Json(prod4);
+            Pds4Product prod = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
             return prod;
         }
 
         
-        public Products getPds4Products(RequestAndResponseContext req) throws IOException 
+        public Pds4Products getPds4Products(RequestAndResponseContext req) throws IOException 
         {
             SearchRequest searchRequest = pds4SearchRequestBuilder.getSearchProductsRequest(req);
 
@@ -328,7 +326,7 @@ public class ProductBusinessObject {
                     RequestOptions.DEFAULT);
 
             List<Pds4Product> list = new ArrayList<Pds4Product>();
-            Products products = new Products();
+            Pds4Products products = new Pds4Products();
             // Summary
             Summary summary = new Summary();
             summary.setQ(req.getQueryString());
@@ -347,7 +345,7 @@ public class ProductBusinessObject {
                 Pds4Product prod = Pds4JsonProductFactory.createProduct(id, fieldMap);
                 list.add(prod);
             }
-            products.setPds4Json(list);
+            products.setData(list);
             return products;
         }
 

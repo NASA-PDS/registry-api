@@ -4,12 +4,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.PdsProduct;
 import io.swagger.annotations.ApiModelProperty;
 
 
 @XmlRootElement( name = "product")
-public class ProductWithXmlLabel extends Product {
+public class ProductWithXmlLabel extends PdsProduct {
 	
 	 @JsonIgnore
 	 private String labelXml = null;

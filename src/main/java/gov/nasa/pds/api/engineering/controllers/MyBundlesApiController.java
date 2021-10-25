@@ -6,8 +6,6 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductVersionSelector;
-import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.Products;
 import gov.nasa.pds.model.Summary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +46,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }
 
     @Override
-    public ResponseEntity<Product> bundleByLidvid(
+    public ResponseEntity<Object> bundleByLidvid(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -56,7 +54,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
     
     @Override
-    public ResponseEntity<Product> bundleByLidvidLatest(
+    public ResponseEntity<Object> bundleByLidvidLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -64,7 +62,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
     
     @Override    
-    public ResponseEntity<Products> bundleByLidvidAll(
+    public ResponseEntity<Object> bundleByLidvidAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
@@ -73,7 +71,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }    
     
     
-    public ResponseEntity<Products> getBundles(
+    public ResponseEntity<Object> getBundles(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q,
@@ -86,7 +84,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }    
     
     
-    public ResponseEntity<Products> collectionsOfABundle(
+    public ResponseEntity<Object> collectionsOfABundle(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
@@ -98,7 +96,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }
     
     
-    public ResponseEntity<Products> collectionsOfABundleAll(
+    public ResponseEntity<Object> collectionsOfABundleAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
@@ -110,7 +108,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }    
     
     
-    public ResponseEntity<Products> collectionsOfABundleLatest(
+    public ResponseEntity<Object> collectionsOfABundleLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
@@ -172,7 +170,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }
 
     
-    private ResponseEntity<Products> getBundlesCollectionsEntity(String lidvid, int start, int limit, 
+    private ResponseEntity<Object> getBundlesCollectionsEntity(String lidvid, int start, int limit, 
             List<String> fields, List<String> sort, boolean onlySummary, ProductVersionSelector versionSelector)
     {
          String accept = this.request.getHeader("Accept");
@@ -188,25 +186,25 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
              try
              {
                  Products products = getBundleCollections(lidvid, start, limit, fields, sort, onlySummary, versionSelector);
-                 return new ResponseEntity<Products>(products, HttpStatus.OK);
+                 return new ResponseEntity<Object>(products, HttpStatus.OK);
              }
              catch (IOException e)
              {
                  log.error("Couldn't serialize response for content type " + accept, e);
-                 return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+                 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
              }
              catch (LidVidNotFoundException e)
              {
                  log.warn("Could not find lid(vid) in database: " + lidvid);
-                 return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+                 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
              }
          }
-         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     
     @Override
-    public ResponseEntity<Products> productsOfABundle(String lidvid, @Valid Integer start, @Valid Integer limit,
+    public ResponseEntity<Object> productsOfABundle(String lidvid, @Valid Integer start, @Valid Integer limit,
             @Valid List<String> fields, @Valid List<String> sort, @Valid Boolean onlySummary)
     {
          String accept = this.request.getHeader("Accept");
@@ -222,20 +220,20 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
              try
              {
                  Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
-                 return new ResponseEntity<Products>(products, HttpStatus.OK);
+                 return new ResponseEntity<Object>(products, HttpStatus.OK);
              }
              catch (IOException e)
              {
                  log.error("Couldn't serialize response for content type " + accept, e);
-                 return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+                 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
              }
              catch (LidVidNotFoundException e)
              {
                  log.warn("Could not find lid(vid) in database: " + lidvid);
-                 return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+                 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
              }
          }
-         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     

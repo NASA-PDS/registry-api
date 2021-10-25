@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.engineering.serializer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -15,9 +14,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
-import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
-import gov.nasa.pds.model.PropertyArrayValues;
-import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.PdsProduct;
 
 public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 	
@@ -36,7 +33,7 @@ public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 	protected boolean supports(Class<?> clazz) {
 		
 	      return ProductWithXmlLabel.class.isAssignableFrom(clazz) 
-	    		  || Product.class.isAssignableFrom(clazz);
+	    		  || PdsProduct.class.isAssignableFrom(clazz);
 	 }
 	
 	@Override
@@ -53,9 +50,9 @@ public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 		
 		log.info(ClassUtils.getUserClass(o).getName());
 		
-		if (Product.class.isAssignableFrom(o.getClass())) {
+		if (PdsProduct.class.isAssignableFrom(o.getClass())) {
 			//HashMap<String, XMLMashallableProperyValue> props = (HashMap<String, XMLMashallableProperyValue>)(HashMap<String, ?>)((Product)o).getProperties();
-			for (Entry<String, ?> e:  ((Product)o).getPdsJson().getProperties().entrySet()) {
+			for (Entry<String, ?> e:  ((PdsProduct)o).getProperties().entrySet()) {
 				XmlProductSerializer.log.info("Class in hashmap value is" + e.getValue().getClass().getCanonicalName());
 			}
 		}

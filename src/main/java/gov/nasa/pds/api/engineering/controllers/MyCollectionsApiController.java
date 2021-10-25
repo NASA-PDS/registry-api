@@ -49,21 +49,21 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
     
     
-    public ResponseEntity<Product> collectionsByLidvid(
+    public ResponseEntity<Object> collectionsByLidvid(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
 
     @Override
-    public ResponseEntity<Product> collectionsByLidvidLatest(
+    public ResponseEntity<Object> collectionsByLidvidLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
     }
     
     
-    public ResponseEntity<Products> collectionsByLidvidAll(
+    public ResponseEntity<Object> collectionsByLidvidAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
@@ -72,7 +72,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
 
     
-    public ResponseEntity<Products> getCollection(
+    public ResponseEntity<Object> getCollection(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "search query, complex query uses eq,ne,gt,ge,lt,le,(,),not,and,or. Properties are named as in 'properties' attributes, literals are strings between \" or numbers. Detailed query specification is available at https://bit.ly/393i1af") @Valid @RequestParam(value = "q", required = false) String q,
@@ -85,7 +85,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }    
 
     
-    public ResponseEntity<Products> productsOfACollection(
+    public ResponseEntity<Object> productsOfACollection(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String identifier,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
@@ -97,7 +97,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
 
     
-    public ResponseEntity<Products> productsOfACollectionLatest(
+    public ResponseEntity<Object> productsOfACollectionLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String identifier,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
@@ -109,7 +109,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }
 
     
-    public ResponseEntity<Products> productsOfACollectionAll(
+    public ResponseEntity<Object> productsOfACollectionAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String identifier,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
@@ -121,7 +121,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     }    
     
     
-    ResponseEntity<Products> getProductsOfACollectionResponseEntity(String lidvid, int start, int limit, 
+    ResponseEntity<Object> getProductsOfACollectionResponseEntity(String lidvid, int start, int limit, 
             List<String> fields, List<String> sort, boolean onlySummary)
     {
         MyCollectionsApiController.log.info("Get productsOfACollection");
@@ -235,7 +235,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
 
     @Override
-    public ResponseEntity<Products> bundlesContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
+    public ResponseEntity<Object> bundlesContainingCollection(String lidvid, @Valid Integer start, @Valid Integer limit,
             @Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly)
     {
         String accept = this.request.getHeader("Accept");
@@ -252,20 +252,20 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
             try
             {
                 Products products = this.getContainingBundle(lidvid, start, limit, fields, sort, summaryOnly);              
-                return new ResponseEntity<Products>(products, HttpStatus.OK);
+                return new ResponseEntity<Object>(products, HttpStatus.OK);
             }
             catch (IOException e)
             {
                 log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             catch (LidVidNotFoundException e)
             {
                 log.warn("Could not find lid(vid) in database: " + lidvid);
-                return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
             }
          }
-         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
     }
     
     private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException,LidVidNotFoundException

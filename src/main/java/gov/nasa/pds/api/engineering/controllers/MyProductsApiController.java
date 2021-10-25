@@ -46,7 +46,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     }
     
    
-    public ResponseEntity<Products> products(
+    public ResponseEntity<Object> products(
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
             @ApiParam(value = "search query") @Valid @RequestParam(value = "q", required = false) String q,
@@ -59,7 +59,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     }
     
      
-    public ResponseEntity<Product> productsByLidvid(
+    public ResponseEntity<Object> productsByLidvid(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -67,7 +67,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
     
     @Override
-    public ResponseEntity<Product> productsByLidvidLatest(
+    public ResponseEntity<Object> productsByLidvidLatest(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid)
     {
         return this.getLatestProductResponseEntity(lidvid);
@@ -75,7 +75,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     
     
     @Override
-    public ResponseEntity<Products> productsByLidvidAll(
+    public ResponseEntity<Object> productsByLidvidAll(
             @ApiParam(value = "lidvid or lid", required = true) @PathVariable("identifier") String lidvid,
             @ApiParam(value = "offset in matching result list, for pagination", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,
             @ApiParam(value = "maximum number of matching results returned, for pagination", defaultValue = "10") @Valid @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit)
@@ -85,7 +85,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     
     
     @Override
-    public ResponseEntity<Products> bundlesContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
+    public ResponseEntity<Object> bundlesContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
             @Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) {
         String accept = this.request.getHeader("Accept");
         MyProductsApiController.log.info("accept value is " + accept);
@@ -102,20 +102,20 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
             try
             {
                 Products products = this.getContainingBundle(lidvid, start, limit, fields, sort, summaryOnly);              
-                return new ResponseEntity<Products>(products, HttpStatus.OK);
+                return new ResponseEntity<Object>(products, HttpStatus.OK);
             }
             catch (IOException e)
             {
                 log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             catch (LidVidNotFoundException e)
             {
                 log.warn("Could not find lid(vid) in database: " + lidvid);
-                return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
             }
          }
-         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
     }
 
 
@@ -160,7 +160,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
 
     @Override
-    public ResponseEntity<Products> collectionsContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
+    public ResponseEntity<Object> collectionsContainingProduct(String lidvid, @Valid Integer start, @Valid Integer limit,
             @Valid List<String> fields, @Valid List<String> sort, @Valid Boolean summaryOnly) {
         String accept = this.request.getHeader("Accept");
         MyProductsApiController.log.info("accept value is " + accept);
@@ -177,20 +177,20 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
             try
             {
                 Products products = this.getContainingCollection(lidvid, start, limit, fields, sort, summaryOnly);              
-                return new ResponseEntity<Products>(products, HttpStatus.OK);
+                return new ResponseEntity<Object>(products, HttpStatus.OK);
             }
             catch (IOException e)
             {
                 log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             catch (LidVidNotFoundException e)
             {
                 log.warn("Could not find lid(vid) in database: " + lidvid);
-                return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
             }
          }
-         else return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     

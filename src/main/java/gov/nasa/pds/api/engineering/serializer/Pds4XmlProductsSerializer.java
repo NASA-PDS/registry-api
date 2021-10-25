@@ -20,10 +20,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import gov.nasa.pds.api.model.xml.Pds4ProductWithXmlLabel;
 import gov.nasa.pds.model.Pds4Product;
-import gov.nasa.pds.model.Products;
+import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
 
-public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Products> {
+public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds4Products> {
 	/***
 	 * OBSOLETE since we don't want to use the label in blob anymore to provide the pds4 original label for a list of products
 	 * 
@@ -41,20 +41,20 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pro
 
 	  @Override
 	  protected boolean supports(Class<?> clazz) {
-	      return Products.class.isAssignableFrom(clazz);
+	      return Pds4Products.class.isAssignableFrom(clazz);
 	  }
 
 	  @Override
-	  protected Products readInternal(Class<? extends Products> clazz, HttpInputMessage inputMessage)
+	  protected Pds4Products readInternal(Class<? extends Pds4Products> clazz, HttpInputMessage inputMessage)
 	          throws IOException, HttpMessageNotReadableException {
 	     // dummy method never used
-	      return new Products();
+	      return new Pds4Products();
 	  }
 
 	
 	  
 	  @Override
-	  protected void writeInternal(Products products, HttpOutputMessage outputMessage)
+	  protected void writeInternal(Pds4Products products, HttpOutputMessage outputMessage)
 	          throws IOException, HttpMessageNotWritableException {
 	      try {
 	          OutputStream outputStream = outputMessage.getBody();
@@ -79,7 +79,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pro
 	       
 	          
 	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "data");
-	          for (Pds4Product product : products.getPds4Json()) {
+	          for (Pds4Product product : products.getData()) {
 	        	  writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "product");
 	        	  
 	        	  String productBody = ((Pds4ProductWithXmlLabel)product).getLabelXml();

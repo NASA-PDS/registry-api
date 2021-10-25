@@ -17,14 +17,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.model.Pds4Product;
-import gov.nasa.pds.model.Products;
+import gov.nasa.pds.model.Pds4Products;
 
 
 /**
  * Custom serializer to write a Pds4Product in "pds4+json" format.
  * @author karpenko
  */
-public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Products>
+public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Pds4Products>
 {
     /**
      * Constructor
@@ -38,20 +38,20 @@ public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Pro
     @Override
     protected boolean supports(Class<?> clazz)
     {
-        return Products.class.isAssignableFrom(clazz);
+        return Pds4Products.class.isAssignableFrom(clazz);
     }
 
     
     @Override
-    protected Products readInternal(Class<? extends Products> clazz, HttpInputMessage msg)
+    protected Pds4Products readInternal(Class<? extends Pds4Products> clazz, HttpInputMessage msg)
             throws IOException, HttpMessageNotReadableException
     {
-        return new Products();
+        return new Pds4Products();
     }
 
     
     @Override
-    public void writeInternal(Products products, HttpOutputMessage msg)
+    public void writeInternal(Pds4Products products, HttpOutputMessage msg)
             throws IOException, HttpMessageNotWritableException
     {
         ObjectMapper mapper = new ObjectMapper();
@@ -70,7 +70,7 @@ public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Pro
         
         // Data
         wr.write("\"data\":[");
-        writeProducts(products.getPds4Json(), wr, mapper);
+        writeProducts(products.getData(), wr, mapper);
         wr.write("]\n");
                 
         wr.write("}\n");
