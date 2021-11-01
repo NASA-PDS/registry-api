@@ -6,7 +6,8 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductVersionSelector;
-import gov.nasa.pds.model.Summary;
+import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -23,11 +24,8 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-02-16T16:35:42.434-08:00[America/Los_Angeles]")
@@ -120,17 +118,14 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     }
     
     
-    private Products getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
-            List<String> sort, boolean onlySummary, ProductVersionSelector versionSelector) 
+    private void getBundleCollections(RequestAndResponseContext context) 
                     throws IOException, LidVidNotFoundException
     {
-        long begin = System.currentTimeMillis();
-        
-        lidvid = productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
+        String lidvid = productBO.getLidVidDao().getLatestLidVidByLid(context.getLIDVID());
         MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + lidvid);
         
         List<String> clidvids = null;
-        if(versionSelector == ProductVersionSelector.ALL)
+        if(context.getSelector() == ProductVersionSelector.ALL)
         {
             clidvids = productBO.getBundleDao().getAllBundleCollectionLidVids(lidvid);
         }
@@ -139,34 +134,18 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
         }
 
-        Set<String> uniqueProperties = new TreeSet<String>();
-        Products products = new Products();
-        Summary summary = new Summary();
-
-        if (sort == null) { sort = Arrays.asList(); }
-
-        summary.setHits(clidvids.size());
-        summary.setStart(start);
-        summary.setLimit(limit);
-        summary.setSort(sort);
-        products.setSummary(summary);
-
         int size = clidvids.size();
-        if (size > 0 && start < size && limit > 0)
+        if (size > 0 && context.getStart() < size && context.getLimit() > 0)
         {
-            int end = start + limit;
+            int end = context.getStart() + context.getLimit();
             if(end > size) end = size;
-            List<String> ids = clidvids.subList(start, end);
-            fillProductsFromLidvids(products, uniqueProperties, ids, fields, onlySummary);
+            List<String> ids = clidvids.subList(context.getStart(), end);
+            fillProductsFromLidvids(context, ids, -1);
         }
         else 
         {
             log.warn("Did not find any collections for bundle lidvid: " + lidvid);
         }
-
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        summary.setTook((int)(System.currentTimeMillis() - begin));
-        return products;    
     }
 
     
@@ -175,31 +154,28 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     {
          String accept = this.request.getHeader("Accept");
          MyBundlesApiController.log.info("accept value is " + accept);
-         if ((accept != null 
-                && (accept.contains("application/json") 
-                        || accept.contains("application/pds4+json")
-                        || accept.contains("text/html")
-                        || accept.contains("application/xml")
-                        || accept.contains("*/*")))
-            || (accept == null))
+
+         try
          {
-             try
-             {
-                 Products products = getBundleCollections(lidvid, start, limit, fields, sort, onlySummary, versionSelector);
-                 return new ResponseEntity<Object>(products, HttpStatus.OK);
-             }
-             catch (IOException e)
-             {
-                 log.error("Couldn't serialize response for content type " + accept, e);
-                 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
-             }
-             catch (LidVidNotFoundException e)
-             {
-                 log.warn("Could not find lid(vid) in database: " + lidvid);
-                 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-             }
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, onlySummary, versionSelector, accept);
+        	 this.getBundleCollections(context);
+        	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
-         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+         catch (IOException e)
+         {
+        	 log.error("Couldn't serialize response for content type " + accept, e);
+        	 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+         catch (LidVidNotFoundException e)
+         {
+        	 log.warn("Could not find lid(vid) in database: " + lidvid);
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+         }
+         catch (ApplicationTypeException e)
+         {
+        	 log.error("Application type not implemented", e);
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+         }
     }
 
     
@@ -209,56 +185,40 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     {
          String accept = this.request.getHeader("Accept");
          MyBundlesApiController.log.info("accept value is " + accept);
-         if ((accept != null 
-                && (accept.contains("application/json") 
-                        || accept.contains("application/pds4+json")
-                        || accept.contains("text/html")
-                        || accept.contains("application/xml")
-                        || accept.contains("*/*")))
-            || (accept == null))
+
+         try
          {
-             try
-             {
-                 Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
-                 return new ResponseEntity<Object>(products, HttpStatus.OK);
-             }
-             catch (IOException e)
-             {
-                 log.error("Couldn't serialize response for content type " + accept, e);
-                 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
-             }
-             catch (LidVidNotFoundException e)
-             {
-                 log.warn("Could not find lid(vid) in database: " + lidvid);
-                 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-             }
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, false, accept);
+             this.getProductChildren(context);
+        	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
-         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+         catch (IOException e)
+         {
+        	 log.error("Couldn't serialize response for content type " + accept, e);
+        	 return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+         catch (LidVidNotFoundException e)
+         {
+        	 log.warn("Could not find lid(vid) in database: " + lidvid);
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+         }
+         catch (ApplicationTypeException e)
+         {
+        	 log.error("Application type not implemented", e);
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+         }
     }
 
     
-    private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException,LidVidNotFoundException
+    private void getProductChildren(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
     {
-    long begin = System.currentTimeMillis();
-        lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+        String lidvid = this.productBO.getLatestLidVidFromLid(context.getLIDVID());
         MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
 
         int iteration=0,wsize=0;
-        Set<String> uniqueProperties = new TreeSet<String>();
         List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();
-        Products products = new Products();
-        Summary summary = new Summary();
-
-        if (sort == null) { sort = Arrays.asList(); }
-
-        summary.setHits(-1);
-        summary.setLimit(limit);
-        summary.setSort(sort);
-        summary.setStart(start);
-        summary.setTook(-1);
-        products.setSummary(summary);
 
         if (0 < clidvids.size())
         {
@@ -276,12 +236,12 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
                     @SuppressWarnings("unchecked")
                     List<String> plids = (List<String>)hit.get("product_lidvid");
 
-                    if (start <= iteration || start < iteration+plids.size()) { wlidvids.addAll(plids); }
+                    if (context.getStart() <= iteration || context.getStart() < iteration+plids.size()) { wlidvids.addAll(plids); }
                     else { wsize = plids.size(); } 
                 }
 
-                if (start <= iteration || start < iteration+wlidvids.size())
-                { plidvids.addAll(wlidvids.subList(start <= iteration ? 0 : start-iteration, wlidvids.size())); }
+                if (context.getStart() <= iteration || context.getStart() < iteration+wlidvids.size())
+                { plidvids.addAll(wlidvids.subList(context.getStart() <= iteration ? 0 : context.getStart()-iteration, wlidvids.size())); }
 
                 //if (limit <= plidvids.size()) { break; }
                 //else { iteration = iteration + wlidvids.size() + wsize; }
@@ -292,16 +252,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         
         MyBundlesApiController.log.info("found " + Integer.toString(plidvids.size()) + " products in this bundle");
 
-        if (plidvids.size() > 0 && limit > 0)
+        if (plidvids.size() > 0 && context.getLimit() > 0)
         {
-            this.fillProductsFromLidvids(products, uniqueProperties,
-                    plidvids.subList(0, plidvids.size() < limit ? plidvids.size() : limit), fields, onlySummary);
+            this.fillProductsFromLidvids(context,
+                    plidvids.subList(0, plidvids.size() < context.getLimit() ? plidvids.size() : context.getLimit()), iteration);
         }
         else MyBundlesApiController.log.warn ("Did not find any products for bundle lidvid: " + lidvid);
-
-        summary.setHits(iteration);
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        summary.setTook((int)(System.currentTimeMillis() - begin));
-        return products;    
     }
 }

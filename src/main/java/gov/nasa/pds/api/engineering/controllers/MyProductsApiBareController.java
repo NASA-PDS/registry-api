@@ -3,21 +3,17 @@ package gov.nasa.pds.api.engineering.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidUtils;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-
-import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
-import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.PropertyArrayValues;
-import gov.nasa.pds.model.Products;
-import gov.nasa.pds.model.Summary;
+import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
 
 @Component
 public class MyProductsApiBareController {
@@ -77,100 +66,22 @@ public class MyProductsApiBareController {
         this.request = context;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void fillProductsFromLidvids (Products products, Set<String> uniqueProperties, List<String> lidvids, List<String> fields, boolean onlySummary) throws IOException
+    protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
     {
-        for (final Map<String,Object> kvp : new ElasticSearchHitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
+    	context.setResponse(new ElasticSearchHitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
                 ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
-                        lidvids, fields, this.esRegistryConnection.getRegistryIndex())))
-        {
-            uniqueProperties.addAll(kvp.keySet());
-
-            if (!onlySummary)
-            {
-            	products.getPdsJson().add(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()).getPdsJson());
-                products.getPdsJson().get(products.getPdsJson().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
-            }
-        }
+                        lidvids, context.getFields(), this.esRegistryConnection.getRegistryIndex())), real_total);
 
     }
 
     
-    @SuppressWarnings("unchecked")
-    protected void fillProductsFromParents (Products products, Set<String> uniqueProperties, List<Map<String,Object>> results, boolean onlySummary) throws IOException
+    protected void getProducts(RequestAndResponseContext context) throws IOException
     {
-        for (Map<String,Object> kvp : results)
-        {
-            uniqueProperties.addAll(kvp.keySet());
-
-            if (!onlySummary)
-            {
-                products.getPdsJson().add(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.getBaseURL()).getPdsJson());
-                products.getPdsJson().get(products.getPdsJson().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Products getProducts(String q, String keyword, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException
-    {
-        long begin = System.currentTimeMillis();
-
-        SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(q, keyword, fields, start, limit, this.presetCriteria);
-        
-        SearchResponse searchResponse = this.esRegistryConnection.getRestHighLevelClient().search(searchRequest, 
-                RequestOptions.DEFAULT);
-        
-        Products products = new Products();
-        
-        Set<String> uniqueProperties = new TreeSet<String>();
-        
-        Summary summary = new Summary();
-
-        summary.setHits(-1);
-        summary.setLimit(limit);
-        summary.setQ((q != null)?q:"" );
-        summary.setStart(start);
-        summary.setTook(-1);
-
-        if (sort == null) {
-            sort = Arrays.asList();
-        }   
-        summary.setSort(sort);
-        
-        products.setSummary(summary);
-        
-        if (searchResponse != null) {
-            summary.setHits((int)searchResponse.getHits().getTotalHits().value);
-            for (SearchHit searchHit : searchResponse.getHits()) {
-                Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
-                
-                Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject.getFilteredProperties(
-                        sourceAsMap, 
-                        fields, 
-                        null
-                        );
-                
-                uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-
-                if (!onlySummary) {
-                    
-                    
-                    EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-
-                    Product product = ElasticSearchUtil.ESentityProductToAPIProduct(
-                            entityProduct, 
-                            this.getBaseURL());
-                    product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-
-                    products.getPdsJson().add(product.getPdsJson());
-                }
-            }
-        }
-        
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        summary.setTook((int)(System.currentTimeMillis() - begin));
-        return products;
+        SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(
+        		context.getQueryString(),
+        		context.getKeyword(),
+        		context.getFields(), context.getStart(), context.getLimit(), context.getPresetCriteria());
+        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), searchRequest);
     }
  
 
@@ -179,49 +90,27 @@ public class MyProductsApiBareController {
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
-        if ((accept != null && 
-                (accept.contains("application/json")
-                        || accept.contains("application/pds4+json")
-                        || accept.contains("text/html")
-                        || accept.contains("application/xml")
-                        || accept.contains("*/*"))) 
-                        || (accept == null))
+
+        try
         {
-            try
-            {
-                Products products = new Products();
-                if("application/pds4+json".equals(accept))
-                {
-                    RequestAndResponseContext req = new RequestAndResponseContext();
-                    req.setSearchCriteria(q, keyword);
-                    req.setPageInfo(start, limit);
-                    req.setFields(fields, sort);
-                    req.presetCriteria = presetCriteria;
-                    req.onlySummary = onlySummary;
-                    
-                    products = productBO.getPds4Products(req);
-                }
-                else
-                {
-                    products = this.getProducts(q, keyword, start, limit, fields, sort, onlySummary);
-                }
-                
-                return new ResponseEntity<Object>(products, HttpStatus.OK);
-            }
-            catch (IOException e)
-            {
-                log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            catch (ParseCancellationException pce)
-            {
-                log.error("Could not parse the query string: " + q);
-                return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-            }
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), q, keyword, start, limit, fields, sort, false, accept);
+        	this.getProducts(context);                
+        	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
-        else
+        catch (IOException e)
         {
-            return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+            log.error("Couldn't serialize response for content type " + accept, e);
+            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (ParseCancellationException pce)
+        {
+            log.error("Could not parse the query string: " + q);
+            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+        }
+        catch (ApplicationTypeException e)
+        {
+       	 log.error("Application type not implemented", e);
+       	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
         }
     }    
     
@@ -230,135 +119,75 @@ public class MyProductsApiBareController {
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
-        if ((accept != null && (accept.contains("application/json")
-                || accept.contains("application/pds4+json")
-        		|| accept.contains("text/html")
-                || accept.contains("application/xml")
-                || accept.contains("*/*")))
-        		|| (accept == null))
-        {
-            try
-            {
-                long startTs = System.currentTimeMillis();
-                
-                String lid = LidVidUtils.extractLidFromLidVid(identifier);
-                Products products = getProductsByLid(lid, start, limit);
-                
-                long endTs = System.currentTimeMillis();
-                if(products != null)
-                {
-                    products.getSummary().setTook((int)(endTs - startTs));
-                }
-                
-                return new ResponseEntity<Object>(products, HttpStatus.OK);
-            }
-            catch (IOException e)
-            {
-                log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            catch (ParseCancellationException pce)
-            {
-                log.error("", pce);
-                return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
-            }
+
+        try
+        {            
+            String lidvid = LidVidUtils.extractLidFromLidVid(identifier);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, accept);
+            this.getProductsByLid(context);
+            return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
-        else
+        catch (IOException e)
         {
-            return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+            log.error("Couldn't serialize response for content type " + accept, e);
+            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (ParseCancellationException pce)
+        {
+            log.error("", pce);
+            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+        }
+        catch (ApplicationTypeException e)
+        {
+       	 log.error("Application type not implemented", e);
+       	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
         }
     }    
     
     
-    public Products getProductsByLid(String lid, int start, int limit) throws IOException 
+    public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
-        SearchRequest req = searchRequestBuilder.getSearchProductsByLid(lid, start, limit);
-        SearchResponse resp = esRegistryConnection.getRestHighLevelClient().search(req, RequestOptions.DEFAULT);
-        
-        Products products = new Products();
-        
-        Summary summary = new Summary();
-        summary.setStart(start);
-        summary.setLimit(limit);
-        products.setSummary(summary);
-        
-        if(resp == null) return products;
-
-        Set<String> uniqueProperties = new TreeSet<>();
-
-        for(SearchHit searchHit : resp.getHits()) 
-        {
-            Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
-            
-            Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = ProductBusinessObject
-                    .getFilteredProperties(sourceAsMap, null, null);
-            
-            uniqueProperties.addAll(filteredMapJsonProperties.keySet());
-
-            EntityProduct entityProduct = objectMapper.convertValue(sourceAsMap, EntityProduct.class);
-
-            Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, this.getBaseURL());
-            product.getPdsJson().setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-
-            products.getPdsJson().add(product.getPdsJson());
-        }
-
-        
-        summary.setHits((int)resp.getHits().getTotalHits().value);
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        return products;
+        SearchRequest req = searchRequestBuilder.getSearchProductsByLid(context.getLIDVID(), context.getStart(), context.getLimit());
+        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), req);
     }
 
     
     protected ResponseEntity<Object> getLatestProductResponseEntity(String lidvid)
     {
         String accept = request.getHeader("Accept");
-        if ((accept != null) 
-                && (accept.contains("application/json")
-                || accept.contains("text/html")
-                || accept.contains("*/*")
-                || accept.contains("application/xml")
-                || accept.contains("application/pds4+xml")
-                || accept.contains("application/pds4+json"))) {
+        
+        try 
+        {
+            lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, accept);
+            GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
+            FetchSourceContext fetchSourceContext = new FetchSourceContext(true, (String[])(context.getFields().toArray()), null);
+            request.fetchSourceContext(fetchSourceContext);
+            context.setResponse(this.esRegistryConnection.getRestHighLevelClient().get(request, RequestOptions.DEFAULT));
             
-            try 
-            {
-                lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
-                
-                Product product = null;
-                
-                if("application/pds4+json".equals(accept))
-                {
-                    product = productBO.getPds4Product(lidvid);
-                }
-                else
-                {
-                    product = this.productBO.getProductWithXml(lidvid, this.getBaseURL());
-                }
-                
-                if (product != null) 
-                {   
-                    return new ResponseEntity<Object>(product, HttpStatus.OK);
-                }                   
-                else 
-                {
-                    // TODO send 302 redirection to a different server if one exists
-                    return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-                }
-            } 
-            catch (IOException e) 
-            {
-                log.error("Couldn't get or serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+            if (context.getResponse() == null)
+            { 
+            	log.warn("Could not find any matches for LIDVID: " + lidvid);
+            	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
             }
-            catch (LidVidNotFoundException e)
-            {
-                log.warn("Could not find lid(vid) in database: " + lidvid);
-                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-            }
+            return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
+        } 
+        catch (IOException e) 
+        {
+            log.error("Couldn't get or serialize response for content type " + accept, e);
+            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (LidVidNotFoundException e)
+        {
+            log.warn("Could not find lid(vid) in database: " + lidvid);
+            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        }
+        catch (ApplicationTypeException e)
+        {
+       	 log.error("Application type not implemented", e);
+       	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
         }
 
-        return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     

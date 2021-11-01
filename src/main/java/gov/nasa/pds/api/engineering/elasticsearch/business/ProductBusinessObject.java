@@ -39,7 +39,8 @@ import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 
 
-public class ProductBusinessObject {
+public class ProductBusinessObject
+{
     
     private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
     
@@ -348,5 +349,4 @@ public class ProductBusinessObject {
             products.setData(list);
             return products;
         }
-
 }

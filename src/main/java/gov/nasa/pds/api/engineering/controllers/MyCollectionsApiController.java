@@ -4,10 +4,7 @@ package gov.nasa.pds.api.engineering.controllers;
 import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.model.Product;
-import gov.nasa.pds.model.Products;
-import gov.nasa.pds.model.Summary;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -25,11 +22,11 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
+import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -124,70 +121,43 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     ResponseEntity<Object> getProductsOfACollectionResponseEntity(String lidvid, int start, int limit, 
             List<String> fields, List<String> sort, boolean onlySummary)
     {
+        String accept = this.request.getHeader("Accept");
         MyCollectionsApiController.log.info("Get productsOfACollection");
 
-        String accept = this.request.getHeader("Accept");
-        MyCollectionsApiController.log.info("accept value is " + accept);
-        if ((accept != null && (accept.contains("application/json")
-        		|| accept.contains("text/html")
-                || accept.contains("application/xml")
-                || accept.contains("application/pds4+json")
-                || accept.contains("application/pds4+xml")
-                || accept.contains("*/*"))) || (accept == null))
+        try
         {
-            try
-            {
-                Products products = this.getProductChildren(lidvid, start, limit, fields, sort, onlySummary);
-
-                /*
-                 * REMOVED since it breaks the result when only-smmary argument is set to true
-                 * if (products.getData() == null || products.getData().size() == 0) return new
-                 * ResponseEntity<Products>(products, HttpStatus.NOT_FOUND); else
-                 */
-
-                return new ResponseEntity<Products>(products, HttpStatus.OK);
-            }
-            catch (LidVidNotFoundException e)
-            {
-                log.error("Couldn't find the lidvid " + e.getMessage());
-                return new ResponseEntity<Products>(HttpStatus.NOT_FOUND);
-
-            }
-            catch (IOException e)
-            {
-                log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Products>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, onlySummary, accept);
+        	this.getProductChildren(context);
+       	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
-        else
+        catch (LidVidNotFoundException e)
         {
-            return new ResponseEntity<Products>(HttpStatus.NOT_IMPLEMENTED);
+            log.error("Couldn't find the lidvid " + e.getMessage());
+            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+
+        }
+        catch (IOException e)
+        {
+            log.error("Couldn't serialize response for content type " + accept, e);
+            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (ApplicationTypeException e)
+        {
+       	 log.error("Application type not implemented", e);
+       	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
         }
     }
     
     
-    private Products getProductChildren(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
+    private void getProductChildren(RequestAndResponseContext context) throws IOException, LidVidNotFoundException
     {
-          long begin = System.currentTimeMillis();
-        if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+        String lidvid = this.productBO.getLatestLidVidFromLid(context.getLIDVID());
     
         MyCollectionsApiController.log.info("request collection lidvid, collections children: " + lidvid);
 
         int iteration=0,wsize=0;
-        HashSet<String> uniqueProperties = new HashSet<String>();
         List<String> productLidvids = new ArrayList<String>();
         List<String> pageOfLidvids = new ArrayList<String>();
-        Products products = new Products();
-        Summary summary = new Summary();
-
-        if (sort == null) { sort = Arrays.asList(); }   
-
-        summary.setHits(-1);
-        summary.setLimit(limit);
-        summary.setSort(sort);  
-        summary.setStart(start);
-        summary.setTook(-1);
-        products.setSummary(summary);
 
         for (final Map<String,Object> kvp : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
                 ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", lidvid, "product_lidvid",
@@ -204,14 +174,14 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
                 List<String> clids = (List<String>)kvp.get("product_lidvid");
 
                 // if we are working with data that we care about (between start and start + limit) then record them
-                if (start <= iteration || start < iteration+clids.size()) {pageOfLidvids.addAll(clids); }
+                if (context.getStart() <= iteration || context.getStart() < iteration+clids.size()) {pageOfLidvids.addAll(clids); }
                 // else just modify the counter to skip them without wasting CPU cycles processing them
                 else { wsize = clids.size(); }
             }
 
             // if any data from the pages then add them to the complete roster
-            if (start <= iteration || start < iteration+pageOfLidvids.size())
-            { productLidvids.addAll(pageOfLidvids.subList(start <= iteration ? 0 : start-iteration, pageOfLidvids.size())); }
+            if (context.getStart() <= iteration || context.getStart() < iteration+pageOfLidvids.size())
+            { productLidvids.addAll(pageOfLidvids.subList(context.getStart() <= iteration ? 0 : context.getStart()-iteration, pageOfLidvids.size())); }
 
             // if the limit of data has been found then break out of the loop
             //if (limit <= productLidvids.size()) { break; }
@@ -220,17 +190,12 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
             iteration = iteration + pageOfLidvids.size() + wsize;
         }
 
-        if (productLidvids.size() > 0 && limit > 0)
+        if (productLidvids.size() > 0 && context.getLimit() > 0)
         {
-            this.fillProductsFromLidvids(products, uniqueProperties,
-                    productLidvids.subList(0, productLidvids.size() < limit ? productLidvids.size() : limit), fields, onlySummary);
+            this.fillProductsFromLidvids(context,
+                    productLidvids.subList(0, productLidvids.size() < context.getLimit() ? productLidvids.size() : context.getLimit()), iteration);
         }
         else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + lidvid);
-
-        summary.setHits(iteration);
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        summary.setTook((int)(System.currentTimeMillis() - begin));
-        return products;        
     }
 
 
@@ -241,60 +206,38 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         String accept = this.request.getHeader("Accept");
         MyCollectionsApiController.log.info("accept value is " + accept);
 
-        if ((accept != null 
-                && (accept.contains("application/json") 
-                        || accept.contains("application/pds4+json")
-                        || accept.contains("text/html")
-                        || accept.contains("application/xml")
-                        || accept.contains("*/*")))
-            || (accept == null))
+        try
         {
-            try
-            {
-                Products products = this.getContainingBundle(lidvid, start, limit, fields, sort, summaryOnly);              
-                return new ResponseEntity<Object>(products, HttpStatus.OK);
-            }
-            catch (IOException e)
-            {
-                log.error("Couldn't serialize response for content type " + accept, e);
-                return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            catch (LidVidNotFoundException e)
-            {
-                log.warn("Could not find lid(vid) in database: " + lidvid);
-                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-            }
-         }
-         else return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, summaryOnly, accept);
+       	 	this.getContainingBundle(context);
+       	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
+        }
+        catch (IOException e)
+        {
+            log.error("Couldn't serialize response for content type " + accept, e);
+            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (LidVidNotFoundException e)
+        {
+            log.warn("Could not find lid(vid) in database: " + lidvid);
+            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        }
+        catch (ApplicationTypeException e)
+        {
+       	 log.error("Application type not implemented", e);
+       	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        }
     }
     
-    private Products getContainingBundle(String lidvid, int start, int limit, List<String> fields, List<String> sort, boolean summaryOnly) throws IOException,LidVidNotFoundException
+    private void getContainingBundle(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
     {
-        long begin = System.currentTimeMillis();
-        if (!lidvid.contains("::")) lidvid = this.productBO.getLatestLidVidFromLid(lidvid);
+        String lidvid = this.productBO.getLatestLidVidFromLid(context.getLIDVID());
 
         MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
         MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + lidvid.substring(0, lidvid.indexOf("::")));
-        HashSet<String> uniqueProperties = new HashSet<String>();
-        Products products = new Products();
         SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("ref_lid_collection",
-                lidvid.substring(0, lidvid.indexOf("::")), fields, this.esRegistryConnection.getRegistryIndex(), false);
-        Summary summary = new Summary();
+                lidvid.substring(0, lidvid.indexOf("::")), context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
 
-        if (sort == null) { sort = Arrays.asList(); }
-
-        summary.setHits(-1);
-        summary.setLimit(limit);
-        summary.setSort(sort);
-        summary.setStart(start);
-        summary.setTook(-1);
-        products.setSummary(summary);
-        request.source().size(limit);
-        request.source().from(start);
-        this.fillProductsFromParents(products, uniqueProperties, ElasticSearchUtil.collate(this.esRegistryConnection.getRestHighLevelClient(), request, summary), summaryOnly);
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        summary.setTook((int)(System.currentTimeMillis() - begin));
-        return products;
+        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
     }
-
 }
