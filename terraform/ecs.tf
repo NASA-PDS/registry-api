@@ -3,7 +3,8 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = "pds-${var.node_name_abbr}-${var.venue}-reg-cluster"
 
   tags = {
-    Foxtrot = "${var.node_name_abbr}-${var.venue}"
+    Alpha = var.node_name_abbr
+    Bravo = var.venue
     Charlie = "registry"
   }
 }
@@ -42,7 +43,8 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
   }
 
   tags = {
-    Foxtrot = "${var.node_name_abbr}-${var.venue}"
+    Alpha = var.node_name_abbr
+    Bravo = var.venue
     Charlie = "registry"
   }
 }
@@ -78,7 +80,12 @@ resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
         "timeout": 5,
         "interval": 60,
         "startPeriod": 300
-      }
+      },
+      "secrets": [
+        {"name": "ES_CREDENTIALS", "valueFrom": "${aws_secretsmanager_secret.es_login_secret.arn}"},
+        {"name": "ES_HOSTS", "valueFrom": "${aws_ssm_parameter.es_hosts_parameter.name}"},
+        {"name": "NODE_NAME", "valueFrom": "${aws_ssm_parameter.node_name_parameter.name}"}
+      ]
     }
   ]
 
@@ -96,7 +103,8 @@ EOF
   network_mode = "awsvpc"
 
   tags = {
-    Foxtrot = "${var.node_name_abbr}-${var.venue}"
+    Alpha = var.node_name_abbr
+    Bravo = var.venue
     Charlie = "registry"
   }
 }
@@ -106,21 +114,21 @@ data "aws_iam_role" "pds-task-execution-role" {
   name    = "am-ecs-task-execution"
 }
 
-# resource "aws_lb_target_group" "pds-registry-target-group" {
-  # name        = "pds-${var.node_name_abbr}-reg-tgt"
-  # port        = 80
-  # protocol    = "HTTP"
-  # target_type = "ip"
-  # vpc_id      = "${var.aws_fg_vpc}"
+resource "aws_lb_target_group" "pds-registry-target-group" {
+  name        = "pds-${var.node_name_abbr}-reg-tgt"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.aws_fg_vpc
 
-  # health_check {
-    # enabled = true
-    # path    = "/swagger-ui.html"
-  # }
+  health_check {
+    enabled = true
+    path    = "/swagger-ui.html"
+  }
 
-  # depends_on = [data.aws_alb.pds-alb]
-# }
+  depends_on = [data.aws_alb.pds-alb]
+}
 
-# data "aws_alb" "pds-alb" {
-  # name   = "pds-en-ecs"      # TODO: Change name to be more global
-# }
+data "aws_alb" "pds-alb" {
+  name   = "pds-en-ecs"      # TODO: Change name to be more global
+}

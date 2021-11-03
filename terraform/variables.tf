@@ -44,6 +44,18 @@ variable "aws_fg_subnets" {
   # default = ["subnet-005cbaf96a20adb30", "subnet-070c009607513d587"]
 }
 
+variable "es_user_name" {
+  description = "User name for elastic search"
+}
+
+variable "es_password" {
+  description = "Password for elastic search"
+}
+
+variable "es_hosts" {
+  description = "comma separated list of ES hosts"
+}
+
 # This cannot be specified as a variable
 # variable "aws_task_exec_role_name" {
   # description = "task execution role" 
@@ -53,7 +65,7 @@ variable "aws_fg_subnets" {
 
 variable "aws_fg_image" {
   description = "AWS image name for Fargate"
-  default = "445837347542.dkr.ecr.us-west-2.amazonaws.com/pds-registry-api-service:0.4.0-SNAPSHOT.http"
+  default = "445837347542.dkr.ecr.us-west-2.amazonaws.com/pds-registry-api-service:0.4.1-SNAPSHOT.http"
 }
 
 variable "aws_fg_cpu_units" {
