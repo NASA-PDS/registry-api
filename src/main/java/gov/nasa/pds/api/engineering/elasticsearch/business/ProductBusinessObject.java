@@ -93,7 +93,6 @@ public class ProductBusinessObject
         /*
          * if lid is a lidvid then it return the same lidvid if available in the elasticsearch database
          */
-            
         lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
         SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
             
@@ -102,7 +101,7 @@ public class ProductBusinessObject
 
         if (searchResponse != null)
         {
-            ArrayList<String> lidvids = new ArrayList<String>();
+        	ArrayList<String> lidvids = new ArrayList<String>();
             String lidvid;
             for (SearchHit searchHit : searchResponse.getHits())
             {

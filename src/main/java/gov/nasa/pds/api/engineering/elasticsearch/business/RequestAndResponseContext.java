@@ -12,16 +12,21 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
+import gov.nasa.pds.api.engineering.exceptions.NothingFoundException;
 import gov.nasa.pds.model.Summary;
 
 public class RequestAndResponseContext
 {
-	final private long begin_processing = System.currentTimeMillis();
+    private static final Logger log = LoggerFactory.getLogger(RequestAndResponseContext.class);
+
+    final private long begin_processing = System.currentTimeMillis();
 	final private String queryString;
 	final private String keyword;
 	final private String lidvid;
@@ -98,6 +103,7 @@ public class RequestAndResponseContext
     	formatters.put("application/json", new PdsProductBusinessObject());
     	formatters.put("application/pds4+json", new Pds4ProductBusinessObject());
     	this.formatters = formatters;
+    	this.format = output_format;
 
     	this.baseURL = base;
     	this.om = om;
@@ -112,7 +118,6 @@ public class RequestAndResponseContext
     	this.onlySummary = summaryOnly;
     	this.presetCriteria = null;
     	this.selector = selector;
-    	this.format = output_format;
     }
     
     public String getKeyword() { return this.keyword; }
@@ -137,16 +142,42 @@ public class RequestAndResponseContext
 			this.formatters.get(this.format).setObjectMapper(this.om);
 			output_needs = this.formatters.get(this.format).getRequiredFields();
 		}
-		else throw new ApplicationTypeException("The given application type, " + this.format + ", is not known by RquestAndResponseContext.");
+		else
+		{
+			log.warn("Could not find a matach for application type: " + String.valueOf(this.format));
+			log.warn("   Known types: " + String.valueOf(this.formatters.keySet().size()));
+			for (String key : this.formatters.keySet()) log.warn("      key: " + String.valueOf(key));
+			throw new ApplicationTypeException("The given application type, " + String.valueOf(this.format) + ", is not known by RquestAndResponseContext.");
+		}
 
-		complete.addAll(given);
+		if (given != null) complete.addAll(given);
 		for (int index=0 ; index < output_needs.length ; index++)
 		{ if (!complete.contains(output_needs[index])) complete.add(output_needs[index]); }
 		return complete;
 	}
 	
-	public Object getResponse()
-	{ return this.formatters.get(this.format).getResponse(); }
+	public Object getResponse() throws NothingFoundException
+	{
+		Object response = this.formatters.get(this.format).getResponse();
+		
+		if (response == null)
+		{
+			log.warn("Could not find any data given these conditions");
+			log.warn("   fields: " + String.valueOf(this.getFields()));
+			for (String field : this.getFields()) log.warn("      " + field);
+			log.warn("   keyword: " + this.getKeyword());
+			log.warn("   lidvid: " + this.getLIDVID());
+			log.warn("   limit: " + String.valueOf(this.getLimit()));
+			log.warn("   query string: " + String.valueOf(this.getQueryString()));
+			log.warn("   selector: " + String.valueOf(this.getSelector()));
+			log.warn("   sorting: " + String.valueOf(this.getSort().size()));
+			for (String sort : this.getSort()) log.warn("      " + sort);
+			log.warn("   start: " + String.valueOf(this.getStart()));
+			log.warn("   summary: " + String.valueOf(this.isOnlySummary()));
+			throw new NothingFoundException();
+		}
+		return response;
+	}
 	
 	public void setResponse(ElasticSearchHitIterator hits, int real_total)
 	{ 

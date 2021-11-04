@@ -21,6 +21,8 @@ COPY LICENSE.md /usr/local/registry-api-service-${VERSION}
 COPY NOTICE.txt /usr/local/registry-api-service-${VERSION}
 COPY README.md /usr/local/registry-api-service-${VERSION}
 COPY pom.xml /usr/local/registry-api-service-${VERSION}
+COPY m2.tgz /tmp
+RUN cd /root && tar -zxf /tmp/m2.tgz
 COPY src /usr/local/registry-api-service-${VERSION}/src
 
 # Resources shared with the rest of the world

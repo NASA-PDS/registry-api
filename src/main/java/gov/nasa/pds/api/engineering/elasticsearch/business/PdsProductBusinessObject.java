@@ -68,8 +68,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 	@Override
 	public void setResponse(GetResponse hit, String lidvid)
 	{
-		// TODO Auto-generated method stub
-		
+		this.product = ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(hit.getSourceAsMap(), EntityProduct.class), this.baseURL);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundExcepti
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductVersionSelector;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
+import gov.nasa.pds.api.engineering.exceptions.NothingFoundException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -161,6 +162,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         	 this.getBundleCollections(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
+         catch (ApplicationTypeException e)
+         {
+        	 log.error("Application type not implemented", e);
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+         }
          catch (IOException e)
          {
         	 log.error("Couldn't serialize response for content type " + accept, e);
@@ -171,10 +177,10 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         	 log.warn("Could not find lid(vid) in database: " + lidvid);
         	 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
          }
-         catch (ApplicationTypeException e)
+         catch (NothingFoundException e)
          {
-        	 log.error("Application type not implemented", e);
-        	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	 log.warn("Could not find any matching reference(s) in database.");
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
          }
     }
 
@@ -192,6 +198,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
+         catch (ApplicationTypeException e)
+         {
+        	 log.error("Application type not implemented", e);
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+         }
          catch (IOException e)
          {
         	 log.error("Couldn't serialize response for content type " + accept, e);
@@ -202,10 +213,10 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         	 log.warn("Could not find lid(vid) in database: " + lidvid);
         	 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
          }
-         catch (ApplicationTypeException e)
+         catch (NothingFoundException e)
          {
-        	 log.error("Application type not implemented", e);
-        	 return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	 log.warn("Could not find any matching reference(s) in database.");
+        	 return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
          }
     }
 

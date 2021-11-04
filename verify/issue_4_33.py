@@ -28,7 +28,7 @@ TEST_N_CRITERIA=[
     ]
 
 for url,expectation in TEST_N_CRITERIA:
-    result = requests.get(url)
+    result = requests.get(url, headers={'Accept':'application/json'})
 
     if result.status_code == expectation:
         print ('success', result.status_code, url)
