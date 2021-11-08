@@ -172,7 +172,7 @@ public class MyProductsApiBareController {
             lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
             RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, accept);
             GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
-            FetchSourceContext fetchSourceContext = new FetchSourceContext(true, (String[])(context.getFields().toArray()), null);
+            FetchSourceContext fetchSourceContext = new FetchSourceContext(true, context.getFields().toArray(new String[0]), null);
             request.fetchSourceContext(fetchSourceContext);
             context.setResponse(this.esRegistryConnection.getRestHighLevelClient().get(request, RequestOptions.DEFAULT));
             

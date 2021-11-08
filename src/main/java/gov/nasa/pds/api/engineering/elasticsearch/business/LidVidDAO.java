@@ -34,7 +34,11 @@ public class LidVidDAO
         
         List<String> lidvids = LidVidUtils.getLatestLidVidsByLids(esConnection, Arrays.asList(lid));
         if(lidvids == null || lidvids.isEmpty()) throw new LidVidNotFoundException(lid);
-        if (given != null && lidvids.contains(given)) return given;
+        if (given != null && lidvids.contains(given) && -1 < lidvids.indexOf(given) && lidvids.indexOf(given) == lidvids.lastIndexOf(given))
+        {
+        	if (lidvids.get(lidvids.indexOf(given)).equals(given)) return given;
+        	else throw new LidVidNotFoundException("Partial lidvid is not valid: " + given);
+        }
         else if (given != null) throw new LidVidNotFoundException("No such lidvid: " + given);
 
         return lidvids.get(0);
