@@ -1,21 +1,27 @@
 # Define the cluster
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "pds-${var.node_name_abbr}-reg-cluster"
+  name = "pds-${var.node_name_abbr}-${var.venue}-reg-cluster"
+
+  tags = {
+    Alpha = var.node_name_abbr
+    Bravo = var.venue
+    Charlie = "registry"
+  }
 }
 
-# An ECR repository is a private alternative to Docker Hub.
+# Do we need individual dev/test/prod repositories?
 data "aws_ecr_repository" "pds-registry-api-service" {
   name = "pds-registry-api-service"
 }
 
 # Log groups hold logs from our app.
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
-  name = "/ecs/pds-${var.node_name_abbr}-reg-api-svc-task"
+  name = "/ecs/pds-${var.node_name_abbr}-${var.venue}-reg-api-svc-task"
 }
 
 # The main service.
 resource "aws_ecs_service" "pds-registry-reg-service" {
-  name            = "pds-${var.node_name_abbr}-reg-service"
+  name            = "pds-${var.node_name_abbr}-${var.venue}-reg-service"
   task_definition = aws_ecs_task_definition.pds-registry-ecs-task.arn
   cluster         = aws_ecs_cluster.ecs_cluster.id
   launch_type     = "FARGATE"
@@ -35,11 +41,17 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
     subnets = var.aws_fg_subnets
   }
+
+  tags = {
+    Alpha = var.node_name_abbr
+    Bravo = var.venue
+    Charlie = "registry"
+  }
 }
 
-# The task definition for our app.
+# The task definition for app.
 resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
-  family = "pds-${var.node_name_abbr}-reg-api-svc-task"
+  family = "pds-${var.node_name_abbr}-${var.venue}-reg-api-svc-task"
 
   container_definitions = <<EOF
   [
@@ -68,7 +80,12 @@ resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
         "timeout": 5,
         "interval": 60,
         "startPeriod": 300
-      }
+      },
+      "secrets": [
+        {"name": "ES_CREDENTIALS", "valueFrom": "${aws_secretsmanager_secret.es_login_secret.arn}"},
+        {"name": "ES_HOSTS", "valueFrom": "${aws_ssm_parameter.es_hosts_parameter.name}"},
+        {"name": "NODE_NAME", "valueFrom": "${aws_ssm_parameter.node_name_parameter.name}"}
+      ]
     }
   ]
 
@@ -84,6 +101,12 @@ EOF
 
   # This is required for Fargate containers
   network_mode = "awsvpc"
+
+  tags = {
+    Alpha = var.node_name_abbr
+    Bravo = var.venue
+    Charlie = "registry"
+  }
 }
 
 # role under which ECS will execute tasks.
@@ -91,21 +114,21 @@ data "aws_iam_role" "pds-task-execution-role" {
   name    = "am-ecs-task-execution"
 }
 
-# resource "aws_lb_target_group" "pds-registry-target-group" {
-  # name        = "pds-${var.node_name_abbr}-reg-tgt"
-  # port        = 80
-  # protocol    = "HTTP"
-  # target_type = "ip"
-  # vpc_id      = "${var.aws_fg_vpc}"
+resource "aws_lb_target_group" "pds-registry-target-group" {
+  name        = "pds-${var.node_name_abbr}-reg-tgt"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.aws_fg_vpc
 
-  # health_check {
-    # enabled = true
-    # path    = "/swagger-ui.html"
-  # }
+  health_check {
+    enabled = true
+    path    = "/swagger-ui.html"
+  }
 
-  # depends_on = [data.aws_alb.pds-alb]
-# }
+  depends_on = [data.aws_alb.pds-alb]
+}
 
-# data "aws_alb" "pds-alb" {
-  # name   = "pds-en-ecs"      # TODO: Change name to be more global
-# }
+data "aws_alb" "pds-alb" {
+  name   = "pds-en-ecs"      # TODO: Change name to be more global
+}
