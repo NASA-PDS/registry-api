@@ -1045,9 +1045,18 @@ components:
         application/unsupported:
           schema:
             type: object
+        application/csv:
+          schema:
+            $ref: '#/components/schemas/wyriwygProducts'
+        application/csv+text:
+           schema:
+            $ref: '#/components/schemas/wyriwygProducts'
         application/json:
           schema:
             $ref: '#/components/schemas/pdsProducts'
+        application/kvp+json:
+          schema:
+            $ref: '#/components/schemas/wyriwygProducts'
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Products'
@@ -1057,9 +1066,18 @@ components:
         application/unsupported:
           schema:
             type: object
+        application/csv:
+          schema:
+            $ref: '#/components/schemas/wyriwygProduct'
+        application/csv+text:
+           schema:
+            $ref: '#/components/schemas/wyriwygProduct'
         application/json:
           schema:
             $ref: '#/components/schemas/pdsProduct'
+        application/kvp+json:
+          schema:
+            $ref: '#/components/schemas/wyriwygProduct'
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Product'
@@ -1198,6 +1216,31 @@ components:
         data:
           items:
             $ref: '#/components/schemas/pdsProduct'
+    wyriwygProduct:
+      type: object
+      required:
+        - key_value_pairs
+      properties:
+        key_value_pairs:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+    wyriwygProducts:
+      type: object
+      required:
+        - summary
+        - data
+      properties:
+        summary:
+          $ref: '#/components/schemas/summary'
+        data:
+          items:
+            $ref: '#/components/schemas/wyriwygProduct'
     propertyArrayValues:
       type: array 
       items:
