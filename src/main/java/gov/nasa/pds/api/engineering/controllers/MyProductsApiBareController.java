@@ -81,7 +81,7 @@ public class MyProductsApiBareController {
         SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(
         		context.getQueryString(),
         		context.getKeyword(),
-        		context.getFields(), context.getStart(), context.getLimit(), context.getPresetCriteria());
+        		context.getFields(), context.getStart(), context.getLimit(), this.presetCriteria);
         context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), searchRequest);
     }
  
@@ -94,7 +94,7 @@ public class MyProductsApiBareController {
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), q, keyword, start, limit, fields, sort, false, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), q, keyword, start, limit, fields, sort, onlySummary, this.presetCriteria, accept);
         	this.getProducts(context);                
         	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -115,7 +115,7 @@ public class MyProductsApiBareController {
         }
         catch (ParseCancellationException pce)
         {
-            log.error("Could not parse the query string: " + q);
+            log.error("Could not parse the query string: " + q, pce);
             return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
         }
     }    
@@ -129,7 +129,7 @@ public class MyProductsApiBareController {
         try
         {            
             String lidvid = LidVidUtils.extractLidFromLidVid(identifier);
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, this.presetCriteria, accept);
             this.getProductsByLid(context);
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -170,7 +170,7 @@ public class MyProductsApiBareController {
         try 
         {
             lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
             GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
             FetchSourceContext fetchSourceContext = new FetchSourceContext(true, context.getFields().toArray(new String[0]), null);
             request.fetchSourceContext(fetchSourceContext);

@@ -158,7 +158,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, onlySummary, versionSelector, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, onlySummary, versionSelector, this.presetCriteria, accept);
         	 this.getBundleCollections(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -194,7 +194,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, false, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, false, this.presetCriteria, accept);
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }

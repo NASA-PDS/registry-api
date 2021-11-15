@@ -2,6 +2,7 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -41,14 +42,14 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	public void setObjectMapper(ObjectMapper om) { this.om = om; }
 
 	@Override
-	public int setResponse(ElasticSearchHitIterator hits, Summary summary, boolean onlySummary)
+	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		Set<String> uniqueProperties = new TreeSet<String>();
 		WyriwygProducts products = new WyriwygProducts();
 
 		for (Map<String,Object> kvps : hits)
         {
-            uniqueProperties.addAll(kvps.keySet());
+            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
 
             if (!onlySummary)
             {
@@ -83,7 +84,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	}
 
 	@Override
-	public int setResponse(SearchHits hits, Summary summary, boolean onlySummary)
+	public int setResponse(SearchHits hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		Set<String> uniqueProperties = new TreeSet<String>();
 		WyriwygProducts products = new WyriwygProducts();
@@ -91,7 +92,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 		for (SearchHit hit : hits.getHits())
         {
 			Map<String, Object> kvps = hit.getSourceAsMap();
-            uniqueProperties.addAll(kvps.keySet());
+            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
 
             if (!onlySummary)
             {

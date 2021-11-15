@@ -43,7 +43,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	public void setObjectMapper (ObjectMapper om) { this.objectMapper = om; }
 
 	@Override
-	public int setResponse(ElasticSearchHitIterator hits, Summary summary, boolean onlySummary)
+	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
         List<Pds4Product> list = new ArrayList<Pds4Product>();
         Pds4Products products = new Pds4Products();
@@ -51,7 +51,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 
 		for (Map<String,Object> kvp : hits)
         {
-            uniqueProperties.addAll(kvp.keySet());
+            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
             if (!onlySummary)
             {
@@ -74,7 +74,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	}
 
 	@Override
-	public int setResponse(SearchHits hits, Summary summary, boolean onlySummary)
+	public int setResponse(SearchHits hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
         List<Pds4Product> list = new ArrayList<Pds4Product>();
         Pds4Products products = new Pds4Products();
@@ -86,7 +86,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
             String id = hit.getId();
             Map<String, Object> fieldMap = hit.getSourceAsMap();
             
-            uniqueProperties.addAll(fieldMap.keySet());
+            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(fieldMap, fields, null).keySet());
 
             if (!onlySummary)
             {

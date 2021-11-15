@@ -45,17 +45,19 @@ public class RequestAndResponseContext
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
     		String lidvid,
-    		String output_format // the accept statment of the request that informs the output type
+    		Map<String,String> preset, // default criteria when nothing else is defined
+    		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, "","", lidvid, 0, 10, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, output_format); }
+    { return new RequestAndResponseContext(om, base, null, null, lidvid, 0, 10, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, preset, output_format); }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
     		String lidvid,
     		int start, int limit, // page information
-    		String output_format // the accept statment of the request that informs the output type
+    		Map<String,String> preset, // default criteria when nothing else is defined
+    		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, "","", lidvid, start, limit, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, output_format); }
+    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, preset, output_format); }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
@@ -63,9 +65,10 @@ public class RequestAndResponseContext
     		int start, int limit, // page information
     		List<String> fields, List<String> sort, // fields
     		boolean summaryOnly, // ingore all the data and just return keywords found
-    		String output_format // the accept statment of the request that informs the output type
+    		Map<String,String> preset, // default criteria when nothing else is defined
+    		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, "","", lidvid, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, output_format); }
+    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, preset, output_format); }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
@@ -74,19 +77,21 @@ public class RequestAndResponseContext
     		List<String> fields, List<String> sort, // fields
     		boolean summaryOnly, // ingore all the data and just return keywords found
     		ProductVersionSelector selector, // all, latest, orginal
-    		String output_format // the accept statment of the request that informs the output type
+    		Map<String,String> preset, // default criteria when nothing else is defined
+    		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, "","", lidvid, start, limit, fields, sort, summaryOnly, selector, output_format); }
+    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, fields, sort, summaryOnly, selector, preset, output_format); }
     
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
     		String q, String keyword, // search criteria
     		int start, int limit, // page information
     		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ingore all the data and just return keywords found
-    		String output_format // the accept statment of the request that informs the output type
+    		boolean summaryOnly, // ignore all the data and just return keywords found
+    		Map<String,String> preset, // default criteria when nothing else is defined
+    		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, q, keyword, "", start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, output_format); }
+    { return new RequestAndResponseContext(om, base, q, keyword, null, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, preset, output_format); }
 
     private RequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
@@ -94,9 +99,10 @@ public class RequestAndResponseContext
     		String lidvid, // specific lidvid to find
     		int start, int limit, // page information
     		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ingore all the data and just return keywords found
-    		ProductVersionSelector selector, // all, latest, orginal
-    		String output_format // the accept statment of the request that informs the output type
+    		boolean summaryOnly, // ignore all the data and just return keywords found
+    		ProductVersionSelector selector, // all, latest, original
+    		Map<String,String> preset, // default criteria when nothing else is defined
+    		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
@@ -119,7 +125,7 @@ public class RequestAndResponseContext
     	this.start = start;
     	this.limit = limit;
     	this.onlySummary = summaryOnly;
-    	this.presetCriteria = null;
+    	this.presetCriteria = preset;
     	this.selector = selector;
     }
     
@@ -189,11 +195,12 @@ public class RequestAndResponseContext
 		summary.setStart(this.getStart());
 		summary.setLimit(this.getLimit());
 		summary.setSort(this.getSort());
-		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, onlySummary));
-		summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
+		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.onlySummary));
 		summary.setProperties(new ArrayList<String>());
 		
 		if (0 < real_total) summary.setHits(real_total);
+
+		summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 	}
 
 	public void setResponse(GetResponse hit)
@@ -215,10 +222,11 @@ public class RequestAndResponseContext
 			summary.setLimit(this.getLimit());
 			summary.setSort(this.getSort());
 			summary.setHits(total_hits);
-			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 
 			if (uniqueProperties != null) summary.setProperties(uniqueProperties);
-			this.formatters.get(this.format).setResponse(hits, summary, this.onlySummary);
+			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.onlySummary);
+
+			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 		}
 	}
 	

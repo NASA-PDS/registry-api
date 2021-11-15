@@ -2,6 +2,7 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -43,14 +44,14 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public int setResponse(ElasticSearchHitIterator hits, Summary summary, boolean onlySummary)
+	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		PdsProducts products = new PdsProducts();
 		Set<String> uniqueProperties = new TreeSet<String>();
 
 		for (Map<String,Object> kvp : hits)
         {
-            uniqueProperties.addAll(kvp.keySet());
+            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
             if (!onlySummary)
             {
@@ -59,6 +60,8 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
             }
         }
 		
+		if (onlySummary) products.setData(null);
+
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
 		this.products = products;
@@ -73,7 +76,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public int setResponse(SearchHits hits, Summary summary, boolean onlySummary)
+	public int setResponse(SearchHits hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		Map<String,Object> kvp;
 		PdsProducts products = new PdsProducts();
@@ -82,7 +85,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 		for (SearchHit hit : hits)
         {
 			kvp = hit.getSourceAsMap();
-            uniqueProperties.addAll(kvp.keySet());
+            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
             if (!onlySummary)
             {
@@ -91,6 +94,8 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
             }
         }
 		
+		if (onlySummary) products.setData(null);
+
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
 		this.products = products;
