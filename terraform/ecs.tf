@@ -28,17 +28,15 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   desired_count = 1
 
-  # load_balancer {
-    # target_group_arn = aws_lb_target_group.pds-registry-target-group.arn
-    # container_name   = "pds-${var.node_name_abbr}-reg-container"
-    # container_port   = "80"
-  # }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.pds-registry-target-group.arn
+    container_name   = "pds-${var.node_name_abbr}-reg-container"
+    container_port   = "80"
+  }
 
   network_configuration {
     assign_public_ip = false
-
     security_groups = var.aws_fg_security_groups
-
     subnets = var.aws_fg_subnets
   }
 
