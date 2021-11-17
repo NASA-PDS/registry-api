@@ -29,7 +29,11 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
     private URL baseURL;
     
 	@Override
-	public String[] getRequiredFields()
+	public String[] getMaximallyRequiredFields()
+	{ return new String[0]; }
+
+	@Override
+	public String[] getMinimallyRequiredFields()
 	{ return EntityProduct.JSON_PROPERTIES; }
 
 	@Override

@@ -3,6 +3,7 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,14 +143,15 @@ public class RequestAndResponseContext
 
 	private List<String> add_output_needs (List<String> given) throws ApplicationTypeException
 	{
-		ArrayList<String> complete = new ArrayList<String>();
-		String output_needs[] = {};
+		List<String> complete = new ArrayList<String>();
+		String max_needs[] = {}, min_needs[] = {};
 		
 		if (this.formatters.containsKey(this.format))
 		{ 
 			this.formatters.get(this.format).setBaseURL(this.baseURL);
 			this.formatters.get(this.format).setObjectMapper(this.om);
-			output_needs = this.formatters.get(this.format).getRequiredFields();
+			max_needs = this.formatters.get(this.format).getMaximallyRequiredFields();
+			min_needs = this.formatters.get(this.format).getMinimallyRequiredFields();
 		}
 		else
 		{
@@ -159,9 +161,24 @@ public class RequestAndResponseContext
 			throw new ApplicationTypeException("The given application type, " + String.valueOf(this.format) + ", is not known by RquestAndResponseContext.");
 		}
 
-		if (given != null) complete.addAll(given);
-		for (int index=0 ; index < output_needs.length ; index++)
-		{ if (!complete.contains(output_needs[index])) complete.add(output_needs[index]); }
+		if (given != null && 0 < given.size() && 0 < max_needs.length)
+		{
+			complete.addAll(given);
+			for (int index=0 ; index < min_needs.length ; index++)
+			{ if (!complete.contains(min_needs[index])) complete.add(min_needs[index]); }
+		}
+		
+		if (0 < max_needs.length)
+		{
+			List<String> allowed = Arrays.asList(max_needs);
+			List<String> filtered = new ArrayList<String>();
+
+			for (String field : complete)
+			{
+				if (allowed.contains(field)) { filtered.add(field); }
+			}
+			complete = filtered;
+		}
 		return complete;
 	}
 	

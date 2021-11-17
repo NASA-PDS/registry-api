@@ -13,7 +13,8 @@ import gov.nasa.pds.model.Summary;
 
 public interface ProductBusinessLogic
 {
-	public String[] getRequiredFields();
+	public String[] getMinimallyRequiredFields();
+	public String[] getMaximallyRequiredFields();
 	public Object getResponse();
 	public void setBaseURL (URL baseURL);
 	public void setObjectMapper (ObjectMapper om);

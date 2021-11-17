@@ -30,7 +30,9 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	private WyriwygProducts products = null;
 	
 	@Override
-	public String[] getRequiredFields() { return new String[0]; }
+	public String[] getMaximallyRequiredFields() { return new String[0]; }
+	@Override
+	public String[] getMinimallyRequiredFields() { return new String[0]; }
 
 	@Override
 	public Object getResponse() { return this.product == null ? this.products : this.product; }
