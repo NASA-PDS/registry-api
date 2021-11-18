@@ -5,12 +5,13 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 
+import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUtil;
 
 
 public class Pds4JsonSearchRequestBuilder
 {
-    private static final String[] PDS4_JSON_PRODUCT_FIELDS = { 
+    public static final String[] PDS4_JSON_PRODUCT_FIELDS = { 
             // JSON BLOB
             "ops:Label_File_Info/ops:json_blob",
             // Label Metadata
@@ -75,24 +76,24 @@ public class Pds4JsonSearchRequestBuilder
      * @param req Request parameters
      * @return Elasticsearch request
      */
-    public SearchRequest getSearchProductsRequest(GetProductsRequest req)
+    public SearchRequest getSearchProductsRequest(RequestAndResponseContext req)
     {
         QueryBuilder query = null;
         
         // "keyword" parameter provided. Run full-text query.
-        if(req.keyword != null && !req.keyword.isBlank())
+        if(req.getKeyword() != null && !req.getKeyword().isBlank())
         {
-            query = ProductQueryBuilderUtil.createKeywordQuery(req.keyword, req.presetCriteria);
+            query = ProductQueryBuilderUtil.createKeywordQuery(req.getKeyword(), req.getPresetCriteria());
         }
         // Run PDS query language ("q" parameter) query
         else
         {
-            query = ProductQueryBuilderUtil.createPqlQuery(req.queryString, null, req.presetCriteria);
+            query = ProductQueryBuilderUtil.createPqlQuery(req.getQueryString(), null, req.getPresetCriteria());
         }
         
-        SearchRequestBuilder bld = new SearchRequestBuilder(query, req.start, req.limit);
+        SearchRequestBuilder bld = new SearchRequestBuilder(query, req.getStart(), req.getLimit());
         
-        if(req.onlySummary)
+        if(req.isOnlySummary())
         {
             bld.fetchSource(false, null, null);
         }
