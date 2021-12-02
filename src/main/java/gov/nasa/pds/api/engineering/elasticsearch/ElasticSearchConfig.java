@@ -3,11 +3,13 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import gov.nasa.pds.api.engineering.SystemConstants;
+import gov.nasa.pds.api.engineering.configuration.AWSSecretsAccess;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 
 
@@ -78,7 +80,7 @@ public class ElasticSearchConfig {
 	private ElasticSearchRegistryConnection esRegistryConnection = null;
 
 	@Bean("esRegistryConnection")
-    public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
+	public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
 		
 		if (esRegistryConnection == null) {
 
@@ -104,7 +106,7 @@ public class ElasticSearchConfig {
 					this.ssl);
 		}
 		return this.esRegistryConnection;
-    }
+	}
 
 	
 	@Bean("productBO")
@@ -131,16 +133,17 @@ public class ElasticSearchConfig {
 
 		if (esCredsFromEnv != null && !"".equals(esCredsFromEnv)) {
 			log.info("Received ES login from environment");
-            String[] esCreds = esCredsFromEnv.split(":");
-            if (esCreds.length != 2) {
-            	String message = String.format("Value of %s environment variable is not in appropriate <user>:<pass> format",
-            			                       SystemConstants.ES_CREDENTIALS_ENV_VAR);
-            	log.error(message);
-            	throw new RuntimeException(message);
-            }
+			DefaultKeyValue<String, String> esCreds = AWSSecretsAccess.parseSecret(esCredsFromEnv);
+			if (esCreds == null) {
+				String message = String.format("Value of %s environment variable is not in appropriate JSON format",
+				                               SystemConstants.ES_CREDENTIALS_ENV_VAR);
+				log.error(message);
+				throw new RuntimeException(message);
+			}
 
-            this.username = esCreds[0];
-            this.password = esCreds[1];
+			this.username = esCreds.getKey();
+			this.password = esCreds.getValue();
+			log.debug(String.format("ES Username from environment : [%s]", this.username));
 		}
 	}
 
