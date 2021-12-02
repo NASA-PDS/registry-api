@@ -38,16 +38,19 @@ POSSIBILITY OF SUCH DAMAGE.
   <name>gov.nasa.api.lib</name>
   <description>client and server stubs for the PDS federated API</description>
    <properties>
+       <maven.compiler.target>11</maven.compiler.target>
+       <maven.compiler.source>11</maven.compiler.source>
+       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
        <jackson-version>2.10.0</jackson-version>
        <springfox-version>2.7.0</springfox-version>
   </properties>
-  <parent>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-parent</artifactId>
-      <version>2.3.1.RELEASE</version>
-      <!-- >version>1.5.9.RELEASE</version-->
-  </parent>
- 
+  
+   <parent>
+        <groupId>gov.nasa</groupId>
+        <artifactId>pds</artifactId>
+        <version>1.13.0</version>
+    </parent>
+  
   <build>
       <sourceDirectory>.</sourceDirectory>
 	  <plugins>
@@ -77,60 +80,6 @@ POSSIBILITY OF SUCH DAMAGE.
 		    </executions>
 		</plugin>
 		<plugin>
-	      <groupId>org.sonatype.plugins</groupId>
-	      <artifactId>nexus-staging-maven-plugin</artifactId>
-	      <version>1.6.7</version>
-	      <extensions>true</extensions>
-	      <configuration>
-	        <serverId>ossrh</serverId>
-	        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-	        <autoReleaseAfterClose>true</autoReleaseAfterClose>
-	      </configuration>
-	    </plugin>
-            <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-                <configuration>
-                  <gpgArguments>
-                    <arg>--pinentry-mode</arg>
-                    <arg>loopback</arg>
-                  </gpgArguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-	    <plugin>
-	        <groupId>org.apache.maven.plugins</groupId>
-	        <artifactId>maven-site-plugin</artifactId>
-	        <version>3.8.2</version>
-	      </plugin>
-	       <plugin>
-		    <artifactId>maven-jar-plugin</artifactId>
-		    <version>3.0.1</version>
-		    <executions>
-		        <execution>
-		            <configuration>
-		                <classifier>sources</classifier>
-		                <classesDirectory>${project.build.directory}/target/generated-sources/swagger/src/gen/java/main</classesDirectory>
-		                <includes>**/*.java</includes>
-		            </configuration>
-		            <id>pack-docs</id>
-		            <phase>package</phase>
-		            <goals>
-		                <goal>jar</goal>
-		            </goals>
-		        </execution>
-		    </executions>
-		</plugin>
-		<plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>build-helper-maven-plugin</artifactId>
               <executions>
@@ -145,23 +94,7 @@ POSSIBILITY OF SUCH DAMAGE.
                   </execution>
               </executions>
           </plugin>
-		<plugin>
-	        <groupId>org.apache.maven.plugins</groupId>
-	        <artifactId>maven-javadoc-plugin</artifactId>
-	        <version>3.2.0</version>
-	        <configuration>
-	           <failOnError>false</failOnError>
-	        	<excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*</excludePackageNames>
-	        	<executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-	        </configuration>
-      </plugin>
+		
      </plugins>
     
      
@@ -310,6 +243,18 @@ POSSIBILITY OF SUCH DAMAGE.
 			
 
    </dependencies>
+   
+   <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.3.1.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
    
     <repositories>
     <repository>
