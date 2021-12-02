@@ -27,12 +27,20 @@ public class LidVidDAO
      */
     public String getLatestLidVidByLid(String lid) throws IOException, LidVidNotFoundException
     {
-        if(lid == null) throw new LidVidNotFoundException("");
-        if(lid.contains("::")) return lid;
+    	if(lid == null) throw new LidVidNotFoundException("");
+    	String given = lid.contains("::")? lid : null;
+
+        if(lid.contains("::")) lid = lid.substring(0, lid.indexOf("::"));
         
         List<String> lidvids = LidVidUtils.getLatestLidVidsByLids(esConnection, Arrays.asList(lid));
         if(lidvids == null || lidvids.isEmpty()) throw new LidVidNotFoundException(lid);
-        
+        if (given != null && lidvids.contains(given) && -1 < lidvids.indexOf(given) && lidvids.indexOf(given) == lidvids.lastIndexOf(given))
+        {
+        	if (lidvids.get(lidvids.indexOf(given)).equals(given)) return given;
+        	else throw new LidVidNotFoundException("Partial lidvid is not valid: " + given);
+        }
+        else if (given != null) throw new LidVidNotFoundException("No such lidvid: " + given);
+
         return lidvids.get(0);
     }
 

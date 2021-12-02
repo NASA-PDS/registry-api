@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -14,9 +15,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.model.Products;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 
 /**
  * Bundle Data Access Object (DAO). 
@@ -38,7 +36,7 @@ public class BundleDAO
     }
     
     
-    public Products getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
+    public void getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
             List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
     {
         // TODO: Move code from the bundle controller here.

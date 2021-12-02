@@ -69,12 +69,9 @@ public void configureContentNegotiation(ContentNegotiationConfigurer configurer)
    
       WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
       converters.add(new JsonProductSerializer());
-
       converters.add(new Pds4JsonProductSerializer());
       converters.add(new Pds4JsonProductsSerializer());
-      
       converters.add(new Pds4XmlProductSerializer());
-      
       //converters.add(new XmlProductSerializer()); // Product class, application/xml
       //converters.add(new Jaxb2RootElementHttpMessageConverter()); // other classes, application/xml
   }

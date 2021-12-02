@@ -21,8 +21,8 @@ import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.model.Metadata;
+import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
-import gov.nasa.pds.model.Product;
 import gov.nasa.pds.model.Reference;
 import gov.nasa.pds.model.Summary;
 
@@ -67,8 +67,8 @@ public class ElasticSearchUtil {
 	}
 	
 	
-	static private Product addPropertiesFromESEntity(
-			Product product, 
+	static private PdsProduct addPropertiesFromESEntity(
+			PdsProduct product, 
 			EntityProduct ep,
 			URL baseURL
 			) {
@@ -138,10 +138,10 @@ public class ElasticSearchUtil {
 	}
 	
 
-	static public Product ESentityProductToAPIProduct(EntityProduct ep, URL baseURL) {
+	static public PdsProduct ESentityProductToAPIProduct(EntityProduct ep, URL baseURL) {
 		log.debug("convert ES object to API object without XML label");
 		
-		Product product = new Product();
+		PdsProduct product = new PdsProduct();
 		
 		return addPropertiesFromESEntity(product, ep, baseURL);
 	}

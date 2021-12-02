@@ -54,6 +54,8 @@ public class ElasticSearchHitIterator implements Iterable<Map<String,Object>>,It
 		return this.currentBatch.getAt(this.at);
 	}
 
+	public String  getCurrentId() { try { return this.getAt().getId(); } catch (IOException ioe) { return null; } }
+
 	@Override
 	public boolean hasNext() { return this.currentBatch == null ? false : (this.at + this.page * this.size) < this.currentBatch.getTotalHits().value; }
 

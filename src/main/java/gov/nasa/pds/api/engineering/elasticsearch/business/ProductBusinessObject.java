@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.GetProductsRequest;
 import gov.nasa.pds.api.engineering.elasticsearch.Pds4JsonSearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
@@ -34,13 +33,14 @@ import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
-import gov.nasa.pds.model.Product;
+import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 
 
-public class ProductBusinessObject {
+public class ProductBusinessObject
+{
     
     private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
     
@@ -93,7 +93,6 @@ public class ProductBusinessObject {
         /*
          * if lid is a lidvid then it return the same lidvid if available in the elasticsearch database
          */
-            
         lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
         SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
             
@@ -102,7 +101,7 @@ public class ProductBusinessObject {
 
         if (searchResponse != null)
         {
-            ArrayList<String> lidvids = new ArrayList<String>();
+        	ArrayList<String> lidvids = new ArrayList<String>();
             String lidvid;
             for (SearchHit searchHit : searchResponse.getHits())
             {
@@ -200,14 +199,14 @@ public class ProductBusinessObject {
         }
         
        
-       public Product getProduct(String lidvid, URL baseURL) throws IOException {
+       public PdsProduct getProduct(String lidvid, URL baseURL) throws IOException {
            return this.getProduct(lidvid, baseURL, null);
        }
        
        
 
        @SuppressWarnings("unchecked")
-       public Product getProduct(String lidvid, URL baseURL, @Nullable List<String> fields) throws IOException {
+       public PdsProduct getProduct(String lidvid, URL baseURL, @Nullable List<String> fields) throws IOException {
 
            GetRequest getProductRequest = this.searchRequestBuilder.getGetProductRequest(lidvid, false);
            
@@ -231,7 +230,7 @@ public class ProductBusinessObject {
                 
                 entityProduct = this.objectMapper.convertValue(sourceAsMap, EntityProduct.class);
                 
-                Product product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);
+                PdsProduct product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);
             
                 product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
                 
@@ -319,21 +318,21 @@ public class ProductBusinessObject {
         }
 
         
-        public Pds4Products getPds4Products(GetProductsRequest req) throws IOException 
+        public Pds4Products getPds4Products(RequestAndResponseContext req) throws IOException 
         {
             SearchRequest searchRequest = pds4SearchRequestBuilder.getSearchProductsRequest(req);
 
             SearchResponse searchResponse = elasticSearchConnection.getRestHighLevelClient().search(searchRequest,
                     RequestOptions.DEFAULT);
 
+            List<Pds4Product> list = new ArrayList<Pds4Product>();
             Pds4Products products = new Pds4Products();
-
             // Summary
             Summary summary = new Summary();
-            summary.setQ(req.queryString);
-            summary.setStart(req.start);
-            summary.setLimit(req.limit);
-            summary.setSort(req.sort);
+            summary.setQ(req.getQueryString());
+            summary.setStart(req.getStart());
+            summary.setLimit(req.getLimit());
+            summary.setSort(req.getSort());
             products.setSummary(summary);
             
             if(searchResponse == null) return products;
@@ -344,10 +343,9 @@ public class ProductBusinessObject {
                 String id = hit.getId();
                 Map<String, Object> fieldMap = hit.getSourceAsMap();
                 Pds4Product prod = Pds4JsonProductFactory.createProduct(id, fieldMap);
-                products.addDataItem(prod);
+                list.add(prod);
             }
-
+            products.setData(list);
             return products;
         }
-
 }

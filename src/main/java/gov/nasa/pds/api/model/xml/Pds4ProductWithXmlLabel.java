@@ -1,20 +1,16 @@
 package gov.nasa.pds.api.model.xml;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import gov.nasa.pds.model.PdsProduct;
+import gov.nasa.pds.model.Pds4Product;
 import io.swagger.annotations.ApiModelProperty;
 
-
-@XmlRootElement( name = "product")
-public class ProductWithXmlLabel extends PdsProduct {
+public class Pds4ProductWithXmlLabel extends Pds4Product {
 	
 	 @JsonIgnore
 	 private String labelXml = null;
 	
-	 public ProductWithXmlLabel labelXml(String labelXml) {
+	 public Pds4ProductWithXmlLabel labelXml(String labelXml) {
 		    this.labelXml = labelXml;
 		    return this;
 	 }
@@ -31,5 +27,5 @@ public class ProductWithXmlLabel extends PdsProduct {
 	  public void setLabelXml(String labelXml) {
 	    this.labelXml = labelXml;
 	  }
-	  
+
 }
