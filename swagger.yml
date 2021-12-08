@@ -1060,6 +1060,12 @@ components:
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Products'
+        application/pds4+xml:
+          schema:
+            $ref: '#/components/schemas/pds4Products'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/pdsProducts'
         text/csv:
           schema:
             $ref: '#/components/schemas/wyriwygProducts'
@@ -1084,6 +1090,12 @@ components:
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Product'
+        application/pds4+xml:
+          schema:
+            $ref: '#/components/schemas/pds4Product'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/pdsProduct'
         text/csv:
            schema:
             $ref: '#/components/schemas/wyriwygProduct'
