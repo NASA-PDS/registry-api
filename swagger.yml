@@ -1048,9 +1048,6 @@ components:
         application/csv:
           schema:
             $ref: '#/components/schemas/wyriwygProducts'
-        application/csv+text:
-           schema:
-            $ref: '#/components/schemas/wyriwygProducts'
         application/json:
           schema:
             $ref: '#/components/schemas/pdsProducts'
@@ -1060,6 +1057,9 @@ components:
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Products'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/wyriwygProducts'
     Singular:
       description: Successful request
       content:
@@ -1068,9 +1068,6 @@ components:
             type: object
         application/csv:
           schema:
-            $ref: '#/components/schemas/wyriwygProduct'
-        application/csv+text:
-           schema:
             $ref: '#/components/schemas/wyriwygProduct'
         application/json:
           schema:
@@ -1081,6 +1078,9 @@ components:
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Product'
+        text/csv:
+           schema:
+            $ref: '#/components/schemas/wyriwygProduct'
   schemas:
     summary:
       type: object
