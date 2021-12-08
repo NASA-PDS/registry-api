@@ -96,7 +96,7 @@ public class AWSSecretsAccess {
 	}
 	
 	// Given a String JSON representation, parse the secret key/value and return 
-	public DefaultKeyValue<String, String> parseSecret(String secretString) 
+	public static DefaultKeyValue<String, String> parseSecret(String secretString) 
 	{
 		DefaultKeyValue<String, String> result = null;
 		
@@ -109,7 +109,7 @@ public class AWSSecretsAccess {
 			while (fieldIter.hasNext()) {
 				if(secretId != null) {
 					// more than field name? This shouldn't happen
-					throw new RuntimeException(String.format("Received multiple fields in secret lookup request (%s)", secretString));
+					throw new RuntimeException(String.format("Received multiple fields in secret value (%s)", secretString));
 				}
 				secretId = fieldIter.next();
 				secretValue = jsonObj.get(secretId).asText();
@@ -119,11 +119,11 @@ public class AWSSecretsAccess {
 			}
 		}
 		catch(JsonMappingException jmEx) {
-			log.error("Could not parse return secret JSON value (%s)", jmEx.getMessage());
+			log.error("Could not parse secret JSON value (%s)", jmEx.getMessage());
 			throw new RuntimeException(jmEx);
 		}
 		catch(JsonProcessingException jpEx) {
-			log.error("Could not process returned secret JSON value (%s)", jpEx.getMessage());
+			log.error("Could not process secret JSON value (%s)", jpEx.getMessage());
 			throw new RuntimeException(jpEx);
 		}
 		
