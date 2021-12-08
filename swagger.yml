@@ -1045,7 +1045,7 @@ components:
         /:
           schema:
             type: object
-        */*:
+        "*/*":
           schema:
             $ref: '#/components/schemas/pdsProducts'
         application/csv:
@@ -1069,7 +1069,7 @@ components:
         /:
           schema:
             type: object
-        */*:
+        "*/*":
           schema:
             $ref: '#/components/schemas/pdsProduct'
         application/csv:
