@@ -1042,9 +1042,12 @@ components:
     Plural:
       description: Successful request
       content:
-        application/unsupported:
+        /:
           schema:
             type: object
+        */*:
+          schema:
+            $ref: '#/components/schemas/pdsProducts'
         application/csv:
           schema:
             $ref: '#/components/schemas/wyriwygProducts'
@@ -1063,9 +1066,12 @@ components:
     Singular:
       description: Successful request
       content:
-        application/unsupported:
+        /:
           schema:
             type: object
+        */*:
+          schema:
+            $ref: '#/components/schemas/pdsProduct'
         application/csv:
           schema:
             $ref: '#/components/schemas/wyriwygProduct'
