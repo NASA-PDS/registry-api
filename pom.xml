@@ -1,35 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
-Copyright © 2021, California Institute of Technology ("Caltech").
-U.S. Government sponsorship acknowledged.
+    Copyright © 2021, California Institute of Technology ("Caltech").
+    U.S. Government sponsorship acknowledged.
 
-All rights reserved.
+    All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-• Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-• Redistributions must reproduce the above copyright notice, this list of
-  conditions and the following disclaimer in the documentation and/or other
-  materials provided with the distribution.
-• Neither the name of Caltech nor its operating division, the Jet Propulsion
-  Laboratory, nor the names of its contributors may be used to endorse or
-  promote products derived from this software without specific prior written
-  permission.
+    • Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+    • Redistributions must reproduce the above copyright notice, this list of
+    conditions and the following disclaimer in the documentation and/or other
+    materials provided with the distribution.
+    • Neither the name of Caltech nor its operating division, the Jet Propulsion
+    Laboratory, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written
+    permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
--->
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.pds</groupId>
@@ -37,71 +37,79 @@ POSSIBILITY OF SUCH DAMAGE.
   <version>0.5.0-SNAPSHOT</version>
   <name>gov.nasa.api.lib</name>
   <description>client and server stubs for the PDS federated API</description>
-   <properties>
-       <maven.compiler.target>11</maven.compiler.target>
-       <maven.compiler.source>11</maven.compiler.source>
-       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-       <jackson-version>2.10.0</jackson-version>
-       <springfox-version>2.7.0</springfox-version>
+  <properties>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jackson-version>2.10.0</jackson-version>
+    <springfox-version>2.7.0</springfox-version>
   </properties>
   
-   <parent>
-        <groupId>gov.nasa</groupId>
-        <artifactId>pds</artifactId>
-        <version>1.13.0</version>
-    </parent>
+  <parent>
+    <groupId>gov.nasa</groupId>
+    <artifactId>pds</artifactId>
+    <version>1.13.0</version>
+  </parent>
   
   <build>
-      <sourceDirectory>.</sourceDirectory>
-	  <plugins>
-		  <plugin>
-		    <groupId>io.swagger.codegen.v3</groupId>
-		    <artifactId>swagger-codegen-maven-plugin</artifactId>
-		    <version>3.0.20</version>
-		    <executions>
-		       <execution>
-		            <goals>
-		                <goal>generate</goal>
-		            </goals>   
-		            <configuration>
-		                <inputSpec>${project.basedir}/swagger.yml</inputSpec>
-		                <language>spring</language>
-		                <withXml>true</withXml> 
-		                <configOptions>
-		                   <sourceFolder>src/gen/java/main</sourceFolder>
-		                   <dateLibrary>joda</dateLibrary>
-		                   <modelPackage>gov.nasa.pds.model</modelPackage>
-		                   <apiPackage>gov.nasa.pds.api.base</apiPackage>
-		                   <generateSupportingFiles>false</generateSupportingFiles>
-		                   <interfaceOnly>false</interfaceOnly>  		                   
-		                </configOptions>
-		            </configuration>
-		        </execution>
-		    </executions>
-		</plugin>
-		<plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>build-helper-maven-plugin</artifactId>
-              <executions>
-                  <execution>
-                      <phase>generate-sources</phase>
-                      <goals><goal>add-source</goal></goals>
-                      <configuration>
-                          <sources>
-                              <source>${project.build.directory}/api/target/generated-sources/swagger/src/gen/java/main</source>
-                          </sources>
-                      </configuration>
-                  </execution>
-              </executions>
-          </plugin>
-		
-     </plugins>
-    
-     
-	
+    <sourceDirectory>.</sourceDirectory>
+    <plugins>
+      <plugin>
+	<groupId>io.swagger.codegen.v3</groupId>
+	<artifactId>swagger-codegen-maven-plugin</artifactId>
+	<version>3.0.20</version>
+	<executions>
+	  <execution>
+	    <goals>
+	      <goal>generate</goal>
+	    </goals>   
+	    <configuration>
+	      <inputSpec>${project.basedir}/swagger.yml</inputSpec>
+	      <language>spring</language>
+	      <withXml>true</withXml> 
+	      <configOptions>
+		<sourceFolder>src/gen/java/main</sourceFolder>
+		<dateLibrary>joda</dateLibrary>
+		<modelPackage>gov.nasa.pds.model</modelPackage>
+		<apiPackage>gov.nasa.pds.api.base</apiPackage>
+		<generateSupportingFiles>false</generateSupportingFiles>
+		<interfaceOnly>false</interfaceOnly>  		                   
+	      </configOptions>
+	    </configuration>
+	  </execution>
+	</executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals><goal>add-source</goal></goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/api/target/generated-sources/swagger/src/gen/java/main</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-source-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <id>attach-sources</id>
+	    <goals>
+	      <goal>jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+    </plugins>    
   </build>
   
-   <distributionManagement>
+  <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -119,144 +127,144 @@ POSSIBILITY OF SUCH DAMAGE.
   
   
   
+  <dependencies>
+    <!-- dependencies are needed for the client being generated -->
+    <!--SpringFox dependencies -->
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>${springfox-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>${springfox-version}</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
+    
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    
+    
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
+
+
+    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    
+    <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson-version}</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
+    <dependency>
+      <groupId>com.github.joschi.jackson</groupId>
+      <artifactId>jackson-datatype-threetenbp</artifactId>
+      <version>${jackson-version}</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.6</version>
+    </dependency>
+
+
+    
+    <!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
+    <dependency>
+      <groupId>org.threeten</groupId>
+      <artifactId>threetenbp</artifactId>
+      <version>1.4.4</version>
+    </dependency>
+    
+
+  </dependencies>
+  
+  <dependencyManagement>
     <dependencies>
-        <!-- dependencies are needed for the client being generated -->
-              <!--SpringFox dependencies -->
-       <dependency>
-           <groupId>io.springfox</groupId>
-           <artifactId>springfox-swagger2</artifactId>
-           <version>${springfox-version}</version>
-       </dependency>
-       <dependency>
-           <groupId>io.springfox</groupId>
-           <artifactId>springfox-swagger-ui</artifactId>
-           <version>${springfox-version}</version>
-       </dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-web</artifactId>
-	    </dependency>
-
-	<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
-	<dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-context</artifactId>
-	    </dependency>
-
-	
-	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
-	<dependency>
-	    <groupId>org.springframework.boot</groupId>
-	    <artifactId>spring-boot-starter-web</artifactId>
-	    </dependency>
-	
-	<dependency>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-starter-thymeleaf</artifactId>
-           </dependency>
-       
-        <dependency>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-starter-test</artifactId>
-       </dependency>
-       
-       <!-- https://mvnrepository.com/artifact/junit/junit -->
-	<dependency>
-	    <groupId>junit</groupId>
-	    <artifactId>junit</artifactId>
-	</dependency>
-	
-	
-	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
-	<dependency>
-	    <groupId>org.springframework.boot</groupId>
-	    <artifactId>spring-boot-autoconfigure</artifactId>
-	</dependency>
-
-
-	<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-	<dependency>
-	    <groupId>javax.servlet</groupId>
-	    <artifactId>servlet-api</artifactId>
-	    <version>2.5</version>
-	    <scope>provided</scope>
-	</dependency>
-	
-        
-        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
-	<dependency>
-	    <groupId>javax.validation</groupId>
-	    <artifactId>validation-api</artifactId>
-	    </dependency>
-
-
- 		<dependency>
-           <groupId>com.fasterxml.jackson.jaxrs</groupId>
-           <artifactId>jackson-jaxrs-base</artifactId>
-           </dependency>
-       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-core</artifactId>
-         </dependency>
-       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-annotations</artifactId>
-         </dependency>
-       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-databind</artifactId>
-         </dependency>
-       <dependency>
-         <groupId>com.fasterxml.jackson.jaxrs</groupId>
-         <artifactId>jackson-jaxrs-json-provider</artifactId>
-         </dependency>
-         <dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>${jackson-version}</version>
-		</dependency>
-       
-       <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
-	<dependency>
-	    <groupId>com.github.joschi.jackson</groupId>
-	    <artifactId>jackson-datatype-threetenbp</artifactId>
-	    <version>${jackson-version}</version>
-	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
-		<dependency>
-		    <groupId>joda-time</groupId>
-		    <artifactId>joda-time</artifactId>
-		    <version>2.10.6</version>
-		</dependency>
-
-
-	
-	<!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
-	<dependency>
-	    <groupId>org.threeten</groupId>
-	    <artifactId>threetenbp</artifactId>
-	    <version>1.4.4</version>
-	</dependency>
-			
-
-   </dependencies>
-   
-   <dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>2.3.1.RELEASE</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>2.3.1.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
-</dependencyManagement>
-   
-    <repositories>
+  </dependencyManagement>
+  
+  <repositories>
     <repository>
       <id>oss.sonatype.org-snapshot</id>
       <url>http://oss.sonatype.org/content/repositories/snapshots</url>
@@ -268,13 +276,13 @@ POSSIBILITY OF SUCH DAMAGE.
       </snapshots>
     </repository>
   </repositories> 
-   
-   
+  
+  
 
   <scm>
-        <url>https://github.com/NASA-PDS/pds-api-javalib</url>
-        <connection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</developerConnection>
-        <tag>v0.4.0</tag>
+    <url>https://github.com/NASA-PDS/pds-api-javalib</url>
+    <connection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</developerConnection>
+    <tag>v0.4.0</tag>
   </scm>
 </project>
