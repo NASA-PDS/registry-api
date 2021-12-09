@@ -1,6 +1,6 @@
 # PDS API Search Query Lexer
 
-![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5750532.svg)](https://doi.org/10.5281/zenodo.5750532)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5750532.svg)](https://doi.org/10.5281/zenodo.5750532)
 
 This repository contains the resources to create a Java JAR library to parse the [Planetary Data System](https://pds.nasa.gov/)'s [API](https://github.com/NASA-PDS/pds-api) search queries.
 
