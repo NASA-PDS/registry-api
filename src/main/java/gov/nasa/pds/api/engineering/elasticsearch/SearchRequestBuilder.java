@@ -3,7 +3,7 @@ package gov.nasa.pds.api.engineering.elasticsearch;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.core.TimeValue;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
