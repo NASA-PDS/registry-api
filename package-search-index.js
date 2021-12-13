@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"gov.nasa.pds.api.base"},{"l":"gov.nasa.pds.model"},{"l":"io.swagger"},{"l":"io.swagger.configuration"}]

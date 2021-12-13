@@ -3,11 +3,13 @@
 -encoding
 'UTF-8'
 -protected
+-source
+'1.8'
 -sourcepath
 '/github/workspace:/github/workspace/target/generated-sources/swagger/src/gen/java/main:/github/workspace/target/generated-sources/annotations'
 -author
 -bottom
-'Copyright &#169; 2021 <a href="https://spring.io">Pivotal Software, Inc.</a>. All rights reserved.'
+'Copyright &#169; 2021 <a href="https://pds.nasa.gov/">Planetary Data System</a>. All rights reserved.'
 -charset
 'UTF-8'
 -d
@@ -15,10 +17,10 @@
 -docencoding
 'UTF-8'
 -doctitle
-'gov.nasa.api.lib 0.3.0 API'
+'gov.nasa.api.lib 0.4.1 API'
 -linkoffline
-'https://docs.oracle.com/en/java/javase/11/docs/api' '/github/workspace/target/javadoc-bundle-options'
+'https://docs.oracle.com/javase/8/docs/api' '/github/workspace/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'gov.nasa.api.lib 0.3.0 API'
+'gov.nasa.api.lib 0.4.1 API'
