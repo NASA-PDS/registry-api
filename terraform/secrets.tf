@@ -7,7 +7,7 @@
 #    aws secretsmanager delete-secret --secret-id <id> --force-delete-without-recovery --region <region>
 #
 resource aws_secretsmanager_secret "es_login_secret" {
-  name = "pds/${var.node_name_abbr}/registry/es/login"
+  name = "pds/${var.node_name_abbr}/${var.venue}/registry/es/login"
 
   tags = {
     Alpha = var.node_name_abbr
@@ -28,7 +28,7 @@ EOF
 
 # Store the list of es hosts as a parameter to be injected into the container as an environment variable
 resource "aws_ssm_parameter" "es_hosts_parameter" {
-  name = "/pds/${var.node_name_abbr}/registry/es/hosts"
+  name = "/pds/${var.node_name_abbr}/${var.venue}/registry/es/hosts"
   type = "String"
   value = var.es_hosts
 
@@ -41,7 +41,7 @@ resource "aws_ssm_parameter" "es_hosts_parameter" {
 
 # Store the node name as a parameter to be injected into the container as an environment variable
 resource "aws_ssm_parameter" "node_name_parameter" {
-  name = "/pds/${var.node_name_abbr}/registry/node_name"
+  name = "/pds/${var.node_name_abbr}/${var.venue}/registry/node_name"
   type = "String"
   value = var.node_name_abbr
 

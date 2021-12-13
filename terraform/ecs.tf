@@ -30,7 +30,7 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.pds-registry-target-group.arn
-    container_name   = "pds-${var.node_name_abbr}-reg-container"
+    container_name   = "pds-${var.node_name_abbr}-${var.venue}-reg-container"
     container_port   = "80"
   }
 
@@ -54,7 +54,7 @@ resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
   container_definitions = <<EOF
   [
     {
-      "name": "pds-${var.node_name_abbr}-reg-container",
+      "name": "pds-${var.node_name_abbr}-${var.venue}-reg-container",
       "image": "${var.aws_fg_image}",
       "portMappings": [
         {
@@ -113,7 +113,7 @@ data "aws_iam_role" "pds-task-execution-role" {
 }
 
 resource "aws_lb_target_group" "pds-registry-target-group" {
-  name        = "pds-${var.node_name_abbr}-reg-tgt"
+  name        = "pds-${var.node_name_abbr}-${var.venue}-reg-tgt"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -123,10 +123,21 @@ resource "aws_lb_target_group" "pds-registry-target-group" {
     enabled = true
     path    = "/swagger-ui.html"
   }
-
-  depends_on = [data.aws_alb.pds-alb]
 }
 
-data "aws_alb" "pds-alb" {
-  name   = "pds-en-ecs"      # TODO: Change name to be more global
+resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
+  listener_arn = var.aws_lb_listener_arn
+  priority     = 100
+
+  action {
+    type             = "forward"
+    target_group_arn =  aws_lb_target_group.pds-registry-target-group.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = var.http_header_forward_name
+      values           = [var.http_header_forward_value,]
+    }
+  }
 }
