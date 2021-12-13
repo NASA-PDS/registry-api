@@ -65,7 +65,23 @@ variable "es_hosts" {
 
 variable "aws_fg_image" {
   description = "AWS image name for Fargate"
-  default = "445837347542.dkr.ecr.us-west-2.amazonaws.com/pds-registry-api-service:0.4.1-SNAPSHOT.http"
+  # default = "445837347542.dkr.ecr.us-west-2.amazonaws.com/pds-registry-api-service:0.5.0-SNAPSHOT.http"
+}
+
+variable "aws_lb_listener_arn" {
+  description = "ARN of the AWS LB listener to associated with the service target group"
+  default = "arn:aws:elasticloadbalancing:us-west-2:445837347542:listener/app/pds-en-ecs/7870b4ad486ca87b/085568f01bd7a139"
+}
+
+variable "http_header_forward_name" {
+  description = "Name of the http header for which requests are forwarded to this service's target group"
+  default = "x-request-node"
+}
+
+variable "http_header_forward_value" {
+  description = "Value of the http_header for which requests are forwarded to this service's target group"
+  # except for production, the venue is part of the x-request-node value
+  # default = ${var.node_name_abbr}-${var.venue}"
 }
 
 variable "aws_fg_cpu_units" {
