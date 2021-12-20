@@ -11,10 +11,15 @@ import java.util.TreeSet;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
+
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
 import gov.nasa.pds.model.WyriwygProductKeyValuePairs;
@@ -22,6 +27,8 @@ import gov.nasa.pds.model.WyriwygProducts;
 
 public class WyriwygBusinessObject implements ProductBusinessLogic
 {
+	private static final Logger log = LoggerFactory.getLogger(WyriwygBusinessObject.class);
+
 	@SuppressWarnings("unused")
 	private ObjectMapper om;
 	@SuppressWarnings("unused")
@@ -59,10 +66,15 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             	for (Entry<String, Object> pair : kvps.entrySet())
             	{
             		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
-            		kvp.setKey(pair.getKey());
-            		kvp.setValue(String.valueOf(pair.getValue()));
-            		product.addKeyValuePairsItem(kvp);
+            		try
+            		{
+            			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+            			kvp.setValue(String.valueOf(pair.getValue()));
+            			product.addKeyValuePairsItem(kvp);
+            		}
+            		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
             	}
+            	products.addDataItem(product);
             }
         }
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
@@ -78,9 +90,13 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
     	for (Entry<String, Object> pair : hit.getSourceAsMap().entrySet())
     	{
     		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
-    		kvp.setKey(pair.getKey());
-    		kvp.setValue(String.valueOf(pair.getValue()));
-    		product.addKeyValuePairsItem(kvp);
+    		try
+    		{
+    			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+    			kvp.setValue(String.valueOf(pair.getValue()));
+    			product.addKeyValuePairsItem(kvp);
+    		}
+    		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
     	}
     	this.product = product;
 	}
@@ -102,10 +118,15 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             	for (Entry<String, Object> pair : kvps.entrySet())
             	{
             		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
-            		kvp.setKey(pair.getKey());
-            		kvp.setValue(String.valueOf(pair.getValue()));
-            		product.addKeyValuePairsItem(kvp);
+            		try
+            		{
+            			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+            			kvp.setValue(String.valueOf(pair.getValue()));
+            			product.addKeyValuePairsItem(kvp);
+            		}
+            		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
             	}
+            	products.addDataItem(product);
             }
         }
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
@@ -113,5 +134,4 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 		this.products = products;
 		return (int)(hits.getTotalHits().value);
 	}
-
 }

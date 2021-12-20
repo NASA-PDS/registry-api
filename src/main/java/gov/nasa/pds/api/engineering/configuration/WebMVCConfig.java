@@ -14,10 +14,15 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import gov.nasa.pds.api.engineering.serializer.CsvPluralSerializer;
+import gov.nasa.pds.api.engineering.serializer.CsvSingularSerializer;
+import gov.nasa.pds.api.engineering.serializer.JsonPluralSerializer;
 import gov.nasa.pds.api.engineering.serializer.JsonProductSerializer;
+import gov.nasa.pds.api.engineering.serializer.JsonSingularSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4JsonProductSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4JsonProductsSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
+import gov.nasa.pds.api.engineering.serializer.XmlProductSerializer;
 
 
 @Configuration
@@ -68,11 +73,15 @@ public void configureContentNegotiation(ContentNegotiationConfigurer configurer)
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
    
       WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+      converters.add(new CsvPluralSerializer());
+      converters.add(new CsvSingularSerializer());
+      converters.add(new JsonPluralSerializer());
+      converters.add(new JsonSingularSerializer());
       converters.add(new JsonProductSerializer());
       converters.add(new Pds4JsonProductSerializer());
       converters.add(new Pds4JsonProductsSerializer());
       converters.add(new Pds4XmlProductSerializer());
-      //converters.add(new XmlProductSerializer()); // Product class, application/xml
+      converters.add(new XmlProductSerializer()); // Product class, application/xml
       //converters.add(new Jaxb2RootElementHttpMessageConverter()); // other classes, application/xml
   }
 

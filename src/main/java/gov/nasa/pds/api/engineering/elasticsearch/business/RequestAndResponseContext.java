@@ -107,14 +107,16 @@ public class RequestAndResponseContext
     		) throws ApplicationTypeException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
+    	formatters.put("*/*", new PdsProductBusinessObject());
     	formatters.put("application/csv", new WyriwygBusinessObject());
-    	formatters.put("application/csv+text", new WyriwygBusinessObject());
     	formatters.put("application/json", new PdsProductBusinessObject());
     	formatters.put("application/kvp+json", new WyriwygBusinessObject());
     	formatters.put("application/pds4+json", new Pds4ProductBusinessObject());
+    	formatters.put("application/pds4+xml", new Pds4ProductBusinessObject());
+    	formatters.put("application/xml", new PdsProductBusinessObject());
+    	formatters.put("text/csv", new WyriwygBusinessObject());
     	this.formatters = formatters;
     	this.format = output_format;
-
     	this.baseURL = base;
     	this.om = om;
     	this.queryString = q;
@@ -161,9 +163,11 @@ public class RequestAndResponseContext
 			throw new ApplicationTypeException("The given application type, " + String.valueOf(this.format) + ", is not known by RquestAndResponseContext.");
 		}
 
-		if (given != null && 0 < given.size() && 0 < max_needs.length)
+		/* if the URL contains fields, then make sure the minimum was included too OR there is maximum set. */
+		if ((given != null && 0 < given.size()) || 0 < max_needs.length)
 		{
-			complete.addAll(given);
+			if (given != null) complete.addAll(given);
+
 			for (int index=0 ; index < min_needs.length ; index++)
 			{ if (!complete.contains(min_needs[index])) complete.add(min_needs[index]); }
 		}
