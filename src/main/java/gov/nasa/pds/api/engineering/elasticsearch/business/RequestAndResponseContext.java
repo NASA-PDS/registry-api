@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.icu.util.StringTokenizer;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
@@ -115,8 +116,9 @@ public class RequestAndResponseContext
     	formatters.put("application/pds4+xml", new Pds4ProductBusinessObject());
     	formatters.put("application/xml", new PdsProductBusinessObject());
     	formatters.put("text/csv", new WyriwygBusinessObject());
+    	formatters.put("text/html", new PdsProductBusinessObject());
     	this.formatters = formatters;
-    	this.format = output_format;
+    	this.format = this.find_match(output_format);
     	this.baseURL = base;
     	this.om = om;
     	this.queryString = q;
@@ -186,6 +188,27 @@ public class RequestAndResponseContext
 		return complete;
 	}
 	
+	private String find_match (String from_user)
+	{
+		String match=from_user;
+		StringTokenizer mimes = new StringTokenizer(from_user, ",");
+		
+		while (mimes.hasMoreTokens())
+		{
+			/* separate the mime_type/mime_subtype from ;* stuff */
+			String mime = mimes.nextToken();
+			if (mime.contains(";")) mime = mime.substring(0, mime.indexOf(";"));
+			
+			if (this.formatters.keySet().contains(mime))
+			{
+				match = mime;
+				break;
+			}
+		}
+		log.info("Matched output type as '" + match + "' from '" + from_user + "'.");
+		return match;
+	}
+
 	public Object getResponse() throws NothingFoundException
 	{
 		Object response = this.formatters.get(this.format).getResponse();

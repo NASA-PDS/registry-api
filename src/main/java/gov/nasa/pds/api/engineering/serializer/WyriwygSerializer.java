@@ -35,7 +35,7 @@ final class WyriwygSerializer
 		for (WyriwygProductKeyValuePairs kvp : product.getKeyValuePairs())
 		{
 			if (0 < n) wr.write(",\n");
-			wr.write(indent + "  \"" + kvp.getKey() + "\":\"" + mapper.writeValueAsString(kvp.getValue()) + "\"");
+			wr.write(indent + "  \"" + kvp.getKey() + "\":" + mapper.writeValueAsString(kvp.getValue()));
 		}
 		wr.write(indent + "}");
 	}

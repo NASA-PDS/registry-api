@@ -17,19 +17,16 @@ public class JsonProductSerializer extends MappingJackson2HttpMessageConverter {
 	
 	private static final Logger log = LoggerFactory.getLogger(JsonProductSerializer.class);
 	
-	public JsonProductSerializer() {
-		
+	public JsonProductSerializer()
+	{
 		super();
-		
+
 		List<MediaType> supportMediaTypes = new ArrayList<MediaType>();
 		supportMediaTypes.add(MediaType.APPLICATION_JSON);
 		this.setSupportedMediaTypes(supportMediaTypes);
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 	    mapper.setSerializationInclusion(Include.NON_NULL);
 	    this.setObjectMapper(mapper);
-	     
 	}
-	
-
 }
