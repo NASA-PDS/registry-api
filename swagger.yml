@@ -8,7 +8,7 @@ info:
   description: |
     Federated PDS API which provides actionable end points standardized
     between the different nodes.
-  version: pds-api-110-4
+  version: 0.5.0-SNAPSHOT
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -1042,14 +1042,14 @@ components:
     Plural:
       description: Successful request
       content:
-        application/unsupported:
+        "*":
           schema:
             type: object
+        "*/*":
+          schema:
+            $ref: '#/components/schemas/pdsProducts'
         application/csv:
           schema:
-            $ref: '#/components/schemas/wyriwygProducts'
-        application/csv+text:
-           schema:
             $ref: '#/components/schemas/wyriwygProducts'
         application/json:
           schema:
@@ -1060,17 +1060,26 @@ components:
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Products'
+        application/pds4+xml:
+          schema:
+            $ref: '#/components/schemas/pds4Products'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/pdsProducts'
+        text/csv:
+           schema:
+            $ref: '#/components/schemas/wyriwygProducts'
     Singular:
       description: Successful request
       content:
-        application/unsupported:
+        "*":
           schema:
             type: object
+        "*/*":
+          schema:
+            $ref: '#/components/schemas/pdsProduct'
         application/csv:
           schema:
-            $ref: '#/components/schemas/wyriwygProduct'
-        application/csv+text:
-           schema:
             $ref: '#/components/schemas/wyriwygProduct'
         application/json:
           schema:
@@ -1081,6 +1090,15 @@ components:
         application/pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Product'
+        application/pds4+xml:
+          schema:
+            $ref: '#/components/schemas/pds4Product'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/pdsProduct'
+        text/csv:
+           schema:
+            $ref: '#/components/schemas/wyriwygProduct'
   schemas:
     summary:
       type: object
