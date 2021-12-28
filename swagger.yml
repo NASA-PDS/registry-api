@@ -1042,7 +1042,7 @@ components:
     Plural:
       description: Successful request
       content:
-        /:
+        "*":
           schema:
             type: object
         "*/*":
@@ -1063,6 +1063,7 @@ components:
         application/pds4+xml:
           schema:
             $ref: '#/components/schemas/pds4Products'
+<<<<<<< HEAD
         application/xml:
           schema:
             $ref: '#/components/schemas/pdsProducts'
@@ -1073,6 +1074,18 @@ components:
       description: Successful request
       content:
         /:
+=======
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/wyriwygProducts'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/pdsProducts'
+    Singular:
+      description: Successful request
+      content:
+        "*":
+>>>>>>> e642a9f545ab0bf63dcdf5cafb142f0fc33f308c
           schema:
             type: object
         "*/*":
@@ -1099,6 +1112,12 @@ components:
         text/csv:
            schema:
             $ref: '#/components/schemas/wyriwygProduct'
+<<<<<<< HEAD
+=======
+        text/html:
+           schema:
+            $ref: '#/components/schemas/pdsProduct'
+>>>>>>> e642a9f545ab0bf63dcdf5cafb142f0fc33f308c
   schemas:
     summary:
       type: object
