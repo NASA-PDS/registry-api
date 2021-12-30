@@ -24,10 +24,9 @@ import gov.nasa.pds.api.engineering.serializer.Pds4JsonProductsSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductsSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductTextHtmlSerializer;
+import gov.nasa.pds.api.engineering.serializer.PdsProductXMLSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductsTextHtmlSerializer;
-
-import gov.nasa.pds.api.engineering.serializer.XmlProductSerializer;
-
+import gov.nasa.pds.api.engineering.serializer.PdsProductsXMLSerializer;
 
 @Configuration
 @EnableWebMvc
@@ -76,8 +75,8 @@ public class WebMVCConfig implements WebMvcConfigurer
 		converters.add(new Pds4XmlProductSerializer());
 		converters.add(new Pds4XmlProductsSerializer());
 		converters.add(new PdsProductTextHtmlSerializer());
+		converters.add(new PdsProductXMLSerializer());
 		converters.add(new PdsProductsTextHtmlSerializer());
-		converters.add(new XmlProductSerializer()); // Product class, application/xml
-		//converters.add(new Jaxb2RootElementHttpMessageConverter()); // other classes, application/xml
+		converters.add(new PdsProductsXMLSerializer());
 	}
 }
