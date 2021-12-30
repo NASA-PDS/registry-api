@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.engineering.serializer;
 
-import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
+import gov.nasa.pds.model.Pds4Product;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -14,8 +15,10 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<ProductWithXmlLabel> {
+
+public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4Product> {
 
 		  public Pds4XmlProductSerializer() {
 		      super(new MediaType("application", "pds4+xml"));
@@ -23,31 +26,27 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Produ
 
 		  @Override
 		  protected boolean supports(Class<?> clazz) {
-		      return ProductWithXmlLabel.class.isAssignableFrom(clazz);
+		      return Pds4Product.class.isAssignableFrom(clazz);
 		  }
 
 		  
 		  @Override
-		  protected ProductWithXmlLabel readInternal(Class<? extends ProductWithXmlLabel> clazz, HttpInputMessage inputMessage)
+		  protected Pds4Product readInternal(Class<? extends Pds4Product> clazz, HttpInputMessage inputMessage)
 		          throws IOException, HttpMessageNotReadableException {
 		     
-		      return new ProductWithXmlLabel();
+		      return new Pds4Product();
 		  }
 		  
 
 		  @Override
-		  protected void writeInternal(ProductWithXmlLabel product, HttpOutputMessage outputMessage)
+		  protected void writeInternal(Pds4Product product, HttpOutputMessage outputMessage)
 		          throws IOException, HttpMessageNotWritableException {
 		      try {
 		          OutputStream outputStream = outputMessage.getBody();
-		          
 		          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
+		          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 		          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
-		   
-		          String body = product.getLabelXml();
-		          
-		          outputStream.write(body.getBytes());
-		          outputStream.close();
+		          (new XmlMapper()).writeValue (writer, product);
 		      } catch (ClassCastException e) {
 		    	  this.logger.error("For XML serialization, the Product object must be extended as ProductWithXmlLabel: " + e.getMessage());
 		      }

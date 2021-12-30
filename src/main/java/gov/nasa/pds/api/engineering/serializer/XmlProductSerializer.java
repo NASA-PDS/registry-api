@@ -13,7 +13,6 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
-import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.PdsProduct;
 
 public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
@@ -32,8 +31,7 @@ public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 	@Override
 	protected boolean supports(Class<?> clazz) {
 		
-	      return ProductWithXmlLabel.class.isAssignableFrom(clazz) 
-	    		  || PdsProduct.class.isAssignableFrom(clazz);
+	      return PdsProduct.class.isAssignableFrom(clazz);
 	 }
 	
 	@Override
@@ -50,19 +48,12 @@ public class XmlProductSerializer extends Jaxb2RootElementHttpMessageConverter {
 		
 		log.info(ClassUtils.getUserClass(o).getName());
 		
-		if (PdsProduct.class.isAssignableFrom(o.getClass())) {
-			//HashMap<String, XMLMashallableProperyValue> props = (HashMap<String, XMLMashallableProperyValue>)(HashMap<String, ?>)((Product)o).getProperties();
+		if (PdsProduct.class.isAssignableFrom(o.getClass()))
+		{
 			for (Entry<String, ?> e:  ((PdsProduct)o).getProperties().entrySet()) {
 				XmlProductSerializer.log.info("Class in hashmap value is" + e.getValue().getClass().getCanonicalName());
 			}
 		}
-		
-		if (ProductWithXmlLabel.class.isAssignableFrom(o.getClass())) {
-			o = ((ProductWithXmlLabel)o).labelXml(null);
-		}
-		
-		
-   		
 		super.writeToResult(o, headers, result);
 	}
 

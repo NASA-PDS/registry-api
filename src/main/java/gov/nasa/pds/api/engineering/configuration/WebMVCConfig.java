@@ -22,6 +22,7 @@ import gov.nasa.pds.api.engineering.serializer.JsonSingularSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4JsonProductSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4JsonProductsSerializer;
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
+import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductsSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductTextHtmlSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductsTextHtmlSerializer;
 
@@ -73,6 +74,7 @@ public class WebMVCConfig implements WebMvcConfigurer
 		converters.add(new Pds4JsonProductSerializer());
 		converters.add(new Pds4JsonProductsSerializer());
 		converters.add(new Pds4XmlProductSerializer());
+		converters.add(new Pds4XmlProductsSerializer());
 		converters.add(new PdsProductTextHtmlSerializer());
 		converters.add(new PdsProductsTextHtmlSerializer());
 		converters.add(new XmlProductSerializer()); // Product class, application/xml
