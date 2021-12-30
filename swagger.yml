@@ -1067,8 +1067,11 @@ components:
           schema:
             $ref: '#/components/schemas/pdsProducts'
         text/csv:
-           schema:
+          schema:
             $ref: '#/components/schemas/wyriwygProducts'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/pdsProducts'
     Singular:
       description: Successful request
       content:
@@ -1099,6 +1102,9 @@ components:
         text/csv:
            schema:
             $ref: '#/components/schemas/wyriwygProduct'
+        text/html:
+           schema:
+            $ref: '#/components/schemas/pdsProduct'
   schemas:
     summary:
       type: object
