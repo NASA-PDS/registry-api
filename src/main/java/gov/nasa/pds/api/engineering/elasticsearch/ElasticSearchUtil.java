@@ -30,9 +30,27 @@ public class ElasticSearchUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchUtil.class);
     
-	static public String jsonPropertyToElasticProperty(String jsonProperty) {
-		return jsonProperty.replace(".", "/");
-		
+	static public String jsonPropertyToElasticProperty(String jsonProperty)
+	{ return jsonProperty.replace(".", "/"); }
+	
+	static public String[] jsonPropertyToElasticProperty(String[] jsonProperties)
+	{ 
+		if (jsonProperties != null && jsonProperties.length > 0)
+		{
+			for (int i=0 ; i < jsonProperties.length ; i++)
+			{ jsonProperties[i] = jsonPropertyToElasticProperty(jsonProperties[i]); }
+		}
+		return jsonProperties;
+	}
+
+	static public List<String> jsonPropertyToElasticProperty(List<String> jsonProperties)
+	{
+		if (jsonProperties != null && jsonProperties.size() > 0)
+		{
+			for (int i=0 ; i < jsonProperties.size() ; i++)
+			{ jsonProperties.set(i, jsonPropertyToElasticProperty(jsonProperties.get(i))); }
+		}
+		return jsonProperties;
 	}
 	
 	static public String elasticPropertyToJsonProperty(String elasticProperty) throws UnsupportedElasticSearchProperty {

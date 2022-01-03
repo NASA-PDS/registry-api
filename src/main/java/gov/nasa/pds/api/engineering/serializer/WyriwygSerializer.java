@@ -36,6 +36,7 @@ final class WyriwygSerializer
 		{
 			if (0 < n) wr.write(",\n");
 			wr.write(indent + "  \"" + kvp.getKey() + "\":" + mapper.writeValueAsString(kvp.getValue()));
+			n++;
 		}
 		wr.write(indent + "}");
 	}

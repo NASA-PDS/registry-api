@@ -1,9 +1,7 @@
 package gov.nasa.pds.api.engineering.elasticsearch;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -157,7 +155,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
             query = ProductQueryBuilderUtil.createPqlQuery(queryString, fields, presetCriteria);
         }
         
-        String[] includedFields = createIncludedFields(fields);
+        String[] includedFields = fields.toArray(new String[0]);
         String[] excludedFields = { EntitytProductWithBlob.BLOB_PROPERTY };
 
         SearchRequestBuilder bld = new SearchRequestBuilder(query, start, limit);
@@ -262,24 +260,4 @@ public class ElasticSearchRegistrySearchRequestBuilder {
         }
         return request;
     }
-    
-    
-    private String[] createIncludedFields(List<String> fields)
-    {
-        if(fields == null || fields.isEmpty()) return null;
-        
-        HashSet<String> esFields = new HashSet<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
-        for (int i = 0; i < fields.size(); i++)
-        {
-            String includedField = ElasticSearchUtil.jsonPropertyToElasticProperty((String) fields.get(i));
-            ElasticSearchRegistrySearchRequestBuilder.log.debug("add field " + includedField + " to search");
-            esFields.add(includedField);
-        }
-
-        String[] includedFields = esFields.toArray(new String[esFields.size()]);
-        
-        return includedFields;
-    }
-
-
 }

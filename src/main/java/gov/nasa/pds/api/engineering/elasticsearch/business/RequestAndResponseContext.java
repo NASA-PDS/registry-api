@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.util.StringTokenizer;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
+import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.engineering.exceptions.NothingFoundException;
 import gov.nasa.pds.model.Summary;
@@ -149,13 +150,14 @@ public class RequestAndResponseContext
 	{
 		List<String> complete = new ArrayList<String>();
 		String max_needs[] = {}, min_needs[] = {};
-		
+		given = ElasticSearchUtil.jsonPropertyToElasticProperty(given);
+
 		if (this.formatters.containsKey(this.format))
 		{ 
 			this.formatters.get(this.format).setBaseURL(this.baseURL);
 			this.formatters.get(this.format).setObjectMapper(this.om);
-			max_needs = this.formatters.get(this.format).getMaximallyRequiredFields();
-			min_needs = this.formatters.get(this.format).getMinimallyRequiredFields();
+			max_needs = ElasticSearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
+			min_needs = ElasticSearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
 		}
 		else
 		{
