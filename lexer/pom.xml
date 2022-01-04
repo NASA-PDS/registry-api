@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+Copyright © 2021, California Institute of Technology ("Caltech").
+U.S. Government sponsorship acknowledged.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+• Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+• Redistributions must reproduce the above copyright notice, this list of
+  conditions and the following disclaimer in the documentation and/or other
+  materials provided with the distribution.
+• Neither the name of Caltech nor its operating division, the Jet Propulsion
+  Laboratory, nor the names of its contributors may be used to endorse or
+  promote products derived from this software without specific prior written
+  permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>gov.nasa.pds</groupId>
+  <artifactId>api-search-query-lexer</artifactId>
+  <version>1.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>PDS API Search Query Lexer</name>
+  <description>Lexer for PDS API Search queries</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- configure the versions you want to use here -->
+    <slf4j-version>1.7.12</slf4j-version>
+    <log4j.version>1.2.17</log4j.version>
+    <antlr4.version>4.9.2</antlr4.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+  
+  </properties>
+  
+  <parent>
+    <groupId>gov.nasa</groupId>
+    <artifactId>pds</artifactId>
+    <version>1.13.0</version>
+  </parent>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+
+    <!-- logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.antlr/antlr4 -->
+	<dependency>
+	    <groupId>org.antlr</groupId>
+	    <artifactId>antlr4</artifactId>
+	    <version>${antlr4.version}</version>
+	</dependency>
+	
+	<dependency>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4-runtime-testsuite</artifactId>
+	<version>${antlr4.version}</version>
+</dependency>
+<!-- Thanks for using https://jar-download.com -->
+
+	<dependency>
+		<groupId>org.junit.jupiter</groupId>
+		<artifactId>junit-jupiter-api</artifactId>
+		<version>5.7.0</version>
+	</dependency>
+	<dependency>
+		<groupId>org.junit.jupiter</groupId>
+		<artifactId>junit-jupiter-engine</artifactId>
+		<version>5.7.0</version>
+	</dependency>
+	
+
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+		    <groupId>org.antlr</groupId>
+		    <artifactId>antlr4-maven-plugin</artifactId>
+		    <version>${antlr4.version}</version>
+		    <executions>
+		        <execution>
+		            <goals>
+		                <goal>antlr4</goal>
+		            </goals>
+		        </execution>
+		    </executions>
+	   </plugin>
+	      
+	      
+	      
+	   <plugin>
+		    <artifactId>maven-jar-plugin</artifactId>
+		    <version>3.0.1</version>
+		    <executions>
+		        <execution>
+		            <configuration>
+		                <classifier>sources</classifier>
+		                <classesDirectory>${project.build.directory}/target/generated-sources</classesDirectory>
+		                <includes>**/*</includes>
+		            </configuration>
+		            <id>source</id>
+		            <phase>package</phase>
+		            <goals>
+		                <goal>jar</goal>
+		            </goals>
+		        </execution>
+		    </executions>
+		</plugin>
+		
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-javadoc-plugin</artifactId>
+           <configuration>
+             <source>11</source>
+             <failOnError>false</failOnError>
+           </configuration>
+           <executions>
+             <execution>
+               <id>attach-javadocs</id>
+               <goals>
+                 <goal>jar</goal>
+               </goals>
+             </execution>
+           </executions>
+         </plugin>
+			      
+      
+    </plugins>
+  </build>
+
+ <scm>
+    <url>https://github.com/NASA-PDS/api-search-query-lexer/tree/master</url>
+    <connection>scm:git:git://github.com/NASA-PDS/api-search-query-lexer.git</connection>
+    <developerConnection>scm:git:git@github.com:NASA-PDS/api-search-query-lexer.git</developerConnection>
+    <tag>v1.0.0</tag>
+  </scm>
+
+</project>
