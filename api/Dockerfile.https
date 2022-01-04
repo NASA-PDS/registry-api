@@ -1,0 +1,40 @@
+FROM ubuntu:20.04
+
+# Get arguments from the build command line
+ARG version
+ENV VERSION=$version
+
+# Build up the OS
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
+    apt-get install -y curl \
+                       libtcnative-1 \
+                       maven \
+                       openjdk-11-jdk-headless \
+                       tar
+
+# Make room for the app
+RUN mkdir /usr/local/registry-api-service-${VERSION}
+
+# Copy the data into the building container
+COPY LICENSE.txt /usr/local/registry-api-service-${VERSION}
+COPY NOTICE.txt /usr/local/registry-api-service-${VERSION}
+COPY README.txt /usr/local/registry-api-service-${VERSION}
+COPY pom.xml /usr/local/registry-api-service-${VERSION}
+COPY src /usr/local/registry-api-service-${VERSION}/src
+
+# Resources shared with the rest of the world
+EXPOSE 443
+
+# Build then generate/store the self signed cert.
+RUN set -ex \
+  && cd /usr/local/registry-api-service-${VERSION} \
+  && mvn clean \
+  && mvn install \
+  && cd /usr/local/registry-api-service-${VERSION}/target/classes \
+  && keytool -genkeypair -keyalg RSA -alias registry -keystore keystore.p12 -storepass MyDogHasFleas -keypass MyDogHasFleas \
+             -dname "CN=Unknown" -keysize 2048 -validity 3650 -noprompt 
+
+# Run the sevice by default
+WORKDIR /usr/local/registry-api-service-${VERSION}
+CMD ["mvn", "spring-boot:run"]
