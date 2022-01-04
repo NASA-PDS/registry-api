@@ -34,20 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nasa.pds</groupId>
 	<artifactId>registry-api-service</artifactId>
-	<version>0.5.0-SNAPSHOT</version>
+        <version>0.5.0-SNAPSHOT</version>
 	<name>gov.nasa.pds.api.registry-service</name>
 	<description>registry api service contributing to the PDS federated API</description>
 	<properties>
+                <maven.compiler.target>11</maven.compiler.target>
+                <maven.compiler.source>11</maven.compiler.source>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jackson-version>2.10.0</jackson-version>
 		<springfox-version>2.7.0</springfox-version>
 		<elasticsearch.version>7.13.3</elasticsearch.version>
 	</properties>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.1.RELEASE</version>
-		<!-- >version>1.5.9.RELEASE</version -->
-	</parent>
 	<build>
 		<plugins>
 			<plugin>
@@ -345,6 +342,19 @@ POSSIBILITY OF SUCH DAMAGE.
         </dependency>
         
 	</dependencies>
+
+   <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.3.1.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
 	<repositories>
 		<repository>
 			<id>oss.sonatype.org-snapshot</id>

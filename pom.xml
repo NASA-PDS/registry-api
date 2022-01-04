@@ -55,16 +55,19 @@ Go through this file line-by-line and replace the template values with your own.
     <parent>
         <groupId>gov.nasa</groupId>
         <artifactId>pds</artifactId>
-        <version>1.12.0</version>
+        <version>1.13.0</version>
     </parent>
   
     <!-- My project metadata here -->
     <properties>
         <!-- Obviously put in your own project name instead of `myproject` -->
-        <project-name>myproject</project-name>
+        <project-name>registry</project-name>
 
         <!-- You'll want a Unicode-type encoding here in almost every case -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+       
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <!--
@@ -76,36 +79,34 @@ Go through this file line-by-line and replace the template values with your own.
     The next part of the Maven coorindate is the name of the artifact, its "artifact ID". Note we cannot use
     any expression here, as tempting as it would be to use ${project-name} here:
     -->
-    <artifactId>myproject</artifactId>
+    <artifactId>registry-api</artifactId>
     <!-- The third part of the Maven coorindate is the version identifier of the artifact: -->
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <!-- The final part is the kind: here we make a `jar`, but there's `war`, `ejb`, `ear`, `maven-plugin`, etc.: -->
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>${project.groupId}:${project-name}</name>
     <description>
-        Put a short paragraph-sized summary of the project here.
+        PDS registry api
     </description>
     <!-- Check the calendar -->
     <inceptionYear>2021</inceptionYear>
-
-    <!--
-    👉 Note: in the elements below, we cannot use `${project-name}` as apparently property expansion does
-    not occur here despite the documentation at https://maven.apache.org/pom.html#Properties says.
-
-    So be sure to replace all five `myproject`s below with your actual project name!
-    -->
-    <url>https://nasa-pds.github.io/myproject</url>
+    <url>https://nasa-pds.github.io/${project-name}</url>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/NASA-PDS/myproject/issues</url>
+        <url>https://github.com/NASA-PDS/${project-name}/issues</url>
     </issueManagement>
     <scm>
-        <connection>scm:git:https://github.com/NASA-PDS/myproject.git</connection>
-        <developerConnection>scm:git:ssh://github.com/NASA-PDS/myproject.git</developerConnection>
-        <url>https://nasa-pds.github.io/myproject</url>
+        <connection>scm:git:https://github.com/NASA-PDS/${project-name}.git</connection>
+        <developerConnection>scm:git:ssh://github.com/NASA-PDS/${project-name}.git</developerConnection>
+        <url>https://nasa-pds.github.io/${project-name}</url>
         <tag>main</tag>
     </scm>
+    <modules >
+	    <module>model</module>
+	    <module>lexer</module>
+	    <module>api</module>
+	</modules>
 
     <!-- Put the packages your project depends on here -->
     <dependencies>
