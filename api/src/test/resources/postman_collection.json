@@ -1,0 +1,3123 @@
+{
+	"info": {
+		"_postman_id": "da1e14cf-e88e-452f-b54d-cb343f227f13",
+		"name": "Planetary Data System API Demo",
+		"description": "Federated PDS API which provides actionable end points standardized\nbetween the different nodes.\n\n\nContact Support:\n Email: pds-operator@jpl.nasa.gov",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "URN resolver for lidvid",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:lidvid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":lidvid"
+							],
+							"variable": [
+								{
+									"key": "lidvid",
+									"value": "urn:nasa:pds:orex.ocams:data_raw:20190702t072824s852_pol_l0pan.fits::1.0",
+									"description": "(Required) lidvid (urn)"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Internal server error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/:lidvid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										":lidvid"
+									],
+									"variable": [
+										{
+											"key": "lidvid"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "lidvid not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/:lidvid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										":lidvid"
+									],
+									"variable": [
+										{
+											"key": "lidvid"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/:lidvid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										":lidvid"
+									],
+									"variable": [
+										{
+											"key": "lidvid"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "xml",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/xml"
+								}
+							],
+							"cookie": [],
+							"body": "magna voluptate irure ullamco in"
+						}
+					]
+				},
+				{
+					"name": "URN resolver for lidvid not existing",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/:lidvid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								":lidvid"
+							],
+							"variable": [
+								{
+									"description": "(Required) lidvid (urn)",
+									"key": "lidvid",
+									"value": "magna voluptate irure ullamco in"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "lidvid not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/:lidvid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										":lidvid"
+									],
+									"variable": [
+										{
+											"key": "lidvid"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/:lidvid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										":lidvid"
+									],
+									"variable": [
+										{
+											"key": "lidvid"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "xml",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/xml"
+								}
+							],
+							"cookie": [],
+							"body": "magna voluptate irure ullamco in"
+						},
+						{
+							"name": "Internal server error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/:lidvid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										":lidvid"
+									],
+									"variable": [
+										{
+											"key": "lidvid"
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {
+				
+			}
+		},
+		{
+			"name": "collection, unit comparison requests",
+			"item": [
+				{
+					"name": "request PDS collections q is null",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections q is empty",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?q=\"\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "\"\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections EQual String",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?q=pds:Primary_Result_Summary/pds:processing_level eq \"Raw\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "pds:Primary_Result_Summary/pds:processing_level eq \"Raw\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections Not EQual String",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?q=pds/Primary_Result_Summary/pds/processing_level ne \"Raw\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "pds/Primary_Result_Summary/pds/processing_level ne \"Raw\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections Greater Than String",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?q=pds/Primary_Result_Summary/pds/processing_level gt \"Partially Processed\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "pds/Primary_Result_Summary/pds/processing_level gt \"Partially Processed\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections Lower Than String",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?q=pds:Primary_Result_Summary/pds:processing_level lt \"Partially Processed\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "pds:Primary_Result_Summary/pds:processing_level lt \"Partially Processed\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections Greater or Equal String",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?q=pds:Primary_Result_Summary/pds:processing_level ge \"Partially Processed\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "pds:Primary_Result_Summary/pds:processing_level ge \"Partially Processed\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections Lower or Equal String",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=pds:Primary_Result_Summary/pds:processing_level le \"Partially Processed\"",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "pds:Primary_Result_Summary/pds:processing_level le \"Partially Processed\"",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections file zie (num q)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=_file_size eq 8042",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "_file_size eq 8042",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections Not Equal file size (num q)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=_file_size ne 8042",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "_file_size ne 8042",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections greater Than file size (num q)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=_file_size gt 8963",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "_file_size gt 8963",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections greater or equal file size (num q)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=_file_size ge 8963",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "_file_size ge 8963",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections lower than file size (num q)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=_file_size lt 8963",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "_file_size lt 8963",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections lower or equal file size (num q)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=_file_size le 8963",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "_file_size le 8963",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {
+				
+			}
+		},
+		{
+			"name": "collections, complex requests",
+			"item": [
+				{
+					"name": "request PDS collections group",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=(pds/Primary_Result_Summary/pds/processing_level eq \"Raw\")",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "(pds/Primary_Result_Summary/pds/processing_level eq \"Raw\")",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections group not",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=not (pds/Primary_Result_Summary/pds/processing_level eq \"Raw\")",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "not (pds/Primary_Result_Summary/pds/processing_level eq \"Raw\")",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections nested group",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=((pds/Primary_Result_Summary/pds/processing_level eq \"Raw\"))",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "((pds/Primary_Result_Summary/pds/processing_level eq \"Raw\"))",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections and statement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=((pds/Primary_Result_Summary/pds/processing_level eq \"Raw\") and (_file_size le 8942))",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "86952436",
+									"description": "offset in matching result list, for pagination",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "((pds/Primary_Result_Summary/pds/processing_level eq \"Raw\") and (_file_size le 8942))",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						},
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						}
+					]
+				},
+				{
+					"name": "request PDS collections or statement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/collections?limit=10&q=((pds/Primary_Result_Summary/pds/processing_level eq \"Raw\") or not (_file_size le 8942))",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"collections"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "maximum number of matching results returned, for pagination"
+								},
+								{
+									"key": "q",
+									"value": "((pds/Primary_Result_Summary/pds/processing_level eq \"Raw\") or not (_file_size le 8942))",
+									"description": "search query"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Bad request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"url\": \"https://pds.nasa.gov/api/1.0/collections\",\n \"resource\": \"/collections\",\n \"query\": \"q=mission qt 12\",\n \"message\": \"query operator gt not supported on field mission\"\n}"
+						},
+						{
+							"name": "Successful request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/collections?start=<integer>&limit=<integer>&q=<string>&fields=<string>&fields=<string>&sort=<string>&sort=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"collections"
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "<integer>"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>"
+										},
+										{
+											"key": "q",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "fields",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										},
+										{
+											"key": "sort",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Total-Count",
+									"value": "86952436",
+									"description": "Total number of records maching the request."
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"metadata\": {\n  \"q\": \"consectetur mollit magna dolor\",\n  \"start\": -27309082,\n  \"limit\": 85105165,\n  \"sort\": [\n   \"voluptate sint sit\",\n   \"fugiat irure\"\n  ]\n },\n \"data\": \"schema type not provided\"\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {
+				
+			}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "744739be-895e-4f46-a5b4-ea52b492a56f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0313d193-437b-4fb0-9c30-3be52a87a047",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "a3705782-197e-4e5e-af5f-95d10275a886",
+			"key": "baseUrl",
+			"value": "https://pds-gamma.jpl.nasa.gov/api"
+		}
+	],
+	"protocolProfileBehavior": {
+		
+	}
+}
