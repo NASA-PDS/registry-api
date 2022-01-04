@@ -1,0 +1,28 @@
+springfox.documentation.swagger.v2.path=/api-docs
+spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
+
+debug=true
+logging.level.root = DEBUG
+logging.level.gov.nasa.pds.api.engineering.elasticsearch = DEBUG
+
+server.contextPath=/
+server.port=80
+server.use-forward-headers=true
+
+## TODO: get key-store-password from the secrets manager
+server.ssl.enabled=false
+server.ssl.key-alias=registry
+server.ssl.key-store-password=
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-type=PKCS12
+
+## note the port is mandatory even when it is default :80 or :443
+elasticSearch.host=search-pds-dev-esext-kcq7xxa4lsrakjw33lywpjdyfy.us-west-2.es.amazonaws.com:443
+elasticSearch.registryIndex=registry
+elasticSearch.registryRefIndex=registry-refs
+elasticSearch.timeOutSeconds=60
+# elasticSearch.username=
+# elasticSearch.password=
+elasticSearch.userAWSSecretName=en/registry/es/user
+# elasticSearch.userAWSSecretRegion=
+elasticSearch.ssl=true

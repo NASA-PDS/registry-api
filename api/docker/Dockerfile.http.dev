@@ -1,0 +1,41 @@
+FROM openjdk:11-slim
+
+# Get arguments from the build command line
+ARG version
+ENV VERSION=$version 
+
+# For using explicit credentials to access the keystore, use the following w/
+# the credentials provided by the SA's. Only the ECS cluster IP's have been
+# whitelisted.
+# ENV AWS_ACCESS_KEY=<access key> \
+#     AWS_SECRET_KEY=<secret key>
+
+# Build up the OS
+RUN apt-get update \
+ && apt-get install -y curl \
+                       libtcnative-1
+
+# Make room for the app and capture the version
+RUN mkdir /usr/local/registry-api-service \
+ && cd /usr/local/registry-api-service \
+ && echo ${VERSION} > version.txt \
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy the data into the building container
+COPY LICENSE.md /usr/local/registry-api-service
+COPY NOTICE.txt /usr/local/registry-api-service
+COPY README.md /usr/local/registry-api-service
+
+# Resources shared with the rest of the world
+EXPOSE 80
+
+# Load the local jar file - the config is contained therein
+COPY target/registry-api-service-${VERSION}.jar /usr/local/registry-api-service/registry-api-service.jar
+
+# Run the sevice by default
+WORKDIR /usr/local/registry-api-service
+
+CMD ["java", \
+     "-cp", "/usr/local/registry-api-service", \
+     "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
+     "gov.nasa.pds.api.engineering.SpringBootMain"]
