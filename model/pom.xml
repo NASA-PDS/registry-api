@@ -1,0 +1,296 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>gov.nasa.pds</groupId>
+  <artifactId>api</artifactId>
+  <version>0.4.0-SNAPSHOT</version>
+  <name>gov.nasa.api.lib</name>
+  <description>client and server stubs for the PDS federated API</description>
+   <properties>
+       <jackson-version>2.10.0</jackson-version>
+       <springfox-version>2.7.0</springfox-version>
+  </properties>
+  <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>2.3.1.RELEASE</version>
+      <!-- >version>1.5.9.RELEASE</version-->
+  </parent>
+ 
+  <build>
+      <sourceDirectory>.</sourceDirectory>
+	  <plugins>
+		  <plugin>
+		    <groupId>io.swagger.codegen.v3</groupId>
+		    <artifactId>swagger-codegen-maven-plugin</artifactId>
+		    <version>3.0.20</version>
+		    <executions>
+		       <execution>
+		            <goals>
+		                <goal>generate</goal>
+		            </goals>   
+		            <configuration>
+		                <inputSpec>${project.basedir}/swagger.yml</inputSpec>
+		                <language>spring</language>
+		                <withXml>true</withXml> 
+		                <configOptions>
+		                   <sourceFolder>src/gen/java/main</sourceFolder>
+		                   <dateLibrary>joda</dateLibrary>
+		                   <modelPackage>gov.nasa.pds.model</modelPackage>
+		                   <apiPackage>gov.nasa.pds.api.base</apiPackage>
+		                   <generateSupportingFiles>false</generateSupportingFiles>
+		                   <interfaceOnly>false</interfaceOnly>  		                   
+		                </configOptions>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin>
+		<plugin>
+	      <groupId>org.sonatype.plugins</groupId>
+	      <artifactId>nexus-staging-maven-plugin</artifactId>
+	      <version>1.6.7</version>
+	      <extensions>true</extensions>
+	      <configuration>
+	        <serverId>ossrh</serverId>
+	        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+	        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+	      </configuration>
+	    </plugin>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+	    <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-site-plugin</artifactId>
+	        <version>3.8.2</version>
+	      </plugin>
+	       <plugin>
+		    <artifactId>maven-jar-plugin</artifactId>
+		    <version>3.0.1</version>
+		    <executions>
+		        <execution>
+		            <configuration>
+		                <classifier>sources</classifier>
+		                <classesDirectory>${project.build.directory}/target/generated-sources/swagger/src/gen/java/main</classesDirectory>
+		                <includes>**/*.java</includes>
+		            </configuration>
+		            <id>pack-docs</id>
+		            <phase>package</phase>
+		            <goals>
+		                <goal>jar</goal>
+		            </goals>
+		        </execution>
+		    </executions>
+		</plugin>
+		<plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>build-helper-maven-plugin</artifactId>
+              <executions>
+                  <execution>
+                      <phase>generate-sources</phase>
+                      <goals><goal>add-source</goal></goals>
+                      <configuration>
+                          <sources>
+                              <source>${project.build.directory}/api/target/generated-sources/swagger/src/gen/java/main</source>
+                          </sources>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+		<plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-javadoc-plugin</artifactId>
+	        <version>3.2.0</version>
+	        <configuration>
+	           <failOnError>false</failOnError>
+	        	<excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*</excludePackageNames>
+	        	<executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+	        </configuration>
+      </plugin>
+     </plugins>
+    
+     
+	
+  </build>
+  
+   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <site>
+      <id>dummy URL to enabling doc staging</id>
+      <url>https://{project.artifactId}</url>
+    </site>
+  </distributionManagement>
+  
+  
+  
+    <dependencies>
+        <!-- dependencies are needed for the client being generated -->
+              <!--SpringFox dependencies -->
+       <dependency>
+           <groupId>io.springfox</groupId>
+           <artifactId>springfox-swagger2</artifactId>
+           <version>${springfox-version}</version>
+       </dependency>
+       <dependency>
+           <groupId>io.springfox</groupId>
+           <artifactId>springfox-swagger-ui</artifactId>
+           <version>${springfox-version}</version>
+       </dependency>
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-web</artifactId>
+	    </dependency>
+
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-context</artifactId>
+	    </dependency>
+
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+	<dependency>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-web</artifactId>
+	    </dependency>
+	
+	<dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-thymeleaf</artifactId>
+           </dependency>
+       
+        <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-test</artifactId>
+       </dependency>
+       
+       <!-- https://mvnrepository.com/artifact/junit/junit -->
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	</dependency>
+	
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
+	<dependency>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-autoconfigure</artifactId>
+	</dependency>
+
+
+	<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+	<dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>servlet-api</artifactId>
+	    <version>2.5</version>
+	    <scope>provided</scope>
+	</dependency>
+	
+        
+        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+	<dependency>
+	    <groupId>javax.validation</groupId>
+	    <artifactId>validation-api</artifactId>
+	    </dependency>
+
+
+ 		<dependency>
+           <groupId>com.fasterxml.jackson.jaxrs</groupId>
+           <artifactId>jackson-jaxrs-base</artifactId>
+           </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+         </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         </dependency>
+       <dependency>
+         <groupId>com.fasterxml.jackson.jaxrs</groupId>
+         <artifactId>jackson-jaxrs-json-provider</artifactId>
+         </dependency>
+         <dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>${jackson-version}</version>
+		</dependency>
+       
+       <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
+	<dependency>
+	    <groupId>com.github.joschi.jackson</groupId>
+	    <artifactId>jackson-datatype-threetenbp</artifactId>
+	    <version>${jackson-version}</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>2.10.6</version>
+		</dependency>
+
+
+	
+	<!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
+	<dependency>
+	    <groupId>org.threeten</groupId>
+	    <artifactId>threetenbp</artifactId>
+	    <version>1.4.4</version>
+	</dependency>
+			
+
+   </dependencies>
+   
+    <repositories>
+    <repository>
+      <id>oss.sonatype.org-snapshot</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories> 
+   
+   
+</project>
