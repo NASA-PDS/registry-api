@@ -1,0 +1,8 @@
+target.generated-sources.swagger.src.gen.java.main.gov.nasa.pds.api.base
+target.generated-sources.swagger.src.gen.java.main.gov.nasa.pds.model
+target.generated-sources.swagger.src.gen.java.main.io.swagger
+target.generated-sources.swagger.src.gen.java.main.io.swagger.configuration
+gov.nasa.pds.api.base
+gov.nasa.pds.model
+io.swagger
+io.swagger.configuration
