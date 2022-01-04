@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+Note to template users: update the copyright in this file (and all others) as needed.
+
+Copyright © 2021, California Institute of Technology ("Caltech").
+U.S. Government sponsorship acknowledged.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+• Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+• Redistributions must reproduce the above copyright notice, this list of
+  conditions and the following disclaimer in the documentation and/or other
+  materials provided with the distribution.
+• Neither the name of Caltech nor its operating division, the Jet Propulsion
+  Laboratory, nor the names of its contributors may be used to endorse or
+  promote products derived from this software without specific prior written
+  permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+-->
+
+
+<!--
+👉 This is the TEMPLATE project object model or `pom.xml` file.
+
+Go through this file line-by-line and replace the template values with your own.
+-->
+
+<project xmlns='http://maven.apache.org/POM/4.0.0'
+         xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+         xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'>
+
+    <!-- POM-specific metadata -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+    Speaking of the parent POM, here we say what it is: every PDS Maven project inherits from this parent.
+    Maven (and other compatible build tools) resolve this automatically, but you can find the source of this
+    parent at https://github.com/NASA-PDS/pdsen-maven-parent
+    -->
+    <parent>
+        <groupId>gov.nasa</groupId>
+        <artifactId>pds</artifactId>
+        <version>1.12.0</version>
+    </parent>
+  
+    <!-- My project metadata here -->
+    <properties>
+        <!-- Obviously put in your own project name instead of `myproject` -->
+        <project-name>myproject</project-name>
+
+        <!-- You'll want a Unicode-type encoding here in almost every case -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!--
+    Maven "coordinates" that identify this package uniquely in the entire universe; the group identifies an 
+    organizational unit (by reverse domain name) that produced the artifact:
+    -->
+    <groupId>gov.nasa.pds</groupId>
+    <!--
+    The next part of the Maven coorindate is the name of the artifact, its "artifact ID". Note we cannot use
+    any expression here, as tempting as it would be to use ${project-name} here:
+    -->
+    <artifactId>myproject</artifactId>
+    <!-- The third part of the Maven coorindate is the version identifier of the artifact: -->
+    <version>1.0.0-SNAPSHOT</version>
+    <!-- The final part is the kind: here we make a `jar`, but there's `war`, `ejb`, `ear`, `maven-plugin`, etc.: -->
+    <packaging>jar</packaging>
+
+    <name>${project.groupId}:${project-name}</name>
+    <description>
+        Put a short paragraph-sized summary of the project here.
+    </description>
+    <!-- Check the calendar -->
+    <inceptionYear>2021</inceptionYear>
+
+    <!--
+    👉 Note: in the elements below, we cannot use `${project-name}` as apparently property expansion does
+    not occur here despite the documentation at https://maven.apache.org/pom.html#Properties says.
+
+    So be sure to replace all five `myproject`s below with your actual project name!
+    -->
+    <url>https://nasa-pds.github.io/myproject</url>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/NASA-PDS/myproject/issues</url>
+    </issueManagement>
+    <scm>
+        <connection>scm:git:https://github.com/NASA-PDS/myproject.git</connection>
+        <developerConnection>scm:git:ssh://github.com/NASA-PDS/myproject.git</developerConnection>
+        <url>https://nasa-pds.github.io/myproject</url>
+        <tag>main</tag>
+    </scm>
+
+    <!-- Put the packages your project depends on here -->
+    <dependencies>
+        <!-- If you do any kind of testing—and you should—use Junit, which is the gold standard for Java -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.8.0-M1</version>
+            <scope>test</scope>
+        </dependency>
+        <!--
+        Here's an example dependency; you can find dependencies at https://search.maven.org. This isn't
+        actually used by this template, but is shown full-fleshed out because chances are your project
+        will need at least one if not many dependencies.
+        -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-numbers-primes</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>false</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--
+        Resources (files) are non-code parts of a project that the code-parts access during run time; these
+        should be bundled in a jar (or war, or whatever) and get specified here
+        -->
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>example.properties</include>
+                </includes>
+                <targetPath>gov/nasa/pds/mypackage</targetPath>
+            </resource>
+            <!-- You can give <testResources> for resources needed during the test phase -->
+        </resources>
+
+        <!--
+        Plugins tell Maven how to operate the various lifecycle phases; include extra as needed, such
+        as for CORBA stub generation from `.idl` files, or even more modern things.
+        -->
+        <plugins>
+            <!--
+            Other plugins get inherited, such as maven-compiler-plugin and maver-surefire-plugin,
+            so we don't need to repeat them here.
+
+            This plugin below makes this package an *executable* jar. If you want to make a plain jar, adjust
+            the parameters below; or use a different plugin to get a differnt kind of artifact.
+
+            You can find some plugins at: https://maven.apache.org/plugins/
+            Note that other plugins exist and may be published elsewhere.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Main-Class>gov.nasa.pds.mypackage.Main</Main-Class>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Other handy items get inherited from the parent POM, but you can override these here -->
+    <developers/>
+    <profiles/>
+    <distributionManagement/>
+    <reporting/>
+    <licenses/>
+    <organization/>  <!-- ← Might not be implemented in parent pom yet -->
+
+</project>
