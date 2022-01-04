@@ -1,0 +1,330 @@
+openapi: 3.0.0
+info:
+  title: PDS federated API
+  description: |
+    Federated PDS API which provides actionable end points standardized
+    between the different nodes.
+  termsOfService: http://pds.nasa.gov
+  contact:
+    email: pds-operator@jpl.nasa.gov
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+externalDocs:
+  description: Find out more information on the PDS API Specification
+  url: https://github.com/NASA-PDS/pds-api-core
+servers:
+- url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: core
+  description: Federated core layer for PDS requests
+  externalDocs:
+    description: Find out more
+    url: http://pds.nasa.gov
+paths:
+  /capabilities:
+    get:
+      tags:
+      - capablities
+      summary: capabilities api entry point, list the resources provided by the current
+        API end-point.
+      operationId: capabilities
+      responses:
+        "200":
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/capabilities'
+              example:
+              - action: capabilities
+                version: 0.1
+              - action: collections
+                version: 0.4
+              - action: records
+                version: 0.2
+              - action: routes
+                version: 0.1
+        "404":
+          description: capabilities not available
+        "500":
+          description: Internal server error
+      x-openapi-router-controller: pds_api_server.controllers.capablities_controller
+  /records/{lidvid}:
+    get:
+      tags:
+      - records
+      summary: URN resolver for lidvid
+      operationId: record
+      parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Succesful request
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PDS4Label'
+        "404":
+          description: lidvid not found
+        "500":
+          description: Internal server error
+      x-openapi-router-controller: pds_api_server.controllers.records_controller
+  /collections:
+    get:
+      tags:
+      - collections
+      summary: request PDS collections
+      operationId: get_collection
+      parameters:
+      - name: start
+        in: query
+        description: offset in matching result list, for pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: maximum number of matching results returned, for pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: q
+        in: query
+        description: search query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: returned fields, syntax field0,field1
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: sort_by
+        in: query
+        description: sort results, syntax asc(field0),desc(field1)
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: Succesful request
+          headers:
+            X-Total-Count:
+              description: Total number of records maching the request.
+              style: simple
+              explode: false
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collections'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage'
+      x-openapi-router-controller: pds_api_server.controllers.collections_controller
+  /routes:
+    get:
+      tags:
+      - routes
+      operationId: all_routes
+      responses:
+        "200":
+          description: Succesful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/routes'
+      x-openapi-router-controller: pds_api_server.controllers.routes_controller
+  /routes/{resource}:
+    get:
+      tags:
+      - routes
+      operationId: routes
+      parameters:
+      - name: resource
+        in: path
+        description: requested action as a request path, e.g. '/record'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: version
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: query parameter on the action, e.g. lidvid urn for a '/records'
+          action
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "302":
+          description: Successful request, redirect request
+      x-openapi-router-controller: pds_api_server.controllers.routes_controller
+components:
+  schemas:
+    capabilities:
+      type: array
+      example:
+      - action: capabilities
+        version: 0.1
+      - action: collections
+        version: 0.4
+      - action: records
+        version: 0.2
+      - action: routes
+        version: 0.1
+      items:
+        $ref: '#/components/schemas/capabilities_inner'
+    routes:
+      type: array
+      example:
+      - resource: /routes
+        query: '*'
+        url: https://pds.nasa/gov/v1/api
+        version: "0.1"
+      - resource: /records
+        query: urn:nasa:pds:insight_rad:*
+        url: https://pds-geosciences.wustl.edu/v0/api
+        version: "0.2"
+      - resource: /records
+        query: urn:nasa:pds:insight_rad:*
+        url: https://pds-geosciences.wustl.edu/v0.3/api
+        version: "0.3"
+      items:
+        $ref: '#/components/schemas/route'
+    route:
+      required:
+      - query
+      - resource
+      - url
+      type: object
+      properties:
+        resource:
+          type: string
+        query:
+          type: string
+        url:
+          type: string
+    collections:
+      required:
+      - data
+      - metadata
+      type: object
+      properties:
+        metadata:
+          type: object
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/collection'
+      example:
+        metadata: {}
+        data:
+        - description: description
+          instrument: instrument
+          id: id
+          title: title
+          target: target
+        - description: description
+          instrument: instrument
+          id: id
+          title: title
+          target: target
+    collection:
+      required:
+      - id
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: identifier lidvid of the collection
+        title:
+          type: string
+        description:
+          type: string
+        instrument:
+          type: string
+          description: identifier lidvid of the instrument or procedure generating
+            the data
+        target:
+          type: string
+          description: identifier lidvid of the target of the observation
+      example:
+        description: description
+        instrument: instrument
+        id: id
+        title: title
+        target: target
+    PDS4Label:
+      type: object
+    errorMessage:
+      required:
+      - message
+      - query
+      - resource
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+        resource:
+          type: string
+        query:
+          type: string
+        message:
+          type: string
+      example:
+        url: https://pds.nasa.gov/api/1.0/collections
+        resource: /collections
+        query: q=mission qt 12
+        message: query operator gt not supported on field mission
+    capabilities_inner:
+      required:
+      - action
+      - version
+      type: object
+      properties:
+        action:
+          type: string
+        version:
+          type: string
+

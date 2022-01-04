@@ -1,0 +1,258 @@
+openapi: 3.0.0
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://cae-swaggerhub.jpl.nasa.gov/virts/PDS/federated_api/0.0.1
+info:
+  description: |
+    Federated PDS API which provides actionable end points standardized
+    between the different nodes.
+  version: "0.0.1"
+  title: PDS federated API
+  termsOfService: 'http://pds.nasa.gov'
+  contact:
+    email: pds_operator@jpl.nasa.gov
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: core
+    description: Federated core layer for PDS requests
+    externalDocs:
+      description: Find out more
+      url: 'http://pds.nasa.gov'
+paths:
+  /capabilities:
+    get:
+      tags:
+        - capablities
+      summary: capabilities api entry point, list the resources provided by the current API end-point.
+      operationId: capabilities
+      responses:
+        '200':
+          description: Succesful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/capabilities'
+              example: 
+                - action: capabilities
+                  version: 0.1
+                - action: collections
+                  version: 0.4
+                - action: records 
+                  version: 0.2
+                - action: routes
+                  version: 0.1
+        '404':
+          description: capabilities not available
+        '500':
+          description: Internal server error
+  /records/{lidvid}:
+    get:
+      tags:
+        - records
+      summary: URN resolver for lidvid
+      operationId: record
+      responses:
+        '200':
+          description: Succesful request
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PDS4Label'
+        '404':
+          description: lidvid not found
+        '500':
+          description: Internal server error
+    parameters:
+      - name: lidvid
+        in: path
+        description: lidvid (urn)
+        required: true
+        schema:
+          type: string
+  /collections:
+    get:
+      tags:
+        - collections
+      summary: request PDS collections
+      operationId: get collection
+      responses:
+        '200':
+          description: Succesful request
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage'
+      parameters:
+        - name: start
+          in: query
+          description: offset in matching result list, for pagination
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: maximum number of matching results returned, for pagination
+          required: false
+          schema:
+            type: integer
+        - name: q
+          in: query
+          description: search query
+          required: false
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: returned fields, syntax field0,field1
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: sort-by
+          in: query
+          description: sort results, syntax asc(field0),desc(field1)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          
+  /routes:
+    get:
+      tags:
+        - routes
+      operationId: allRoutes
+      responses:
+        '200':
+          description: Succesful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/routes'
+  /routes/{resource}:
+    get:
+      tags:
+        - routes
+      operationId: routes
+      responses:
+        '302':
+          description: Successful request, redirect request
+      parameters:
+        - name: resource
+          in: path
+          description: requested action as a request path, e.g. '/record'
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: query
+          in: query
+          description: query parameter on the action, e.g. lidvid urn for a '/records' action
+          required: false
+          schema:
+            type: string
+           
+          
+  
+
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+components:
+  schemas:
+    capabilities:
+        type: array
+        items: 
+          type: object
+          required:
+            - action
+            - version
+          properties:
+            action:
+              type: string
+            version:
+              type: string
+        example:
+          - action: capabilities
+            version: 0.1
+          - action: collections
+            version: 0.4
+          - action: records 
+            version: 0.2
+          - action: routes
+            version: 0.1
+    routes:
+      type: array
+      items:
+        type: object
+        required:
+          - resource
+          - query
+          - url
+        properties:
+          resource:
+            type: string
+          query:
+            type: string
+          url:
+            type: string
+        example: [
+          { resource: '/routes',
+            query: '*',
+            url: 'https://pds.nasa/gov/v1/api',
+            version: '0.1'
+          },
+          {
+            resource: '/records',
+            query: 'urn:nasa:pds:insight_rad:*',
+            url: 'https://pds-geosciences.wustl.edu/v0/api',
+            version: '0.2'
+          },
+          {
+            resource: '/records',
+            query: 'urn:nasa:pds:insight_rad:*',
+            url: 'https://pds-geosciences.wustl.edu/v0.3/api',
+            version: '0.3'
+          }
+          ]
+    PDS4Label:
+      type: object
+    errorMessage:
+      type: object
+      required:
+        - url
+        - resource
+        - query
+        - message
+      properties:
+        url:
+          type: string
+        resource:
+          type: string
+        query:
+          type: string
+        message:
+          type: string
+      example:
+        {
+          url: 'https://pds.nasa.gov/api/1.0/collections',
+          resource: '/collections',
+          query: 'q=mission qt 12',
+          message: 'query operator gt not supported on field mission'
+        }
