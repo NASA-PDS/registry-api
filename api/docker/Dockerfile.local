@@ -14,25 +14,26 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        tar
 
 # Make room for the app
-RUN mkdir /usr/local/registry-api-service-${VERSION}
+RUN mkdir -p /usr/local/registry-${VERSION}/api && \
+    mkdir -p /usr/local/registry-${VERSION}/lexer && \
+    mkdir -p /usr/local/registry-${VERSION}/model
 
 # Copy the data into the building container
-COPY LICENSE.md /usr/local/registry-api-service-${VERSION}
-COPY NOTICE.txt /usr/local/registry-api-service-${VERSION}
-COPY README.md /usr/local/registry-api-service-${VERSION}
-COPY pom.xml /usr/local/registry-api-service-${VERSION}
-#COPY m2.tgz /tmp
-#RUN cd /root && tar -zxf /tmp/m2.tgz
-COPY src /usr/local/registry-api-service-${VERSION}/src
+COPY api /usr/local/registry-${VERSION}/api
+COPY lexer /usr/local/registry-${VERSION}/lexer
+COPY model /usr/local/registry-${VERSION}/model
 
 # Resources shared with the rest of the world
 EXPOSE 8080
 
 # Build the application and deploy it inside the container
-RUN cd /usr/local/registry-api-service-${VERSION} && \
-    mvn clean && \
-    mvn install
+RUN set -x && cd /usr/local/registry-${VERSION}/model && \
+    mvn clean install && \
+    cd /usr/local/registry-${VERSION}/lexer && \
+    mvn clean install && \
+    cd /usr/local/registry-${VERSION}/api && \
+    mvn clean install
 
 # Run the sevice by default
-WORKDIR /usr/local/registry-api-service-${VERSION}
+WORKDIR /usr/local/registry-${VERSION}/api
 CMD ["mvn", "spring-boot:run"]
