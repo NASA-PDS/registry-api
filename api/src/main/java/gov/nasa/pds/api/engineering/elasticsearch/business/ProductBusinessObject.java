@@ -3,7 +3,6 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +27,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchReq
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.Pds4JsonSearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.PdsProduct;
@@ -241,81 +238,22 @@ public class ProductBusinessObject
                 return null;
             }
        }
-       
-       
-       public ProductWithXmlLabel getProductWithXml(String lidvid, URL baseURL)  throws IOException {
-           return this.getProductWithXml(lidvid, baseURL, null);
-       }
-       
-       // TODO make the method more generic by having the name of the class we want to cast the object into instead of a boolean, the code will be more neat also
-       @SuppressWarnings("unchecked")
-       public ProductWithXmlLabel getProductWithXml(String lidvid, URL baseURL, @Nullable List<String> field) throws IOException {
-           
-           GetRequest getProductRequest = this.searchRequestBuilder.getGetProductRequest(lidvid, true);
-           
-           GetResponse getResponse = null;
-           
-           
-           RestHighLevelClient restHighLevelClient = this.elasticSearchConnection.getRestHighLevelClient();
-            
-           getResponse = restHighLevelClient.get(
-                   getProductRequest, 
-                   RequestOptions.DEFAULT
-                   );
-        
-            if (getResponse.isExists()) {
-                log.info("get response " + getResponse.toString());
-                Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
-                
-                try {
-                
-                    Map<String, XMLMashallableProperyValue> filteredMapJsonProperties = 
-                            ProductBusinessObject.getFilteredProperties(
-                                    sourceAsMap, 
-                                    null,
-                                    new ArrayList<String>(Arrays.asList(ElasticSearchUtil.elasticPropertyToJsonProperty(EntitytProductWithBlob.BLOB_PROPERTY)))
-                                    );
-                
-                    EntitytProductWithBlob entityProduct;
-                    
-                    entityProduct = this.objectMapper.convertValue(sourceAsMap, EntitytProductWithBlob.class);
-                    
 
-                    ProductWithXmlLabel product = ElasticSearchUtil.ESentityProductToAPIProduct(entityProduct, baseURL);            
-                    product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)filteredMapJsonProperties);
-                
-                    return product;
-                    
-                }
-                catch (UnsupportedElasticSearchProperty e) {
-                    log.error("This should never happen " + e.getMessage());
-                    return null;
-                }
-                
-                
-               
-           } 
-            else {
-                return null;
-            }
-       }
-       
-       
-        public Pds4Product getPds4Product(String lidvid) throws IOException 
-        {
-            GetRequest req = this.pds4SearchRequestBuilder.getProductRequest(lidvid);
-            RestHighLevelClient client = this.elasticSearchConnection.getRestHighLevelClient();           
-            GetResponse resp = client.get(req, RequestOptions.DEFAULT);
+       public Pds4Product getPds4Product(String lidvid) throws IOException 
+       {
+    	   GetRequest req = this.pds4SearchRequestBuilder.getProductRequest(lidvid);
+    	   RestHighLevelClient client = this.elasticSearchConnection.getRestHighLevelClient();           
+    	   GetResponse resp = client.get(req, RequestOptions.DEFAULT);
             
-            if(!resp.isExists())
-            {
-                return null;
-            }
+    	   if(!resp.isExists())
+    	   {
+    		   return null;
+    	   }
 
-            Map<String, Object> fieldMap = resp.getSourceAsMap();
-            Pds4Product prod = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
-            return prod;
-        }
+    	   Map<String, Object> fieldMap = resp.getSourceAsMap();
+    	   Pds4Product prod = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
+    	   return prod;
+       }
 
         
         public Pds4Products getPds4Products(RequestAndResponseContext req) throws IOException 

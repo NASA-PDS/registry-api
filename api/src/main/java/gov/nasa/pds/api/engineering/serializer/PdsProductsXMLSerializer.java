@@ -1,6 +1,6 @@
 package gov.nasa.pds.api.engineering.serializer;
 
-import gov.nasa.pds.model.Pds4Product;
+import gov.nasa.pds.model.PdsProducts;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,28 +18,28 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 
-public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4Product> {
+public class PdsProductsXMLSerializer extends AbstractHttpMessageConverter<PdsProducts> {
 
-		  public Pds4XmlProductSerializer() {
-		      super(new MediaType("application", "pds4+xml"));
+		  public PdsProductsXMLSerializer() {
+		      super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
 		  }
 
 		  @Override
 		  protected boolean supports(Class<?> clazz) {
-		      return Pds4Product.class.isAssignableFrom(clazz);
+		      return PdsProducts.class.isAssignableFrom(clazz);
 		  }
 
 		  
 		  @Override
-		  protected Pds4Product readInternal(Class<? extends Pds4Product> clazz, HttpInputMessage inputMessage)
+		  protected PdsProducts readInternal(Class<? extends PdsProducts> clazz, HttpInputMessage inputMessage)
 		          throws IOException, HttpMessageNotReadableException {
 		     
-		      return new Pds4Product();
+		      return new PdsProducts();
 		  }
 		  
 
 		  @Override
-		  protected void writeInternal(Pds4Product product, HttpOutputMessage outputMessage)
+		  protected void writeInternal(PdsProducts product, HttpOutputMessage outputMessage)
 		          throws IOException, HttpMessageNotWritableException {
 		      try {
 		          OutputStream outputStream = outputMessage.getBody();
