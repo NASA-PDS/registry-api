@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = "pds-${var.node_name_abbr}-${var.venue}-reg-cluster"
 
   tags = {
-    Alpha = var.node_name_abbr
+    Alfa = var.node_name_abbr
     Bravo = var.venue
     Charlie = "registry"
   }
@@ -41,7 +41,7 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
   }
 
   tags = {
-    Alpha = var.node_name_abbr
+    Alfa = var.node_name_abbr
     Bravo = var.venue
     Charlie = "registry"
   }
@@ -101,7 +101,7 @@ EOF
   network_mode = "awsvpc"
 
   tags = {
-    Alpha = var.node_name_abbr
+    Alfa = var.node_name_abbr
     Bravo = var.venue
     Charlie = "registry"
   }
