@@ -10,7 +10,7 @@ resource aws_secretsmanager_secret "es_login_secret" {
   name = "pds/${var.node_name_abbr}/${var.venue}/registry/es/login"
 
   tags = {
-    Alpha = var.node_name_abbr
+    Alfa = var.node_name_abbr
     Bravo = var.venue
     Charlie = "registry"
   }
@@ -33,7 +33,7 @@ resource "aws_ssm_parameter" "es_hosts_parameter" {
   value = var.es_hosts
 
   tags = {
-    Alpha = var.node_name_abbr
+    Alfa = var.node_name_abbr
     Bravo = var.venue
     Charlie = "registry"
   }
@@ -46,7 +46,7 @@ resource "aws_ssm_parameter" "node_name_parameter" {
   value = var.node_name_abbr
 
   tags = {
-    Alpha = var.node_name_abbr
+    Alfa = var.node_name_abbr
     Bravo = var.venue
     Charlie = "registry"
   }
