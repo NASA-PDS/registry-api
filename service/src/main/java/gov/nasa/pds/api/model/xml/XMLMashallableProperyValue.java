@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-import gov.nasa.pds.api.engineering.serializer.XmlProductSerializer;
+import gov.nasa.pds.api.registry.serializer.XmlProductSerializer;
 import gov.nasa.pds.model.PropertyArrayValues;
 
 

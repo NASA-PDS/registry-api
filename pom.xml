@@ -87,7 +87,7 @@ Go through this file line-by-line and replace the template values with your own.
 
     <name>${project.groupId}:${project-name}</name>
     <description>
-        PDS registry api
+        PDS Registry Api
     </description>
     <!-- Check the calendar -->
     <inceptionYear>2021</inceptionYear>
