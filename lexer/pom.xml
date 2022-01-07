@@ -35,12 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>gov.nasa.pds</groupId>
-  <artifactId>api-search-query-lexer</artifactId>
+  <artifactId>registry-api-lexer</artifactId>
   <version>1.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>PDS API Search Query Lexer</name>
-  <description>Lexer for PDS API Search queries</description>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>PDS Registry API Search Query Lexer</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -169,11 +169,5 @@ POSSIBILITY OF SUCH DAMAGE.
     </plugins>
   </build>
 
- <scm>
-    <url>https://github.com/NASA-PDS/api-search-query-lexer/tree/master</url>
-    <connection>scm:git:git://github.com/NASA-PDS/api-search-query-lexer.git</connection>
-    <developerConnection>scm:git:git@github.com:NASA-PDS/api-search-query-lexer.git</developerConnection>
-    <tag>v1.0.0</tag>
-  </scm>
 
 </project>

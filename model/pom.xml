@@ -33,10 +33,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nasa.pds</groupId>
-  <artifactId>api</artifactId>
+  <artifactId>registry-api-model</artifactId>
   <version>0.5.0-SNAPSHOT</version>
-  <name>gov.nasa.api.lib</name>
-  <description>client and server stubs for the PDS federated API</description>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>PDS Registry API Controllers and Reponses Models</description>
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
@@ -74,6 +74,7 @@
 	  </execution>
 	</executions>
       </plugin>
+      <!-- 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -81,26 +82,10 @@
           <execution>
             <phase>generate-sources</phase>
             <goals><goal>add-source</goal></goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/api/target/generated-sources/swagger/src/gen/java/main</source>
-              </sources>
-            </configuration>
           </execution>
         </executions>
       </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-source-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <id>attach-sources</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>
+       -->
     </plugins>    
   </build>
   
@@ -272,10 +257,4 @@
     </repository>
   </repositories> 
   
-
-  <scm>
-        <url>https://github.com/NASA-PDS/pds-api-javalib</url>
-        <connection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/NASA-PDS/pds-api-javalib.git</developerConnection>
-  </scm>
 </project>

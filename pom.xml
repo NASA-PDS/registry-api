@@ -61,7 +61,7 @@ Go through this file line-by-line and replace the template values with your own.
     <!-- My project metadata here -->
     <properties>
         <!-- Obviously put in your own project name instead of `myproject` -->
-        <project-name>registry</project-name>
+        <project-name>registry-api</project-name>
 
         <!-- You'll want a Unicode-type encoding here in almost every case -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -96,6 +96,7 @@ Go through this file line-by-line and replace the template values with your own.
         <system>GitHub</system>
         <url>https://github.com/NASA-PDS/${project-name}/issues</url>
     </issueManagement>
+        
     <scm>
         <connection>scm:git:https://github.com/NASA-PDS/${project-name}.git</connection>
         <developerConnection>scm:git:ssh://github.com/NASA-PDS/${project-name}.git</developerConnection>
@@ -105,8 +106,10 @@ Go through this file line-by-line and replace the template values with your own.
     <modules >
 	    <module>model</module>
 	    <module>lexer</module>
-	    <module>api</module>
+	    <module>service</module>
 	</modules>
+
+  
 
     <!-- Put the packages your project depends on here -->
     <dependencies>
