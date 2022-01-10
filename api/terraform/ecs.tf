@@ -127,7 +127,6 @@ resource "aws_lb_target_group" "pds-registry-target-group" {
 
 resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
   listener_arn = var.aws_lb_listener_arn
-  priority     = 100
 
   action {
     type             = "forward"
