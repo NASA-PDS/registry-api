@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.springframework.http.HttpInputMessage;
@@ -46,6 +47,10 @@ public class PdsProductXMLSerializer extends AbstractHttpMessageConverter<PdsPro
 		          new XmlMapper().writeValue (writer, product);
 		      } catch (ClassCastException e) {
 		    	  this.logger.error("For XML serialization, the Product object must be extended as ProductWithXmlLabel: " + e.getMessage());
+		      }
+			  catch (XMLStreamException e) 
+			  {
+				this.logger.error("XML serialization problem: " + e.getMessage());
 		      }
 		  }	
 }
