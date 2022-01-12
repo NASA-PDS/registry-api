@@ -82,11 +82,8 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 		          xmlMapper.writeValue (writer, product);
 		          writer.writeEndElement();
 	          }
-	          
 	          writer.writeEndElement(); // data
-	          	          
 	          writer.writeEndElement(); // products
-
 	          writer.close();     
 	          outputStream.close();
 	      } catch (ClassCastException e) {

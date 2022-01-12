@@ -46,11 +46,9 @@ public class PdsProductsXMLSerializer extends AbstractHttpMessageConverter<PdsPr
 		          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 		          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 		          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
-		          (new XmlMapper()).writeValue (writer, product);
+		          new XmlMapper().writeValue (writer, product);
 		      } catch (ClassCastException e) {
 		    	  this.logger.error("For XML serialization, the Product object must be extended as ProductWithXmlLabel: " + e.getMessage());
-		      }
-		        catch (Exception e) {
 		      }
 		  }
 
