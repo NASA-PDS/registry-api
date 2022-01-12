@@ -20,9 +20,9 @@ RUN mkdir -p /usr/local/registry-${VERSION}
 COPY LICENSE.md /usr/local/registry-${VERSION}/
 COPY pom.xml /usr/local/registry-${VERSION}/
 COPY SECURITY.md /usr/local/registry-${VERSION}/
-COPY api /usr/local/registry-${VERSION}/api
 COPY lexer /usr/local/registry-${VERSION}/lexer
 COPY model /usr/local/registry-${VERSION}/model
+COPY service /usr/local/registry-${VERSION}/service
 
 # Resources shared with the rest of the world
 EXPOSE 8080
@@ -32,5 +32,5 @@ RUN set -x && cd /usr/local/registry-${VERSION} && \
     mvn clean install
 
 # Run the sevice by default
-WORKDIR /usr/local/registry-${VERSION}/api
+WORKDIR /usr/local/registry-${VERSION}/service
 CMD ["mvn", "spring-boot:run"]
