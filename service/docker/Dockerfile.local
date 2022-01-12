@@ -28,7 +28,8 @@ COPY service /usr/local/registry-${VERSION}/service
 EXPOSE 8080
 
 # Build the application and deploy it inside the container
-RUN set -x && cd /usr/local/registry-${VERSION} && \
+RUN set -x && \
+    cd /usr/local/registry-${VERSION} && \
     mvn clean install
 
 # Run the sevice by default
