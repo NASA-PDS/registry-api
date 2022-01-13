@@ -29,7 +29,7 @@ EXPOSE 443
 RUN set -ex \
  && cd /usr/local/registry-api-service \
  && curl -L \
-         https://github.com/NASA-PDS/registry-api-service/releases/download/v${VERSION}/registry-api-service-${VERSION}.jar \
+         https://github.com/NASA-PDS/registry-api/releases/download/v${VERSION}/registry-api-service-${VERSION}.jar \
          -o registry-api-service.jar
 
 # TODO: Set-up bind dir for application.properties here...
