@@ -32,7 +32,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
     private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilder.class);
     private static final String[] DEFAULT_ALL_FIELDS = { "*" };
     
-    private static final String[] DEFAULT_BLOB = { "ops:Label_File_Info/ops:blob" };
+    private static final String[] DEFAULT_EXCLUDE_BLOB = { EntitytProductWithBlob.BLOB_PROPERTY };
     
     private String registryIndex;
     private String registryRefIndex;
@@ -248,7 +248,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
         BoolQueryBuilder find_kvps = QueryBuilders.boolQuery();
         SearchRequest request = new SearchRequest(es_index)
                 .source(new SearchSourceBuilder().query(find_kvps)
-                        .fetchSource(fields == null ? DEFAULT_ALL_FIELDS : aFields, DEFAULT_BLOB));
+                        .fetchSource(fields == null ? DEFAULT_ALL_FIELDS : aFields, DEFAULT_EXCLUDE_BLOB));
 
         for (Entry<String,List<String>> key : kvps.entrySet())
         {
