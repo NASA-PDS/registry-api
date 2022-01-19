@@ -3,7 +3,6 @@ package gov.nasa.pds.api.engineering.elasticsearch.business;
 import java.net.URL;
 import java.util.List;
 
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.search.SearchHits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +18,5 @@ public interface ProductBusinessLogic
 	public void setBaseURL (URL baseURL);
 	public void setObjectMapper (ObjectMapper om);
 	public int setResponse (ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary);
-	public void setResponse (GetResponse hit, String lidvid);
 	public int setResponse (SearchHits hits, Summary summary, List<String> fields, boolean onlySummary);
 }

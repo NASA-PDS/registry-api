@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 
@@ -69,12 +68,6 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		this.products = products;
 		return list.size();
-	}
-	@Override
-	public void setResponse(GetResponse hit, String lidvid)
-	{
-        Map<String, Object> fieldMap = hit.getSourceAsMap();
-        this.product = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
 	}
 
 	@Override

@@ -5,97 +5,58 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.lang.Math;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
-import gov.nasa.pds.api.engineering.elasticsearch.business.CollectionProductRefBusinessObject;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 
 
-public class ElasticSearchRegistrySearchRequestBuilder {
-    
+public class ElasticSearchRegistrySearchRequestBuilder
+{
     private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilder.class);
-    private static final String[] DEFAULT_ALL_FIELDS = { "*" };
     
-    private static final String[] DEFAULT_EXCLUDE_BLOB = { EntitytProductWithBlob.BLOB_PROPERTY };
-    
-    private String registryIndex;
-    private String registryRefIndex;
+    final public String registryIndex;
+    final public String registryRefIndex;
     private int timeOutSeconds;
     
     public ElasticSearchRegistrySearchRequestBuilder(
             String registryIndex, 
             String registryRefindex, 
-            int timeOutSeconds) {
-        
+            int timeOutSeconds)
+    {
         this.registryIndex = registryIndex;
         this.registryRefIndex = registryRefindex;
         this.timeOutSeconds = timeOutSeconds;
-    
     }
     
-    
-    
-    public ElasticSearchRegistrySearchRequestBuilder() {
-        
+    public ElasticSearchRegistrySearchRequestBuilder()
+    {
         this.registryIndex = "registry";
         this.registryRefIndex = "registry-refs";
         this.timeOutSeconds = 60;
-    
-    }
-
-
-    public SearchRequest getSearchProductRefsFromCollectionLidVid(
-            String lidvid,
-            int start,
-            int limit) {
-        MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("collection_lidvid", lidvid);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        
-        int productRefStart = (int)Math.floor(start/(float)CollectionProductRefBusinessObject.PRODUCT_REFERENCES_BATCH_SIZE);
-        int productRefLimit = (int)Math.ceil(limit/(float)CollectionProductRefBusinessObject.PRODUCT_REFERENCES_BATCH_SIZE);
-        log.debug("Request product reference documents from " + Integer.toString(productRefStart) + " for size " + Integer.toString(productRefLimit) );
-        searchSourceBuilder.query(matchQueryBuilder)
-            .from(productRefStart)
-            .size(productRefLimit);
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.source(searchSourceBuilder);
-        searchRequest.indices(this.registryRefIndex);
-
-        
-        log.debug("search product ref request :" + searchRequest.toString());
-        
-        return searchRequest;
-        
     }
     
-    public SearchRequest getSearchProductRequestHasLidVidPrefix(String lidvid) {
+    public SearchRequest getSearchProductRequestHasLidVidPrefix(String lidvid)
+    {
         PrefixQueryBuilder prefixQueryBuilder = QueryBuilders.prefixQuery("lidvid", lidvid);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(prefixQueryBuilder);
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.source(searchSourceBuilder);
         searchRequest.indices(this.registryIndex);
-        
         return searchRequest;
     }
 
-    
     public SearchRequest getSearchProductsByLid(String lid, int from, int size) 
     {
         TermQueryBuilder termQuery = QueryBuilders.termQuery("lid", lid);
@@ -103,37 +64,11 @@ public class ElasticSearchRegistrySearchRequestBuilder {
         srcBuilder.query(termQuery);
         srcBuilder.from(from);
         srcBuilder.size(size);
-        
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.source(srcBuilder);
         searchRequest.indices(this.registryIndex);
-        
         return searchRequest;
     }
-
-    
-    
-    public GetRequest getGetProductRequest(String lidvid, boolean withXMLBlob) {
-        
-        GetRequest getProductRequest = new GetRequest(this.registryIndex, 
-                lidvid);
-        
-        FetchSourceContext fetchSourceContext = new FetchSourceContext(true, null, withXMLBlob?null:new String[] {  EntitytProductWithBlob.BLOB_PROPERTY });
-        
-        getProductRequest.fetchSourceContext(fetchSourceContext);
-        
-        return getProductRequest;
-        
-    }
-
-
-    public GetRequest getGetProductRequest(String lidvid) {
-        
-        return this.getGetProductRequest(lidvid, false);
-        
-    }
-    
-    
     
     public SearchRequest getSearchProductsRequest(
             String queryString,
@@ -179,7 +114,7 @@ public class ElasticSearchRegistrySearchRequestBuilder {
         return getSearchProductsRequest(queryString, keyword, fields, start, limit, presetCriteria);
     }
     
-    static public SearchRequest getQueryFieldFromLidvid (String lidvid, String field, String es_index)
+    static public SearchRequest getqueryfieldfromlidvid (String lidvid, String field, String es_index)
     {
         List<String> fields = new ArrayList<String>(), lidvids = new ArrayList<String>();
         Map<String,List<String>> kvps = new HashMap<String,List<String>>();
@@ -238,18 +173,23 @@ public class ElasticSearchRegistrySearchRequestBuilder {
 
     static public SearchRequest getQueryForKVPs (Map<String,List<String>> kvps, List<String> fields, String es_index, boolean term)
     {
-        String[] aFields = new String[fields == null ? 0 : fields.size() + EntityProduct.JSON_PROPERTIES.length];
-        if (fields != null)
-        {
-            for (int i = 0 ; i < EntityProduct.JSON_PROPERTIES.length ; i++) aFields[i] = EntityProduct.JSON_PROPERTIES[i];
-            for (int i = 0 ; i < fields.size(); i++) aFields[i+EntityProduct.JSON_PROPERTIES.length] = ElasticSearchUtil.jsonPropertyToElasticProperty(fields.get(i));
-        }
+    	String[] exclude = { EntitytProductWithBlob.BLOB_PROPERTY };
+        String[] include = fields.toArray(new String[0]);
+        
+        if (fields.contains(EntitytProductWithBlob.BLOB_PROPERTY)) exclude = new String[0];
 
         BoolQueryBuilder find_kvps = QueryBuilders.boolQuery();
         SearchRequest request = new SearchRequest(es_index)
                 .source(new SearchSourceBuilder().query(find_kvps)
-                        .fetchSource(fields == null ? DEFAULT_ALL_FIELDS : aFields, DEFAULT_EXCLUDE_BLOB));
+                        .fetchSource(include, exclude));
 
+        log.info("****************************************");
+        log.info("****************        exclude");
+        for (String e : exclude) log.info("****************           " + e);
+        log.info("****************************************");
+        log.info("****************        include");
+        for (String i : include) log.info("****************           " + i);
+        log.info("****************************************");
         for (Entry<String,List<String>> key : kvps.entrySet())
         {
             for (String value : key.getValue())

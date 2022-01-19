@@ -70,9 +70,6 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	          XmlMapper xmlMapper = new XmlMapper();
 	          xmlMapper.writeValue(writer, summary);
 	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "data");
-	          log.error("                     **************************");
-	          log.error("                     *********      length: " + String.valueOf(products.getData().size()));
-	          log.error("                     **************************");
 	          for (Pds4Product product : products.getData()) {
 	        	  writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "product");
 		          xmlMapper.writeValue (writer, product);
