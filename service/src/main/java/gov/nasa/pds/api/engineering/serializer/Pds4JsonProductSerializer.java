@@ -17,7 +17,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.engineering.elasticsearch.BlobUtil;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4Product;
 
@@ -81,14 +80,12 @@ public class Pds4JsonProductSerializer extends AbstractHttpMessageConverter<Pds4
             wr.write(",\n\"meta\": " + value);
         }
         
-        Object obj = product.getPds4();
-        if(obj != null)
+        if(product.getPds4() != null)
         {
             try
             {
-                String pds4json = BlobUtil.blobToString((String)obj);
                 wr.write(",\n\"pds4\": ");
-                wr.write(pds4json);
+                wr.write((String)product.getPds4());
             }
             catch(Exception ex)
             {

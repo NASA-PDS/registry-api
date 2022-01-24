@@ -14,6 +14,7 @@ public class EntitytProductWithBlob extends EntityProduct {
 	private static final Logger log = LoggerFactory.getLogger(EntityProduct.class);
 
 	public static final String BLOB_PROPERTY = "ops:Label_File_Info/ops:blob";
+	public static final String JSON_BLOB_PROPERTY = "ops:Label_File_Info/ops:json_blob";
 	
 	@JsonProperty("ops:Label_File_Info/ops:blob")
 	private String fileBlob;

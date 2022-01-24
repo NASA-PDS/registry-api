@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import gov.nasa.pds.api.engineering.elasticsearch.BlobUtil;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4MetadataDataFiles;
 import gov.nasa.pds.model.Pds4MetadataLabelFile;
@@ -16,8 +21,10 @@ import gov.nasa.pds.model.Pds4Product;
  */
 public class Pds4JsonProductFactory
 {
+	private static final Logger log = LoggerFactory.getLogger(Pds4JsonProductFactory.class);
+
     // JSON BLOB
-    private static final String FLD_JSON_BLOB = "ops:Label_File_Info/ops:json_blob";
+    private static final String FLD_JSON_BLOB = EntitytProductWithBlob.JSON_BLOB_PROPERTY;
     
     // Data File Info
     private static final String FLD_DATA_FILE_NAME = "ops:Data_File_Info/ops:file_name";
@@ -52,7 +59,10 @@ public class Pds4JsonProductFactory
         if(fieldMap == null) return prod;
                 
         // Pds4 JSON BLOB
-        prod.setPds4(fieldMap.get(FLD_JSON_BLOB));
+        String decoded_blob = null;
+        try { decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_JSON_BLOB))); }
+        catch (Exception e) { log.error("Could not convert the given blob", e); }
+        prod.setPds4(decoded_blob);
         // Metadata
         prod.setMetadata(createMetadata(fieldMap));
 

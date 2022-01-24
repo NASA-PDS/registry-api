@@ -45,7 +45,21 @@ public class ElasticSearchRegistrySearchRequestBuilder
         this.registryRefIndex = "registry-refs";
         this.timeOutSeconds = 60;
     }
-    
+
+    static private String[] excludes (List<String> fields)
+    {
+    	String[] exclude, ex0 = new String[0], exbp = {EntitytProductWithBlob.BLOB_PROPERTY},
+                exjbp = {EntitytProductWithBlob.JSON_BLOB_PROPERTY},
+                exall = {EntitytProductWithBlob.BLOB_PROPERTY, EntitytProductWithBlob.JSON_BLOB_PROPERTY};
+
+    	if (fields.contains(EntitytProductWithBlob.BLOB_PROPERTY) && fields.contains(EntitytProductWithBlob.JSON_BLOB_PROPERTY)) exclude = ex0;
+    	else if (fields.contains(EntitytProductWithBlob.BLOB_PROPERTY)) exclude = exjbp;
+    	else if (fields.contains(EntitytProductWithBlob.JSON_BLOB_PROPERTY)) exclude = exbp;
+    	else exclude = exall;
+
+    	return exclude;
+    }
+
     public SearchRequest getSearchProductRequestHasLidVidPrefix(String lidvid)
     {
         PrefixQueryBuilder prefixQueryBuilder = QueryBuilders.prefixQuery("lidvid", lidvid);
@@ -90,8 +104,8 @@ public class ElasticSearchRegistrySearchRequestBuilder
             query = ProductQueryBuilderUtil.createPqlQuery(queryString, fields, presetCriteria);
         }
         
+        String[] excludedFields = excludes (fields);
         String[] includedFields = fields.toArray(new String[0]);
-        String[] excludedFields = { EntitytProductWithBlob.BLOB_PROPERTY };
 
         SearchRequestBuilder bld = new SearchRequestBuilder(query, start, limit);
         bld.fetchSource(true, includedFields, excludedFields);
@@ -173,11 +187,9 @@ public class ElasticSearchRegistrySearchRequestBuilder
 
     static public SearchRequest getQueryForKVPs (Map<String,List<String>> kvps, List<String> fields, String es_index, boolean term)
     {
-    	String[] exclude = { EntitytProductWithBlob.BLOB_PROPERTY };
+    	String[] exclude = excludes (fields);
         String[] include = fields.toArray(new String[0]);
         
-        if (fields.contains(EntitytProductWithBlob.BLOB_PROPERTY)) exclude = new String[0];
-
         BoolQueryBuilder find_kvps = QueryBuilders.boolQuery();
         SearchRequest request = new SearchRequest(es_index)
                 .source(new SearchSourceBuilder().query(find_kvps)
