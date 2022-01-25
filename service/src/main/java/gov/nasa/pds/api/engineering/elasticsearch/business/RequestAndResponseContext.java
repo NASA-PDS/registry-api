@@ -187,8 +187,6 @@ public class RequestAndResponseContext
 			}
 			complete = filtered;
 		}
-		
-		if (complete.size() == 0) complete.add ("*");
 
 		return complete;
 	}
