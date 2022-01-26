@@ -2,7 +2,6 @@ package gov.nasa.pds.api.engineering.serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -18,7 +17,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import gov.nasa.pds.api.model.xml.Pds4ProductWithXmlLabel;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
@@ -32,8 +30,8 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
    	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);
 
 	
-	  static final private String NAMESPACE_PREFIX = "pds_api";
-	  static final private String NAMESPACE_URL = "http://pds.nasa.gov/api";
+	  static final public String NAMESPACE_PREFIX = "pds_api";
+	  static final public String NAMESPACE_URL = "http://pds.nasa.gov/api";
 	
 	  public Pds4XmlProductsSerializer() {
 	      super(new MediaType("application", "pds4+xml"));
@@ -60,44 +58,25 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	          OutputStream outputStream = outputMessage.getBody();
 	          
 	          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
-	          //outputFactory.setProperty(WstxInputProperties.P_RETURN_NULL_FOR_DEFAULT_NAMESPACE, true);
 	          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 	          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
-	        
-	          //writer.setDefaultNamespace("http://pds.nasa.gov/pds4/pds/v1");
 	          writer.setPrefix(Pds4XmlProductsSerializer.NAMESPACE_PREFIX, 
 		            		  Pds4XmlProductsSerializer.NAMESPACE_URL);
-	        
 	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "products");
 	          writer.writeDefaultNamespace("http://pds.nasa.gov/pds4/pds/v1");
 	          writer.writeNamespace(Pds4XmlProductsSerializer.NAMESPACE_PREFIX, 
             		  Pds4XmlProductsSerializer.NAMESPACE_URL);
-	       	          
 	          Summary summary = products.getSummary();
 	          XmlMapper xmlMapper = new XmlMapper();
 	          xmlMapper.writeValue(writer, summary);
-	       
-	          
 	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "data");
 	          for (Pds4Product product : products.getData()) {
 	        	  writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "product");
-	        	  
-	        	  String productBody = ((Pds4ProductWithXmlLabel)product).getLabelXml();
-	        	  productBody = productBody.substring(productBody.lastIndexOf("?>")+2);
-	        	  
-	        	  writer.writeCharacters("");
-	        	  writer.flush();
-		          OutputStreamWriter osw = new OutputStreamWriter(outputStream);
-		          osw.write(productBody);
-		          osw.flush();
-		          
+		          xmlMapper.writeValue (writer, product);
 		          writer.writeEndElement();
 	          }
-	          
 	          writer.writeEndElement(); // data
-	          	          
 	          writer.writeEndElement(); // products
-
 	          writer.close();     
 	          outputStream.close();
 	      } catch (ClassCastException e) {

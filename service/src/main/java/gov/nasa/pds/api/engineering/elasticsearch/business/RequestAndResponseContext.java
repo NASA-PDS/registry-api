@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -118,6 +117,7 @@ public class RequestAndResponseContext
     	formatters.put("application/xml", new PdsProductBusinessObject());
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
+    	formatters.put("text/xml", new PdsProductBusinessObject());
     	this.formatters = formatters;
     	this.format = this.find_match(output_format);
     	this.baseURL = base;
@@ -187,6 +187,7 @@ public class RequestAndResponseContext
 			}
 			complete = filtered;
 		}
+
 		return complete;
 	}
 	
@@ -248,9 +249,6 @@ public class RequestAndResponseContext
 
 		summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 	}
-
-	public void setResponse(GetResponse hit)
-	{ if (hit != null) this.formatters.get(this.format).setResponse(hit, this.getLIDVID()); }
 
 	public void setResponse(SearchHits hits)
 	{ this.setResponse(hits, null); }

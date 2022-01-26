@@ -18,11 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;
-import gov.nasa.pds.api.model.xml.ProductWithXmlLabel;
 import gov.nasa.pds.model.Reference;
 import gov.nasa.pds.model.Summary;
 
@@ -146,15 +144,7 @@ public class ElasticSearchUtil {
 		product.setTargets(targets);
 
 		return product;
-	}
-	
-	static public ProductWithXmlLabel ESentityProductToAPIProduct(EntitytProductWithBlob ep, URL baseURL) {
-		log.debug("convert ES object to API object with XML label");
-		ProductWithXmlLabel product = new ProductWithXmlLabel();
-		product.setLabelXml(ep.getPDS4XML());
-		return (ProductWithXmlLabel)addPropertiesFromESEntity(product, ep, baseURL);
-	}
-	
+	}	
 
 	static public PdsProduct ESentityProductToAPIProduct(EntityProduct ep, URL baseURL) {
 		log.debug("convert ES object to API object without XML label");

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
@@ -81,24 +80,6 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 		products.setSummary(summary);
 		this.products = products;
 		return products.getData().size();
-	}
-
-	@Override
-	public void setResponse(GetResponse hit, String lidvid)
-	{
-    	WyriwygProduct product = new WyriwygProduct();
-    	for (Entry<String, Object> pair : hit.getSourceAsMap().entrySet())
-    	{
-    		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
-    		try
-    		{
-    			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
-    			kvp.setValue(String.valueOf(pair.getValue()));
-    			product.addKeyValuePairsItem(kvp);
-    		}
-    		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
-    	}
-    	this.product = product;
 	}
 
 	@Override

@@ -10,10 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,11 +168,9 @@ public class MyProductsApiBareController {
         {
             lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
             RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
-            GetRequest request = new GetRequest(this.esRegistryConnection.getRegistryIndex(), lidvid);
-            FetchSourceContext fetchSourceContext = new FetchSourceContext(true, context.getFields().toArray(new String[0]), null);
-            request.fetchSourceContext(fetchSourceContext);
-            context.setResponse(this.esRegistryConnection.getRestHighLevelClient().get(request, RequestOptions.DEFAULT));
-            
+            SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid", lidvid, context.getFields(),this.esRegistryConnection.getRegistryIndex(), false);
+            context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
+
             if (context.getResponse() == null)
             { 
             	log.warn("Could not find any matches for LIDVID: " + lidvid);

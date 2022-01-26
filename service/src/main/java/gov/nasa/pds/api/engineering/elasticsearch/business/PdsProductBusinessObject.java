@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 
@@ -70,12 +69,6 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 		products.setSummary(summary);
 		this.products = products;
 		return products.getData().size();
-	}
-
-	@Override
-	public void setResponse(GetResponse hit, String lidvid)
-	{
-		this.product = ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(hit.getSourceAsMap(), EntityProduct.class), this.baseURL);
 	}
 
 	@Override
