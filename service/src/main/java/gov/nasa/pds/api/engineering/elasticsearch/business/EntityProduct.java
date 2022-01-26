@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.engineering.elasticsearch.entities;
+package gov.nasa.pds.api.engineering.elasticsearch.business;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

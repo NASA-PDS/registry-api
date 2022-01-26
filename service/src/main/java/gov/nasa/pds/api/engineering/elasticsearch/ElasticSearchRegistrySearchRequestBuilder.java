@@ -17,8 +17,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
+import gov.nasa.pds.api.engineering.elasticsearch.business.BlobUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.BlobUtil;
 
 public class ElasticSearchRegistrySearchRequestBuilder
 {

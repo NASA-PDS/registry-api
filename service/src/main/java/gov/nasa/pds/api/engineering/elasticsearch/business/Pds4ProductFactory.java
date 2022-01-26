@@ -7,7 +7,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.engineering.elasticsearch.entities.BlobUtil;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4MetadataDataFiles;
 import gov.nasa.pds.model.Pds4MetadataLabelFile;
