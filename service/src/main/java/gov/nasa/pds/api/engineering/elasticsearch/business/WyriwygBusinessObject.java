@@ -50,6 +50,24 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	public void setObjectMapper(ObjectMapper om) { this.om = om; }
 
 	@Override
+	public void setResponse (SearchHit hit, List<String> fields)
+	{
+    	WyriwygProduct product = new WyriwygProduct();
+    	for (Entry<String, Object> pair : hit.getSourceAsMap().entrySet())
+    	{
+    		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
+    		try
+    		{
+    			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+    			kvp.setValue(String.valueOf(pair.getValue()));
+    			product.addKeyValuePairsItem(kvp);
+    		}
+    		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
+    	}
+    	this.product = product;
+	}
+
+	@Override
 	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		Set<String> uniqueProperties = new TreeSet<String>();

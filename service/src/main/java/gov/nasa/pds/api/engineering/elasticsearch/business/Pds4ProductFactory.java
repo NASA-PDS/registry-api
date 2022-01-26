@@ -64,8 +64,17 @@ public class Pds4ProductFactory
         	if (isJSON) decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_JSON_BLOB)));
         	else
         	{
+        		int first,last;
         		decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_XML_BLOB)));
-        		// FIXME: need to remove the <?xml> lines
+        		decoded_blob = decoded_blob.replaceAll("\r", "");
+        		first = decoded_blob.indexOf("<?");
+        		while (0 <= first)
+        		{
+        			last = decoded_blob.indexOf("?>", first+2);
+        			decoded_blob = decoded_blob.replace (decoded_blob.substring(first, last+2), "");
+        			first = decoded_blob.indexOf("<?");
+        		}
+        		decoded_blob = decoded_blob.strip();
         	}
         }
         catch (Exception e)

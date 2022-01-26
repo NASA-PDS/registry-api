@@ -46,6 +46,18 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public void setResponse (SearchHit hit, List<String> fields)
+	{
+		Map<String,Object> kvp = hit.getSourceAsMap();;
+		PdsProduct product;
+
+		product = ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+        this.product = product;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		PdsProducts products = new PdsProducts();

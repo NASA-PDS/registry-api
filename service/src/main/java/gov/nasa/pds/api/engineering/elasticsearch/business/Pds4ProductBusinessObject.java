@@ -76,6 +76,10 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	public void setObjectMapper (ObjectMapper om) { this.objectMapper = om; }
 
 	@Override
+	public void setResponse (SearchHit hit, List<String> fields)
+	{ this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON); }
+
+	@Override
 	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
         List<Pds4Product> list = new ArrayList<Pds4Product>();

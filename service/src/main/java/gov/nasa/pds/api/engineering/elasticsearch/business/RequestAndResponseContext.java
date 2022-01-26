@@ -280,4 +280,18 @@ public class RequestAndResponseContext
         request.source().from(this.getStart());
         this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
 	}
+
+	public void setSingularResponse(RestHighLevelClient client, SearchRequest request) throws IOException
+	{
+        request.source().size(this.getLimit());
+        request.source().from(this.getStart());
+        SearchHits hits = client.search(request, RequestOptions.DEFAULT).getHits();
+        
+        if (hits.getTotalHits().value == 1L) this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
+        else
+        {
+        	log.error("Too many or too few lidvids which is just wrong.");
+        	throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+        }
+	}
 }

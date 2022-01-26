@@ -156,7 +156,7 @@ public class MyProductsApiBareController {
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
         SearchRequest req = searchRequestBuilder.getSearchProductsByLid(context.getLIDVID(), context.getStart(), context.getLimit());
-        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), req);
+        context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), req);
     }
 
     
@@ -169,7 +169,7 @@ public class MyProductsApiBareController {
             lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
             RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
             SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid", lidvid, context.getFields(),this.esRegistryConnection.getRegistryIndex(), false);
-            context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
+            context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
 
             if (context.getResponse() == null)
             { 

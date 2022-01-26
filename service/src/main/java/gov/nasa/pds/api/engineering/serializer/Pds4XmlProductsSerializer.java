@@ -27,11 +27,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	 * 
 	 */
 	
-   	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);
-
-	
-	  static final public String NAMESPACE_PREFIX = "pds_api";
-	  static final public String NAMESPACE_URL = "http://pds.nasa.gov/api";
+   	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);	
 	
 	  public Pds4XmlProductsSerializer() {
 	      super(new MediaType("application", "pds4+xml"));
@@ -60,19 +56,19 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 	          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 	          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
-	          writer.setPrefix(Pds4XmlProductsSerializer.NAMESPACE_PREFIX, 
-		            		  Pds4XmlProductsSerializer.NAMESPACE_URL);
-	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "products");
+	          writer.setPrefix(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
+		            		  Pds4XmlProductSerializer.NAMESPACE_URL);
+	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "products");
 	          writer.writeDefaultNamespace("http://pds.nasa.gov/pds4/pds/v1");
-	          writer.writeNamespace(Pds4XmlProductsSerializer.NAMESPACE_PREFIX, 
-            		  Pds4XmlProductsSerializer.NAMESPACE_URL);
+	          writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
+            		  Pds4XmlProductSerializer.NAMESPACE_URL);
 	          Summary summary = products.getSummary();
 	          XmlMapper xmlMapper = new XmlMapper();
 	          xmlMapper.writeValue(writer, summary);
-	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "data");
+	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "data");
 	          for (Pds4Product product : products.getData()) {
-	        	  writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "product");
-		          xmlMapper.writeValue (writer, product);
+	        	  writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
+		          Pds4XmlProductSerializer.serialize (writer, xmlMapper, product);
 		          writer.writeEndElement();
 	          }
 	          writer.writeEndElement(); // data
