@@ -11,26 +11,6 @@ import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUt
 
 public class Pds4JsonSearchRequestBuilder
 {
-    public static final String[] PDS4_JSON_PRODUCT_FIELDS = { 
-            // JSON BLOB
-            "ops:Label_File_Info/ops:json_blob",
-            // Label Metadata
-            "ops:Label_File_Info/ops:file_name",
-            "ops:Label_File_Info/ops:creation_date_time",
-            "ops:Label_File_Info/ops:file_ref",
-            "ops:Label_File_Info/ops:file_size",
-            "ops:Label_File_Info/ops:md5_checksum",
-            // File Metadata
-            "ops:Data_File_Info/ops:creation_date_time",
-            "ops:Data_File_Info/ops:file_ref",
-            "ops:Data_File_Info/ops:file_name",
-            "ops:Data_File_Info/ops:file_size",
-            "ops:Data_File_Info/ops:md5_checksum",
-            "ops:Data_File_Info/ops:mime_type",
-            // Node Name
-            "ops:Harvest_Info/ops:node_name"
-        };
-
     private String registryIndex;
     private int timeOutSeconds;
 
@@ -99,7 +79,7 @@ public class Pds4JsonSearchRequestBuilder
         }
         else
         {
-            bld.fetchSource(true, PDS4_JSON_PRODUCT_FIELDS, null);
+            bld.fetchSource(true, {}, null);
         }
         
         bld.setTimeoutSeconds(this.timeOutSeconds);

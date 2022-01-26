@@ -7,12 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.Pds4JsonSearchRequestBuilder;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.model.Pds4Product;
-import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.PropertyArrayValues;
-import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 
 
@@ -41,7 +34,6 @@ public class ProductBusinessObject
     
     private ElasticSearchRegistryConnection elasticSearchConnection;
     private ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder;
-    private Pds4JsonSearchRequestBuilder pds4SearchRequestBuilder;
 
     private ObjectMapper objectMapper;
     
@@ -57,11 +49,7 @@ public class ProductBusinessObject
                 this.elasticSearchConnection.getRegistryIndex(),
                 this.elasticSearchConnection.getRegistryRefIndex(),
                 this.elasticSearchConnection.getTimeOutSeconds());
-        
-        this.pds4SearchRequestBuilder = new Pds4JsonSearchRequestBuilder(
-                this.elasticSearchConnection.getRegistryIndex(), 
-                this.elasticSearchConnection.getTimeOutSeconds());
-        
+       
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         
@@ -189,53 +177,5 @@ public class ProductBusinessObject
             return filteredMapJsonProperties;
                 
                 
-        }
-
-       public Pds4Product getPds4Product(String lidvid) throws IOException 
-       {
-    	   GetRequest req = this.pds4SearchRequestBuilder.getProductRequest(lidvid);
-    	   RestHighLevelClient client = this.elasticSearchConnection.getRestHighLevelClient();           
-    	   GetResponse resp = client.get(req, RequestOptions.DEFAULT);
-            
-    	   if(!resp.isExists())
-    	   {
-    		   return null;
-    	   }
-
-    	   Map<String, Object> fieldMap = resp.getSourceAsMap();
-    	   Pds4Product prod = Pds4JsonProductFactory.createProduct(lidvid, fieldMap);
-    	   return prod;
-       }
-
-        
-        public Pds4Products getPds4Products(RequestAndResponseContext req) throws IOException 
-        {
-            SearchRequest searchRequest = pds4SearchRequestBuilder.getSearchProductsRequest(req);
-
-            SearchResponse searchResponse = elasticSearchConnection.getRestHighLevelClient().search(searchRequest,
-                    RequestOptions.DEFAULT);
-
-            List<Pds4Product> list = new ArrayList<Pds4Product>();
-            Pds4Products products = new Pds4Products();
-            // Summary
-            Summary summary = new Summary();
-            summary.setQ(req.getQueryString());
-            summary.setStart(req.getStart());
-            summary.setLimit(req.getLimit());
-            summary.setSort(req.getSort());
-            products.setSummary(summary);
-            
-            if(searchResponse == null) return products;
-            
-            // Products
-            for(SearchHit hit : searchResponse.getHits()) 
-            {
-                String id = hit.getId();
-                Map<String, Object> fieldMap = hit.getSourceAsMap();
-                Pds4Product prod = Pds4JsonProductFactory.createProduct(id, fieldMap);
-                list.add(prod);
-            }
-            products.setData(list);
-            return products;
         }
 }

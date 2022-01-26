@@ -7,8 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.engineering.elasticsearch.BlobUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
+import gov.nasa.pds.api.engineering.elasticsearch.entities.BlobUtil;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4MetadataDataFiles;
 import gov.nasa.pds.model.Pds4MetadataLabelFile;
@@ -19,30 +18,31 @@ import gov.nasa.pds.model.Pds4Product;
  * Creates Pds4Product object from Elasticsearch key-value field map.
  * @author karpenko
  */
-public class Pds4JsonProductFactory
+public class Pds4ProductFactory
 {
-	private static final Logger log = LoggerFactory.getLogger(Pds4JsonProductFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(Pds4ProductFactory.class);
 
     // JSON BLOB
-    private static final String FLD_JSON_BLOB = EntitytProductWithBlob.JSON_BLOB_PROPERTY;
+    public static final String FLD_JSON_BLOB = BlobUtil.JSON_BLOB_PROPERTY;
+    public static final String FLD_XML_BLOB = BlobUtil.XML_BLOB_PROPERTY;
     
     // Data File Info
-    private static final String FLD_DATA_FILE_NAME = "ops:Data_File_Info/ops:file_name";
-    private static final String FLD_DATA_FILE_CREATION = "ops:Data_File_Info/ops:creation_date_time";
-    private static final String FLD_DATA_FILE_REF = "ops:Data_File_Info/ops:file_ref";
-    private static final String FLD_DATA_FILE_SIZE = "ops:Data_File_Info/ops:file_size";
-    private static final String FLD_DATA_FILE_MD5 = "ops:Data_File_Info/ops:md5_checksum";
-    private static final String FLD_DATA_FILE_MIME_TYPE = "ops:Data_File_Info/ops:mime_type";
+    public static final String FLD_DATA_FILE_NAME = "ops:Data_File_Info/ops:file_name";
+    public static final String FLD_DATA_FILE_CREATION = "ops:Data_File_Info/ops:creation_date_time";
+    public static final String FLD_DATA_FILE_REF = "ops:Data_File_Info/ops:file_ref";
+    public static final String FLD_DATA_FILE_SIZE = "ops:Data_File_Info/ops:file_size";
+    public static final String FLD_DATA_FILE_MD5 = "ops:Data_File_Info/ops:md5_checksum";
+    public static final String FLD_DATA_FILE_MIME_TYPE = "ops:Data_File_Info/ops:mime_type";
 
     // Label Info
-    private static final String FLD_LABEL_FILE_NAME = "ops:Label_File_Info/ops:file_name";
-    private static final String FLD_LABEL_FILE_CREATION = "ops:Label_File_Info/ops:creation_date_time";
-    private static final String FLD_LABEL_FILE_REF = "ops:Label_File_Info/ops:file_ref";
-    private static final String FLD_LABEL_FILE_SIZE = "ops:Label_File_Info/ops:file_size";
-    private static final String FLD_LABEL_FILE_MD5 = "ops:Label_File_Info/ops:md5_checksum";
+    public static final String FLD_LABEL_FILE_NAME = "ops:Label_File_Info/ops:file_name";
+    public static final String FLD_LABEL_FILE_CREATION = "ops:Label_File_Info/ops:creation_date_time";
+    public static final String FLD_LABEL_FILE_REF = "ops:Label_File_Info/ops:file_ref";
+    public static final String FLD_LABEL_FILE_SIZE = "ops:Label_File_Info/ops:file_size";
+    public static final String FLD_LABEL_FILE_MD5 = "ops:Label_File_Info/ops:md5_checksum";
 
     // Node Name
-    private static final String FLD_NODE_NAME = "ops:Harvest_Info/ops:node_name";
+    public static final String FLD_NODE_NAME = "ops:Harvest_Info/ops:node_name";
     
     
     /**
@@ -51,7 +51,7 @@ public class Pds4JsonProductFactory
      * @param fieldMap key-value field map
      * @return new Pds4Product object
      */
-    public static Pds4Product createProduct(String lidvid, Map<String, Object> fieldMap)
+    public static Pds4Product createProduct(String lidvid, Map<String, Object> fieldMap, boolean isJSON)
     {
         Pds4Product prod = new Pds4Product();
         prod.setId(lidvid);
@@ -60,8 +60,20 @@ public class Pds4JsonProductFactory
                 
         // Pds4 JSON BLOB
         String decoded_blob = null;
-        try { decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_JSON_BLOB))); }
-        catch (Exception e) { log.error("Could not convert the given blob", e); }
+        try
+        { 
+        	if (isJSON) decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_JSON_BLOB)));
+        	else
+        	{
+        		decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_XML_BLOB)));
+        		// FIXME: need to remove the <?xml> lines
+        	}
+        }
+        catch (Exception e)
+        {
+        	log.error("Could not convert the given blob", e);
+        	decoded_blob = "Could not decode blob. See logs for error details.";
+        }
         prod.setPds4(decoded_blob);
         // Metadata
         prod.setMetadata(createMetadata(fieldMap));

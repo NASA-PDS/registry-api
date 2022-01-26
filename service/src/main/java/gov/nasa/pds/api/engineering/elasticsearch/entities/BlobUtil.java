@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.engineering.elasticsearch;
+package gov.nasa.pds.api.engineering.elasticsearch.entities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,7 +13,10 @@ import java.util.zip.InflaterInputStream;
  */
 public class BlobUtil
 {
-    /**
+	public static final String JSON_BLOB_PROPERTY = "ops:Label_File_Info/ops:json_blob";
+	public static final String XML_BLOB_PROPERTY = "ops:Label_File_Info/ops:blob";
+
+	/**
      * Decompress base64 encoded BLOB.
      * @param blob Base64 encoded compressed BLOB
      * @return Original BLOB value as a string
