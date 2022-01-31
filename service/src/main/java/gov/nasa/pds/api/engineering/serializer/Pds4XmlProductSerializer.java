@@ -71,7 +71,7 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 		writer.writeStartElement("pds4");
 		writer.writeCharacters(" ");
 		writer.flush();
-		stream.write(String.valueOf (product.getPds4()).getBytes());
+		stream.write(String.valueOf (product.getPds4()).getBytes("UTF8"));
 		stream.flush();
 		writer.writeEndElement();
 		writer.flush();
