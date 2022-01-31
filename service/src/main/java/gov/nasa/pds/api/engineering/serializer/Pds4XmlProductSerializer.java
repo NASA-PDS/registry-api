@@ -48,27 +48,33 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 			XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
 			writer.setPrefix(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 					Pds4XmlProductSerializer.NAMESPACE_URL);
-			writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "products");
+			writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
 			writer.writeDefaultNamespace("http://pds.nasa.gov/pds4/pds/v1");
 			writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 	        		  Pds4XmlProductSerializer.NAMESPACE_URL);
-			Pds4XmlProductSerializer.serialize(writer, new XmlMapper(), product);
+			Pds4XmlProductSerializer.serialize(outputStream, writer, new XmlMapper(), product);
+			writer.writeEndElement();
+			writer.close();
 		}
 		catch (ClassCastException e)
 		{ this.logger.error("For XML serialization, the Product object must be extended as ProductWithXmlLabel: " + e.getMessage()); }
-		catch (Exception e) {}
+		catch (Exception e)
+		{ this.logger.error("Unexpected for no known reason.", e); }
 	}
 	
-	static public void serialize (XMLStreamWriter writer, XmlMapper mapper, Pds4Product product) throws IOException, XMLStreamException
+	static public void serialize (OutputStream stream, XMLStreamWriter writer, XmlMapper mapper, Pds4Product product) throws IOException, XMLStreamException
 	{
-		writer.writeStartElement("Pds4Product");
-		mapper.writeValue(writer, product.getId());
+		writer.writeStartElement("id");
+		writer.writeCharacters(product.getId());
+		writer.writeEndElement();
 		mapper.writeValue(writer, product.getMetadata());
 		writer.writeStartElement("pds4");
-		writer.writeCharacters((String)product.getPds4());
-		writer.writeCharacters("\n\n********** blah blah blah   ***************");
+		writer.writeCharacters(" ");
+		writer.flush();
+		stream.write(String.valueOf (product.getPds4()).getBytes());
+		stream.flush();
 		writer.writeEndElement();
-		writer.writeEndElement();	
+		writer.flush();
 	}
 }
 

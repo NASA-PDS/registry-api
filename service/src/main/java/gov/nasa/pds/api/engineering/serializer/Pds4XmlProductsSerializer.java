@@ -50,9 +50,9 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	  @Override
 	  protected void writeInternal(Pds4Products products, HttpOutputMessage outputMessage)
 	          throws IOException, HttpMessageNotWritableException {
-	      try {
-	          OutputStream outputStream = outputMessage.getBody();
-	          
+	      try
+	      {
+	    	  OutputStream outputStream = outputMessage.getBody();
 	          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 	          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 	          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
@@ -68,19 +68,18 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "data");
 	          for (Pds4Product product : products.getData()) {
 	        	  writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
-		          Pds4XmlProductSerializer.serialize (writer, xmlMapper, product);
+		          Pds4XmlProductSerializer.serialize (outputStream, writer, xmlMapper, product);
 		          writer.writeEndElement();
 	          }
 	          writer.writeEndElement(); // data
 	          writer.writeEndElement(); // products
 	          writer.close();     
 	          outputStream.close();
-	      } catch (ClassCastException e) {
-	    	  this.logger.error("For XML serialization, Product object must be extended to ProductWithXmlLabel: " + e.getMessage());
-	      } catch (Exception e) {
-	    	  
-	    	  Pds4XmlProductsSerializer.log.info("error while serializing products in xml " + e.getMessage());
-	      }
+	      } 
+	      catch (ClassCastException e)
+	      { this.logger.error("For XML serialization, Product object must be extended to ProductWithXmlLabel: " + e.getMessage()); }
+	      catch (Exception e)
+	      { Pds4XmlProductsSerializer.log.info("error while serializing products in xml " + e.getMessage()); }
 	  }
 
 }
