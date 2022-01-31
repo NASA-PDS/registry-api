@@ -287,7 +287,7 @@ public class RequestAndResponseContext
         request.source().from(this.getStart());
         SearchHits hits = client.search(request, RequestOptions.DEFAULT).getHits();
         
-        if (hits.getTotalHits().value == 1L) this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
+        if (hits != null && hits.getTotalHits().value == 1L) this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
         else
         {
         	log.error("Too many or too few lidvids which is just wrong.");
