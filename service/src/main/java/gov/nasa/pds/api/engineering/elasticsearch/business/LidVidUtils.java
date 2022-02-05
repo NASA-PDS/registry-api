@@ -11,6 +11,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -137,7 +138,10 @@ public class LidVidUtils
         SearchSourceBuilder src = new SearchSourceBuilder();
         
         // Query
-        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(0);
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        ProductQueryBuilderUtil.addArchiveStatusFilter(boolQuery);
+        boolQuery.must(QueryBuilders.termsQuery("lid", lids));        
+        src.query(boolQuery).fetchSource(false).size(0);
 
         // Aggregations
         src.aggregation(AggregationBuilders.terms("lids").field("lid").size(lids.size())
@@ -157,9 +161,13 @@ public class LidVidUtils
     public static SearchSourceBuilder buildGetAllLidVidsRequest(Collection<String> lids)
     {
         if(lids == null || lids.isEmpty()) return null;
-        
+
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        ProductQueryBuilderUtil.addArchiveStatusFilter(boolQuery);
+        boolQuery.must(QueryBuilders.termsQuery("lid", lids));        
+
         SearchSourceBuilder src = new SearchSourceBuilder();
-        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(5000);
+        src.query(boolQuery).fetchSource(false).size(5000);
         return src;
     }
 }

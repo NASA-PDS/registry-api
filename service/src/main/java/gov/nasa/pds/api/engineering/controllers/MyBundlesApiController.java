@@ -3,7 +3,7 @@ package gov.nasa.pds.api.engineering.controllers;
 
 import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.engineering.elasticsearch.KVPQueryBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductVersionSelector;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
@@ -13,6 +13,7 @@ import gov.nasa.pds.api.engineering.exceptions.NothingFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -233,9 +234,14 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         if (0 < clidvids.size())
         {
-            for (final Map<String,Object> hit : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                    ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", clidvids, "product_lidvid",
-                            this.esRegistryConnection.getRegistryRefIndex())))
+            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryRefIndex());
+            bld.setKVP("collection_lidvid", clidvids);
+            bld.setFields("product_lidvid");
+            SearchRequest req = bld.buildTermQuery();
+            
+            ElasticSearchHitIterator itr = new ElasticSearchHitIterator(esRegistryConnection.getRestHighLevelClient(), req);
+            
+            for(final Map<String,Object> hit : itr)
             {
                 wlidvids.clear();
                 wsize = 0;

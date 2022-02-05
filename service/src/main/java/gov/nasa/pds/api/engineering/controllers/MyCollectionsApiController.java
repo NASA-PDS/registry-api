@@ -3,8 +3,7 @@ package gov.nasa.pds.api.engineering.controllers;
 
 import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-
+import gov.nasa.pds.api.engineering.elasticsearch.KVPQueryBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -165,9 +164,12 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         List<String> productLidvids = new ArrayList<String>();
         List<String> pageOfLidvids = new ArrayList<String>();
 
-        for (final Map<String,Object> kvp : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                ElasticSearchRegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", lidvid, "product_lidvid",
-                        this.esRegistryConnection.getRegistryRefIndex())))
+        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryRefIndex());
+        bld.setKVP("collection_lidvid", lidvid);
+        bld.setFields("product_lidvid");
+        SearchRequest request = bld.buildTermQuery();
+
+        for (final Map<String,Object> kvp : new ElasticSearchHitIterator(esRegistryConnection.getRestHighLevelClient(), request))
         {
             pageOfLidvids.clear();
             wsize = 0;
@@ -246,8 +248,11 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + lidvid);
         MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + lidvid.substring(0, lidvid.indexOf("::")));
-        SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("ref_lid_collection",
-                lidvid.substring(0, lidvid.indexOf("::")), context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
+        
+        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
+        bld.setKVP("ref_lid_collection", lidvid.substring(0, lidvid.indexOf("::")));
+        bld.setFields(context.getFields());
+        SearchRequest request = bld.buildMatchQuery();
 
         context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
     }

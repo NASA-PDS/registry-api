@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.engineering.elasticsearch.business;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -42,11 +43,11 @@ public class ProductQueryBuilderUtil
             boolQuery = parseQueryString(queryString);
         }
 
-        for (Map.Entry<String, String> e : presetCriteria.entrySet())
-        {
-            // example "product_class", "Product_Collection"
-            boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue()));
-        }
+        // Archive status filter
+        addArchiveStatusFilter(boolQuery);
+    
+        // Preset criteria filter
+        addPresetCriteria(boolQuery, presetCriteria);
 
         if (fields != null)
         {
@@ -56,7 +57,26 @@ public class ProductQueryBuilderUtil
         return boolQuery;
     }
 
+    
+    public static void addArchiveStatusFilter(BoolQueryBuilder boolQuery)
+    {
+        List<String> allowedStatuses = Arrays.asList("archived", "certified");
+        boolQuery.must(QueryBuilders.termsQuery("ops:Tracking_Meta/ops:archive_status", allowedStatuses));
+    }
 
+    
+    public static void addPresetCriteria(BoolQueryBuilder boolQuery, Map<String, String> presetCriteria)
+    {
+        if(presetCriteria != null)
+        {
+            presetCriteria.forEach((key, value) -> 
+            {
+                boolQuery.filter(QueryBuilders.termQuery(key, value));
+            });
+        }
+    }
+    
+    
     /**
      * Create full-text / keyword query (Uses Lucene query language for now)
      * @param req request parameters
@@ -74,15 +94,12 @@ public class ProductQueryBuilderUtil
         // Boolean (root) query
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         boolQuery.must(luceneQuery);
-        
+
+        // Archive status filter
+        addArchiveStatusFilter(boolQuery);
+
         // Preset criteria filter
-        if(presetCriteria != null)
-        {
-            presetCriteria.forEach((key, value) -> 
-            {
-                boolQuery.filter(QueryBuilders.termQuery(key, value));
-            });
-        }
+        addPresetCriteria(boolQuery, presetCriteria);
         
         return boolQuery;
     }
