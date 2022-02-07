@@ -64,12 +64,17 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 	
 	static public void serialize (OutputStream stream, XMLStreamWriter writer, XmlMapper mapper, Pds4Product product) throws IOException, XMLStreamException
 	{
-		writer.writeStartElement("id");
+		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "id");
 		writer.writeCharacters(product.getId());
 		writer.writeEndElement();
-		mapper.writeValue(writer, product.getMetadata());
-		writer.writeStartElement("pds4");
-		writer.writeCharacters(" ");
+		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "meta");
+		writer.writeCharacters("");
+		writer.flush();
+		stream.write(mapper.writeValueAsString(product.getMetadata()).getBytes("UTF-8"));
+		stream.flush();
+		writer.writeEndElement();
+		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "pds4");
+		writer.writeCharacters("");
 		writer.flush();
 		stream.write(String.valueOf (product.getPds4()).getBytes("UTF8"));
 		stream.flush();
