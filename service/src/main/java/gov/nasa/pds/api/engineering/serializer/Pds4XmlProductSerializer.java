@@ -70,7 +70,7 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "meta");
 		writer.writeCharacters("");
 		writer.flush();
-		stream.write(mapper.writeValueAsString(product.getMetadata()).getBytes("UTF-8"));
+		stream.write(mapper.writeValueAsString(product.getMetadata()).replace("<Pds4Metadata>","").replace("</Pds4Metadata>","").getBytes("UTF-8"));
 		stream.flush();
 		writer.writeEndElement();
 		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "pds4");
