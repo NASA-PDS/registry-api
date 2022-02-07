@@ -49,7 +49,6 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 			writer.setPrefix(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 					Pds4XmlProductSerializer.NAMESPACE_URL);
 			writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
-			writer.writeDefaultNamespace("http://pds.nasa.gov/pds4/pds/v1");
 			writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 	        		  Pds4XmlProductSerializer.NAMESPACE_URL);
 			Pds4XmlProductSerializer.serialize(outputStream, writer, new XmlMapper(), product);
