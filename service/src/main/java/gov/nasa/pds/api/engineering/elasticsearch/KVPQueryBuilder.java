@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUtil;
 
+/**
+ * Builds Elasticsearch queries
+ * @author karpenko
+ */
 public class KVPQueryBuilder
 {
     private static final Logger log = LoggerFactory.getLogger(KVPQueryBuilder.class);
@@ -23,34 +27,50 @@ public class KVPQueryBuilder
     private List<String> fields;
     private Map<String,List<String>> kvps;
     
-    private boolean archiveStatus;
+    private boolean filterByArchiveStatus = false;
 
     
-    public KVPQueryBuilder(String esIndex, boolean filterByArchiveStatus)
-    {
-        this.esIndex = esIndex;
-        this.archiveStatus = filterByArchiveStatus;
-    }
-
-    
+    /**
+     * Constructor
+     * @param esIndex Elasticsearch index
+     */
     public KVPQueryBuilder(String esIndex)
     {
-        this(esIndex, false);
+        this.esIndex = esIndex;
     }
 
     
+    public void setFilterByArchiveStatus(Boolean b)
+    {
+        filterByArchiveStatus = b;
+    }
+    
+    
+    /**
+     * Return these field names
+     * @param field field name (path)
+     */
     public void setFields(String field)
     {
         fields = Arrays.asList(field);
     }
 
     
+    /**
+     * Return these field names
+     * @param fields field names (paths)
+     */
     public void setFields(List<String> fields)
     {
         this.fields = fields;
     }
 
-    
+
+    /**
+     * Set query criteria
+     * @param key field name
+     * @param value field value
+     */
     public void setKVP(String key, String value)
     {
         kvps = new HashMap<>();
@@ -58,6 +78,11 @@ public class KVPQueryBuilder
     }
 
     
+    /**
+     * Set query criteria
+     * @param key field name
+     * @param values field values
+     */
     public void setKVP(String key, List<String> values)
     {
         kvps = new HashMap<>();
@@ -85,16 +110,22 @@ public class KVPQueryBuilder
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         
         // Archive status filter
-        if(archiveStatus) ProductQueryBuilderUtil.addArchiveStatusFilter(boolQuery);
+        if(filterByArchiveStatus) ProductQueryBuilderUtil.addArchiveStatusFilter(boolQuery);
         
         // KVP
         kvps.forEach((key, values) -> 
         {
-            values.forEach((value) -> 
+            if(term) 
             {
-                if(term) boolQuery.must(QueryBuilders.termQuery(key, value));
-                else boolQuery.must(QueryBuilders.matchQuery(key, value));
-            });
+                boolQuery.must(QueryBuilders.termsQuery(key, values));
+            }
+            else
+            {
+                values.forEach((value) -> 
+                {
+                    boolQuery.must(QueryBuilders.matchQuery(key, value));
+                });
+            }
         });
         
         // Create request
