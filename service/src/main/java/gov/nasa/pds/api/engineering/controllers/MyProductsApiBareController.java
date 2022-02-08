@@ -179,7 +179,7 @@ public class MyProductsApiBareController {
             KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
             bld.setKVP("lidvid", lidvid);
             bld.setFields(context.getFields());            
-            SearchRequest request = bld.buildMatchQuery();
+            SearchRequest request = bld.buildTermQuery();
             
             context.setResponse(esRegistryConnection.getRestHighLevelClient(), request);
 
