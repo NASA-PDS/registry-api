@@ -67,7 +67,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1
+          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
           required: false
           schema:
             type: array
@@ -198,7 +198,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -255,7 +255,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -323,7 +323,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1
+          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
           required: false
           schema:
             type: array
@@ -454,7 +454,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -511,7 +511,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -568,7 +568,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -625,7 +625,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -693,7 +693,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1
+          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
           required: false
           schema:
             type: array
@@ -824,7 +824,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -881,7 +881,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -938,7 +938,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -995,7 +995,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
