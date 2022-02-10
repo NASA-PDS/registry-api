@@ -1,8 +1,11 @@
 package gov.nasa.pds.api.engineering.elasticsearch.business;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.annotation.PostConstruct;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -17,6 +20,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import gov.nasa.pds.api.engineering.elasticsearch.Antlr4SearchListener;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
@@ -24,9 +29,38 @@ import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
 
 
+@Component
 public class ProductQueryBuilderUtil
 {
     private static final Logger log = LoggerFactory.getLogger(ProductQueryBuilderUtil.class);
+    
+    @Value("${filter.archiveStatus}")
+    private String propArchiveStatusFilter;
+    private static List<String> archiveStatusFilter;
+
+
+    /**
+     * Init archive status filter
+     */
+    @PostConstruct
+    public void init() 
+    {
+        if(propArchiveStatusFilter == null) return;
+        
+        List<String> list = new ArrayList<>();
+        
+        StringTokenizer tkz = new StringTokenizer(propArchiveStatusFilter, ",; ");
+        while(tkz.hasMoreTokens())
+        {
+            String token = tkz.nextToken();
+            list.add(token);
+        }
+        
+        if(!list.isEmpty())
+        {
+            archiveStatusFilter = list;
+        }
+    }
     
     /**
      * Create PDS query language query
@@ -60,8 +94,11 @@ public class ProductQueryBuilderUtil
     
     public static void addArchiveStatusFilter(BoolQueryBuilder boolQuery)
     {
-        List<String> allowedStatuses = Arrays.asList("archived", "certified");
-        boolQuery.must(QueryBuilders.termsQuery("ops:Tracking_Meta/ops:archive_status", allowedStatuses));
+        log.debug("addArchiveStatusFilter: " + archiveStatusFilter);
+        
+        if(archiveStatusFilter == null || archiveStatusFilter.isEmpty()) return;
+        
+        boolQuery.must(QueryBuilders.termsQuery("ops:Tracking_Meta/ops:archive_status", archiveStatusFilter));
     }
 
     

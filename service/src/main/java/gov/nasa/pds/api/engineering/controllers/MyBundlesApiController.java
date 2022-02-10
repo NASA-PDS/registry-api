@@ -195,7 +195,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, false, this.presetCriteria, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(
+        	         this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, false, this.presetCriteria, accept);
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -229,6 +230,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         int iteration=0,wsize=0;
         List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
+        
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();
 

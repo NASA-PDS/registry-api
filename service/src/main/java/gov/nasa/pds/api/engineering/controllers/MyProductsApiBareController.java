@@ -68,6 +68,7 @@ public class MyProductsApiBareController {
     protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
     {
         KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
+        bld.setFilterByArchiveStatus(true);
         bld.setKVP("lidvid", lidvids);
         bld.setFields(context.getFields());
         SearchRequest req = bld.buildTermQuery();
@@ -177,6 +178,7 @@ public class MyProductsApiBareController {
                     this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
             
             KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
+            bld.setFilterByArchiveStatus(true);
             bld.setKVP("lidvid", lidvid);
             bld.setFields(context.getFields());            
             SearchRequest request = bld.buildTermQuery();
