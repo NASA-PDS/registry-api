@@ -14,8 +14,11 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import gov.nasa.pds.api.engineering.serializer.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.engineering.serializer.CsvPluralSerializer;
 import gov.nasa.pds.api.engineering.serializer.CsvSingularSerializer;
+import gov.nasa.pds.api.engineering.serializer.HtmlErrorMessageSerializer;
+import gov.nasa.pds.api.engineering.serializer.JsonErrorMessageSerializer;
 import gov.nasa.pds.api.engineering.serializer.JsonPluralSerializer;
 import gov.nasa.pds.api.engineering.serializer.JsonProductSerializer;
 import gov.nasa.pds.api.engineering.serializer.JsonSingularSerializer;
@@ -27,6 +30,7 @@ import gov.nasa.pds.api.engineering.serializer.PdsProductTextHtmlSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductXMLSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductsTextHtmlSerializer;
 import gov.nasa.pds.api.engineering.serializer.PdsProductsXMLSerializer;
+import gov.nasa.pds.api.engineering.serializer.XmlErrorMessageSerializer;
 
 @Configuration
 @EnableWebMvc
@@ -65,8 +69,11 @@ public class WebMVCConfig implements WebMvcConfigurer
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
 	{
 		WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+		converters.add(new CsvErrorMessageSerializer());
 		converters.add(new CsvPluralSerializer());
 		converters.add(new CsvSingularSerializer());
+		converters.add(new HtmlErrorMessageSerializer());
+		converters.add(new JsonErrorMessageSerializer());
 		converters.add(new JsonPluralSerializer());
 		converters.add(new JsonSingularSerializer());
 		converters.add(new JsonProductSerializer());
@@ -78,5 +85,6 @@ public class WebMVCConfig implements WebMvcConfigurer
 		converters.add(new PdsProductXMLSerializer());
 		converters.add(new PdsProductsTextHtmlSerializer());
 		converters.add(new PdsProductsXMLSerializer());
+		converters.add(new XmlErrorMessageSerializer());
 	}
 }

@@ -25,6 +25,7 @@ import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.engineering.elasticsearch.business.ErrorFactory;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidUtils;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
@@ -98,22 +99,22 @@ public class MyProductsApiBareController {
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-        	return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
         }
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
-        	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (ParseCancellationException pce)
         {
             log.error("Could not parse the query string: " + q, pce);
-            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>(ErrorFactory.build(pce, this.request), HttpStatus.BAD_REQUEST);
         }
     }    
     
@@ -133,22 +134,22 @@ public class MyProductsApiBareController {
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-        	return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
         }
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
-        	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (ParseCancellationException pce)
         {
             log.error("", pce);
-            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>(ErrorFactory.build(pce, this.request), HttpStatus.BAD_REQUEST);
         }
     }    
     
@@ -181,22 +182,22 @@ public class MyProductsApiBareController {
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-        	return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
         }
         catch (IOException e) 
         {
             log.error("Couldn't get or serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (LidVidNotFoundException e)
         {
             log.warn("Could not find lid(vid) in database: " + lidvid);
-            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
-        	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -226,5 +227,4 @@ public class MyProductsApiBareController {
             return null;
         }
     }
-
 }
