@@ -29,11 +29,14 @@ public class XmlErrorMessageSerializer extends AbstractHttpMessageConverter<Erro
 			throws IOException, HttpMessageNotWritableException
 	{
 		OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
-		osw.write("<error><request>");
-		osw.write(t.getRequest());
-		osw.write("</request><message>");
-		osw.write(t.getMessage());
-		osw.write("</message></error>");
-		osw.close();
+		try
+		{
+			osw.write("<error><request>");
+			osw.write(t.getRequest());
+			osw.write("</request><message>");
+			osw.write(t.getMessage());
+			osw.write("</message></error>");
+		}
+		finally { osw.close(); }
 	}
 }

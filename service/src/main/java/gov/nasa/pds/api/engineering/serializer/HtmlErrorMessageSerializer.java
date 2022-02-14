@@ -28,12 +28,15 @@ public class HtmlErrorMessageSerializer extends AbstractHttpMessageConverter<Err
 			throws IOException, HttpMessageNotWritableException
 	{
 		OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
-		osw.write("<html><body><h1>Error Message</h1><h2>From Request</h2><p>");
-		osw.write(t.getRequest());
-		osw.write("</p><h2>Message</h2><p>");
-		osw.write(t.getMessage());
-		osw.write("</p></body></html>");
-		osw.close();
+		try
+		{
+			osw.write("<html><body><h1>Error Message</h1><h2>From Request</h2><p>");
+			osw.write(t.getRequest());
+			osw.write("</p><h2>Message</h2><p>");
+			osw.write(t.getMessage());
+			osw.write("</p></body></html>");
+		}
+		finally { osw.close(); }
 	}
 }
 
