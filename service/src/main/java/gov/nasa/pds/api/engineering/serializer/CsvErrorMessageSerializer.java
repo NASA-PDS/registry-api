@@ -28,7 +28,7 @@ public class CsvErrorMessageSerializer extends AbstractHttpMessageConverter<Erro
 	protected void writeInternal(ErrorMessage t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException
 	{
-		OutputStreamWriter writer = new OutputStreamWriter(outputMessage.getBody());
+		OutputStreamWriter writer = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
 		writer.write ("request,message\n");
 		writer.write('"');
 		writer.write(t.getRequest());

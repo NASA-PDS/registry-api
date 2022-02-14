@@ -30,7 +30,7 @@ public class JsonErrorMessageSerializer extends AbstractHttpMessageConverter<Err
 	protected void writeInternal(ErrorMessage t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException
 	{
-        OutputStreamWriter wr = new OutputStreamWriter(outputMessage.getBody());
+        OutputStreamWriter wr = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
         wr.write("{\"request\":\"");
         wr.write(t.getRequest());
         wr.write("\",\"message\":\"");
