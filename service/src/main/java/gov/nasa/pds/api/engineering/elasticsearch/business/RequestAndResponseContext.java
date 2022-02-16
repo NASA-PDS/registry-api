@@ -112,8 +112,8 @@ public class RequestAndResponseContext
     	formatters.put("application/csv", new WyriwygBusinessObject());
     	formatters.put("application/json", new PdsProductBusinessObject());
     	formatters.put("application/kvp+json", new WyriwygBusinessObject());
-    	formatters.put("application/pds4+json", new Pds4ProductBusinessObject());
-    	formatters.put("application/pds4+xml", new Pds4ProductBusinessObject());
+    	formatters.put("application/pds4+json", new Pds4ProductBusinessObject(true));
+    	formatters.put("application/pds4+xml", new Pds4ProductBusinessObject(false));
     	formatters.put("application/xml", new PdsProductBusinessObject());
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
@@ -279,5 +279,19 @@ public class RequestAndResponseContext
         request.source().size(this.getLimit());
         request.source().from(this.getStart());
         this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
+	}
+
+	public void setSingularResponse(RestHighLevelClient client, SearchRequest request) throws IOException
+	{
+        request.source().size(this.getLimit());
+        request.source().from(this.getStart());
+        SearchHits hits = client.search(request, RequestOptions.DEFAULT).getHits();
+        
+        if (hits != null && hits.getTotalHits().value == 1L) this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
+        else
+        {
+        	log.error("Too many or too few lidvids which is just wrong.");
+        	throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+        }
 	}
 }

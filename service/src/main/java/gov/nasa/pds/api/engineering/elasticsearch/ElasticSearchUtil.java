@@ -17,7 +17,7 @@ import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
+import gov.nasa.pds.api.engineering.elasticsearch.business.EntityProduct;
 import gov.nasa.pds.api.engineering.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;

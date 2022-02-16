@@ -12,6 +12,13 @@ import gov.nasa.pds.api.engineering.SystemConstants;
 import gov.nasa.pds.api.engineering.configuration.AWSSecretsAccess;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductBusinessObject;
 
+/* Keep this eventhough not directly referenced
+ * 
+ * Seems to found and used via reflection rather than direct reference. When removed
+ * it causes spring to fail with an elasticsearch failure requiring EleasticSearchRegistryConnection.
+ * Not sure why the error indicates an interface that is already there when this class is missing
+ * but that is what happened.
+ */
 
 @Configuration 
 public class ElasticSearchConfig { 

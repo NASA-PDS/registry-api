@@ -27,11 +27,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	 * 
 	 */
 	
-   	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);
-
-	
-	  static final public String NAMESPACE_PREFIX = "pds_api";
-	  static final public String NAMESPACE_URL = "http://pds.nasa.gov/api";
+   	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);	
 	
 	  public Pds4XmlProductsSerializer() {
 	      super(new MediaType("application", "pds4+xml"));
@@ -54,37 +50,35 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	  @Override
 	  protected void writeInternal(Pds4Products products, HttpOutputMessage outputMessage)
 	          throws IOException, HttpMessageNotWritableException {
-	      try {
-	          OutputStream outputStream = outputMessage.getBody();
-	          
+	      try
+	      {
+	    	  OutputStream outputStream = outputMessage.getBody();
 	          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 	          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 	          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
-	          writer.setPrefix(Pds4XmlProductsSerializer.NAMESPACE_PREFIX, 
-		            		  Pds4XmlProductsSerializer.NAMESPACE_URL);
-	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "products");
-	          writer.writeDefaultNamespace("http://pds.nasa.gov/pds4/pds/v1");
-	          writer.writeNamespace(Pds4XmlProductsSerializer.NAMESPACE_PREFIX, 
-            		  Pds4XmlProductsSerializer.NAMESPACE_URL);
+	          writer.setPrefix(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
+		            		  Pds4XmlProductSerializer.NAMESPACE_URL);
+	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "products");
+	          writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
+            		  Pds4XmlProductSerializer.NAMESPACE_URL);
 	          Summary summary = products.getSummary();
 	          XmlMapper xmlMapper = new XmlMapper();
 	          xmlMapper.writeValue(writer, summary);
-	          writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "data");
+	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "data");
 	          for (Pds4Product product : products.getData()) {
-	        	  writer.writeStartElement(Pds4XmlProductsSerializer.NAMESPACE_URL, "product");
-		          xmlMapper.writeValue (writer, product);
+	        	  writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
+		          Pds4XmlProductSerializer.serialize (outputStream, writer, xmlMapper, product);
 		          writer.writeEndElement();
 	          }
 	          writer.writeEndElement(); // data
 	          writer.writeEndElement(); // products
 	          writer.close();     
 	          outputStream.close();
-	      } catch (ClassCastException e) {
-	    	  this.logger.error("For XML serialization, Product object must be extended to ProductWithXmlLabel: " + e.getMessage());
-	      } catch (Exception e) {
-	    	  
-	    	  Pds4XmlProductsSerializer.log.info("error while serializing products in xml " + e.getMessage());
-	      }
+	      } 
+	      catch (ClassCastException e)
+	      { this.logger.error("For XML serialization, Product object must be extended to ProductWithXmlLabel: " + e.getMessage()); }
+	      catch (Exception e)
+	      { Pds4XmlProductsSerializer.log.info("error while serializing products in xml " + e.getMessage()); }
 	  }
 
 }

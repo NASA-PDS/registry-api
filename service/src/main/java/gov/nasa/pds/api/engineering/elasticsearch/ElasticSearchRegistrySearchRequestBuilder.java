@@ -17,9 +17,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 
+import gov.nasa.pds.api.engineering.elasticsearch.business.BlobUtil;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ProductQueryBuilderUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntitytProductWithBlob;
-
 
 public class ElasticSearchRegistrySearchRequestBuilder
 {
@@ -48,13 +47,13 @@ public class ElasticSearchRegistrySearchRequestBuilder
 
     static private String[] excludes (List<String> fields)
     {
-    	String[] exclude, ex0 = new String[0], exbp = {EntitytProductWithBlob.BLOB_PROPERTY},
-                exjbp = {EntitytProductWithBlob.JSON_BLOB_PROPERTY},
-                exall = {EntitytProductWithBlob.BLOB_PROPERTY, EntitytProductWithBlob.JSON_BLOB_PROPERTY};
+    	String[] exclude, ex0 = new String[0], exbp = {BlobUtil.XML_BLOB_PROPERTY},
+                exjbp = {BlobUtil.JSON_BLOB_PROPERTY},
+                exall = {BlobUtil.XML_BLOB_PROPERTY, BlobUtil.JSON_BLOB_PROPERTY};
 
-    	if (fields.contains(EntitytProductWithBlob.BLOB_PROPERTY) && fields.contains(EntitytProductWithBlob.JSON_BLOB_PROPERTY)) exclude = ex0;
-    	else if (fields.contains(EntitytProductWithBlob.BLOB_PROPERTY)) exclude = exjbp;
-    	else if (fields.contains(EntitytProductWithBlob.JSON_BLOB_PROPERTY)) exclude = exbp;
+    	if (fields.contains(BlobUtil.XML_BLOB_PROPERTY) && fields.contains(BlobUtil.JSON_BLOB_PROPERTY)) exclude = ex0;
+    	else if (fields.contains(BlobUtil.XML_BLOB_PROPERTY)) exclude = exjbp;
+    	else if (fields.contains(BlobUtil.JSON_BLOB_PROPERTY)) exclude = exbp;
     	else exclude = exall;
 
     	return exclude;
