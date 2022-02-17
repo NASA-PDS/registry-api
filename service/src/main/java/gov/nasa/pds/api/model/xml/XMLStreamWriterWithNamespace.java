@@ -6,7 +6,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
 
-public class XMLStreamWriterWithNamespace implements XMLStreamWriter
+class XMLStreamWriterWithNamespace implements XMLStreamWriter
 {
 	final private XMLStreamWriter actual;
 
