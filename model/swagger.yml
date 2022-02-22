@@ -1,14 +1,8 @@
 openapi: 3.0.0
-# Added by API Auto Mocking Plugin
-servers:
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
- 
 info:
   description: |
-    Federated PDS API which provides actionable end points standardized
-    between the different nodes.
-  version: 0.5.0-SNAPSHOT
+    Registry API enabling advanced search on PDS data and metadata
+  version: 1.0.0-SNAPSHOT
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -16,12 +10,18 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    
+servers:
+  - url: https://pds.nasa.gov/api/registry/1.0
+    description: production server
+
 tags:
-  - name: core
-    description: Federated core layer for PDS requests
+  - name: registry
+    description: PDS registry API
     externalDocs:
       description: Find out more
       url: 'http://pds.nasa.gov'
+      
 paths:
   /products:
     get:
