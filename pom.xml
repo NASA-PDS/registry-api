@@ -105,7 +105,7 @@ Go through this file line-by-line and replace the template values with your own.
     <modules >
 	    <module>model</module>
 	    <module>lexer</module>
-	    <module>api</module>
+	    <module>service</module>
 	</modules>
 
     <!-- Put the packages your project depends on here -->
