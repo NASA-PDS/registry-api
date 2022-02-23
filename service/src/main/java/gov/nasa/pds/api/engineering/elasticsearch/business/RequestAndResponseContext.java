@@ -112,8 +112,8 @@ public class RequestAndResponseContext
     	formatters.put("application/csv", new WyriwygBusinessObject());
     	formatters.put("application/json", new PdsProductBusinessObject());
     	formatters.put("application/kvp+json", new WyriwygBusinessObject());
-    	formatters.put("application/pds4+json", new Pds4ProductBusinessObject(true));
-    	formatters.put("application/pds4+xml", new Pds4ProductBusinessObject(false));
+    	formatters.put("application/vnd.nasa.pds.pds4+json", new Pds4ProductBusinessObject(true));
+    	formatters.put("application/vnd.nasa.pds.pds4+xml", new Pds4ProductBusinessObject(false));
     	formatters.put("application/xml", new PdsProductBusinessObject());
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
