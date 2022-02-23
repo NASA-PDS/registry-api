@@ -10,11 +10,15 @@ It is composed with the following subcomponents:
 
 ## Prerequisites:
 
+### Build
+
 To build and run the application you need:
 
 - jdk 11
 - maven
 
+
+### Run and Test
 
 For the API to work, you also need ElasticSearch/OpenSearch with some test data loaded in it.
 
