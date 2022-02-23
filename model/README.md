@@ -8,7 +8,7 @@ Visit the software's website at https://nasa-pds.github.io/pds-api-javalib/
 
 # Prerequisites
 
-- JDK 1.8
+- JDK 11
 - MAVEN
 
 Note that GitHub Actions is used in this repository to automate testing, packaging, and deployment of releases to GitHub and the Sonatype Central Repostiory, OSSRH.
