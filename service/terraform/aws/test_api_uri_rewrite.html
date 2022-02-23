@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+ 
+<h2>Test the api_uri_rewrite CloudFront Function</h2>
+ 
+<script src="api_uri_rewrite.js"></script>
+<script>
+// Test
+ 
+// Mock ‘event’
+event = { "request" : { "uri" : "https://foo.com/api/search-geo/1.0/products/lidvid=200?limit=10",
+                        "headers" : {} } };
+document.write("<p>original uri: " + event.request.uri);
+ 
+request = handler(event);
+ 
+document.write("<br>result uri: " + request.uri); // should be https://foo.com/products/lidvid=200?limit=10”
+document.write("<br>result header: " + request.headers["x-request-node"]);   // should be “search-geo/1.0”
+ 
+</script>
+ 
+</body>
+</html>
