@@ -53,5 +53,7 @@ In the `registry` project:
     npm install newman
     newman run docker/postman/postman_collection.json --env-var baseUrl=http://localhost:8080
     
+ Important note: As a developer you are asked to complete the postman test suite according to the new feature you are developing. Do a pull request in the `registry` project to submit the updates.
+    
 
 
