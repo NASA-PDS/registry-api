@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.engineering.serializer;
 
+import gov.nasa.pds.api.model.xml.NamespaceXmlFactory;
 import gov.nasa.pds.model.Pds4Product;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 			writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
 			writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 	        		  Pds4XmlProductSerializer.NAMESPACE_URL);
-			Pds4XmlProductSerializer.serialize(outputStream, writer, new XmlMapper(), product);
+			Pds4XmlProductSerializer.serialize(outputStream, writer, new XmlMapper(new NamespaceXmlFactory()), product);
 			writer.writeEndElement();
 			writer.close();
 		}
@@ -69,7 +70,9 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "meta");
 		writer.writeCharacters("");
 		writer.flush();
-		stream.write(mapper.writeValueAsString(product.getMetadata()).replace("<Pds4Metadata>","").replace("</Pds4Metadata>","").getBytes("UTF-8"));
+		stream.write(mapper.writeValueAsString(product.getMetadata())
+				.replace("<pds_api:Pds4Metadata xmlns:pds_api=\"http://pds.nasa.gov/api\">","")
+				.replace("</pds_api:Pds4Metadata>","").getBytes("UTF-8"));
 		stream.flush();
 		writer.writeEndElement();
 		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "pds4");
