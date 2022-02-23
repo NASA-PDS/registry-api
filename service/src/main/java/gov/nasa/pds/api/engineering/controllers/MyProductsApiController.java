@@ -97,7 +97,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_ACCEPTABLE);
         }
         catch (IOException e)
         {
@@ -149,7 +149,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_ACCEPTABLE);
         }
         catch (IOException e)
         {
