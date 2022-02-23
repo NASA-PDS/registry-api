@@ -1,6 +1,6 @@
 # Registry API
 
-This repository enables to start the API service for the PDS registry.
+This repository implements the [search API v1.0.0-SNAPSHOT](https://nasa-pds.github.io/pds-api/specifications.html) for the PDS registry.
 
 
 It is composed with the following subcomponents:
