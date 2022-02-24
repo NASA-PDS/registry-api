@@ -4,21 +4,40 @@
  
 <h2>Test the api_uri_rewrite CloudFront Function</h2>
  
+<div class="container">
+    <form action="test_api_uri_rewrite.html" method="post" id="uri_form">
+        <div class="field">
+            <label for="uri">URI:</label>
+            <input type="text" id="uri" name="uri" placeholder="Enter the uri to test" size=80 />
+            <p>
+            <br><submitted_uri></submitted_uri>
+            <br><result_uri></result_uri>
+            <br><result_header></result_header>
+        </div>
+    </form>
+</div>
+ 
 <script src="api_uri_rewrite.js"></script>
 <script>
-// Test
  
-// Mock ‘event’
-event = { "request" : { "uri" : "https://foo.com/api/search-geo/1.0/products/lidvid=200?limit=10",
-                        "headers" : {} } };
-document.write("<p>original uri: " + event.request.uri);
- 
-request = handler(event);
- 
-document.write("<br>result uri: " + request.uri); // should be https://foo.com/products/lidvid=200?limit=10”
-document.write("<br>result header: " + request.headers["x-request-node"]);   // should be “search-geo/1.0”
+const form = document.querySelector("#uri_form");
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    uri_input = form.elements["uri"];
+    uri = uri_input.value.trim();
+
+    let incoming_event_json = { "request" : { "uri" : uri, "headers" : {} } };
+    request = handler(incoming_event_json);
+
+    const parentNode = uri_input.parentNode;
+    var msg = parentNode.querySelector("submitted_uri");
+    msg.innerText = "submitted uri: " + uri;
+    msg = parentNode.querySelector("result_uri");
+    msg.innerText = "result uri: " + request.uri;
+    msg = parentNode.querySelector("result_header"); 
+    msg.innerText = "result header: " + request.headers["x-request-node"];
+});
  
 </script>
- 
 </body>
 </html>
