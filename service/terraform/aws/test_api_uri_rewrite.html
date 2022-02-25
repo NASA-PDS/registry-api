@@ -23,19 +23,23 @@
 const form = document.querySelector("#uri_form");
 form.addEventListener("submit", function(event) {
     event.preventDefault();
-    uri_input = form.elements["uri"];
-    uri = uri_input.value.trim();
+    uriInput = form.elements["uri"];
+    uri = uriInput.value.trim();
 
-    let incoming_event_json = { "request" : { "uri" : uri, "headers" : {} } };
-    request = handler(incoming_event_json);
+    let incomingEventJson = { "request" : { "uri" : uri, "headers" : {} } };
+    request = handler(incomingEventJson);
 
-    const parentNode = uri_input.parentNode;
+    const parentNode = uriInput.parentNode;
     var msg = parentNode.querySelector("submitted_uri");
     msg.innerText = "submitted uri: " + uri;
     msg = parentNode.querySelector("result_uri");
     msg.innerText = "result uri: " + request.uri;
     msg = parentNode.querySelector("result_header"); 
-    msg.innerText = "result header: " + request.headers["x-request-node"];
+    if (request.headers["x-request-node"] === undefined) {
+        msg.innerText = "result header: None";
+    } else {
+        msg.innerText = "result header: " + request.headers["x-request-node"].value;
+    }
 });
  
 </script>
