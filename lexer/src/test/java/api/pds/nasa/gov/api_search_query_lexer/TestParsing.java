@@ -14,18 +14,18 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
-import gov.nasa.pds.api.engineering.lexer.SearchLexer;
-import gov.nasa.pds.api.engineering.lexer.SearchListener;
-import gov.nasa.pds.api.engineering.lexer.SearchParser;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.AndStatementContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.ComparisonContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.ExpressionContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.GroupContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.LikeComparisonContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.OperatorContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.OrStatementContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.QueryContext;
-import gov.nasa.pds.api.engineering.lexer.SearchParser.QueryTermContext;
+import gov.nasa.pds.api.registry.lexer.SearchLexer;
+import gov.nasa.pds.api.registry.lexer.SearchListener;
+import gov.nasa.pds.api.registry.lexer.SearchParser;
+import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.OperatorContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.OrStatementContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.QueryContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.QueryTermContext;
 
 
 public class TestParsing implements ParseTreeListener, SearchListener

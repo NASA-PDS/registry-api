@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 
-import gov.nasa.pds.api.engineering.serializer.Pds4XmlProductSerializer;
+import gov.nasa.pds.api.registry.serializer.Pds4XmlProductSerializer;
 
 public class NamespaceXmlFactory extends XmlFactory
 {
