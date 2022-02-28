@@ -1497,33 +1497,34 @@ components:
       properties:
         node_name:
           type: string
-        label_file:
+        ops:Label_File_Info:
           type: object
           properties:
-            file_name:
+            ops:file_name:
               type: string
-            file_ref:
+            ops:file_ref:
               type: string
-            creation_date:
+            ops:creation_date:
               type: string
-            file_size:
+            ops:file_size:
               type: string
-            md5_checksum:
+            ops:md5_checksum:
               type: string        
-        data_files:
+        ops:Data_Files:
           type: array
           items:
             type: object
             properties:
-              file_name:
+              ops:file_name:
                 type: string
-              file_ref:
+              ops:file_ref:
                 type: string
-              creation_date:
+              ops:creation_date:
                 type: string
-              file_size:
+              ops:file_size:
                 type: string
-              md5_checksum:
+              ops:md5_checksum:
                 type: string
-              mime_type:
+              ops:mime_type:
                 type: string
+

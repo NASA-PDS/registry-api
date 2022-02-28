@@ -17,7 +17,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import gov.nasa.pds.api.model.xml.NamespaceXmlFactory;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
@@ -62,13 +61,15 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "products");
 	          writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
             		  Pds4XmlProductSerializer.NAMESPACE_URL);
+	          writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX_OPS, 
+            		  Pds4XmlProductSerializer.NAMESPACE_URL_OPS);
 	          Summary summary = products.getSummary();
 	          XmlMapper xmlMapper = new XmlMapper();
 	          xmlMapper.writeValue(writer, summary);
 	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "data");
 	          for (Pds4Product product : products.getData()) {
 	        	  writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
-		          Pds4XmlProductSerializer.serialize (outputStream, writer, new XmlMapper(new NamespaceXmlFactory()), product);
+		          Pds4XmlProductSerializer.serialize (outputStream, writer, new XmlMapper(), product);
 		          writer.writeEndElement();
 	          }
 	          writer.writeEndElement(); // data
