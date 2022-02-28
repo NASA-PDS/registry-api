@@ -1,14 +1,8 @@
 openapi: 3.0.0
-# Added by API Auto Mocking Plugin
-servers:
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/PDS_APIs/pds_federated_api/0.1.0
- 
 info:
   description: |
-    Federated PDS API which provides actionable end points standardized
-    between the different nodes.
-  version: 0.5.0-SNAPSHOT
+    Registry API enabling advanced search on PDS data and metadata
+  version: 1.0.0-SNAPSHOT
   title: Planetary Data System API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -16,12 +10,18 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    
+servers:
+  - url: https://pds.nasa.gov/api/registry/1.0
+    description: production server
+
 tags:
-  - name: core
-    description: Federated core layer for PDS requests
+  - name: registry
+    description: PDS registry API
     externalDocs:
       description: Find out more
       url: 'http://pds.nasa.gov'
+      
 paths:
   /products:
     get:
@@ -32,12 +32,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
-        '408':
-          description: request time out
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
       parameters:
         - name: start
           in: query
@@ -67,7 +69,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1
+          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
           required: false
           schema:
             type: array
@@ -97,10 +99,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -117,10 +123,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -137,10 +147,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -171,10 +185,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -198,7 +216,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -228,10 +246,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -255,7 +277,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -286,13 +308,13 @@ paths:
         '200':
           $ref: "#/components/responses/Plural"
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/errorMessage'
-        '408':
-          description: request time out
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
       parameters:
         - name: start
           in: query
@@ -323,7 +345,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1
+          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
           required: false
           schema:
             type: array
@@ -353,10 +375,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -373,10 +399,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -393,10 +423,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -427,10 +461,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -454,7 +492,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -484,10 +522,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -511,7 +553,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -541,10 +583,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -568,7 +614,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -598,10 +644,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -625,7 +675,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -656,13 +706,13 @@ paths:
         '200':
           $ref: "#/components/responses/Plural"
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/errorMessage'
-        '408':
-          description: request time out
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
       parameters:
         - name: start
           in: query
@@ -693,7 +743,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1
+          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
           required: false
           schema:
             type: array
@@ -723,10 +773,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -743,10 +797,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -763,10 +821,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -797,10 +859,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -824,7 +890,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -854,10 +920,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -881,7 +951,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -911,10 +981,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -938,7 +1012,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -968,10 +1042,14 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
         '404':
-          description: lidvid not found
+          $ref: "#/components/responses/Error"
         '500':
-          description: Internal server error
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
     parameters:
       - name: identifier
         in: path
@@ -995,7 +1073,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1
+        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
         required: false
         schema:
           type: array
@@ -1022,6 +1100,42 @@ externalDocs:
   url: 'https://github.com/NASA-PDS/pds-api-core'
 components:
   responses:
+    Error:
+      description: Unsuccessful request
+      content:
+        "*":
+          schema:
+            type: object
+        "*/*":
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        application/csv:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        application/kvp+json:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        application/pds4+json:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        application/pds4+xml:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        text/html:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/errorMessage'
     Plural:
       description: Successful request
       content:
@@ -1331,22 +1445,10 @@ components:
     errorMessage:
       type: object
       required:
-        - url
-        - resource
-        - query
+        - request
         - message
       properties:
-        url:
-          type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        resource:
-          type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        query:
+        request:
           type: string
           xml:
             prefix: 'pds_api'
@@ -1361,9 +1463,7 @@ components:
         namespace: 'http://pds.nasa.gov/api'
       example:
         {
-          url: 'https://pds.nasa.gov/api/1.0/collections',
-          resource: '/collections',
-          query: 'q=mission qt 12',
+          request: 'https://pds.nasa.gov/api/1.0/collections?q=mission qt 12',
           message: 'query operator gt not supported on field mission'
         }
     pds4Product:

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 
+import gov.nasa.pds.api.engineering.elasticsearch.business.ErrorFactory;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
@@ -133,23 +134,23 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-       	 	return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+       	 	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
         }
         catch (LidVidNotFoundException e)
         {
             log.error("Couldn't find the lidvid " + e.getMessage());
-            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
 
         }
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
-        	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
     }
     
@@ -235,22 +236,22 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
-        	return new ResponseEntity<Object>(HttpStatus.NOT_IMPLEMENTED);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_IMPLEMENTED);
         }
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (LidVidNotFoundException e)
         {
             log.warn("Could not find lid(vid) in database: " + lidvid);
-            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
-        	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
     }
     

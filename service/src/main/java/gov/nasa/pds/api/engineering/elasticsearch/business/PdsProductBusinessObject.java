@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
-import gov.nasa.pds.api.engineering.elasticsearch.entities.EntityProduct;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.PropertyArrayValues;
@@ -44,6 +43,18 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
 	@Override
 	public void setObjectMapper (ObjectMapper om) { this.objectMapper = om; }
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void setResponse (SearchHit hit, List<String> fields)
+	{
+		Map<String,Object> kvp = hit.getSourceAsMap();;
+		PdsProduct product;
+
+		product = ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+        product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+        this.product = product;
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
