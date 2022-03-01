@@ -161,17 +161,9 @@ public class RequestAndResponseContext
 		}
 		else
 		{
-			String known = "";
-			log.warn("Could not find a matach for application type: " + String.valueOf(this.format));
-			log.warn("   Known types: " + String.valueOf(this.formatters.keySet().size()));
-			for (String key : this.formatters.keySet())
-			{
-				log.warn("      key: " + String.valueOf(key));
-				known = known + key + ",";
-			}
-			known = known.substring(0, known.length()-1);
-			throw new ApplicationTypeException("The given application type, " + String.valueOf(this.format) +
-					                           ", is not known by RquestAndResponseContext. Known choices are: " + known);
+                    String known = String.join(", ", this.formatters.keySet());
+			log.warn("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
+			throw new ApplicationTypeException("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
 		}
 
 		/* if the URL contains fields, then make sure the minimum was included too OR there is maximum set. */
