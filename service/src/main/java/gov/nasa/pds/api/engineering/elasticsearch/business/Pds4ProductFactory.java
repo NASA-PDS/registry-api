@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.model.Pds4Metadata;
-import gov.nasa.pds.model.Pds4MetadataDataFiles;
-import gov.nasa.pds.model.Pds4MetadataLabelFile;
+import gov.nasa.pds.model.Pds4MetadataOpsDataFiles;
+import gov.nasa.pds.model.Pds4MetadataOpsLabelFileInfo;
 import gov.nasa.pds.model.Pds4Product;
 
 
@@ -95,41 +95,41 @@ public class Pds4ProductFactory
         Pds4Metadata meta = new Pds4Metadata();
 
         meta.setNodeName((String)fieldMap.get(FLD_NODE_NAME));
-        meta.setLabelFile(createLabelFile(fieldMap));
-        meta.setDataFiles(createDataFiles(fieldMap));
+        meta.setOpsLabelFileInfo(createLabelFile(fieldMap));
+        meta.setOpsDataFiles(createDataFiles(fieldMap));
         
         return meta;
     }
     
     
-    private static Pds4MetadataLabelFile createLabelFile(Map<String, Object> fieldMap)
+    private static Pds4MetadataOpsLabelFileInfo createLabelFile(Map<String, Object> fieldMap)
     {
         Object obj = fieldMap.get(FLD_LABEL_FILE_NAME);
         if(obj == null) return null;
 
-        Pds4MetadataLabelFile item = new Pds4MetadataLabelFile();
+        Pds4MetadataOpsLabelFileInfo item = new Pds4MetadataOpsLabelFileInfo();
 
         String val = (String)obj;
-        item.setFileName(val);
+        item.setOpsfileName(val);
         
         val = (String)fieldMap.get(FLD_LABEL_FILE_CREATION);
-        item.setCreationDate(val);
+        item.setOpscreationDate(val);
         
         val = (String)fieldMap.get(FLD_LABEL_FILE_REF);
-        item.setFileRef(val);
+        item.setOpsfileRef(val);
         
         val = (String)fieldMap.get(FLD_LABEL_FILE_SIZE);
-        item.setFileSize(val);
+        item.setOpsfileSize(val);
 
         val = (String)fieldMap.get(FLD_LABEL_FILE_MD5);
-        item.setMd5Checksum(val);
+        item.setOpsmd5Checksum(val);
 
         return item;
     }
     
 
     @SuppressWarnings("rawtypes")
-    private static List<Pds4MetadataDataFiles> createDataFiles(Map<String, Object> fieldMap)
+    private static List<Pds4MetadataOpsDataFiles> createDataFiles(Map<String, Object> fieldMap)
     {
         Object obj = fieldMap.get(FLD_DATA_FILE_NAME);
         if(obj == null) return null;
@@ -143,18 +143,18 @@ public class Pds4ProductFactory
             List md5List = (List)fieldMap.get(FLD_DATA_FILE_MD5);
             List mimeList = (List)fieldMap.get(FLD_DATA_FILE_MIME_TYPE);            
             
-            List<Pds4MetadataDataFiles> items = new ArrayList<>(nameList.size());
+            List<Pds4MetadataOpsDataFiles> items = new ArrayList<>(nameList.size());
             
             for(int i = 0; i < nameList.size(); i++)
             {
-                Pds4MetadataDataFiles item = new Pds4MetadataDataFiles();
+                Pds4MetadataOpsDataFiles item = new Pds4MetadataOpsDataFiles();
                 items.add(item);
-                item.setFileName((String)nameList.get(i));
-                item.setCreationDate((String)dateList.get(i));
-                item.setFileRef((String)refList.get(i));
-                item.setFileSize((String)sizeList.get(i));
-                item.setMd5Checksum((String)md5List.get(i));
-                item.setMimeType((String)mimeList.get(i));
+                item.setOpsfileName((String)nameList.get(i));
+                item.setOpscreationDate((String)dateList.get(i));
+                item.setOpsfileRef((String)refList.get(i));
+                item.setOpsfileSize((String)sizeList.get(i));
+                item.setOpsmd5Checksum((String)md5List.get(i));
+                item.setOpsmimeType((String)mimeList.get(i));
             }
             
             return items;
@@ -162,26 +162,26 @@ public class Pds4ProductFactory
         else
         {
             String val = (String)obj;
-            List<Pds4MetadataDataFiles> items = new ArrayList<>(1);
+            List<Pds4MetadataOpsDataFiles> items = new ArrayList<>(1);
             
-            Pds4MetadataDataFiles item = new Pds4MetadataDataFiles();
+            Pds4MetadataOpsDataFiles item = new Pds4MetadataOpsDataFiles();
             items.add(item);
-            item.setFileName(val);
+            item.setOpsfileName(val);
             
             val = (String)fieldMap.get(FLD_DATA_FILE_CREATION);
-            item.setCreationDate(val);
+            item.setOpscreationDate(val);
             
             val = (String)fieldMap.get(FLD_DATA_FILE_REF);
-            item.setFileRef(val);
+            item.opsfileRef(val);
             
             val = (String)fieldMap.get(FLD_DATA_FILE_SIZE);
-            item.setFileSize(val);
+            item.setOpsfileSize(val);
 
             val = (String)fieldMap.get(FLD_DATA_FILE_MD5);
-            item.setMd5Checksum(val);
+            item.setOpsmd5Checksum(val);
 
             val = (String)fieldMap.get(FLD_DATA_FILE_MIME_TYPE);
-            item.setMimeType(val);
+            item.setOpsmimeType(val);
             
             return items;
         }
