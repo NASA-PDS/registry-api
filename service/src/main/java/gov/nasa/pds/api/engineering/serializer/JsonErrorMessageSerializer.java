@@ -17,7 +17,8 @@ public class JsonErrorMessageSerializer extends AbstractHttpMessageConverter<Err
 	public JsonErrorMessageSerializer()
 	{ super(MediaType.APPLICATION_JSON,
 			new MediaType("application","kvp+json"),
-			new MediaType("application", "pds4+json")); }
+			new MediaType("application", "pds4+json"),
+			MediaType.ALL); }
 
 	@Override
 	protected boolean supports(Class<?> clazz) { return ErrorMessage.class.isAssignableFrom(clazz); }
