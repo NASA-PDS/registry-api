@@ -53,7 +53,22 @@ POSSIBILITY OF SUCH DAMAGE.
   
   </properties>
   
-  
+ <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <site>
+      <id>dummy URL to enabling doc staging</id>
+      <url>https://{project.artifactId}</url>
+    </site>
+  </distributionManagement> 
+ 
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -184,5 +199,6 @@ POSSIBILITY OF SUCH DAMAGE.
     <developerConnection>scm:git:git@github.com:NASA-PDS/registry-api.git</developerConnection>
     <tag>v1.0.0</tag>
   </scm>
+
 
 </project>
