@@ -69,7 +69,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+          description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
           required: false
           schema:
             type: array
@@ -216,7 +216,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -277,7 +277,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -345,7 +345,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+          description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
           required: false
           schema:
             type: array
@@ -492,7 +492,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -553,7 +553,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -614,7 +614,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -675,7 +675,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -743,7 +743,7 @@ paths:
             type: string
         - name: fields
           in: query
-          description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+          description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
           required: false
           schema:
             type: array
@@ -890,7 +890,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -951,7 +951,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -1012,7 +1012,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -1073,7 +1073,7 @@ paths:
           default: 100
       - name: fields
         in: query
-        description: returned fields, syntax field0,field1 but does not impact pds4+json and pds4+xml output formats
+        description: returned fields, syntax field0,field1 but does not impact vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml output formats
         required: false
         schema:
           type: array
@@ -1118,10 +1118,10 @@ components:
         application/kvp+json:
           schema:
             $ref: '#/components/schemas/errorMessage'
-        application/pds4+json:
+        application/vnd.nasa.pds.pds4+json:
           schema:
             $ref: '#/components/schemas/errorMessage'
-        application/pds4+xml:
+        application/vnd.nasa.pds.pds4+xml:
           schema:
             $ref: '#/components/schemas/errorMessage'
         application/xml:
@@ -1154,10 +1154,10 @@ components:
         application/kvp+json:
           schema:
             $ref: '#/components/schemas/wyriwygProducts'
-        application/pds4+json:
+        application/vnd.nasa.pds.pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Products'
-        application/pds4+xml:
+        application/vnd.nasa.pds.pds4+xml:
           schema:
             $ref: '#/components/schemas/pds4Products'
         application/xml:
@@ -1190,10 +1190,10 @@ components:
         application/kvp+json:
           schema:
             $ref: '#/components/schemas/wyriwygProduct'
-        application/pds4+json:
+        application/vnd.nasa.pds.pds4+json:
           schema:
             $ref: '#/components/schemas/pds4Product'
-        application/pds4+xml:
+        application/vnd.nasa.pds.pds4+xml:
           schema:
             $ref: '#/components/schemas/pds4Product'
         application/xml:
@@ -1497,33 +1497,34 @@ components:
       properties:
         node_name:
           type: string
-        label_file:
+        ops:Label_File_Info:
           type: object
           properties:
-            file_name:
+            ops:file_name:
               type: string
-            file_ref:
+            ops:file_ref:
               type: string
-            creation_date:
+            ops:creation_date:
               type: string
-            file_size:
+            ops:file_size:
               type: string
-            md5_checksum:
+            ops:md5_checksum:
               type: string        
-        data_files:
+        ops:Data_Files:
           type: array
           items:
             type: object
             properties:
-              file_name:
+              ops:file_name:
                 type: string
-              file_ref:
+              ops:file_ref:
                 type: string
-              creation_date:
+              ops:creation_date:
                 type: string
-              file_size:
+              ops:file_size:
                 type: string
-              md5_checksum:
+              ops:md5_checksum:
                 type: string
-              mime_type:
+              ops:mime_type:
                 type: string
+

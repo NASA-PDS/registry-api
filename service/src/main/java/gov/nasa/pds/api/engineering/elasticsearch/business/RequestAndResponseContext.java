@@ -112,8 +112,8 @@ public class RequestAndResponseContext
     	formatters.put("application/csv", new WyriwygBusinessObject());
     	formatters.put("application/json", new PdsProductBusinessObject());
     	formatters.put("application/kvp+json", new WyriwygBusinessObject());
-    	formatters.put("application/pds4+json", new Pds4ProductBusinessObject(true));
-    	formatters.put("application/pds4+xml", new Pds4ProductBusinessObject(false));
+    	formatters.put("application/vnd.nasa.pds.pds4+json", new Pds4ProductBusinessObject(true));
+    	formatters.put("application/vnd.nasa.pds.pds4+xml", new Pds4ProductBusinessObject(false));
     	formatters.put("application/xml", new PdsProductBusinessObject());
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
@@ -161,10 +161,9 @@ public class RequestAndResponseContext
 		}
 		else
 		{
-			log.warn("Could not find a matach for application type: " + String.valueOf(this.format));
-			log.warn("   Known types: " + String.valueOf(this.formatters.keySet().size()));
-			for (String key : this.formatters.keySet()) log.warn("      key: " + String.valueOf(key));
-			throw new ApplicationTypeException("The given application type, " + String.valueOf(this.format) + ", is not known by RquestAndResponseContext.");
+                    String known = String.join(", ", this.formatters.keySet());
+			log.warn("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
+			throw new ApplicationTypeException("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
 		}
 
 		/* if the URL contains fields, then make sure the minimum was included too OR there is maximum set. */
