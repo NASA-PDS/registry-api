@@ -33,7 +33,7 @@ public class Pds4JsonProductSerializer extends AbstractHttpMessageConverter<Pds4
      */
     public Pds4JsonProductSerializer()
     {
-        super(new MediaType("application", "pds4+json"));
+        super(new MediaType("application", "vnd.nasa.pds.pds4+json"));
     }
 
     

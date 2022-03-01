@@ -1,6 +1,5 @@
 package gov.nasa.pds.api.engineering.serializer;
 
-import gov.nasa.pds.api.model.xml.NamespaceXmlFactory;
 import gov.nasa.pds.model.Pds4Product;
 
 import java.io.IOException;
@@ -23,10 +22,12 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4Product>
 {
 	static final public String NAMESPACE_PREFIX = "pds_api";
+	static final public String NAMESPACE_PREFIX_OPS = "ops";
 	static final public String NAMESPACE_URL = "http://pds.nasa.gov/api";
+	static final public String NAMESPACE_URL_OPS = "https://pds.nasa.gov/pds4/ops/v1";
 
 	public Pds4XmlProductSerializer()
-	{ super(new MediaType("application", "pds4+xml")); }
+	{ super(new MediaType("application", "vnd.nasa.pds.pds4+xml")); }
 
 	@Override
 	protected boolean supports(Class<?> clazz)
@@ -49,10 +50,12 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 			XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
 			writer.setPrefix(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 					Pds4XmlProductSerializer.NAMESPACE_URL);
+			writer.setPrefix(NAMESPACE_PREFIX_OPS, NAMESPACE_URL_OPS);
 			writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "product");
 			writer.writeNamespace(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 	        		  Pds4XmlProductSerializer.NAMESPACE_URL);
-			Pds4XmlProductSerializer.serialize(outputStream, writer, new XmlMapper(new NamespaceXmlFactory()), product);
+			writer.writeNamespace(NAMESPACE_PREFIX_OPS, NAMESPACE_URL_OPS);
+			Pds4XmlProductSerializer.serialize(outputStream, writer, new XmlMapper(), product);
 			writer.writeEndElement();
 			writer.close();
 		}
@@ -71,8 +74,8 @@ public class Pds4XmlProductSerializer extends AbstractHttpMessageConverter<Pds4P
 		writer.writeCharacters("");
 		writer.flush();
 		stream.write(mapper.writeValueAsString(product.getMetadata())
-				.replace("<pds_api:Pds4Metadata xmlns:pds_api=\"http://pds.nasa.gov/api\">","")
-				.replace("</pds_api:Pds4Metadata>","").getBytes("UTF-8"));
+				.replace("<Pds4Metadata>","")
+				.replace("</Pds4Metadata>","").getBytes("UTF-8"));
 		stream.flush();
 		writer.writeEndElement();
 		writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "pds4");
