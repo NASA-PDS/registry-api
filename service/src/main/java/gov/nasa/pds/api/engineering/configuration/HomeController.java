@@ -18,8 +18,6 @@ public class HomeController {
 
     	String contextPath = this.contextPath.endsWith("/")?this.contextPath:this.contextPath+"/";
 
-        // Leave this redirect in place even if swagger is turned off since it is used for
-        // AWS healthchecks (i.e. GET / -> 302)
         System.out.println(contextPath+"swagger-ui.html");
         return "redirect:"+contextPath+"swagger-ui.html";
     }
