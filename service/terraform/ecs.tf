@@ -127,7 +127,8 @@ resource "aws_lb_target_group" "pds-registry-target-group" {
 
   health_check {
     enabled = true
-    path    = "/swagger-ui.html"
+    path    = "/"
+    matcher = "200,301,302"
     interval = 60
   }
 }
