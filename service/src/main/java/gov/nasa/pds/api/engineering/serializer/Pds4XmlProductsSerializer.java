@@ -31,7 +31,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
    	  private static final Logger log = LoggerFactory.getLogger(Pds4XmlProductsSerializer.class);	
 	
 	  public Pds4XmlProductsSerializer() {
-	      super(new MediaType("application", "pds4+xml"));
+	      super(new MediaType("application", "vnd.nasa.pds.pds4+xml"));
 	  }
 
 	  @Override

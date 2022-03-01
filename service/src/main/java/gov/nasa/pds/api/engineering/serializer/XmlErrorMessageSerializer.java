@@ -15,7 +15,7 @@ import gov.nasa.pds.model.ErrorMessage;
 public class XmlErrorMessageSerializer extends AbstractHttpMessageConverter<ErrorMessage>
 {
 	public XmlErrorMessageSerializer()
-	{ super(MediaType.APPLICATION_XML, MediaType.TEXT_XML, new MediaType("application", "pds4+xml")); }
+	{ super(MediaType.APPLICATION_XML, MediaType.TEXT_XML, new MediaType("application", "vnd.nasa.pds.pds4+xml")); }
 
 	@Override
 	protected boolean supports(Class<?> clazz) { return ErrorMessage.class.isAssignableFrom(clazz); }

@@ -14,11 +14,13 @@ import gov.nasa.pds.model.ErrorMessage;
 
 public class JsonErrorMessageSerializer extends AbstractHttpMessageConverter<ErrorMessage>
 {
-	public JsonErrorMessageSerializer()
-	{ super(MediaType.APPLICATION_JSON,
+	public JsonErrorMessageSerializer(){ 
+		super(MediaType.APPLICATION_JSON,
 			new MediaType("application","kvp+json"),
-			new MediaType("application", "pds4+json"),
-			MediaType.ALL); }
+			new MediaType("application", "vnd.nasa.pds.pds4+json"),
+			MediaType.ALL); 
+	}
+
 
 	@Override
 	protected boolean supports(Class<?> clazz) { return ErrorMessage.class.isAssignableFrom(clazz); }
