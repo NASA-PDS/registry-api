@@ -1,21 +1,8 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-03-01)
+## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-01)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.0-SNAPSHOT...«unknown»)
-
-**Defects:**
-
-- Content type pds4+xml does not namespace tags in \<pds\_api:meta\> with pds\_api [\#93](https://github.com/NASA-PDS/registry-api/issues/93)
-- Fix unstable integration build failure [\#89](https://github.com/NASA-PDS/registry-api/issues/89) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-- Service using JSON blob in pds4+xml response when it should use ops blob [\#81](https://github.com/NASA-PDS/registry-api/issues/81) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-- blob/json\_blob should not be included in default response [\#73](https://github.com/NASA-PDS/registry-api/issues/73) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- Improvements to branch pds-api-125 [\#18](https://github.com/NASA-PDS/registry-api/issues/18) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-- AWS cost analysis tag  is not 'Alpha' but instead 'Alfa' [\#5](https://github.com/NASA-PDS/registry-api/issues/5)
-
-## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-01-11)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0-SNAPSHOT...v0.5.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v0.5.0-SNAPSHOT)
 
 **Requirements:**
 
@@ -32,10 +19,18 @@
 
 - implement freetext search [\#70](https://github.com/NASA-PDS/registry-api/issues/70)
 - implement the start/limit efficiently [\#71](https://github.com/NASA-PDS/registry-api/issues/71)
+- Add list of available fields in response format [\#55](https://github.com/NASA-PDS/registry-api/issues/55)
+- As a user of the API, I want to have an homogeneous way of getting error or status for long requests or requests longer than supported by a synchronous web API. [\#56](https://github.com/NASA-PDS/registry-api/issues/56)
 
 **Defects:**
 
+- Content type pds4+xml does not namespace tags in \<pds\_api:meta\> with pds\_api [\#93](https://github.com/NASA-PDS/registry-api/issues/93)
+- Fix unstable integration build failure [\#89](https://github.com/NASA-PDS/registry-api/issues/89) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- Service using JSON blob in pds4+xml response when it should use ops blob [\#81](https://github.com/NASA-PDS/registry-api/issues/81) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- blob/json\_blob should not be included in default response [\#73](https://github.com/NASA-PDS/registry-api/issues/73) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Improvements to branch pds-api-125 [\#18](https://github.com/NASA-PDS/registry-api/issues/18) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - CICD did not publish the jar on artifactory [\#2](https://github.com/NASA-PDS/registry-api/issues/2) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- AWS cost analysis tag  is not 'Alpha' but instead 'Alfa' [\#5](https://github.com/NASA-PDS/registry-api/issues/5)
 - parsing right hand side of operator does not behave as desired [\#57](https://github.com/NASA-PDS/registry-api/issues/57) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - parsing of string does not succeed [\#58](https://github.com/NASA-PDS/registry-api/issues/58)
 
@@ -46,15 +41,6 @@
 - add creation of routing rule to terraform script [\#7](https://github.com/NASA-PDS/registry-api/issues/7)
 - Revert  ES High Level Java API version 7.13.3 [\#6](https://github.com/NASA-PDS/registry-api/issues/6)
 - As a developer, I want to update in a single place the list of supported MIME types [\#60](https://github.com/NASA-PDS/registry-api/issues/60)
-
-## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-01-04)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v1.0.0-SNAPSHOT)
-
-**Improvements:**
-
-- Add list of available fields in response format [\#55](https://github.com/NASA-PDS/registry-api/issues/55)
-- As a user of the API, I want to have an homogeneous way of getting error or status for long requests or requests longer than supported by a synchronous web API. [\#56](https://github.com/NASA-PDS/registry-api/issues/56)
 
 
 
