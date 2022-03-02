@@ -8,17 +8,8 @@ It is composed with the following subcomponents:
 - model: library end-point controller definition and response objects generated from the openAPI specification (see https://github.com/NASA-PDS/pds-api/)
 - api: the API service, a spring-boot application
 
-## Prerequisites:
 
-### Build
-
-To build and run the application you need:
-
-- jdk 11
-- maven
-
-
-### Run and Test
+## Prerequisites
 
 For the API to work, you also need ElasticSearch/OpenSearch with some test data loaded in it.
 
@@ -31,10 +22,27 @@ Based on `docker` you can easily start all the prerequisites as configured in th
 Start the prerequisites:
 
     docker compose --profile=dev-api up
-    
-    
+
+
+## Start the application from a released package
+
+Get the latest stable release https://github.com/NASA-PDS/registry-api-service/releases
+
+Download the zip or tar.gz file.
+
+Follow instructions in README.txt in the decompressed folder    
+
 
 ## Developers
+
+### Prerequisites
+
+To build and run the application you need:
+
+- jdk 11
+- maven
+
+### Build
 
 Builds the application:
 

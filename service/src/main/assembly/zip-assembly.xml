@@ -44,7 +44,7 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>README.md</source>
+			<source>README.txt</source>
 			<outputDirectory></outputDirectory>
 			<filtered>true</filtered>
 		</file>
