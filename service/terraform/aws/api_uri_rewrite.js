@@ -14,8 +14,8 @@ function handler(event) {
     // split the uri
     var uriParts = incomingUri.split("/");
 
-    // continue with the rewrite only if "/api/" is first in the URI
-    if (uriParts[1].toLowerCase() == "api") {
+    // continue with the rewrite only if "/api/search" is first in the URI
+    if (uriParts[1].toLowerCase() == "api" && uriParts[2].toLowerCase() == "search" ) {
 
         // at a minimum service and version are required, otherwise fall through w/o changes
         if (uriParts.length >= 4) {
