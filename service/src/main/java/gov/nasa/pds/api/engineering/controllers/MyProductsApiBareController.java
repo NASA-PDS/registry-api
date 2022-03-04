@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.engineering.elasticsearch.KVPQueryBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ErrorFactory;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
@@ -67,10 +68,16 @@ public class MyProductsApiBareController {
 
     protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
     {
-    	context.setResponse(new ElasticSearchHitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
-                ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
-                        lidvids, context.getFields(), this.esRegistryConnection.getRegistryIndex())), real_total);
-
+        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
+        bld.setFilterByArchiveStatus(true);
+        bld.setKVP("lidvid", lidvids);
+        bld.setFields(context.getFields());
+        SearchRequest req = bld.buildTermQuery();
+        
+        ElasticSearchHitIterator itr = new ElasticSearchHitIterator(lidvids.size(), 
+                esRegistryConnection.getRestHighLevelClient(), req);
+        
+    	context.setResponse(itr, real_total);
     }
 
     
@@ -168,9 +175,16 @@ public class MyProductsApiBareController {
         try 
         {
             lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
-            SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid", lidvid, context.getFields(),this.esRegistryConnection.getRegistryIndex(), false);
-            context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(
+                    this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
+            
+            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
+            bld.setFilterByArchiveStatus(true);
+            bld.setKVP("lidvid", lidvid);
+            bld.setFields(context.getFields());            
+            SearchRequest request = bld.buildTermQuery();
+            
+            context.setResponse(esRegistryConnection.getRestHighLevelClient(), request);
 
             if (context.getResponse() == null)
             { 

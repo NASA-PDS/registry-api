@@ -21,14 +21,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.engineering.elasticsearch.KVPQueryBuilder;
 import gov.nasa.pds.api.engineering.elasticsearch.business.ErrorFactory;
 import gov.nasa.pds.api.engineering.elasticsearch.business.LidVidNotFoundException;
 import gov.nasa.pds.api.engineering.elasticsearch.business.RequestAndResponseContext;
 import gov.nasa.pds.api.engineering.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.engineering.exceptions.NothingFoundException;
 import io.swagger.annotations.ApiParam;
-
 
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-10-29T11:01:11.991-07:00[America/Los_Angeles]")
@@ -126,11 +125,17 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         if (0 < collectionLIDs.size())
         {
-            SearchRequest request = ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP
-                    ("ref_lid_collection", collectionLIDs, context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
+            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
+            bld.setKVP("ref_lid_collection", collectionLIDs);
+            bld.setFields(context.getFields());
+            SearchRequest request = bld.buildMatchQuery();
+            
             context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
         }
-        else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
+        else 
+        {
+            MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
+        }
     }
 
 
@@ -173,14 +178,21 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     {
         List<String> fields = new ArrayList<String>(), lidvids = new ArrayList<String>();
         String field = noVer ? "collection_lid" : "collection_lidvid";
-
         fields.add(field);
-        for (final Map<String,Object> kvp : new ElasticSearchHitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                ElasticSearchRegistrySearchRequestBuilder.getQueryFieldsFromKVP("product_lidvid",
-                        lidvid, fields, this.esRegistryConnection.getRegistryRefIndex(), false)))
+        
+        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryRefIndex());
+        bld.setKVP("product_lidvid", lidvid);
+        bld.setFields(fields);            
+        SearchRequest request = bld.buildMatchQuery();
+        
+        ElasticSearchHitIterator itr = new ElasticSearchHitIterator(esRegistryConnection.getRestHighLevelClient(), request);
+        
+        for (final Map<String,Object> kvp : itr)
         {
             if (kvp.get(field) instanceof String)
-            { lidvids.add(kvp.get(field).toString()); }
+            { 
+                lidvids.add(kvp.get(field).toString()); 
+            }
             else
             {
                 @SuppressWarnings("unchecked")
@@ -188,6 +200,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
                 for (String clid : clids) { lidvids.add(clid); }
             }
         }
+        
         return lidvids;
     }
 

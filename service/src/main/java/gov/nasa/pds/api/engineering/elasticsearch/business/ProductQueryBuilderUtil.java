@@ -1,7 +1,11 @@
 package gov.nasa.pds.api.engineering.elasticsearch.business;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.annotation.PostConstruct;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -16,6 +20,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import gov.nasa.pds.api.engineering.elasticsearch.Antlr4SearchListener;
 import gov.nasa.pds.api.engineering.elasticsearch.ElasticSearchUtil;
@@ -23,9 +29,38 @@ import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
 
 
+@Component
 public class ProductQueryBuilderUtil
 {
     private static final Logger log = LoggerFactory.getLogger(ProductQueryBuilderUtil.class);
+    
+    @Value("${filter.archiveStatus}")
+    private String propArchiveStatusFilter;
+    private static List<String> archiveStatusFilter;
+
+
+    /**
+     * Init archive status filter
+     */
+    @PostConstruct
+    public void init() 
+    {
+        if(propArchiveStatusFilter == null) return;
+        
+        List<String> list = new ArrayList<>();
+        
+        StringTokenizer tkz = new StringTokenizer(propArchiveStatusFilter, ",; ");
+        while(tkz.hasMoreTokens())
+        {
+            String token = tkz.nextToken();
+            list.add(token);
+        }
+        
+        if(!list.isEmpty())
+        {
+            archiveStatusFilter = list;
+        }
+    }
     
     /**
      * Create PDS query language query
@@ -42,11 +77,11 @@ public class ProductQueryBuilderUtil
             boolQuery = parseQueryString(queryString);
         }
 
-        for (Map.Entry<String, String> e : presetCriteria.entrySet())
-        {
-            // example "product_class", "Product_Collection"
-            boolQuery.must(QueryBuilders.termQuery(e.getKey(), e.getValue()));
-        }
+        // Archive status filter
+        addArchiveStatusFilter(boolQuery);
+    
+        // Preset criteria filter
+        addPresetCriteria(boolQuery, presetCriteria);
 
         if (fields != null)
         {
@@ -56,7 +91,29 @@ public class ProductQueryBuilderUtil
         return boolQuery;
     }
 
+    
+    public static void addArchiveStatusFilter(BoolQueryBuilder boolQuery)
+    {
+        log.debug("addArchiveStatusFilter: " + archiveStatusFilter);
+        
+        if(archiveStatusFilter == null || archiveStatusFilter.isEmpty()) return;
+        
+        boolQuery.must(QueryBuilders.termsQuery("ops:Tracking_Meta/ops:archive_status", archiveStatusFilter));
+    }
 
+    
+    public static void addPresetCriteria(BoolQueryBuilder boolQuery, Map<String, String> presetCriteria)
+    {
+        if(presetCriteria != null)
+        {
+            presetCriteria.forEach((key, value) -> 
+            {
+                boolQuery.filter(QueryBuilders.termQuery(key, value));
+            });
+        }
+    }
+    
+    
     /**
      * Create full-text / keyword query (Uses Lucene query language for now)
      * @param req request parameters
@@ -74,15 +131,12 @@ public class ProductQueryBuilderUtil
         // Boolean (root) query
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         boolQuery.must(luceneQuery);
-        
+
+        // Archive status filter
+        addArchiveStatusFilter(boolQuery);
+
         // Preset criteria filter
-        if(presetCriteria != null)
-        {
-            presetCriteria.forEach((key, value) -> 
-            {
-                boolQuery.filter(QueryBuilders.termQuery(key, value));
-            });
-        }
+        addPresetCriteria(boolQuery, presetCriteria);
         
         return boolQuery;
     }
