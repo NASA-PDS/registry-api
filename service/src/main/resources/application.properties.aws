@@ -3,7 +3,7 @@ spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
 
 debug=true
 logging.level.root = DEBUG
-logging.level.gov.nasa.pds.api.engineering.elasticsearch = DEBUG
+logging.level.gov.nasa.pds.api.registry.elasticsearch = DEBUG
 
 server.contextPath=/
 server.port=80

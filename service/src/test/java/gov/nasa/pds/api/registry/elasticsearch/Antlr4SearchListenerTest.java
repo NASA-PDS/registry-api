@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.engineering.elasticsearch;
+package gov.nasa.pds.api.registry.elasticsearch;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -15,9 +15,9 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.function.Executable;
 
-import gov.nasa.pds.api.engineering.lexer.SearchLexer;
-import gov.nasa.pds.api.engineering.lexer.SearchParser;
 import gov.nasa.pds.api.registry.elasticsearch.Antlr4SearchListener;
+import gov.nasa.pds.api.registry.lexer.SearchLexer;
+import gov.nasa.pds.api.registry.lexer.SearchParser;
 
 public class Antlr4SearchListenerTest
 {

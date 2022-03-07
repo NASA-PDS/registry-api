@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.engineering.elasticsearch;
+package gov.nasa.pds.api.registry.elasticsearch;
 
 import java.io.FileWriter;
 import java.io.IOException;

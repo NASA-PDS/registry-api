@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.nasa.pds.api.engineering.lexer.SearchLexer;
-import gov.nasa.pds.api.engineering.lexer.SearchParser;
 import gov.nasa.pds.api.registry.elasticsearch.Antlr4SearchListener;
 import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchUtil;
+import gov.nasa.pds.api.registry.lexer.SearchLexer;
+import gov.nasa.pds.api.registry.lexer.SearchParser;
 
 
 @Component

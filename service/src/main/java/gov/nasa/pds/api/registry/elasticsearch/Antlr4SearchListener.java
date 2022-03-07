@@ -3,6 +3,8 @@ package gov.nasa.pds.api.registry.elasticsearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
+import gov.nasa.pds.api.registry.lexer.SearchParser;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -15,9 +17,6 @@ import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-
-import gov.nasa.pds.api.engineering.lexer.SearchBaseListener;
-import gov.nasa.pds.api.engineering.lexer.SearchParser;
 
 public class Antlr4SearchListener extends SearchBaseListener
 {

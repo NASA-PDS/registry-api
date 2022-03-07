@@ -24,7 +24,7 @@ Just run:
 
 The grammar definition is in the file: 
 
-    src/main/antlr4/gov/nasa/pds/api/engineering/lexer/Search.g4
+    src/main/antlr4/gov/nasa/pds/api/registry/lexer/Search.g4
 
 
 ## 👥 Contributing

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.engineering.configuration;
+package gov.nasa.pds.api.registry.configuration;
 
 
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
