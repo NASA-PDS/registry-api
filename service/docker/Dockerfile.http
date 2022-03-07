@@ -41,4 +41,4 @@ CMD ["java", \
      # "-cp", "<bind_dir>", \
      "-cp", "/usr/local/registry-api-service", \
      "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
-     "gov.nasa.pds.api.engineering.SpringBootMain"]
+     "gov.nasa.pds.api.registry.SpringBootMain"]

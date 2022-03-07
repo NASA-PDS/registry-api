@@ -17,6 +17,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import gov.nasa.pds.api.engineering.lexer.SearchLexer;
 import gov.nasa.pds.api.engineering.lexer.SearchParser;
+import gov.nasa.pds.api.registry.elasticsearch.Antlr4SearchListener;
 
 public class Antlr4SearchListenerTest
 {
