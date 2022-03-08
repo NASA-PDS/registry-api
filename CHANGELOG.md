@@ -1,6 +1,16 @@
 # Changelog
 
-## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-02)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-03-08)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.0-SNAPSHOT...«unknown»)
+
+**Other closed issues:**
+
+- Refactor meta section of pds4+xml response to use ops namespace [\#85](https://github.com/NASA-PDS/registry-api/issues/85)
+- Refactor meta section of pds4+json response to use ops namespace [\#84](https://github.com/NASA-PDS/registry-api/issues/84)
+- Update API to only return results where archive status in \(archived, certified\) [\#78](https://github.com/NASA-PDS/registry-api/issues/78)
+
+## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-04)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v0.5.0-SNAPSHOT)
 
