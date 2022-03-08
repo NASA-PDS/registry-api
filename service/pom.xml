@@ -58,7 +58,7 @@ POSSIBILITY OF SUCH DAMAGE.
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>gov.nasa.pds.api.engineering.SpringBootMain</mainClass>
+					<mainClass>gov.nasa.pds.api.registry.SpringBootMain</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
