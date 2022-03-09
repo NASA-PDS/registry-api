@@ -26,4 +26,4 @@ elasticSearch.password=
 elasticSearch.ssl=false
 
 # Only show products with following archive statuses
-filter.archiveStatus=archived,certified,staged
+filter.archiveStatus=archived,certified
