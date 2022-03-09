@@ -14,7 +14,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
 
 /**
  * Bundle Data Access Object (DAO). 

@@ -19,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
+import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
 import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
 

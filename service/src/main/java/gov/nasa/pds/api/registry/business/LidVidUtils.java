@@ -23,7 +23,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
 
 
 /**

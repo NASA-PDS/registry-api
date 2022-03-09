@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
 
 public class LidVidDAO
 {

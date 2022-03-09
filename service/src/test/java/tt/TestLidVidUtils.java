@@ -3,8 +3,8 @@ package tt;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.business.BundleDAO;
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnectionImpl;
+import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnectionImpl;
 
 
 public class TestLidVidUtils

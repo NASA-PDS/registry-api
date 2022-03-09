@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.search;
+package gov.nasa.pds.api.registry.elasticsearch;
 
 import java.util.List;
 
