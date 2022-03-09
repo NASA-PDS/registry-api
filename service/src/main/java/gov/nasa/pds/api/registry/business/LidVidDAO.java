@@ -1,11 +1,11 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
 
 public class LidVidDAO
 {

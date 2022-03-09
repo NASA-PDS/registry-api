@@ -21,17 +21,17 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.KVPQueryBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.business.ErrorFactory;
-import gov.nasa.pds.api.registry.elasticsearch.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.elasticsearch.business.LidVidUtils;
-import gov.nasa.pds.api.registry.elasticsearch.business.ProductBusinessObject;
-import gov.nasa.pds.api.registry.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.registry.business.ErrorFactory;
+import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.LidVidUtils;
+import gov.nasa.pds.api.registry.business.ProductBusinessObject;
+import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
+import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 @Component
 public class MyProductsApiBareController {

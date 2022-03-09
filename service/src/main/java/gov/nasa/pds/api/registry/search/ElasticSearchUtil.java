@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.search;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,7 +17,7 @@ import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.elasticsearch.business.EntityProduct;
+import gov.nasa.pds.api.registry.business.EntityProduct;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;

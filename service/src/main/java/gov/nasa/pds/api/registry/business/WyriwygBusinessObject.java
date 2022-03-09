@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
+import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
+import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
 import gov.nasa.pds.model.WyriwygProductKeyValuePairs;

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
 
 /**
  * Bundle Data Access Object (DAO). 

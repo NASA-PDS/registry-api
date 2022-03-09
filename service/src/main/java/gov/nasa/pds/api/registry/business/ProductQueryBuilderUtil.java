@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.nasa.pds.api.registry.elasticsearch.Antlr4SearchListener;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
+import gov.nasa.pds.api.registry.search.Antlr4SearchListener;
+import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
 
 
 @Component

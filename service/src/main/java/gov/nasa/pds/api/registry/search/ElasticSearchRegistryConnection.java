@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.search;
 
 import org.elasticsearch.client.RestHighLevelClient;
 

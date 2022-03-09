@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
 
 
 /**

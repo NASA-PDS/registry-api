@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 /**
  * Used by API calls, such as "/bundles/{lidvid}/collections", 

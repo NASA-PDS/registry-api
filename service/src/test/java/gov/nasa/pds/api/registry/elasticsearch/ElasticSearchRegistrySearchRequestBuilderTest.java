@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest

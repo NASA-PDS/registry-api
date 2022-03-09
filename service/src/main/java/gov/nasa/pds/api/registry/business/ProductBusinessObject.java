@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchUtil;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
 
 
 public class ProductBusinessObject

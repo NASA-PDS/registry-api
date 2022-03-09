@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch.business;
+package gov.nasa.pds.api.registry.business;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -2,13 +2,13 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.elasticsearch.KVPQueryBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.business.ErrorFactory;
-import gov.nasa.pds.api.registry.elasticsearch.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.registry.business.ErrorFactory;
+import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
+import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
+import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;

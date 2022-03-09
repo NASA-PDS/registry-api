@@ -2,9 +2,9 @@ package tt;
 
 import java.util.List;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnectionImpl;
-import gov.nasa.pds.api.registry.elasticsearch.business.BundleDAO;
+import gov.nasa.pds.api.registry.business.BundleDAO;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.search.ElasticSearchRegistryConnectionImpl;
 
 
 public class TestLidVidUtils

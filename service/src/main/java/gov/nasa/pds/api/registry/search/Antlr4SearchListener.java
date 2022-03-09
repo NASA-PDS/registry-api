@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.search;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.search;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.elasticsearch.business.BlobUtil;
-import gov.nasa.pds.api.registry.elasticsearch.business.ProductQueryBuilderUtil;
+import gov.nasa.pds.api.registry.business.BlobUtil;
+import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;

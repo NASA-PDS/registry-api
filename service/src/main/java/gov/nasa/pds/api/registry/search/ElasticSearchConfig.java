@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.search;
 
 import java.util.List;
 import org.slf4j.Logger;
@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import gov.nasa.pds.api.registry.SystemConstants;
+import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
-import gov.nasa.pds.api.registry.elasticsearch.business.ProductBusinessObject;
 
 /* Keep this eventhough not directly referenced
  * 
