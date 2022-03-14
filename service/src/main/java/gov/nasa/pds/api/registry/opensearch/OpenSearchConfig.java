@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 import gov.nasa.pds.api.registry.SystemConstants;
 import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 
 /* Keep this eventhough not directly referenced
  * 
  * Seems to found and used via reflection rather than direct reference. When removed
- * it causes spring to fail with an elasticsearch failure requiring EleasticSearchRegistryConnection.
+ * it causes spring to fail with an opensearch failure requiring EleasticSearchRegistryConnection.
  * Not sure why the error indicates an interface that is already there when this class is missing
  * but that is what happened.
  */
@@ -31,25 +31,25 @@ public class OpenSearchConfig {
 	// original behavior when the default was specified in the Value annotation.
 	private static final String DEFAULT_ES_HOST = "localhost:9200";
 	
-	@Value("#{'${elasticSearch.host:}'.split(',')}") 
+	@Value("#{'${openSearch.host:}'.split(',')}") 
 	private List<String> hosts;
 	
-	@Value("${elasticSearch.registryIndex:registry}")
+	@Value("${openSearch.registryIndex:registry}")
 	private String registryIndex;
 	
-	@Value("${elasticSearch.registryRefIndex:registry-refs}")
+	@Value("${openSearch.registryRefIndex:registry-refs}")
 	private String registryRefIndex;
 	
-	@Value("${elasticSearch.timeOutSeconds:60}")
+	@Value("${openSearch.timeOutSeconds:60}")
 	private int timeOutSeconds;
 	
-	@Value("${elasticSearch.username:}")
+	@Value("${openSearch.username:}")
 	private String username;
 	
-	@Value("${elasticSearch.password:}")
+	@Value("${openSearch.password:}")
 	private String password;
 	
-	@Value("${elasticSearch.ssl:false}")
+	@Value("${openSearch.ssl:false}")
 	private boolean ssl;
     
 	public List<String> getHosts() {
@@ -88,7 +88,7 @@ public class OpenSearchConfig {
 	private OpenSearchRegistryConnection esRegistryConnection = null;
 
 	@Bean("esRegistryConnection")
-	public OpenSearchRegistryConnection ElasticSearchRegistryConnection() {
+	public OpenSearchRegistryConnection openSearchRegistryConnection() {
 		
 		if (esRegistryConnection == null) {
 
@@ -119,16 +119,16 @@ public class OpenSearchConfig {
 	
 	@Bean("productBO")
 	public ProductBusinessObject ProductBusinessObject() {
-		return new ProductBusinessObject(this.ElasticSearchRegistryConnection());
+		return new ProductBusinessObject(this.openSearchRegistryConnection());
 	}
 
     
 	@Bean("searchRequestBuilder")
-	public ElasticSearchRegistrySearchRequestBuilder ElasticSearchRegistrySearchRequestBuilder() {
+	public RegistrySearchRequestBuilder RegistrySearchRequestBuilder() {
 		
-		OpenSearchRegistryConnection esRegistryConnection = this.ElasticSearchRegistryConnection();
+		OpenSearchRegistryConnection esRegistryConnection = this.openSearchRegistryConnection();
 		
-		return new ElasticSearchRegistrySearchRequestBuilder(
+		return new RegistrySearchRequestBuilder(
      			esRegistryConnection.getRegistryIndex(),
      			esRegistryConnection.getRegistryRefIndex(),
     			esRegistryConnection.getTimeOutSeconds());

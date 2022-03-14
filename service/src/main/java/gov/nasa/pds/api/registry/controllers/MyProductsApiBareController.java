@@ -30,7 +30,7 @@ import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 @Component
@@ -58,7 +58,7 @@ public class MyProductsApiBareController {
     protected ProductBusinessObject productBO;
     
     @Autowired
-    ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder;
+    RegistrySearchRequestBuilder searchRequestBuilder;
     
 
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {

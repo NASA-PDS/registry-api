@@ -54,7 +54,7 @@ public class LidVidUtils
     
     /**
      * Get latest versions of LIDs
-     * @param esConnection Elasticsearch connection
+     * @param esConnection opensearch connection
      * @param lids list of LIDs
      * @return list of LIDVIDs
      * @throws IOException
@@ -68,7 +68,7 @@ public class LidVidUtils
         
         SearchRequest esRequest = new SearchRequest(esConnection.getRegistryIndex()).source(src);
         
-        // Call Elasticsearch
+        // Call opensearch
         RestHighLevelClient client = esConnection.getRestHighLevelClient();
         SearchResponse esResp = client.search(esRequest, RequestOptions.DEFAULT);
 
@@ -101,7 +101,7 @@ public class LidVidUtils
     
     /**
      * Get all LIDVIDs by LIDs
-     * @param esConnection Elasticsearch connection
+     * @param esConnection opensearch connection
      * @param lids list of LIDs
      * @return a list of LIDVIDs
      * @throws IOException an exception
@@ -115,7 +115,7 @@ public class LidVidUtils
         
         SearchRequest esRequest = new SearchRequest(esConnection.getRegistryIndex()).source(src);
         
-        // Call Elasticsearch
+        // Call opensearch
         RestHighLevelClient client = esConnection.getRestHighLevelClient();
         SearchResponse esResp = client.search(esRequest, RequestOptions.DEFAULT);
         
@@ -129,7 +129,7 @@ public class LidVidUtils
     /**
      * Build aggregation query to select latest versions of lids
      * @param lids list of LIDs
-     * @return Elasticsearch query
+     * @return opensearch query
      */
     public static SearchSourceBuilder buildGetLatestLidVidsRequest(Collection<String> lids)
     {
@@ -156,7 +156,7 @@ public class LidVidUtils
     /**
      * Build terms query to select all document ids by a list of LIDs.
      * @param lids a list of LIDS
-     * @return Elasticsearch query
+     * @return opensearch query
      */
     public static SearchSourceBuilder buildGetAllLidVidsRequest(Collection<String> lids)
     {

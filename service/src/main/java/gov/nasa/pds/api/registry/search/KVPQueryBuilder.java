@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 
 /**
- * Builds Elasticsearch queries
+ * Builds opensearch queries
  * @author karpenko
  */
 public class KVPQueryBuilder
@@ -32,7 +32,7 @@ public class KVPQueryBuilder
     
     /**
      * Constructor
-     * @param esIndex Elasticsearch index
+     * @param esIndex opensearch index
      */
     public KVPQueryBuilder(String esIndex)
     {
@@ -104,7 +104,7 @@ public class KVPQueryBuilder
     
     private SearchRequest build(boolean term)
     {
-        String[] exclude = ElasticSearchRegistrySearchRequestBuilder.excludes(fields);
+        String[] exclude = RegistrySearchRequestBuilder.excludes(fields);
         String[] include = fields.toArray(new String[0]);
         
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();

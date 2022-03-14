@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.opensearch;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,15 +18,15 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest
-class ElasticSearchRegistrySearchRequestBuilderTest {
+class RegistrySearchRequestBuilderTest {
 
-	private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilderTest.class);
+	private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilderTest.class);
 
-	private ElasticSearchRegistrySearchRequestBuilder requestBuilder  = new ElasticSearchRegistrySearchRequestBuilder();; 
+	private RegistrySearchRequestBuilder requestBuilder  = new RegistrySearchRequestBuilder();; 
 	
 	public static Map<String, String> queryMap;
 	static {
@@ -99,7 +99,7 @@ class ElasticSearchRegistrySearchRequestBuilderTest {
 		
 		try {
 			FileWriter myWriter = new FileWriter("unittests.txt");
-			for (Entry<String, String> queryEntry : ElasticSearchRegistrySearchRequestBuilderTest.queryMap.entrySet()) {
+			for (Entry<String, String> queryEntry : RegistrySearchRequestBuilderTest.queryMap.entrySet()) {
 				
 				queryString = queryEntry.getKey();
 				List<String> fields = new ArrayList<String>(Arrays.asList("title","ops:Label_File_Info.ops:md5_checksum"));
@@ -126,7 +126,7 @@ class ElasticSearchRegistrySearchRequestBuilderTest {
 				Assertions.assertArrayEquals(
 						searchRequest.toString().toCharArray(), 
 						queryEntry.getValue().toCharArray(), 
-						"elasticSearch query is \n" 
+						"openSearch query is \n" 
 								+ searchRequest.toString()
 								+ "\n Expected is:\n"
 								+ queryEntry.getValue());

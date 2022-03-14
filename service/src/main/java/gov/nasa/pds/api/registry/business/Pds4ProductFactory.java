@@ -14,7 +14,7 @@ import gov.nasa.pds.model.Pds4Product;
 
 
 /**
- * Creates Pds4Product object from Elasticsearch key-value field map.
+ * Creates Pds4Product object from opensearch key-value field map.
  * @author karpenko
  */
 public class Pds4ProductFactory
@@ -45,7 +45,7 @@ public class Pds4ProductFactory
     
     
     /**
-     * Create Pds4Product object from Elasticsearch key-value field map.
+     * Create Pds4Product object from opensearch key-value field map.
      * @param lidvid product LIDVID
      * @param fieldMap key-value field map
      * @return new Pds4Product object

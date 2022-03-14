@@ -1,13 +1,13 @@
 package gov.nasa.pds.api.registry.exceptions;
 
-public class UnsupportedElasticSearchProperty extends Exception {
+public class UnsupportedSearchProperty extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public UnsupportedElasticSearchProperty(String msg) {
+	public UnsupportedSearchProperty(String msg) {
 		
 		super(msg);
 		

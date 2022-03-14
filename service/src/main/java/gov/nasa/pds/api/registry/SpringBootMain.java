@@ -10,7 +10,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ",  "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.elasticsearch"})
+@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ",  "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.opensearch"})
 public class SpringBootMain implements CommandLineRunner {
 	
 

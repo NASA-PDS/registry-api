@@ -8,7 +8,7 @@ import java.util.Base64;
 import java.util.zip.InflaterInputStream;
 
 /**
- * Utility class to extract BLOBs stored in Elasticsearch
+ * Utility class to extract BLOBs stored in DB
  * @author karpenko
  */
 public class BlobUtil

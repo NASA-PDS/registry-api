@@ -125,7 +125,7 @@ public class Antlr4SearchListener extends SearchBaseListener
     @Override
     public void exitComparison(SearchParser.ComparisonContext ctx)
     {
-        final String left = SearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
+        final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
         
         String right;
         QueryBuilder comparator = null;
@@ -192,7 +192,7 @@ public class Antlr4SearchListener extends SearchBaseListener
     @Override
     public void exitLikeComparison(SearchParser.LikeComparisonContext ctx)
     {
-        final String left = SearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getText());
+        final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getText());
         
         String right = ctx.STRINGVAL().getText();
         right = right.substring(1, right.length() - 1);

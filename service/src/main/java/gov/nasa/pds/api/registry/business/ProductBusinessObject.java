@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
-import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
@@ -32,8 +32,8 @@ public class ProductBusinessObject
     
     private static final String DEFAULT_NULL_VALUE = null; 
     
-    private OpenSearchRegistryConnection elasticSearchConnection;
-    private ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder;
+    private OpenSearchRegistryConnection openSearchConnection;
+    private RegistrySearchRequestBuilder searchRequestBuilder;
 
     private ObjectMapper objectMapper;
     
@@ -43,12 +43,12 @@ public class ProductBusinessObject
     private BundleDAO bundleDao;
     
     public ProductBusinessObject(OpenSearchRegistryConnection esRegistryConnection) {
-        this.elasticSearchConnection = esRegistryConnection;
+        this.openSearchConnection = esRegistryConnection;
         
-        this.searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
-                this.elasticSearchConnection.getRegistryIndex(),
-                this.elasticSearchConnection.getRegistryRefIndex(),
-                this.elasticSearchConnection.getTimeOutSeconds());
+        this.searchRequestBuilder = new RegistrySearchRequestBuilder(
+                this.openSearchConnection.getRegistryIndex(),
+                this.openSearchConnection.getRegistryRefIndex(),
+                this.openSearchConnection.getTimeOutSeconds());
        
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -72,12 +72,12 @@ public class ProductBusinessObject
     public String getLatestLidVidFromLid(String lid) throws IOException,LidVidNotFoundException
     {
         /*
-         * if lid is a lidvid then it return the same lidvid if available in the elasticsearch database
+         * if lid is a lidvid then it return the same lidvid if available in the opensearch database
          */
         lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
         SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
             
-        SearchResponse searchResponse = this.elasticSearchConnection.getRestHighLevelClient().search(searchRequest, 
+        SearchResponse searchResponse = this.openSearchConnection.getRestHighLevelClient().search(searchRequest, 
                 RequestOptions.DEFAULT);
 
         if (searchResponse != null)
@@ -119,7 +119,7 @@ public class ProductBusinessObject
        
        
        /**
-     * @param sourceAsMap source map coming from elasticSearch
+     * @param sourceAsMap source map coming from openSearch
      * @param included_fields, in API syntax, with .
      * @param excluded_fields is ignored is included_fields is not null and not empty, in API syntax
      * @return
@@ -136,15 +136,15 @@ public class ProductBusinessObject
                 String apiProperty;
                 for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
                     try {
-                        apiProperty = SearchUtil.elasticPropertyToJsonProperty(entry.getKey());
+                        apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
                         if ((excluded_fields == null)
                                 || (! excluded_fields.contains(apiProperty)))
                      filteredMapJsonProperties.put(
                              apiProperty, 
                              ProductBusinessObject.object2PropertyValue(entry.getValue())
                              );
-                    } catch (UnsupportedElasticSearchProperty e) {
-                        log.warn("ElasticSearch property " + entry.getKey() + " is not supported, ignored");
+                    } catch (UnsupportedSearchProperty e) {
+                        log.warn("openSearch property " + entry.getKey() + " is not supported, ignored");
                     }
                 }
                 
@@ -154,7 +154,7 @@ public class ProductBusinessObject
                 String esField;
                 for (String field : included_fields) {
                     
-                    esField = SearchUtil.jsonPropertyToElasticProperty(field);
+                    esField = SearchUtil.jsonPropertyToOpenProperty(field);
                 
                     if (sourceAsMap.containsKey(esField)) {
                         filteredMapJsonProperties.put(

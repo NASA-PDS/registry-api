@@ -17,15 +17,15 @@ import org.opensearch.index.query.TermQueryBuilder;
 import org.opensearch.index.query.PrefixQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 
-public class ElasticSearchRegistrySearchRequestBuilder
+public class RegistrySearchRequestBuilder
 {
-    private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistrySearchRequestBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
     
     final public String registryIndex;
     final public String registryRefIndex;
     private int timeOutSeconds;
     
-    public ElasticSearchRegistrySearchRequestBuilder(
+    public RegistrySearchRequestBuilder(
             String registryIndex, 
             String registryRefindex, 
             int timeOutSeconds)
@@ -35,7 +35,7 @@ public class ElasticSearchRegistrySearchRequestBuilder
         this.timeOutSeconds = timeOutSeconds;
     }
     
-    public ElasticSearchRegistrySearchRequestBuilder()
+    public RegistrySearchRequestBuilder()
     {
         this.registryIndex = "registry";
         this.registryRefIndex = "registry-refs";
@@ -107,7 +107,7 @@ public class ElasticSearchRegistrySearchRequestBuilder
         bld.fetchSource(true, includedFields, excludedFields);
         bld.setTimeoutSeconds(this.timeOutSeconds);        
         SearchRequest searchRequest = bld.build(this.registryIndex);
-        log.debug("Elasticsearch request :" + searchRequest.toString());
+        log.debug("opensearch request :" + searchRequest.toString());
 
         return searchRequest;
     }

@@ -150,14 +150,14 @@ public class RequestAndResponseContext
 	{
 		List<String> complete = new ArrayList<String>();
 		String max_needs[] = {}, min_needs[] = {};
-		given = SearchUtil.jsonPropertyToElasticProperty(given);
+		given = SearchUtil.jsonPropertyToOpenProperty(given);
 
 		if (this.formatters.containsKey(this.format))
 		{ 
 			this.formatters.get(this.format).setBaseURL(this.baseURL);
 			this.formatters.get(this.format).setObjectMapper(this.om);
-			max_needs = SearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
-			min_needs = SearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
+			max_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
+			min_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
 		}
 		else
 		{

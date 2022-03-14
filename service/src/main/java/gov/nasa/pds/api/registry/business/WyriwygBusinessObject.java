@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
+import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.SearchUtil;
 import gov.nasa.pds.model.Summary;
@@ -57,11 +57,11 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
     		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
     		try
     		{
-    			kvp.setKey(SearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+    			kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
     			kvp.setValue(String.valueOf(pair.getValue()));
     			product.addKeyValuePairsItem(kvp);
     		}
-    		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
+    		catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
     	}
     	this.product = product;
 	}
@@ -84,11 +84,11 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
             		try
             		{
-            			kvp.setKey(SearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+            			kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
             			kvp.setValue(String.valueOf(pair.getValue()));
             			product.addKeyValuePairsItem(kvp);
             		}
-            		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
+            		catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
             	}
             	products.addDataItem(product);
             }
@@ -118,11 +118,11 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
             		try
             		{
-            			kvp.setKey(SearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+            			kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
             			kvp.setValue(String.valueOf(pair.getValue()));
             			product.addKeyValuePairsItem(kvp);
             		}
-            		catch (UnsupportedElasticSearchProperty e) { log.warn("ElasticSearch property " + pair.getKey() + " is not supported, ignored"); }
+            		catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
             	}
             	products.addDataItem(product);
             }

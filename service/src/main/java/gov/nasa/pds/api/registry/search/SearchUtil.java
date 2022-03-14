@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.business.EntityProduct;
-import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
+import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.Reference;
@@ -28,32 +28,32 @@ public class SearchUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(SearchUtil.class);
     
-	static public String jsonPropertyToElasticProperty(String jsonProperty)
+	static public String jsonPropertyToOpenProperty(String jsonProperty)
 	{ return jsonProperty.replace(".", "/"); }
 	
-	static public String[] jsonPropertyToElasticProperty(String[] jsonProperties)
+	static public String[] jsonPropertyToOpenProperty(String[] jsonProperties)
 	{ 
 		if (jsonProperties != null && jsonProperties.length > 0)
 		{
 			for (int i=0 ; i < jsonProperties.length ; i++)
-			{ jsonProperties[i] = jsonPropertyToElasticProperty(jsonProperties[i]); }
+			{ jsonProperties[i] = jsonPropertyToOpenProperty(jsonProperties[i]); }
 		}
 		return jsonProperties;
 	}
 
-	static public List<String> jsonPropertyToElasticProperty(List<String> jsonProperties)
+	static public List<String> jsonPropertyToOpenProperty(List<String> jsonProperties)
 	{
 		if (jsonProperties != null && jsonProperties.size() > 0)
 		{
 			for (int i=0 ; i < jsonProperties.size() ; i++)
-			{ jsonProperties.set(i, jsonPropertyToElasticProperty(jsonProperties.get(i))); }
+			{ jsonProperties.set(i, jsonPropertyToOpenProperty(jsonProperties.get(i))); }
 		}
 		return jsonProperties;
 	}
 	
-	static public String elasticPropertyToJsonProperty(String elasticProperty) throws UnsupportedElasticSearchProperty {
+	static public String openPropertyToJsonProperty(String openProperty) throws UnsupportedSearchProperty {
 		   		
-			return elasticProperty.replace('/', '.');
+			return openProperty.replace('/', '.');
 	 }
 	
 	static private void addReference (ArrayList<Reference> to, String ID, URL baseURL)

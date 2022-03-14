@@ -19,7 +19,7 @@ import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 
 /**
  * Bundle Data Access Object (DAO). 
- * Provides methods to get bundle information from Elasticsearch.
+ * Provides methods to get bundle information from opensearch.
  * 
  * @author karpenko
  */
@@ -29,7 +29,7 @@ public class BundleDAO
     
     /**
      * Constructor
-     * @param esConnection Elasticsearch connection
+     * @param esConnection opensearch connection
      */
     public BundleDAO(OpenSearchRegistryConnection esConnection)
     {
@@ -68,7 +68,7 @@ public class BundleDAO
         FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includes, null);
         esRequest.fetchSourceContext(fetchSourceContext);
         
-        // Call Elasticsearch
+        // Call opensearch
         RestHighLevelClient client = esConnection.getRestHighLevelClient();
         GetResponse esResponse = client.get(esRequest, RequestOptions.DEFAULT);
         if(!esResponse.isExists()) throw new LidVidNotFoundException(bundleLidVid);
@@ -148,7 +148,7 @@ public class BundleDAO
         FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includes, null);
         esRequest.fetchSourceContext(fetchSourceContext);
         
-        // Call Elasticsearch
+        // Call opensearch
         RestHighLevelClient client = esConnection.getRestHighLevelClient();
         GetResponse esResponse = client.get(esRequest, RequestOptions.DEFAULT);
         if(!esResponse.isExists()) throw new LidVidNotFoundException(bundleLidVid);

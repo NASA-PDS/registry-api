@@ -149,7 +149,7 @@ public class ProductQueryBuilderUtil
         ExistsQueryBuilder existsQueryBuilder;
         for (String field : fields)
         {
-            esField = SearchUtil.jsonPropertyToElasticProperty(field);
+            esField = SearchUtil.jsonPropertyToOpenProperty(field);
             existsQueryBuilder = QueryBuilders.existsQuery(esField);
             fieldsBoolQuery.should(existsQueryBuilder);
         }

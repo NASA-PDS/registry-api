@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.opensearch;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;

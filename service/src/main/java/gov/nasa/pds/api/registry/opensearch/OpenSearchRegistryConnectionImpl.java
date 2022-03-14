@@ -58,7 +58,7 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
-		OpenSearchRegistryConnectionImpl.log.info("Connection to elastic search");
+		OpenSearchRegistryConnectionImpl.log.info("Connection to open search");
 		for (String host : hosts) {
 			String hostPort[] = host.split(":");
 			OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort[0] + ":" + hostPort[1]);
@@ -73,7 +73,7 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 		if ((username != null) && (username != ""))  {
 		
 			
-			OpenSearchRegistryConnectionImpl.log.info("Set elasticSearch connection with username/password");
+			OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection with username/password");
 			final CredentialsProvider credentialsProvider =
 				    new BasicCredentialsProvider();
 			credentialsProvider.setCredentials(AuthScope.ANY,
@@ -108,7 +108,7 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 			    });
 		}
 		else {
-			OpenSearchRegistryConnectionImpl.log.info("Set elasticSearch connection");
+			OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection");
 			builder = RestClient.builder(
             		httpHosts.toArray(new HttpHost[httpHosts.size()])); 
 		}
