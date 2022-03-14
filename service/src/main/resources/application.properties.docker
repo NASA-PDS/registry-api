@@ -8,7 +8,7 @@ spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
 
 debug=true
 logging.level.root = DEBUG
-logging.level.gov.nasa.pds.api.registry.elasticsearch = DEBUG
+logging.level.gov.nasa.pds.api.registry.opensearch = DEBUG
 
 server.ssl.enabled=false
 server.ssl.key-alias=registry
@@ -17,13 +17,13 @@ server.ssl.key-store=classpath:keystore.p12
 server.ssl.key-store-type=PKCS12
 
 # note the port is mandatory even when it is default :80 or :443
-elasticSearch.host=es:9200
-elasticSearch.registryIndex=registry
-elasticSearch.registryRefIndex=registry-refs
-elasticSearch.timeOutSeconds=60
-elasticSearch.username=
-elasticSearch.password=
-elasticSearch.ssl=false
+openSearch.host=es:9200
+openSearch.registryIndex=registry
+openSearch.registryRefIndex=registry-refs
+openSearch.timeOutSeconds=60
+openSearch.username=
+openSearch.password=
+openSearch.ssl=false
 
 # Only show products with following archive statuses
 filter.archiveStatus=archived,certified
