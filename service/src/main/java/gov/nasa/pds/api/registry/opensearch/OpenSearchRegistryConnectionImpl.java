@@ -70,7 +70,7 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 		
 		RestClientBuilder builder;
 		
-		if ((username != null) && (username != ""))  {
+		if ((username != null) && (!username.equals("")))  {
 		
 			
 			OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection with username/password");

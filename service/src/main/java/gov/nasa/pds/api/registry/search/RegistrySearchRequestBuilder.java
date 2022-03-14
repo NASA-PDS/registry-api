@@ -27,11 +27,11 @@ public class RegistrySearchRequestBuilder
     
     public RegistrySearchRequestBuilder(
             String registryIndex, 
-            String registryRefindex, 
+            String registryRefIndex, 
             int timeOutSeconds)
     {
         this.registryIndex = registryIndex;
-        this.registryRefIndex = registryRefindex;
+        this.registryRefIndex = registryRefIndex;
         this.timeOutSeconds = timeOutSeconds;
     }
     

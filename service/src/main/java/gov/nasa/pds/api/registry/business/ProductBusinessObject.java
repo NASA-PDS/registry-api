@@ -138,7 +138,7 @@ public class ProductBusinessObject
                     try {
                         apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
                         if ((excluded_fields == null)
-                                || (! excluded_fields.contains(apiProperty)))
+                                || !excluded_fields.contains(apiProperty))
                      filteredMapJsonProperties.put(
                              apiProperty, 
                              ProductBusinessObject.object2PropertyValue(entry.getValue())
