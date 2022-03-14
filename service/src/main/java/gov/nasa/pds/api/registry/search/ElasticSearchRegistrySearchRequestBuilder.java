@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.business.BlobUtil;
 import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.PrefixQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.TermQueryBuilder;
+import org.opensearch.index.query.PrefixQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
 
 public class ElasticSearchRegistrySearchRequestBuilder
 {

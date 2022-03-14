@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +20,8 @@ import com.ibm.icu.util.StringTokenizer;
 
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.SearchUtil;
 import gov.nasa.pds.model.Summary;
 
 public class RequestAndResponseContext
@@ -150,14 +150,14 @@ public class RequestAndResponseContext
 	{
 		List<String> complete = new ArrayList<String>();
 		String max_needs[] = {}, min_needs[] = {};
-		given = ElasticSearchUtil.jsonPropertyToElasticProperty(given);
+		given = SearchUtil.jsonPropertyToElasticProperty(given);
 
 		if (this.formatters.containsKey(this.format))
 		{ 
 			this.formatters.get(this.format).setBaseURL(this.baseURL);
 			this.formatters.get(this.format).setObjectMapper(this.om);
-			max_needs = ElasticSearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
-			min_needs = ElasticSearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
+			max_needs = SearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
+			min_needs = SearchUtil.jsonPropertyToElasticProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
 		}
 		else
 		{
@@ -234,7 +234,7 @@ public class RequestAndResponseContext
 		return response;
 	}
 	
-	public void setResponse(ElasticSearchHitIterator hits, int real_total)
+	public void setResponse(HitIterator hits, int real_total)
 	{ 
 		Summary summary = new Summary();
 		summary.setQ(this.getQueryString());

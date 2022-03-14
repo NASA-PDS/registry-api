@@ -8,13 +8,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import org.opensearch.action.get.GetRequest;
+import org.opensearch.action.get.GetResponse;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.search.fetch.subphase.FetchSourceContext;
+
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 
 /**
  * Bundle Data Access Object (DAO). 
@@ -24,13 +25,13 @@ import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
  */
 public class BundleDAO
 {
-    private ElasticSearchRegistryConnection esConnection;
+    private OpenSearchRegistryConnection esConnection;
     
     /**
      * Constructor
      * @param esConnection Elasticsearch connection
      */
-    public BundleDAO(ElasticSearchRegistryConnection esConnection)
+    public BundleDAO(OpenSearchRegistryConnection esConnection)
     {
         this.esConnection = esConnection;
     }

@@ -8,16 +8,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
-import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.SearchUtil;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
 import gov.nasa.pds.model.WyriwygProductKeyValuePairs;
@@ -57,7 +57,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
     		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
     		try
     		{
-    			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+    			kvp.setKey(SearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
     			kvp.setValue(String.valueOf(pair.getValue()));
     			product.addKeyValuePairsItem(kvp);
     		}
@@ -67,7 +67,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	}
 
 	@Override
-	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		Set<String> uniqueProperties = new TreeSet<String>();
 		WyriwygProducts products = new WyriwygProducts();
@@ -84,7 +84,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
             		try
             		{
-            			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+            			kvp.setKey(SearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
             			kvp.setValue(String.valueOf(pair.getValue()));
             			product.addKeyValuePairsItem(kvp);
             		}
@@ -118,7 +118,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
             		try
             		{
-            			kvp.setKey(ElasticSearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
+            			kvp.setKey(SearchUtil.elasticPropertyToJsonProperty(pair.getKey()));
             			kvp.setValue(String.valueOf(pair.getValue()));
             			product.addKeyValuePairsItem(kvp);
             		}

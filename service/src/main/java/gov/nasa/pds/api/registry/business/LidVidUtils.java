@@ -6,24 +6,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.metrics.ParsedTopHits;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.common.unit.TimeValue;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.aggregations.Aggregation;
+import org.opensearch.search.aggregations.AggregationBuilders;
+import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.opensearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.opensearch.search.aggregations.metrics.ParsedTopHits;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.search.sort.FieldSortBuilder;
+import org.opensearch.search.sort.SortOrder;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 
 
 /**
@@ -59,7 +59,7 @@ public class LidVidUtils
      * @return list of LIDVIDs
      * @throws IOException
      */
-    public static List<String> getLatestLidVidsByLids(ElasticSearchRegistryConnection esConnection, 
+    public static List<String> getLatestLidVidsByLids(OpenSearchRegistryConnection esConnection, 
             Collection<String> lids) throws IOException
     {
         // Create request
@@ -106,7 +106,7 @@ public class LidVidUtils
      * @return a list of LIDVIDs
      * @throws IOException an exception
      */
-    public static List<String> getAllLidVidsByLids(ElasticSearchRegistryConnection esConnection, 
+    public static List<String> getAllLidVidsByLids(OpenSearchRegistryConnection esConnection, 
             Collection<String> lids) throws IOException
     {
         // Create request

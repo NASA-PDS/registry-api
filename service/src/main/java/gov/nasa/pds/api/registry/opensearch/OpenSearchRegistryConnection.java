@@ -1,8 +1,8 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.opensearch;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestHighLevelClient;
 
-public interface ElasticSearchRegistryConnection 
+public interface OpenSearchRegistryConnection 
 {
 	public RestHighLevelClient getRestHighLevelClient();
 	public String getRegistryIndex();

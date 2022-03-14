@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
+import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
@@ -80,7 +80,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	{ this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON); }
 
 	@Override
-	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
         List<Pds4Product> list = new ArrayList<Pds4Product>();
         Pds4Products products = new Pds4Products();

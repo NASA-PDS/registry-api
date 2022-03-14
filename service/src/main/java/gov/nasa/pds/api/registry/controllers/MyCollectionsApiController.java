@@ -7,13 +7,13 @@ import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
+import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
-import org.elasticsearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -169,7 +169,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         bld.setFields("product_lidvid");
         SearchRequest request = bld.buildTermQuery();
 
-        ElasticSearchHitIterator itr = new ElasticSearchHitIterator(esRegistryConnection.getRestHighLevelClient(), request);
+        HitIterator itr = new HitIterator(esRegistryConnection.getRestHighLevelClient(), request);
         
         for (final Map<String,Object> kvp : itr)
         {

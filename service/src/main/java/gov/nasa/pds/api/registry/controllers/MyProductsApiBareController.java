@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.elasticsearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,10 @@ import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.business.LidVidUtils;
 import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
+import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
@@ -52,7 +52,7 @@ public class MyProductsApiBareController {
     
     // TODO remove and replace by BusinessObjects 
     @Autowired
-    ElasticSearchRegistryConnection esRegistryConnection;
+    OpenSearchRegistryConnection esRegistryConnection;
     
     @Autowired
     protected ProductBusinessObject productBO;
@@ -74,7 +74,7 @@ public class MyProductsApiBareController {
         bld.setFields(context.getFields());
         SearchRequest req = bld.buildTermQuery();
         
-        ElasticSearchHitIterator itr = new ElasticSearchHitIterator(lidvids.size(), 
+        HitIterator itr = new HitIterator(lidvids.size(), 
                 esRegistryConnection.getRestHighLevelClient(), req);
         
     	context.setResponse(itr, real_total);

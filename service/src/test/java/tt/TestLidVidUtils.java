@@ -3,8 +3,8 @@ package tt;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.business.BundleDAO;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnectionImpl;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImpl;
 
 
 public class TestLidVidUtils
@@ -16,7 +16,7 @@ public class TestLidVidUtils
         //System.out.println(src);
         
         
-        ElasticSearchRegistryConnection con = new ElasticSearchRegistryConnectionImpl();
+        OpenSearchRegistryConnection con = new OpenSearchRegistryConnectionImpl();
         
         //List<String> ids = LidVidUtils.getLatestLids(con, Arrays.asList("urn:nasa:pds:orex.spice"));
         //System.out.println(ids);

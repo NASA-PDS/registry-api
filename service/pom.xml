@@ -43,7 +43,6 @@ POSSIBILITY OF SUCH DAMAGE.
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jackson-version>2.10.0</jackson-version>
 		<springfox-version>2.7.0</springfox-version>
-		<elasticsearch.version>7.13.3</elasticsearch.version>
 	</properties>
 	<build>
 		<plugins>
@@ -275,16 +274,15 @@ POSSIBILITY OF SUCH DAMAGE.
 			<version>4.9.2</version>
 		</dependency>
 
+                <dependency>
+                  <groupId>org.opensearch.client</groupId>
+                  <artifactId>opensearch-rest-client</artifactId>
+                  <version>1.2.4</version>
+                </dependency>
 		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${elasticsearch.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<version>${elasticsearch.version}</version>
+		  <groupId>org.opensearch.client</groupId>
+		  <artifactId>opensearch-rest-high-level-client</artifactId>
+		  <version>1.2.4</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->

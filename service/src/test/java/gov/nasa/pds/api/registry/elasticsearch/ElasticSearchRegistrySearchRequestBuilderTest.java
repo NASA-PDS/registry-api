@@ -12,16 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.elasticsearch.action.search.SearchRequest;
-
-import org.junit.jupiter.api.Assertions;
+import org.opensearch.action.search.SearchRequest;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
 
@@ -104,7 +99,7 @@ class ElasticSearchRegistrySearchRequestBuilderTest {
 		
 		try {
 			FileWriter myWriter = new FileWriter("unittests.txt");
-			for (Entry<String, String> queryEntry : this.queryMap.entrySet()) {
+			for (Entry<String, String> queryEntry : ElasticSearchRegistrySearchRequestBuilderTest.queryMap.entrySet()) {
 				
 				queryString = queryEntry.getKey();
 				List<String> fields = new ArrayList<String>(Arrays.asList("title","ops:Label_File_Info.ops:md5_checksum"));

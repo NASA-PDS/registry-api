@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
 
-public class ElasticSearchHitIterator implements Iterable<Map<String,Object>>,Iterator<Map<String,Object>>
+public class HitIterator implements Iterable<Map<String,Object>>,Iterator<Map<String,Object>>
 {
 	private int size=10; // define size to use here to prevent page skipping if elasticsearch default size ever changes
 	private int at=0, page=0;
@@ -18,7 +18,7 @@ public class ElasticSearchHitIterator implements Iterable<Map<String,Object>>,It
 	private RestHighLevelClient client;
 	private SearchRequest request;
 	
-	public ElasticSearchHitIterator (RestHighLevelClient client, SearchRequest request) throws IOException
+	public HitIterator (RestHighLevelClient client, SearchRequest request) throws IOException
 	{
 		super();
 		this.client = client;
@@ -26,7 +26,7 @@ public class ElasticSearchHitIterator implements Iterable<Map<String,Object>>,It
 		this.currentBatch = this.fetch();
 	}
 
-	public ElasticSearchHitIterator (int size, RestHighLevelClient client, SearchRequest request) throws IOException
+	public HitIterator (int size, RestHighLevelClient client, SearchRequest request) throws IOException
 	{
 		super();
 		this.client = client;

@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 
 public class LidVidDAO
 {
-    private ElasticSearchRegistryConnection esConnection;
+    private OpenSearchRegistryConnection esConnection;
     
     
-    public LidVidDAO(ElasticSearchRegistryConnection esConnection)
+    public LidVidDAO(OpenSearchRegistryConnection esConnection)
     {
         this.esConnection = esConnection;        
     }

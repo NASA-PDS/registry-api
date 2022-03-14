@@ -2,11 +2,11 @@ package gov.nasa.pds.api.registry.search;
 
 import java.util.concurrent.TimeUnit;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.common.unit.TimeValue;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.search.fetch.subphase.FetchSourceContext;
 
 
 public class SearchRequestBuilder

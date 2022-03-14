@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.search.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.SearchUtil;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.PropertyArrayValues;
@@ -51,14 +51,14 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 		Map<String,Object> kvp = hit.getSourceAsMap();;
 		PdsProduct product;
 
-		product = ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+		product = SearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
         product.setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
         this.product = product;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public int setResponse(ElasticSearchHitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
 		PdsProducts products = new PdsProducts();
 		Set<String> uniqueProperties = new TreeSet<String>();
@@ -69,7 +69,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
             if (!onlySummary)
             {
-            	products.addDataItem(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+            	products.addDataItem(SearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
                 products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
             }
         }
@@ -97,7 +97,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
             if (!onlySummary)
             {
-            	products.addDataItem(ElasticSearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+            	products.addDataItem(SearchUtil.ESentityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
                 products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
             }
         }

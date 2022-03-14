@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.opensearch;
 
 import java.util.List;
 
@@ -17,24 +17,24 @@ import org.apache.http.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
-import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestClientBuilder;
+import org.opensearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
+import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistryConnection {
+public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConnection {
 	
     // key for getting the remotes from cross cluster config
 	public static String CLUSTER_REMOTE_KEY = "cluster.remote";
 
-	private static final Logger log = LoggerFactory.getLogger(ElasticSearchRegistryConnectionImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(OpenSearchRegistryConnectionImpl.class);
 	
 	private RestHighLevelClient restHighLevelClient;
 	private String registryIndex;
@@ -43,12 +43,12 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 	private ArrayList<String> crossClusterNodes;
 	
 	
-	public ElasticSearchRegistryConnectionImpl()
+	public OpenSearchRegistryConnectionImpl()
 	{
 	    this(Arrays.asList("localhost:9200"), "registry", "registry-refs", 5, null, null, false);
 	}
 	
-	public ElasticSearchRegistryConnectionImpl(List<String> hosts, 
+	public OpenSearchRegistryConnectionImpl(List<String> hosts, 
 			String registryIndex,
 			String registryRefIndex,
 			int timeOutSeconds,
@@ -58,10 +58,10 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
-		ElasticSearchRegistryConnectionImpl.log.info("Connection to elastic search");
+		OpenSearchRegistryConnectionImpl.log.info("Connection to elastic search");
 		for (String host : hosts) {
 			String hostPort[] = host.split(":");
-			ElasticSearchRegistryConnectionImpl.log.info("Host " + hostPort[0] + ":" + hostPort[1]);
+			OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort[0] + ":" + hostPort[1]);
 			httpHosts.add(new HttpHost(hostPort[0], 
             		Integer.parseInt(hostPort[1]), 
             		ssl?"https":"http"));
@@ -73,7 +73,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 		if ((username != null) && (username != ""))  {
 		
 			
-			ElasticSearchRegistryConnectionImpl.log.info("Set elasticSearch connection with username/password");
+			OpenSearchRegistryConnectionImpl.log.info("Set elasticSearch connection with username/password");
 			final CredentialsProvider credentialsProvider =
 				    new BasicCredentialsProvider();
 			credentialsProvider.setCredentials(AuthScope.ANY,
@@ -89,7 +89,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			        	try {
 				        	
 			        		if (ssl) {
-			        			ElasticSearchRegistryConnectionImpl.log.info("Connection over SSL");
+			        			OpenSearchRegistryConnectionImpl.log.info("Connection over SSL");
 					        	SSLContextBuilder sslBld = SSLContexts.custom(); 
 						        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
 						        SSLContext sslContext = sslBld.build();
@@ -108,7 +108,7 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			    });
 		}
 		else {
-			ElasticSearchRegistryConnectionImpl.log.info("Set elasticSearch connection");
+			OpenSearchRegistryConnectionImpl.log.info("Set elasticSearch connection");
 			builder = RestClient.builder(
             		httpHosts.toArray(new HttpHost[httpHosts.size()])); 
 		}
@@ -165,9 +165,9 @@ public class ElasticSearchRegistryConnectionImpl implements ElasticSearchRegistr
 			Set<String> clusters = response.getPersistentSettings().getGroups(CLUSTER_REMOTE_KEY).keySet();
 			if (clusters.size() > 0) {
 				result = new ArrayList<String>(clusters);
-				ElasticSearchRegistryConnectionImpl.log.info("Cross cluster search is active: (" + result.toString() + ")");
+				OpenSearchRegistryConnectionImpl.log.info("Cross cluster search is active: (" + result.toString() + ")");
 			} else {
-				ElasticSearchRegistryConnectionImpl.log.info("Cross cluster search is inactive");
+				OpenSearchRegistryConnectionImpl.log.info("Cross cluster search is inactive");
 			}
 		}
 		catch(Exception ex) {

@@ -12,11 +12,11 @@ import java.util.Deque;
 import java.util.List;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.WildcardQueryBuilder;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.MatchQueryBuilder;
+import org.opensearch.index.query.WildcardQueryBuilder;
+import org.opensearch.index.query.RangeQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
 
 public class Antlr4SearchListener extends SearchBaseListener
 {
@@ -125,7 +125,7 @@ public class Antlr4SearchListener extends SearchBaseListener
     @Override
     public void exitComparison(SearchParser.ComparisonContext ctx)
     {
-        final String left = ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
+        final String left = SearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getSymbol().getText());
         
         String right;
         QueryBuilder comparator = null;
@@ -192,7 +192,7 @@ public class Antlr4SearchListener extends SearchBaseListener
     @Override
     public void exitLikeComparison(SearchParser.LikeComparisonContext ctx)
     {
-        final String left = ElasticSearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getText());
+        final String left = SearchUtil.jsonPropertyToElasticProperty(ctx.FIELD().getText());
         
         String right = ctx.STRINGVAL().getText();
         right = right.substring(1, right.length() - 1);

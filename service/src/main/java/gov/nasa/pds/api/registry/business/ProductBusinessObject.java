@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +19,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedElasticSearchProperty;
 import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
+import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
 public class ProductBusinessObject
@@ -32,7 +32,7 @@ public class ProductBusinessObject
     
     private static final String DEFAULT_NULL_VALUE = null; 
     
-    private ElasticSearchRegistryConnection elasticSearchConnection;
+    private OpenSearchRegistryConnection elasticSearchConnection;
     private ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder;
 
     private ObjectMapper objectMapper;
@@ -42,7 +42,7 @@ public class ProductBusinessObject
     private LidVidDAO lidVidDao;
     private BundleDAO bundleDao;
     
-    public ProductBusinessObject(ElasticSearchRegistryConnection esRegistryConnection) {
+    public ProductBusinessObject(OpenSearchRegistryConnection esRegistryConnection) {
         this.elasticSearchConnection = esRegistryConnection;
         
         this.searchRequestBuilder = new ElasticSearchRegistrySearchRequestBuilder(
@@ -136,7 +136,7 @@ public class ProductBusinessObject
                 String apiProperty;
                 for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
                     try {
-                        apiProperty = ElasticSearchUtil.elasticPropertyToJsonProperty(entry.getKey());
+                        apiProperty = SearchUtil.elasticPropertyToJsonProperty(entry.getKey());
                         if ((excluded_fields == null)
                                 || (! excluded_fields.contains(apiProperty)))
                      filteredMapJsonProperties.put(
@@ -154,7 +154,7 @@ public class ProductBusinessObject
                 String esField;
                 for (String field : included_fields) {
                     
-                    esField = ElasticSearchUtil.jsonPropertyToElasticProperty(field);
+                    esField = SearchUtil.jsonPropertyToElasticProperty(field);
                 
                     if (sourceAsMap.containsKey(esField)) {
                         filteredMapJsonProperties.put(

@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +24,9 @@ import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.Reference;
 import gov.nasa.pds.model.Summary;
 
-public class ElasticSearchUtil {
+public class SearchUtil {
 	
-	private static final Logger log = LoggerFactory.getLogger(ElasticSearchUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(SearchUtil.class);
     
 	static public String jsonPropertyToElasticProperty(String jsonProperty)
 	{ return jsonProperty.replace(".", "/"); }
@@ -133,10 +133,10 @@ public class ElasticSearchUtil {
 			meta.setLabelUrl(labelUrl);
 		}
 
-		for (String id : ep.getRef_lid_instrument_host()) { ElasticSearchUtil.addReference (observationSystemComponent, id, baseURL); }
-		for (String id : ep.getRef_lid_instrument()) { ElasticSearchUtil.addReference (observationSystemComponent, id, baseURL); }
-		for (String id : ep.getRef_lid_investigation()) { ElasticSearchUtil.addReference (investigations, id, baseURL); }
-		for (String id : ep.getRef_lid_target()) { ElasticSearchUtil.addReference (targets, id, baseURL); }
+		for (String id : ep.getRef_lid_instrument_host()) { SearchUtil.addReference (observationSystemComponent, id, baseURL); }
+		for (String id : ep.getRef_lid_instrument()) { SearchUtil.addReference (observationSystemComponent, id, baseURL); }
+		for (String id : ep.getRef_lid_investigation()) { SearchUtil.addReference (investigations, id, baseURL); }
+		for (String id : ep.getRef_lid_target()) { SearchUtil.addReference (targets, id, baseURL); }
 
 		product.setInvestigations(investigations);
 		product.setMetadata(meta);

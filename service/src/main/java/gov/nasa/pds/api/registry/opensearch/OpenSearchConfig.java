@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.elasticsearch;
+package gov.nasa.pds.api.registry.opensearch;
 
 import java.util.List;
 import org.slf4j.Logger;
@@ -22,9 +22,9 @@ import gov.nasa.pds.api.registry.search.ElasticSearchRegistrySearchRequestBuilde
  */
 
 @Configuration 
-public class ElasticSearchConfig { 
+public class OpenSearchConfig { 
 	
-	private static final Logger log = LoggerFactory.getLogger(ElasticSearchConfig.class);
+	private static final Logger log = LoggerFactory.getLogger(OpenSearchConfig.class);
 
 	// This default for ES hosts is set in the constructor since we first want to check
 	// the environment if not set in the application properties. This preserves the
@@ -85,10 +85,10 @@ public class ElasticSearchConfig {
 		this.ssl = ssl;
 	}
 	
-	private ElasticSearchRegistryConnection esRegistryConnection = null;
+	private OpenSearchRegistryConnection esRegistryConnection = null;
 
 	@Bean("esRegistryConnection")
-	public ElasticSearchRegistryConnection ElasticSearchRegistryConnection() {
+	public OpenSearchRegistryConnection ElasticSearchRegistryConnection() {
 		
 		if (esRegistryConnection == null) {
 
@@ -105,7 +105,7 @@ public class ElasticSearchConfig {
             	setESHostsFromEnvOrDefault();
             }
 			
-			this.esRegistryConnection = new ElasticSearchRegistryConnectionImpl(this.hosts,
+			this.esRegistryConnection = new OpenSearchRegistryConnectionImpl(this.hosts,
 					this.registryIndex,
 					this.registryRefIndex,
 					this.timeOutSeconds,
@@ -126,7 +126,7 @@ public class ElasticSearchConfig {
 	@Bean("searchRequestBuilder")
 	public ElasticSearchRegistrySearchRequestBuilder ElasticSearchRegistrySearchRequestBuilder() {
 		
-		ElasticSearchRegistryConnection esRegistryConnection = this.ElasticSearchRegistryConnection();
+		OpenSearchRegistryConnection esRegistryConnection = this.ElasticSearchRegistryConnection();
 		
 		return new ElasticSearchRegistrySearchRequestBuilder(
      			esRegistryConnection.getRegistryIndex(),

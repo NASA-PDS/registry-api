@@ -13,11 +13,11 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.ExistsQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.ExistsQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.search.Antlr4SearchListener;
-import gov.nasa.pds.api.registry.search.ElasticSearchUtil;
+import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
 @Component
@@ -149,7 +149,7 @@ public class ProductQueryBuilderUtil
         ExistsQueryBuilder existsQueryBuilder;
         for (String field : fields)
         {
-            esField = ElasticSearchUtil.jsonPropertyToElasticProperty(field);
+            esField = SearchUtil.jsonPropertyToElasticProperty(field);
             existsQueryBuilder = QueryBuilders.existsQuery(esField);
             fieldsBoolQuery.should(existsQueryBuilder);
         }
