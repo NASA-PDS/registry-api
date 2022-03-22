@@ -77,6 +77,17 @@ jobs:
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
                     CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
                     ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
+            -
+                name: 🏷 Image Tag Determination
+                id: tagger
+                run: echo "::set-output name=image_tag::$(echo ${{github.ref}} | awk -F/ '{print $NF}')"
+            -
+                name: 🏞 Image Generation
+                uses: peter-evans/repository-dispatch@v1
+                with:
+                    token: ${{secrets.ADMIN_GITHUB_TOKEN}}
+                    event-type: roundup-success
+                    client-payload: '{"ref": "${{github.ref}}", "image_tag": "${{steps.tagger.outputs.image_tag}}"}'
 
 ...
 
