@@ -54,11 +54,12 @@ jobs:
                 name: 🧱 Image Construction and Publication
                 uses: docker/build-push-action@v2
                 with:
-                    context: ./service/docker
+                    context: ./
                     file: ./service/docker/Dockerfile.http
                     # Honestly, I'm not sure what should go here:
                     build-args: |
                         version=0.5.0-SNAPSHOT
+                    # Maybe just for this repository, we need a separate workflow for :latest vs :1.2.3?
                     platforms: linux/amd64,linux/arm64
                     push: true
                     tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:${{github.event.client_payload.image_tag}}
