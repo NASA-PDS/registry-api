@@ -1,15 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-03-23)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.0-SNAPSHOT...«unknown»)
-
-**Improvements:**
-
-- add ops:Tracking\_Meta/ops:node\_name and ops:Tracking\_Meta/ops:harvest\_date\_time  to meta section of API response [\#102](https://github.com/NASA-PDS/registry-api/issues/102)
-- Rename `engineering` package naming to `registry` [\#10](https://github.com/NASA-PDS/registry-api/issues/10)
-
-## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-08)
+## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-23)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v0.5.0-SNAPSHOT)
 
@@ -26,6 +17,8 @@
 
 **Improvements:**
 
+- add ops:Tracking\_Meta/ops:node\_name and ops:Tracking\_Meta/ops:harvest\_date\_time  to meta section of API response [\#102](https://github.com/NASA-PDS/registry-api/issues/102)
+- Rename `engineering` package naming to `registry` [\#10](https://github.com/NASA-PDS/registry-api/issues/10)
 - implement freetext search [\#70](https://github.com/NASA-PDS/registry-api/issues/70)
 - implement the start/limit efficiently [\#71](https://github.com/NASA-PDS/registry-api/issues/71)
 - Add list of available fields in response format [\#55](https://github.com/NASA-PDS/registry-api/issues/55)
