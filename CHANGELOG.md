@@ -1,16 +1,15 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-03-08)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-03-23)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.0-SNAPSHOT...«unknown»)
 
-**Other closed issues:**
+**Improvements:**
 
-- Refactor meta section of pds4+xml response to use ops namespace [\#85](https://github.com/NASA-PDS/registry-api/issues/85)
-- Refactor meta section of pds4+json response to use ops namespace [\#84](https://github.com/NASA-PDS/registry-api/issues/84)
-- Update API to only return results where archive status in \(archived, certified\) [\#78](https://github.com/NASA-PDS/registry-api/issues/78)
+- add ops:Tracking\_Meta/ops:node\_name and ops:Tracking\_Meta/ops:harvest\_date\_time  to meta section of API response [\#102](https://github.com/NASA-PDS/registry-api/issues/102)
+- Rename `engineering` package naming to `registry` [\#10](https://github.com/NASA-PDS/registry-api/issues/10)
 
-## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-04)
+## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-08)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v0.5.0-SNAPSHOT)
 
@@ -40,12 +39,15 @@
 - blob/json\_blob should not be included in default response [\#73](https://github.com/NASA-PDS/registry-api/issues/73) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Improvements to branch pds-api-125 [\#18](https://github.com/NASA-PDS/registry-api/issues/18) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - CICD did not publish the jar on artifactory [\#2](https://github.com/NASA-PDS/registry-api/issues/2) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-- AWS cost analysis tag  is not 'Alpha' but instead 'Alfa' [\#5](https://github.com/NASA-PDS/registry-api/issues/5)
+- AWS cost analysis tag  is not 'Alpha' but instead 'Alfa' [\#5](https://github.com/NASA-PDS/registry-api/issues/5) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - parsing right hand side of operator does not behave as desired [\#57](https://github.com/NASA-PDS/registry-api/issues/57) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - parsing of string does not succeed [\#58](https://github.com/NASA-PDS/registry-api/issues/58)
 
 **Other closed issues:**
 
+- Refactor meta section of pds4+xml response to use ops namespace [\#85](https://github.com/NASA-PDS/registry-api/issues/85)
+- Refactor meta section of pds4+json response to use ops namespace [\#84](https://github.com/NASA-PDS/registry-api/issues/84)
+- Update API to only return results where archive status in \(archived, certified\) [\#78](https://github.com/NASA-PDS/registry-api/issues/78)
 - Fix code scanning alert - Failure to use HTTPS or SFTP URL in Maven artifact upload/download [\#74](https://github.com/NASA-PDS/registry-api/issues/74)
 - As a developer, I want to update in a single place the list of supported MIME types [\#9](https://github.com/NASA-PDS/registry-api/issues/9)
 - add creation of routing rule to terraform script [\#7](https://github.com/NASA-PDS/registry-api/issues/7)
