@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.elasticsearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +21,17 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistryConnection;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchRegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.KVPQueryBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.business.ErrorFactory;
-import gov.nasa.pds.api.registry.elasticsearch.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.elasticsearch.business.LidVidUtils;
-import gov.nasa.pds.api.registry.elasticsearch.business.ProductBusinessObject;
-import gov.nasa.pds.api.registry.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.registry.business.ErrorFactory;
+import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.LidVidUtils;
+import gov.nasa.pds.api.registry.business.ProductBusinessObject;
+import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 @Component
 public class MyProductsApiBareController {
@@ -52,13 +52,13 @@ public class MyProductsApiBareController {
     
     // TODO remove and replace by BusinessObjects 
     @Autowired
-    ElasticSearchRegistryConnection esRegistryConnection;
+    OpenSearchRegistryConnection esRegistryConnection;
     
     @Autowired
     protected ProductBusinessObject productBO;
     
     @Autowired
-    ElasticSearchRegistrySearchRequestBuilder searchRequestBuilder;
+    RegistrySearchRequestBuilder searchRequestBuilder;
     
 
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {
@@ -74,7 +74,7 @@ public class MyProductsApiBareController {
         bld.setFields(context.getFields());
         SearchRequest req = bld.buildTermQuery();
         
-        ElasticSearchHitIterator itr = new ElasticSearchHitIterator(lidvids.size(), 
+        HitIterator itr = new HitIterator(lidvids.size(), 
                 esRegistryConnection.getRestHighLevelClient(), req);
         
     	context.setResponse(itr, real_total);

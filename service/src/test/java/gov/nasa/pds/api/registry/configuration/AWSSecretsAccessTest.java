@@ -5,8 +5,6 @@ import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
-
 // import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
 
 public class AWSSecretsAccessTest {

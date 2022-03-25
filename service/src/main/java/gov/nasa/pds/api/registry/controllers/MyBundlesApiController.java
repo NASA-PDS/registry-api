@@ -2,19 +2,19 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import gov.nasa.pds.api.base.BundlesApi;
-import gov.nasa.pds.api.registry.elasticsearch.ElasticSearchHitIterator;
-import gov.nasa.pds.api.registry.elasticsearch.KVPQueryBuilder;
-import gov.nasa.pds.api.registry.elasticsearch.business.ErrorFactory;
-import gov.nasa.pds.api.registry.elasticsearch.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.elasticsearch.business.ProductVersionSelector;
-import gov.nasa.pds.api.registry.elasticsearch.business.RequestAndResponseContext;
+import gov.nasa.pds.api.registry.business.ErrorFactory;
+import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.ProductVersionSelector;
+import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
-import org.elasticsearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -242,7 +242,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             bld.setFields("product_lidvid");
             SearchRequest req = bld.buildTermQuery();
             
-            ElasticSearchHitIterator itr = new ElasticSearchHitIterator(esRegistryConnection.getRestHighLevelClient(), req);
+            HitIterator itr = new HitIterator(esRegistryConnection.getRestHighLevelClient(), req);
             
             for(final Map<String,Object> hit : itr)
             {
