@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"api.pds.nasa.gov.api_search_query_lexer"},{"l":"gov.nasa.pds.api.engineering.lexer"}]
