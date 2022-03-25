@@ -8,12 +8,11 @@ gov.nasa.pds.model
 gov.nasa.pds.api.base
 api.pds.nasa.gov.api_search_query_lexer
 gov.nasa.pds.api.registry.lexer
+gov.nasa.pds.api.registry.elasticsearch
+gov.nasa.pds.api.registry.elasticsearch.business
 gov.nasa.pds.api.registry
-gov.nasa.pds.api.registry.opensearch
 gov.nasa.pds.api.registry.serializer
-gov.nasa.pds.api.registry.business
 gov.nasa.pds.api.registry.exceptions
 gov.nasa.pds.api.registry.controllers
-gov.nasa.pds.api.registry.search
 gov.nasa.pds.api.registry.configuration
 gov.nasa.pds.api.model.xml
