@@ -46,14 +46,12 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 	
 	
 	public OpenSearchRegistryConnectionImpl()
-	{
-		
+	{		
 	    this(new OpenSearchRegistryConnectionImplBuilder());
 	}
 	
 	public OpenSearchRegistryConnectionImpl(OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
-	
-		
+			
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
 		OpenSearchRegistryConnectionImpl.log.info("Connection to open search");

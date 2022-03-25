@@ -144,6 +144,7 @@ public class OpenSearchConfig {
             }
 			
 			this.esRegistryConnection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
+
 		}
 		return this.esRegistryConnection;
 	}
