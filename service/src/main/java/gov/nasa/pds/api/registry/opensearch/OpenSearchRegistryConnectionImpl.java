@@ -12,6 +12,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -45,7 +46,7 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 	
 	public OpenSearchRegistryConnectionImpl()
 	{
-	    this(Arrays.asList("localhost:9200"), "registry", "registry-refs", 5, null, null, false);
+	    this(Arrays.asList("localhost:9200"), "registry", "registry-refs", 5, null, null, false, true);
 	}
 	
 	public OpenSearchRegistryConnectionImpl(List<String> hosts, 
@@ -54,7 +55,8 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 			int timeOutSeconds,
 			String username,
 			String password,
-			boolean ssl) {
+			boolean ssl,
+			boolean sslCertificateVerification) {
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
@@ -95,6 +97,9 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 						        SSLContext sslContext = sslBld.build();
 	
 						        httpClientBuilder.setSSLContext(sslContext);
+						        if (!sslCertificateVerification) {
+						        	httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+						        }
 			        		}
 				        	
 				            return httpClientBuilder

@@ -52,6 +52,9 @@ public class OpenSearchConfig {
 	@Value("${openSearch.ssl:false}")
 	private boolean ssl;
     
+	@Value("${openSearch.sslCertificateVerification:true}")
+	private boolean sslCertificateVerification;
+	
 	public List<String> getHosts() {
 		return hosts;
 	}
@@ -79,6 +82,14 @@ public class OpenSearchConfig {
 		
 	public boolean isSsl() {
 		return ssl;
+	}
+
+	public boolean doesSslCertificateVerification() {
+		return sslCertificateVerification;
+	}
+
+	public void setSslCertificateVerification(boolean sslCertificateVerification) {
+		this.sslCertificateVerification = sslCertificateVerification;
 	}
 
 	public void setSsl(boolean ssl) {
@@ -111,7 +122,8 @@ public class OpenSearchConfig {
 					this.timeOutSeconds,
 					this.username,
 					this.password,
-					this.ssl);
+					this.ssl,
+					this.sslCertificateVerification);
 		}
 		return this.esRegistryConnection;
 	}
