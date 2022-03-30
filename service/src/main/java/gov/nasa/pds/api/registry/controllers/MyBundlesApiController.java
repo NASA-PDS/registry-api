@@ -9,12 +9,11 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
-import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -297,15 +296,9 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         if (0 < clidvids.size())
         {
-            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryRefIndex());
-            bld.setKVP("collection_lidvid", clidvids);
-            bld.setFields("product_lidvid");
-            SearchRequest req = bld.buildTermQuery();
-            
-            HitIterator itr = new HitIterator(esRegistryConnection.getRestHighLevelClient(), req);
-            
-            for(final Map<String,Object> hit : itr)
-            {
+            for (final Map<String,Object> hit : new HitIterator(this.esRegistryConnection.getRestHighLevelClient(),
+                    RegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", clidvids, "product_lidvid",
+                            this.esRegistryConnection.getRegistryRefIndex())))            {
                 wlidvids.clear();
                 wsize = 0;
 

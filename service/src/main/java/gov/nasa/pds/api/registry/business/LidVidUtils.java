@@ -11,7 +11,6 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.common.unit.TimeValue;
-import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.aggregations.Aggregation;
@@ -138,10 +137,8 @@ public class LidVidUtils
         SearchSourceBuilder src = new SearchSourceBuilder();
         
         // Query
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        ProductQueryBuilderUtil.addArchiveStatusFilter(boolQuery);
-        boolQuery.must(QueryBuilders.termsQuery("lid", lids));        
-        src.query(boolQuery).fetchSource(false).size(0);
+        // FIXME: no, this needs to use the usual route and not do it on its own
+        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(0);
 
         // Aggregations
         src.aggregation(AggregationBuilders.terms("lids").field("lid").size(lids.size())
@@ -162,12 +159,9 @@ public class LidVidUtils
     {
         if(lids == null || lids.isEmpty()) return null;
 
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        ProductQueryBuilderUtil.addArchiveStatusFilter(boolQuery);
-        boolQuery.must(QueryBuilders.termsQuery("lid", lids));        
-
+        // FIXME: no, this needs to use the usual route and not do it on its own
         SearchSourceBuilder src = new SearchSourceBuilder();
-        src.query(boolQuery).fetchSource(false).size(5000);
+        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(5000);
         return src;
     }
 }

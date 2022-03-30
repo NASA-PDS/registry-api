@@ -104,7 +104,7 @@ public class KVPQueryBuilder
     
     private SearchRequest build(boolean term)
     {
-        String[] exclude = RegistrySearchRequestBuilder.excludes(fields);
+        String[] exclude = {}; //RegistrySearchRequestBuilder.excludes(fields);
         String[] include = fields.toArray(new String[0]);
         
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();

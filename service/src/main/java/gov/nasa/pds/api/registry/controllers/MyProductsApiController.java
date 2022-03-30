@@ -27,7 +27,7 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import io.swagger.annotations.ApiParam;
 
 
@@ -164,19 +164,13 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         if (0 < collectionLIDs.size())
         {
-            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
-            bld.setKVP("ref_lid_collection", collectionLIDs);
-            bld.setFields(context.getFields());
-            SearchRequest request = bld.buildMatchQuery();
-            
+            SearchRequest request = RegistrySearchRequestBuilder.getQueryFieldsFromKVP
+                    ("ref_lid_collection", collectionLIDs, context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
+
             context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
         }
-        else 
-        {
-            MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
-        }
+        else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
     }
-
 
     @Override
     public ResponseEntity<Object> collectionsContainingProduct(
@@ -233,19 +227,11 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         String field = noVer ? "collection_lid" : "collection_lidvid";
         fields.add(field);
         
-        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryRefIndex());
-        bld.setKVP("product_lidvid", lidvid);
-        bld.setFields(fields);            
-        SearchRequest request = bld.buildMatchQuery();
-        
-        HitIterator itr = new HitIterator(esRegistryConnection.getRestHighLevelClient(), request);
-        
-        for (final Map<String,Object> kvp : itr)
-        {
+        for (final Map<String,Object> kvp : new HitIterator(this.esRegistryConnection.getRestHighLevelClient(),
+                RegistrySearchRequestBuilder.getQueryFieldsFromKVP("product_lidvid",
+                        lidvid, fields, this.esRegistryConnection.getRegistryRefIndex(), false)))        {
             if (kvp.get(field) instanceof String)
-            { 
-                lidvids.add(kvp.get(field).toString()); 
-            }
+            { lidvids.add(kvp.get(field).toString()); }
             else
             {
                 @SuppressWarnings("unchecked")

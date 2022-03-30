@@ -9,7 +9,7 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
+import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -217,22 +217,14 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         List<String> productLidvids = new ArrayList<String>();
         List<String> pageOfLidvids = new ArrayList<String>();
 
-        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryRefIndex());
-        bld.setKVP("collection_lidvid", lidvid);
-        bld.setFields("product_lidvid");
-        SearchRequest request = bld.buildTermQuery();
-
-        HitIterator itr = new HitIterator(esRegistryConnection.getRestHighLevelClient(), request);
-        
-        for (final Map<String,Object> kvp : itr)
-        {
+        for (final Map<String,Object> kvp : new HitIterator(this.esRegistryConnection.getRestHighLevelClient(),
+                RegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", lidvid, "product_lidvid",
+                        this.esRegistryConnection.getRegistryRefIndex())))        {
             pageOfLidvids.clear();
             wsize = 0;
 
             if (kvp.get("product_lidvid") instanceof String)
-            { 
-                pageOfLidvids.add(this.productBO.getLatestLidVidFromLid(kvp.get("product_lidvid").toString())); 
-            }
+            { pageOfLidvids.add(this.productBO.getLatestLidVidFromLid(kvp.get("product_lidvid").toString())); }
             else
             {
                 @SuppressWarnings("unchecked")
@@ -246,12 +238,8 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
             // if any data from the pages then add them to the complete roster
             if (context.getStart() <= iteration || context.getStart() < iteration+pageOfLidvids.size())
-            {
-                int fromIndex = context.getStart() <= iteration ? 0 : context.getStart() - iteration;
-                List<String> subList = pageOfLidvids.subList(fromIndex, pageOfLidvids.size());
-                productLidvids.addAll(subList); 
-            }
-
+            { productLidvids.addAll(pageOfLidvids.subList(context.getStart() <= iteration ? 0 : context.getStart()-iteration, pageOfLidvids.size())); }
+            
             // if the limit of data has been found then break out of the loop
             //if (limit <= productLidvids.size()) { break; }
             // otherwise update all of hte indices for the next iteration
@@ -261,14 +249,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         if (productLidvids.size() > 0 && context.getLimit() > 0)
         {
-            int toIndex = productLidvids.size() < context.getLimit() ? productLidvids.size() : context.getLimit();
-            List<String> subList = productLidvids.subList(0, toIndex);
-            this.fillProductsFromLidvids(context, subList, iteration);
+            this.fillProductsFromLidvids(context,
+                    productLidvids.subList(0, productLidvids.size() < context.getLimit() ? productLidvids.size() : context.getLimit()), iteration);
         }
-        else 
-        {
-            MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + lidvid);
-        }
+        else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + lidvid);
     }
 
 
@@ -321,20 +305,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
     private void getContainingBundle(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
     {
-        String id = context.getLIDVID();
-        if(id == null) return;
-
-        log.info("Find all bundles containing collection ID: " + id);
-
-        int idx = id.indexOf("::");
-        String lid = idx > 0 ? id.substring(0, idx) : id;
-        
-        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
-        bld.setFilterByArchiveStatus(true);
-        
-        bld.setKVP("ref_lid_collection", lid);
-        bld.setFields(context.getFields());
-        SearchRequest request = bld.buildTermQuery();
+        MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + context.getLIDVID());
+        MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")));
+        SearchRequest request = RegistrySearchRequestBuilder.getQueryFieldsFromKVP("ref_lid_collection",
+                context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")), context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
 
         context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
     }

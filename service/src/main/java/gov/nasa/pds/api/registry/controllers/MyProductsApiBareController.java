@@ -30,7 +30,6 @@ import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
 
 @Component
 public class MyProductsApiBareController {
@@ -67,16 +66,9 @@ public class MyProductsApiBareController {
 
     protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
     {
-        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
-        bld.setFilterByArchiveStatus(true);
-        bld.setKVP("lidvid", lidvids);
-        bld.setFields(context.getFields());
-        SearchRequest req = bld.buildTermQuery();
-        
-        HitIterator itr = new HitIterator(lidvids.size(), 
-                esRegistryConnection.getRestHighLevelClient(), req);
-        
-    	context.setResponse(itr, real_total);
+    	context.setResponse(new HitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
+                RegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
+                        lidvids, context.getFields(), this.esRegistryConnection.getRegistryIndex())), real_total);
     }
 
     
@@ -181,15 +173,9 @@ public class MyProductsApiBareController {
         
         try 
         {
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(
-                    this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
-            
-            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
-            bld.setFilterByArchiveStatus(true);
-            bld.setKVP("lidvid", context.getLIDVID());
-            bld.setFields(context.getFields());            
-            SearchRequest request = bld.buildTermQuery();
-            
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+            SearchRequest request = RegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid", context.getLIDVID(), context.getFields(),this.esRegistryConnection.getRegistryIndex(), false);
+            context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), request);            
             context.setResponse(esRegistryConnection.getRestHighLevelClient(), request);
 
             if (context.getResponse() == null)

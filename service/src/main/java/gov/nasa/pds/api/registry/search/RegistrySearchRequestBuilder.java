@@ -1,8 +1,10 @@
 package gov.nasa.pds.api.registry.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import org.opensearch.action.search.SearchRequest;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.index.query.TermQueryBuilder;
+import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.PrefixQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 
@@ -42,7 +45,7 @@ public class RegistrySearchRequestBuilder
         this.timeOutSeconds = 60;
     }
 
-    static public String[] excludes (List<String> fields)
+    static private String[] excludes (List<String> fields)
     {
     	String[] exclude, ex0 = new String[0], exbp = {BlobUtil.XML_BLOB_PROPERTY},
                 exjbp = {BlobUtil.JSON_BLOB_PROPERTY},
@@ -118,5 +121,88 @@ public class RegistrySearchRequestBuilder
         presetCriteria.put("product_class", "Product_Collection");
         return getSearchProductsRequest(queryString, keywords, fields, start, limit, presetCriteria);
     }
+    static public SearchRequest getqueryfieldfromlidvid (String lidvid, String field, String es_index)
+    {
+        List<String> fields = new ArrayList<String>(), lidvids = new ArrayList<String>();
+        Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+        fields.add(field);
+        lidvids.add(lidvid);
+        kvps.put("lidvid", lidvids);
+        return getQueryForKVPs (kvps, fields, es_index);
+    }
 
+    static public SearchRequest getQueryFieldFromKVP (String key, List<String>values, String field, String es_index)
+    {
+        List<String> fields = new ArrayList<String>();
+        Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+        fields.add(field);
+        kvps.put(key, values);
+        return getQueryForKVPs (kvps, fields, es_index);        
+    }
+
+    static public SearchRequest getQueryFieldFromKVP (String key, String value, String field, String es_index)
+    {
+        List<String> fields = new ArrayList<String>(), values = new ArrayList<String>();
+        Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+        fields.add(field);
+        values.add(value);
+        kvps.put(key, values);
+        return getQueryForKVPs (kvps, fields, es_index);
+    }
+
+    static public SearchRequest getQueryFieldsFromKVP (String key, String value, List<String> fields, String es_index, boolean term)
+    {
+        List<String> values = new ArrayList<String>();
+        Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+        values.add(value);
+        kvps.put(key, values);
+        return getQueryForKVPs (kvps, fields, es_index, term);
+    }
+
+    static public SearchRequest getQueryFieldsFromKVP (String key, List<String> values, List<String> fields, String es_index)
+    {
+        Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+        kvps.put(key, values);
+        return getQueryForKVPs (kvps, fields, es_index);        
+    }
+
+    static public SearchRequest getQueryFieldsFromKVP (String key, List<String> values, List<String> fields, String es_index, boolean term)
+    {
+        Map<String,List<String>> kvps = new HashMap<String,List<String>>();
+        kvps.put(key, values);
+        return getQueryForKVPs (kvps, fields, es_index, term);      
+    }
+
+    static public SearchRequest getQueryForKVPs (Map<String,List<String>> kvps, List<String> fields, String es_index)
+    {
+        return getQueryForKVPs (kvps, fields, es_index, true);
+    }
+
+    static public SearchRequest getQueryForKVPs (Map<String,List<String>> kvps, List<String> fields, String es_index, boolean term)
+    {
+    	String[] exclude = excludes (fields);
+        String[] include = fields.toArray(new String[0]);
+
+        BoolQueryBuilder find_kvps = QueryBuilders.boolQuery();
+        SearchRequest request = new SearchRequest(es_index)
+                .source(new SearchSourceBuilder().query(find_kvps)
+                        .fetchSource(include, exclude));
+
+        log.info("****************************************");
+        log.info("****************        exclude");
+        for (String e : exclude) log.info("****************           " + e);
+        log.info("****************************************");
+        log.info("****************        include");
+        for (String i : include) log.info("****************           " + i);
+        log.info("****************************************");
+        for (Entry<String,List<String>> key : kvps.entrySet())
+        {
+            for (String value : key.getValue())
+            {
+                if (term) find_kvps.should (QueryBuilders.termQuery (key.getKey(), value));
+                else find_kvps.should (QueryBuilders.matchQuery (key.getKey(), value));
+            }
+        }
+        return request;
+    }
 }
