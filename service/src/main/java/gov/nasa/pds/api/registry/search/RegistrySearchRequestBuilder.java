@@ -82,7 +82,7 @@ public class RegistrySearchRequestBuilder
     
     public SearchRequest getSearchProductsRequest(
             String queryString,
-            String keyword,
+            List<String> keywords,
             List<String> fields, 
             int start, int limit, 
             Map<String,String> presetCriteria) 
@@ -90,9 +90,10 @@ public class RegistrySearchRequestBuilder
         QueryBuilder query = null;
         
         // "keyword" parameter provided. Run full-text query.
-        if(keyword != null && !keyword.isBlank())
+        if(keywords != null)
         {
-            query = ProductQueryBuilderUtil.createKeywordQuery(keyword, presetCriteria);
+        	// FIXME: list of booleans rather than single
+        	for (String keyword : keywords) query = ProductQueryBuilderUtil.createKeywordQuery(keyword, presetCriteria);
         }
         // Run PDS query language ("q" parameter) query
         else
@@ -111,17 +112,11 @@ public class RegistrySearchRequestBuilder
 
         return searchRequest;
     }
-
     
-    public SearchRequest getSearchProductRequest(String queryString, String keyword, List<String> fields, int start, int limit) {
-        Map<String, String> presetCriteria = new HashMap<String, String>();
-        return getSearchProductsRequest(queryString, keyword, fields, start, limit, presetCriteria);        
-    }
-    
-    public SearchRequest getSearchCollectionRequest(String queryString, String keyword, List<String> fields, int start, int limit) {
+    public SearchRequest getSearchCollectionRequest(String queryString, List<String> keywords, List<String> fields, int start, int limit) {
         Map<String, String> presetCriteria = new HashMap<String, String>();
         presetCriteria.put("product_class", "Product_Collection");
-        return getSearchProductsRequest(queryString, keyword, fields, start, limit, presetCriteria);
+        return getSearchProductsRequest(queryString, keywords, fields, start, limit, presetCriteria);
     }
 
 }

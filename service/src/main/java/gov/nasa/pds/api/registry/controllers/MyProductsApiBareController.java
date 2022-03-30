@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.business.LidVidUtils;
 import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
@@ -85,21 +84,20 @@ public class MyProductsApiBareController {
     {
         SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(
         		context.getQueryString(),
-        		context.getKeyword(),
+        		context.getKeywords(),
         		context.getFields(), context.getStart(), context.getLimit(), this.presetCriteria);
         context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), searchRequest);
     }
  
 
-    protected ResponseEntity<Object> getProductsResponseEntity(String q, String keyword, int start, int limit,
-            List<String> fields, List<String> sort, boolean onlySummary)
+    protected ResponseEntity<Object> getProductsResponseEntity(URIParameters parameters)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), q, keyword, start, limit, fields, sort, onlySummary, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
         	this.getProducts(context);                
         	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -113,6 +111,11 @@ public class MyProductsApiBareController {
             log.error("Couldn't serialize response for content type " + accept, e);
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        catch (LidVidNotFoundException e)
+        {
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+        }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
@@ -120,21 +123,20 @@ public class MyProductsApiBareController {
         }
         catch (ParseCancellationException pce)
         {
-            log.error("Could not parse the query string: " + q, pce);
+            log.error("Could not parse the query string: " + parameters.getQuery(), pce);
             return new ResponseEntity<Object>(ErrorFactory.build(pce, this.request), HttpStatus.BAD_REQUEST);
         }
     }    
     
     
-    protected ResponseEntity<Object> getAllProductsResponseEntity(String identifier, int start, int limit)
+    protected ResponseEntity<Object> getAllProductsResponseEntity(URIParameters parameters)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
 
         try
         {            
-            String lidvid = LidVidUtils.extractLidFromLidVid(identifier);
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, this.presetCriteria, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
             this.getProductsByLid(context);
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -147,6 +149,11 @@ public class MyProductsApiBareController {
         {
             log.error("Couldn't serialize response for content type " + accept, e);
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (LidVidNotFoundException e)
+        {
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)
         {
@@ -168,19 +175,18 @@ public class MyProductsApiBareController {
     }
 
     
-    protected ResponseEntity<Object> getLatestProductResponseEntity(String lidvid)
+    protected ResponseEntity<Object> getLatestProductResponseEntity(URIParameters parameters)
     {
         String accept = request.getHeader("Accept");
         
         try 
         {
-            lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
             RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(
-                    this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
+                    this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
             
             KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
             bld.setFilterByArchiveStatus(true);
-            bld.setKVP("lidvid", lidvid);
+            bld.setKVP("lidvid", context.getLIDVID());
             bld.setFields(context.getFields());            
             SearchRequest request = bld.buildTermQuery();
             
@@ -188,7 +194,7 @@ public class MyProductsApiBareController {
 
             if (context.getResponse() == null)
             { 
-            	log.warn("Could not find any matches for LIDVID: " + lidvid);
+            	log.warn("Could not find any matches for LIDVID: " + context.getLIDVID());
             	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
@@ -205,7 +211,7 @@ public class MyProductsApiBareController {
         }
         catch (LidVidNotFoundException e)
         {
-            log.warn("Could not find lid(vid) in database: " + lidvid);
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)

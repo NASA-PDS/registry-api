@@ -588,17 +588,19 @@ components:
       schema:
         type: string
     Keyword:
-      name: keyword
+      name: keywords
       in: query
       description: |
         syntax: keyword=keyword1,keyword2,...
 
-        behaviro: free text search on title and description (if set q is ignored
+        behavior: free text search on title and description (if set q is ignored
 
         notes: is this implemented?
       required: false
       schema:
-        type: string
+        type: array
+        items:
+          type: string
     Limit:
       name: limit
       in: query
@@ -616,7 +618,7 @@ components:
       description: |
         syntax: q="vid eq 13.0"
 
-        behaviro: query uses eq,ne,gt,ge,lt,le,(,),not,and,or operators. Properties are named as in 'properties' attributes, literals are strings between quotes, like "animal", or numbers. Detailed query specification is available at https://bit.ly/3h3D54T
+        behavior: query uses eq,ne,gt,ge,lt,le,(,),not,and,or operators. Properties are named as in 'properties' attributes, literals are strings between quotes, like "animal", or numbers. Detailed query specification is available at https://bit.ly/3h3D54T
 
         note: ignored when keyword is present
       required: false
@@ -640,16 +642,16 @@ components:
       description: |
         syntax: start=12
 
-        behaviro: offset in matching result list, for pagination
+        behavior: offset in matching result list, for pagination
       required: false
       schema:
         type: integer
         default: 0
     SummaryOnly:
-      name: only-summary
+      name: summary-only
       in: query
       description: |
-        syntax: only-summary={true,false}
+        syntax: summary-only={true,false}
 
         behavior: only return the summary when a list is returned. Useful to get the list of available properties.
       schema:

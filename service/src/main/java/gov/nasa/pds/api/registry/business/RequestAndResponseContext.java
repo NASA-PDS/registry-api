@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.util.StringTokenizer;
 
+import gov.nasa.pds.api.registry.controllers.URIParameters;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
@@ -30,7 +31,7 @@ public class RequestAndResponseContext
 
     final private long begin_processing = System.currentTimeMillis();
 	final private String queryString;
-	final private String keyword;
+	final private List<String> keywords;
 	final private String lidvid;
     final private List<String> fields;
     final private List<String> sort;
@@ -46,66 +47,18 @@ public class RequestAndResponseContext
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
+    		URIParameters parameters,
     		Map<String,String> preset, // default criteria when nothing else is defined
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, 0, 10, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		int start, int limit, // page information
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ingore all the data and just return keywords found
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ingore all the data and just return keywords found
-    		ProductVersionSelector selector, // all, latest, orginal
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, fields, sort, summaryOnly, selector, preset, output_format); }
+    		) throws ApplicationTypeException,LidVidNotFoundException
+    { return new RequestAndResponseContext(om, base, parameters, preset, output_format); }
     
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String q, String keyword, // search criteria
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ignore all the data and just return keywords found
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, q, keyword, null, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
     private RequestAndResponseContext(
     		ObjectMapper om, URL base, // webby criteria
-    		String q, String keyword, // search criteria
-    		String lidvid, // specific lidvid to find
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ignore all the data and just return keywords found
-    		ProductVersionSelector selector, // all, latest, original
+    		URIParameters parameters,
     		Map<String,String> preset, // default criteria when nothing else is defined
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
+    		) throws ApplicationTypeException,LidVidNotFoundException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
     	formatters.put("*/*", new PdsProductBusinessObject());
@@ -122,20 +75,20 @@ public class RequestAndResponseContext
     	this.format = this.find_match(output_format);
     	this.baseURL = base;
     	this.om = om;
-    	this.queryString = q;
-    	this.keyword = keyword;
-    	this.lidvid = lidvid;
+    	this.queryString = parameters.getQuery();
+    	this.keywords = parameters.getKeywords();
+    	this.lidvid = parameters.getIdentifier() == null ? null : LidVidUtils.extractLidFromLidVid(parameters.getIdentifier());
     	this.fields = new ArrayList<String>();
-    	this.fields.addAll(this.add_output_needs (fields));
-    	this.sort = sort == null ? new ArrayList<String>() : sort;
-    	this.start = start;
-    	this.limit = limit;
-    	this.onlySummary = summaryOnly;
+    	this.fields.addAll(this.add_output_needs (parameters.getFields()));
+    	this.sort = parameters.getSort();
+    	this.start = parameters.getStart();
+    	this.limit = parameters.getLimit();
+    	this.onlySummary = parameters.getSummanryOnly();
     	this.presetCriteria = preset;
-    	this.selector = selector;
+    	this.selector = parameters.getSelector();
     }
     
-    public String getKeyword() { return this.keyword; }
+    public List<String> getKeywords() { return this.keywords; }
     public String getLIDVID() { return this.lidvid; }
 	public final List<String> getFields() { return this.fields; }
 	public final List<String> getSort() { return this.sort; }
@@ -218,9 +171,10 @@ public class RequestAndResponseContext
 		if (response == null)
 		{
 			log.warn("Could not find any data given these conditions");
-			log.warn("   fields: " + String.valueOf(this.getFields()));
+			log.warn("   fields: " + String.valueOf(this.getFields().size()));
 			for (String field : this.getFields()) log.warn("      " + field);
-			log.warn("   keyword: " + this.getKeyword());
+			log.warn("   keyword: " + String.valueOf(this.getKeywords().size()));
+			for (String keyword : this.getKeywords()) log.warn("    " + keyword);
 			log.warn("   lidvid: " + this.getLIDVID());
 			log.warn("   limit: " + String.valueOf(this.getLimit()));
 			log.warn("   query string: " + String.valueOf(this.getQueryString()));

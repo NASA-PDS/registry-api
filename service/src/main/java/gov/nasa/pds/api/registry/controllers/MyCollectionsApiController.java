@@ -4,6 +4,7 @@ package gov.nasa.pds.api.registry.controllers;
 import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
@@ -52,8 +53,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: fields=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		)
     {
-    	// FIXME: use fields
-        return this.getLatestProductResponseEntity(identifier);
+        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
     }
 
     @Override
@@ -62,8 +62,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: fields=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		)
     {
-    	// FIXME: use fields
-        return this.getLatestProductResponseEntity(identifier);
+        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
     }
     
     
@@ -74,26 +73,39 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: limit=10  behavior: maximum number of matching results returned, for pagination ", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit,
     		@ApiParam(value = "syntax: sort=asc(field0),desc(field1),...  behavior: is this implemented? ") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
     		@ApiParam(value = "syntax: start=12  behaviro: offset in matching result list, for pagination ", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start,
-    		@ApiParam(value = "syntax: only-summary={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+    		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-    	// FIXME: use fields, sort, and only-summary
-        return getAllProductsResponseEntity(identifier, start, limit);                
+        return getAllProductsResponseEntity(new URIParameters()
+        		.setFields(fields)
+        		.setIdentifier(identifier)
+        		.setLimit(limit)
+        		.setSelector(ProductVersionSelector.ALL)
+        		.setSort(sort)
+        		.setStart(start)
+        		.setSummanryOnly(summaryOnly));                
     }
 
     
     @Override
     public ResponseEntity<Object> getCollection(
     		@ApiParam(value = "syntax: fields=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields,
-    		@ApiParam(value = "syntax: keyword=keyword1,keyword2,...  behaviro: free text search on title and description (if set q is ignored  notes: is this implemented? ") @Valid @RequestParam(value = "keyword", required = false) String keyword,
+    		@ApiParam(value = "syntax: keyword=keyword1,keyword2,...  behaviro: free text search on title and description (if set q is ignored  notes: is this implemented? ") @Valid @RequestParam(value = "keyword", required = false) List<String> keywords,
     		@ApiParam(value = "syntax: limit=10  behavior: maximum number of matching results returned, for pagination ", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit,
     		@ApiParam(value = "syntax: q=\"vid eq 13.0\"  behaviro: query uses eq,ne,gt,ge,lt,le,(,),not,and,or operators. Properties are named as in 'properties' attributes, literals are strings between quotes, like \"animal\", or numbers. Detailed query specification is available at https://bit.ly/3h3D54T  note: ignored when keyword is present ") @Valid @RequestParam(value = "q", required = false) String q,
     		@ApiParam(value = "syntax: sort=asc(field0),desc(field1),...  behavior: is this implemented? ") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
     		@ApiParam(value = "syntax: start=12  behaviro: offset in matching result list, for pagination ", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start,
-    		@ApiParam(value = "syntax: only-summary={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+    		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return this.getProductsResponseEntity(q, keyword, start, limit, fields, sort, onlySummary);
+        return this.getProductsResponseEntity(new URIParameters()
+        		.setFields(fields)
+        		.setKeywords(keywords)
+        		.setLimit(limit)
+        		.setQuery(q)
+        		.setSort(sort)
+        		.setStart(start)
+        		.setSummanryOnly(summaryOnly));
     }    
 
     
@@ -104,10 +116,17 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: limit=10  behavior: maximum number of matching results returned, for pagination ", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit,
     		@ApiParam(value = "syntax: sort=asc(field0),desc(field1),...  behavior: is this implemented? ") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
     		@ApiParam(value = "syntax: start=12  behaviro: offset in matching result list, for pagination ", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start,
-    		@ApiParam(value = "syntax: only-summary={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+    		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return getProductsOfACollectionResponseEntity(identifier, start, limit, fields, sort, onlySummary);
+        return getProductsOfACollectionResponseEntity(new URIParameters()
+        		.setFields(fields)
+        		.setIdentifier(identifier)
+        		.setLimit(limit)
+        		.setSelector(ProductVersionSelector.LATEST)
+        		.setSort(sort)
+        		.setStart(start)
+        		.setSummanryOnly(summaryOnly));
     }
 
     
@@ -118,10 +137,17 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: limit=10  behavior: maximum number of matching results returned, for pagination ", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit,
     		@ApiParam(value = "syntax: sort=asc(field0),desc(field1),...  behavior: is this implemented? ") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
     		@ApiParam(value = "syntax: start=12  behaviro: offset in matching result list, for pagination ", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start,
-    		@ApiParam(value = "syntax: only-summary={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+    		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return getProductsOfACollectionResponseEntity(identifier, start, limit, fields, sort, onlySummary);
+        return getProductsOfACollectionResponseEntity(new URIParameters()
+        		.setFields(fields)
+        		.setIdentifier(identifier)
+        		.setLimit(limit)
+        		.setSelector(ProductVersionSelector.LATEST)
+        		.setSort(sort)
+        		.setStart(start)
+        		.setSummanryOnly(summaryOnly));
     }
 
     
@@ -132,22 +158,28 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: limit=10  behavior: maximum number of matching results returned, for pagination ", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit,
     		@ApiParam(value = "syntax: sort=asc(field0),desc(field1),...  behavior: is this implemented? ") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
     		@ApiParam(value = "syntax: start=12  behaviro: offset in matching result list, for pagination ", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start,
-    		@ApiParam(value = "syntax: only-summary={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+    		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return getProductsOfACollectionResponseEntity(identifier, start, limit, fields, sort, onlySummary);
+        return getProductsOfACollectionResponseEntity(new URIParameters()
+        		.setFields(fields)
+        		.setIdentifier(identifier)
+        		.setLimit(limit)
+        		.setSelector(ProductVersionSelector.ALL)
+        		.setSort(sort)
+        		.setStart(start)
+        		.setSummanryOnly(summaryOnly));
     }    
     
     
-    protected ResponseEntity<Object> getProductsOfACollectionResponseEntity(String lidvid, int start, int limit, 
-            List<String> fields, List<String> sort, boolean onlySummary)
+    protected ResponseEntity<Object> getProductsOfACollectionResponseEntity(URIParameters parameters)
     {
         String accept = this.request.getHeader("Accept");
         MyCollectionsApiController.log.info("Get productsOfACollection");
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, fields, sort, onlySummary, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
         	this.getProductChildren(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -247,15 +279,21 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: limit=10  behavior: maximum number of matching results returned, for pagination ", defaultValue = "100") @Valid @RequestParam(value = "limit", required = false, defaultValue="100") Integer limit,
     		@ApiParam(value = "syntax: sort=asc(field0),desc(field1),...  behavior: is this implemented? ") @Valid @RequestParam(value = "sort", required = false) List<String> sort,
     		@ApiParam(value = "syntax: start=12  behaviro: offset in matching result list, for pagination ", defaultValue = "0") @Valid @RequestParam(value = "start", required = false, defaultValue="0") Integer start,
-    		@ApiParam(value = "syntax: only-summary={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "only-summary", required = false, defaultValue="false") Boolean onlySummary
+    		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
         String accept = this.request.getHeader("Accept");
         MyCollectionsApiController.log.info("accept value is " + accept);
-
+        URIParameters parameters = new URIParameters()
+        		.setFields(fields)
+        		.setIdentifier(identifier)
+        		.setLimit(limit)
+        		.setSort(sort)
+        		.setStart(start)
+        		.setSummanryOnly(summaryOnly);
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), identifier, start, limit, fields, sort, onlySummary, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
        	 	this.getContainingBundle(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
