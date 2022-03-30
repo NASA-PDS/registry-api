@@ -17,6 +17,12 @@ data "aws_ecr_repository" "pds-registry-api-service" {
 # Log groups hold logs from our app.
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
   name = "/ecs/pds-${var.node_name_abbr}-${var.venue}-reg-api-svc-task"
+
+  tags = {
+    Alfa = var.node_name_abbr
+    Bravo = var.venue
+    Charlie = "registry"
+  }
 }
 
 # The main service.
@@ -121,13 +127,14 @@ resource "aws_lb_target_group" "pds-registry-target-group" {
 
   health_check {
     enabled = true
-    path    = "/swagger-ui.html"
+    path    = "/"
+    matcher = "200,301,302"
+    interval = 60
   }
 }
 
 resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
   listener_arn = var.aws_lb_listener_arn
-  priority     = 100
 
   action {
     type             = "forward"
