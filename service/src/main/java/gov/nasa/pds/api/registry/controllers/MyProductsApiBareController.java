@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.RegistryContext;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.business.ProductBusinessObject;
@@ -30,7 +30,6 @@ import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 
@@ -59,7 +58,7 @@ public class MyProductsApiBareController implements ControlContext
     protected ProductBusinessObject productBO;
     
     @Autowired
-    RegistrySearchRequestBuilder searchRequestBuilder;
+    RegistryContext registryContext;
     
 
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {
@@ -79,11 +78,8 @@ public class MyProductsApiBareController implements ControlContext
     
     protected void getProducts(RequestAndResponseContext context) throws IOException
     {
-        SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(
-        		context.getQueryString(),
-        		context.getKeywords(),
-        		context.getFields(), context.getStart(), context.getLimit(), this.presetCriteria);
-        context.setResponse(this.searchConnection.getRestHighLevelClient(), searchRequest);
+    	context.setResponse(this.searchConnection.getRestHighLevelClient(),
+    			new SearchRequestBuilder(context).build(context, this.registryContext.getRegIndex()));
     }
  
 
@@ -167,8 +163,8 @@ public class MyProductsApiBareController implements ControlContext
     
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
-        SearchRequest req = searchRequestBuilder.getSearchProductsByLid(context.getLIDVID(), context.getStart(), context.getLimit());
-        context.setResponse(this.searchConnection.getRestHighLevelClient(), req);
+    	context.setResponse(this.searchConnection.getRestHighLevelClient(),
+        		new SearchRequestBuilder(context).build(context, this.registryContext.getRegIndex()));
     }
 
     

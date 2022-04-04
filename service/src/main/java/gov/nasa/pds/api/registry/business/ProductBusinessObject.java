@@ -20,8 +20,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
+import gov.nasa.pds.api.registry.RegistryContext;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RegistryContextImpl;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
@@ -33,7 +37,7 @@ public class ProductBusinessObject
     private static final String DEFAULT_NULL_VALUE = null; 
     
     private OpenSearchRegistryConnection openSearchConnection;
-    private RegistrySearchRequestBuilder searchRequestBuilder;
+    private RegistryContext registryContext;
 
     private ObjectMapper objectMapper;
     
@@ -45,7 +49,7 @@ public class ProductBusinessObject
     public ProductBusinessObject(OpenSearchRegistryConnection esRegistryConnection) {
         this.openSearchConnection = esRegistryConnection;
         
-        this.searchRequestBuilder = new RegistrySearchRequestBuilder(
+        this.registryContext = new RegistryContextImpl(
                 this.openSearchConnection.getRegistryIndex(),
                 this.openSearchConnection.getRegistryRefIndex(),
                 this.openSearchConnection.getTimeOutSeconds());
@@ -75,8 +79,8 @@ public class ProductBusinessObject
          * if lid is a lidvid then it return the same lidvid if available in the opensearch database
          */
         lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
-        SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
-            
+        SearchRequest searchRequest = new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", lid))
+        		.build(RequestBuildContextFactory.given("lidvid"), this.registryContext.getRegIndex());
         SearchResponse searchResponse = this.openSearchConnection.getRestHighLevelClient().search(searchRequest, 
                 RequestOptions.DEFAULT);
 
