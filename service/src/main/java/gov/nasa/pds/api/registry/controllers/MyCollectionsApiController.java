@@ -9,12 +9,13 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 
-import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -123,7 +124,6 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         		.setFields(fields)
         		.setIdentifier(identifier)
         		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.LATEST)
         		.setSort(sort)
         		.setStart(start)
         		.setSummanryOnly(summaryOnly));
@@ -144,7 +144,6 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         		.setFields(fields)
         		.setIdentifier(identifier)
         		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.LATEST)
         		.setSort(sort)
         		.setStart(start)
         		.setSummanryOnly(summaryOnly));
@@ -179,7 +178,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
         	this.getProductChildren(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -217,9 +216,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         List<String> productLidvids = new ArrayList<String>();
         List<String> pageOfLidvids = new ArrayList<String>();
 
-        for (final Map<String,Object> kvp : new HitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                RegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", lidvid, "product_lidvid",
-                        this.esRegistryConnection.getRegistryRefIndex())))        {
+        for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
+        		new SearchRequestBuilder(RequestConstructionContextFactory.given ("collection_lidvid", lidvid))
+        				.build (RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
+        {
             pageOfLidvids.clear();
             wsize = 0;
 
@@ -277,7 +277,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         		.setSummanryOnly(summaryOnly);
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
        	 	this.getContainingBundle(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -307,9 +307,10 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     {
         MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + context.getLIDVID());
         MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")));
-        SearchRequest request = RegistrySearchRequestBuilder.getQueryFieldsFromKVP("ref_lid_collection",
-                context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")), context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
 
-        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
+        context.setResponse(this.searchConnection.getRestHighLevelClient(),
+        		new SearchRequestBuilder(RequestConstructionContextFactory.given("ref_lid_collection",
+                context.getLIDVID().substring(0, context.getLIDVID().indexOf("::"))))
+                .build(context, this.searchConnection.getRegistryIndex()));
     }
 }

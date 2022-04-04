@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.business.ProductBusinessObject;
@@ -30,10 +31,12 @@ import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 
 @Component
-public class MyProductsApiBareController {
-    
+public class MyProductsApiBareController implements ControlContext
+{    
     private static final Logger log = LoggerFactory.getLogger(MyProductsApiBareController.class);  
     
     protected final ObjectMapper objectMapper;
@@ -50,7 +53,7 @@ public class MyProductsApiBareController {
     
     // TODO remove and replace by BusinessObjects 
     @Autowired
-    OpenSearchRegistryConnection esRegistryConnection;
+    OpenSearchRegistryConnection searchConnection;
     
     @Autowired
     protected ProductBusinessObject productBO;
@@ -66,9 +69,11 @@ public class MyProductsApiBareController {
 
     protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
     {
-    	context.setResponse(new HitIterator(lidvids.size(), this.esRegistryConnection.getRestHighLevelClient(),
-                RegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid",
-                        lidvids, context.getFields(), this.esRegistryConnection.getRegistryIndex())), real_total);
+    	context.setResponse(new HitIterator(lidvids.size(),
+    			this.searchConnection.getRestHighLevelClient(),
+    			new SearchRequestBuilder(RequestConstructionContextFactory.given("lidvid", lidvids))
+    				.build(context, this.searchConnection.getRegistryIndex())),
+    			real_total);
     }
 
     
@@ -78,7 +83,7 @@ public class MyProductsApiBareController {
         		context.getQueryString(),
         		context.getKeywords(),
         		context.getFields(), context.getStart(), context.getLimit(), this.presetCriteria);
-        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), searchRequest);
+        context.setResponse(this.searchConnection.getRestHighLevelClient(), searchRequest);
     }
  
 
@@ -89,7 +94,7 @@ public class MyProductsApiBareController {
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
         	this.getProducts(context);                
         	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -128,7 +133,7 @@ public class MyProductsApiBareController {
 
         try
         {            
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
             this.getProductsByLid(context);
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -163,7 +168,7 @@ public class MyProductsApiBareController {
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
         SearchRequest req = searchRequestBuilder.getSearchProductsByLid(context.getLIDVID(), context.getStart(), context.getLimit());
-        context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), req);
+        context.setResponse(this.searchConnection.getRestHighLevelClient(), req);
     }
 
     
@@ -173,10 +178,9 @@ public class MyProductsApiBareController {
         
         try 
         {
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
-            SearchRequest request = RegistrySearchRequestBuilder.getQueryFieldsFromKVP("lidvid", context.getLIDVID(), context.getFields(),this.esRegistryConnection.getRegistryIndex(), false);
-            context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), request);            
-            context.setResponse(esRegistryConnection.getRestHighLevelClient(), request);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+            context.setResponse(this.searchConnection.getRestHighLevelClient(),
+            		new SearchRequestBuilder(context).build (context, this.searchConnection.getRegistryIndex()));            
 
             if (context.getResponse() == null)
             { 
@@ -213,7 +217,8 @@ public class MyProductsApiBareController {
                 || ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));
     }
  
-    protected URL getBaseURL() {
+    @Override
+    public URL getBaseURL() {
         try {
             MyProductsApiBareController.log.debug("contextPath is: " + this.contextPath);
             
@@ -233,4 +238,16 @@ public class MyProductsApiBareController {
             return null;
         }
     }
+
+	@Override
+	public ObjectMapper getObjectMapper() {
+		// TODO Auto-generated method stub
+		return this.objectMapper;
+	}
+
+	@Override
+	public OpenSearchRegistryConnection getConnection() {
+		// TODO Auto-generated method stub
+		return this.searchConnection;
+	}
 }

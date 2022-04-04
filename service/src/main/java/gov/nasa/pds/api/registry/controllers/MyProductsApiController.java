@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,9 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 import io.swagger.annotations.ApiParam;
 
 
@@ -129,7 +130,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
             this.getContainingBundle(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -164,10 +165,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         if (0 < collectionLIDs.size())
         {
-            SearchRequest request = RegistrySearchRequestBuilder.getQueryFieldsFromKVP
-                    ("ref_lid_collection", collectionLIDs, context.getFields(), this.esRegistryConnection.getRegistryIndex(), false);
-
-            context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), request);
+            context.setResponse(this.searchConnection.getRestHighLevelClient(),
+            		new SearchRequestBuilder(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs))
+            			.build(context, this.searchConnection.getRegistryIndex()));
         }
         else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
     }
@@ -194,7 +194,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
             this.getContainingCollection(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -227,9 +227,10 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         String field = noVer ? "collection_lid" : "collection_lidvid";
         fields.add(field);
         
-        for (final Map<String,Object> kvp : new HitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                RegistrySearchRequestBuilder.getQueryFieldsFromKVP("product_lidvid",
-                        lidvid, fields, this.esRegistryConnection.getRegistryRefIndex(), false)))        {
+        for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
+        		new SearchRequestBuilder(RequestConstructionContextFactory.given("product_lidvid", lidvid))
+        		.build (RequestBuildContextFactory.given(fields), this.searchConnection.getRegistryRefIndex())))
+		{
             if (kvp.get(field) instanceof String)
             { lidvids.add(kvp.get(field).toString()); }
             else

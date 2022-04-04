@@ -120,7 +120,7 @@ public class ProductQueryBuilderUtil
      * @param presetCriteria preset criteria
      * @return a query
      */
-    public static QueryBuilder createKeywordQuery(String keyword, Map<String, String> presetCriteria)
+   public static QueryBuilder createKeywordQuery(String keyword, Map<String, String> presetCriteria)
     {
         // Lucene query
         QueryStringQueryBuilder luceneQuery = QueryBuilders.queryStringQuery(keyword);
@@ -159,7 +159,7 @@ public class ProductQueryBuilderUtil
     }
 
     
-    private static BoolQueryBuilder parseQueryString(String queryString)
+    public static BoolQueryBuilder parseQueryString(String queryString)
     {
         CodePointCharStream input = CharStreams.fromString(queryString);
         SearchLexer lex = new SearchLexer(input);

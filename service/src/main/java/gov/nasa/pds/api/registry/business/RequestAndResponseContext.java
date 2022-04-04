@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,21 +14,24 @@ import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.util.StringTokenizer;
 
-import gov.nasa.pds.api.registry.controllers.URIParameters;
+import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.RequestConstructionContext;
+import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.SearchUtil;
 import gov.nasa.pds.model.Summary;
 
-public class RequestAndResponseContext
+public class RequestAndResponseContext implements RequestBuildContext,RequestConstructionContext
 {
     private static final Logger log = LoggerFactory.getLogger(RequestAndResponseContext.class);
 
     final private long begin_processing = System.currentTimeMillis();
+    final private ControlContext controlContext;
 	final private String queryString;
 	final private List<String> keywords;
 	final private String lidvid;
@@ -38,27 +40,25 @@ public class RequestAndResponseContext
     final private int start;
     final private int limit;
     final private Map<String, String> presetCriteria;
-    final private boolean onlySummary;
+    final private boolean summaryOnly;
     final private ProductVersionSelector selector;
     final private String format;
     final private Map<String, ProductBusinessLogic> formatters;
-    final private ObjectMapper om;
-    final private URL baseURL;
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		URIParameters parameters,
+    		ControlContext connection, // webby criteria
+    		UserContext parameters,
     		Map<String,String> preset, // default criteria when nothing else is defined
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException,LidVidNotFoundException
-    { return new RequestAndResponseContext(om, base, parameters, preset, output_format); }
+    		) throws ApplicationTypeException,LidVidNotFoundException,IOException
+    { return new RequestAndResponseContext(connection, parameters, preset, output_format); }
     
     private RequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		URIParameters parameters,
+    		ControlContext controlContext,// webby criteria
+    		UserContext parameters,
     		Map<String,String> preset, // default criteria when nothing else is defined
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException,LidVidNotFoundException
+    		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
     	formatters.put("*/*", new PdsProductBusinessObject());
@@ -71,33 +71,41 @@ public class RequestAndResponseContext
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
     	formatters.put("text/xml", new PdsProductBusinessObject());
+    	this.controlContext = controlContext;
     	this.formatters = formatters;
     	this.format = this.find_match(output_format);
-    	this.baseURL = base;
-    	this.om = om;
     	this.queryString = parameters.getQuery();
     	this.keywords = parameters.getKeywords();
-    	this.lidvid = parameters.getIdentifier() == null ? null : LidVidUtils.extractLidFromLidVid(parameters.getIdentifier());
+    	this.lidvid = LidVidUtils.resolveLIDVID(parameters.getIdentifier(), parameters.getSelector(), controlContext.getConnection());
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
     	this.sort = parameters.getSort();
     	this.start = parameters.getStart();
     	this.limit = parameters.getLimit();
-    	this.onlySummary = parameters.getSummanryOnly();
+    	this.summaryOnly = parameters.getSummanryOnly();
     	this.presetCriteria = preset;
     	this.selector = parameters.getSelector();
     }
-    
+
+    @Override
     public List<String> getKeywords() { return this.keywords; }
+    @Override
+    public Map<String, List<String>> getKeyValuePairs() { return new HashMap<String,List<String>>(); }
+    @Override
     public String getLIDVID() { return this.lidvid; }
 	public final List<String> getFields() { return this.fields; }
 	public final List<String> getSort() { return this.sort; }
 	public int getStart() { return this.start; }
 	public int getLimit() { return this.limit; }
-	public boolean isOnlySummary() { return this.onlySummary; }
+	@Override
 	public String getQueryString() { return this.queryString; }
 	public final Map<String, String> getPresetCriteria() { return this.presetCriteria; };
 	public ProductVersionSelector getSelector() { return this.selector; }
+
+	public boolean isSingular() { return this.getStart() == -1 && this.getLimit() == 0; }
+	public boolean isSummaryOnly() { return this.summaryOnly; }
+	@Override
+	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
 
 	private List<String> add_output_needs (List<String> given) throws ApplicationTypeException
 	{
@@ -107,8 +115,8 @@ public class RequestAndResponseContext
 
 		if (this.formatters.containsKey(this.format))
 		{ 
-			this.formatters.get(this.format).setBaseURL(this.baseURL);
-			this.formatters.get(this.format).setObjectMapper(this.om);
+			this.formatters.get(this.format).setBaseURL(this.controlContext.getBaseURL());
+			this.formatters.get(this.format).setObjectMapper(this.controlContext.getObjectMapper());
 			max_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
 			min_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
 		}
@@ -182,7 +190,7 @@ public class RequestAndResponseContext
 			log.warn("   sorting: " + String.valueOf(this.getSort().size()));
 			for (String sort : this.getSort()) log.warn("      " + sort);
 			log.warn("   start: " + String.valueOf(this.getStart()));
-			log.warn("   summary: " + String.valueOf(this.isOnlySummary()));
+			log.warn("   summary: " + String.valueOf(this.isSummaryOnly()));
 			throw new NothingFoundException();
 		}
 		return response;
@@ -195,7 +203,7 @@ public class RequestAndResponseContext
 		summary.setStart(this.getStart());
 		summary.setLimit(this.getLimit());
 		summary.setSort(this.getSort());
-		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.onlySummary));
+		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.summaryOnly));
 		summary.setProperties(new ArrayList<String>());
 		
 		if (0 < real_total) summary.setHits(real_total);
@@ -221,7 +229,7 @@ public class RequestAndResponseContext
 			summary.setHits(total_hits);
 
 			if (uniqueProperties != null) summary.setProperties(uniqueProperties);
-			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.onlySummary);
+			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.summaryOnly);
 
 			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 		}
@@ -229,22 +237,27 @@ public class RequestAndResponseContext
 	
 	public void setResponse(RestHighLevelClient client, SearchRequest request) throws IOException
 	{
-        request.source().size(this.getLimit());
-        request.source().from(this.getStart());
-        this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
-	}
+		if (this.isSingular())
+        {
+        	SearchHits hits;
 
-	public void setSingularResponse(RestHighLevelClient client, SearchRequest request) throws IOException
-	{
-        request.source().size(this.getLimit());
-        request.source().from(this.getStart());
-        SearchHits hits = client.search(request, RequestOptions.DEFAULT).getHits();
-        
-        if (hits != null && hits.getTotalHits().value == 1L) this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
+        	request.source().size(2);
+	        request.source().from(0);
+            hits = client.search(request, RequestOptions.DEFAULT).getHits();
+
+            if (hits != null && hits.getTotalHits().value == 1L)
+        	{ this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields); }
+        	else
+        	{
+        		log.error("Too many or too few lidvids which is just wrong.");
+        		throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+        	}
+        }
         else
         {
-        	log.error("Too many or too few lidvids which is just wrong.");
-        	throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+			request.source().size(this.getLimit());
+			request.source().from(this.getStart());
+        	this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
         }
 	}
 }

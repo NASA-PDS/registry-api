@@ -164,4 +164,23 @@ public class LidVidUtils
         src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(5000);
         return src;
     }
+    
+    public static String resolveLIDVID (String identifier, ProductVersionSelector scope, OpenSearchRegistryConnection es) throws IOException, LidVidNotFoundException
+    {
+    	String result = identifier;
+    	
+    	if (0 < identifier.length())
+    	{
+    		String lid = LidVidUtils.extractLidFromLidVid(identifier);
+    		/* YUCK! This should use polymorphism in ProductVersionSelector not a switch statement */
+    		switch (scope)
+    		{
+    		case ALL: result = lid;
+    		case LATEST: result = new LidVidDAO(es).getLatestLidVidByLid(lid);
+    		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
+    		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
+    		}
+    	}
+    	return result;
+    }
 }

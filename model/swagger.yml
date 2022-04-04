@@ -611,6 +611,7 @@ components:
       required: false
       schema:
         type: integer
+        minimum: 1
         default: 100
     Query:
       name: q
@@ -646,6 +647,7 @@ components:
       required: false
       schema:
         type: integer
+        minimum: 0
         default: 0
     SummaryOnly:
       name: summary-only

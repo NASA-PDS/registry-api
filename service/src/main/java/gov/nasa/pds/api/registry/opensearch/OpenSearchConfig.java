@@ -8,10 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import gov.nasa.pds.api.registry.RegistryContext;
 import gov.nasa.pds.api.registry.SystemConstants;
 import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RegistryContextImpl;
 
 /* Keep this eventhough not directly referenced
  * 
@@ -22,8 +23,8 @@ import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
  */
 
 @Configuration 
-public class OpenSearchConfig { 
-	
+public class OpenSearchConfig
+{ 	
 	private static final Logger log = LoggerFactory.getLogger(OpenSearchConfig.class);
 
 	// This default for ES hosts is set in the constructor since we first want to check
@@ -124,11 +125,11 @@ public class OpenSearchConfig {
 
     
 	@Bean("searchRequestBuilder")
-	public RegistrySearchRequestBuilder RegistrySearchRequestBuilder() {
+	public RegistryContext RegistrySearchRequestBuilder() {
 		
 		OpenSearchRegistryConnection esRegistryConnection = this.openSearchRegistryConnection();
 		
-		return new RegistrySearchRequestBuilder(
+		return new RegistryContextImpl(
      			esRegistryConnection.getRegistryIndex(),
      			esRegistryConnection.getRegistryRefIndex(),
     			esRegistryConnection.getTimeOutSeconds());

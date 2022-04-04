@@ -26,7 +26,7 @@ class RegistrySearchRequestBuilderTest {
 
 	private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilderTest.class);
 
-	private RegistrySearchRequestBuilder requestBuilder  = new RegistrySearchRequestBuilder();; 
+	private RegistrySearchRequestBuilder requestBuilder  = new RegistrySearchRequestBuilder("registry", "registry-refs", 60); 
 	
 	public static Map<String, String> queryMap;
 	static {

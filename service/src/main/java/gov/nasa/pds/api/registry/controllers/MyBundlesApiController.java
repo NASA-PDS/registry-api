@@ -9,7 +9,9 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -120,7 +122,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         		.setFields(fields)
         		.setIdentifier(identifier)
         		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.LATEST)
         		.setSort(sort)
         		.setStart(start)
         		.setSummanryOnly(summaryOnly));
@@ -162,7 +163,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         		.setFields(fields)
         		.setIdentifier(identifier)
         		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.LATEST)
         		.setSort(sort)
         		.setStart(start)
         		.setSummanryOnly(summaryOnly));
@@ -206,7 +206,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
         	 this.getBundleCollections(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -255,8 +255,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(
-        	         this.objectMapper, this.getBaseURL(), parameters, this.presetCriteria, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -296,9 +295,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         if (0 < clidvids.size())
         {
-            for (final Map<String,Object> hit : new HitIterator(this.esRegistryConnection.getRestHighLevelClient(),
-                    RegistrySearchRequestBuilder.getQueryFieldFromKVP("collection_lidvid", clidvids, "product_lidvid",
-                            this.esRegistryConnection.getRegistryRefIndex())))            {
+            for (final Map<String,Object> hit : 
+            	new HitIterator(this.searchConnection.getRestHighLevelClient(),
+            			new SearchRequestBuilder (RequestConstructionContextFactory.given ("collection_lidvid", clidvids))
+            			.build(RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
+            {
                 wlidvids.clear();
                 wsize = 0;
 
