@@ -38,7 +38,6 @@ public class ProductQueryBuilderUtil
     private String propArchiveStatusFilter;
     private static List<String> archiveStatusFilter;
 
-
     /**
      * Init archive status filter
      */

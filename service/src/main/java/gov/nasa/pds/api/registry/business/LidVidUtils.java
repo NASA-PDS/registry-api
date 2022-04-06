@@ -175,8 +175,12 @@ public class LidVidUtils
     		/* YUCK! This should use polymorphism in ProductVersionSelector not a switch statement */
     		switch (scope)
     		{
-    		case ALL: result = lid;
-    		case LATEST: result = new LidVidDAO(es).getLatestLidVidByLid(lid);
+    		case ALL:
+    			result = lid;
+    			break;
+    		case LATEST:
+    			result = new LidVidDAO(es).getLatestLidVidByLid(lid);
+    			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
     		}

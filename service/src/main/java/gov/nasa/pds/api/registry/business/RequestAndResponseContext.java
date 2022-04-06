@@ -245,7 +245,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	        request.source().from(0);
             hits = client.search(request, RequestOptions.DEFAULT).getHits();
 
-            if (hits != null && hits.getTotalHits().value == 1L)
+            if (hits != null && hits.getTotalHits() != null && hits.getTotalHits().value == 1L)
         	{ this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields); }
         	else
         	{

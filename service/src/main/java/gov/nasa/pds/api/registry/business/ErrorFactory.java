@@ -10,7 +10,7 @@ public class ErrorFactory
 	{
 		ErrorMessage em = new ErrorMessage();
 		em.setRequest(request.getRequestURI());
-		em.setMessage(err.getMessage());
+		em.setMessage(err.getMessage() == null || err.getMessage().length() == 0 ? err.toString() : err.getMessage());
 		return em;
 	}
 }

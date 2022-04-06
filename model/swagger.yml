@@ -95,7 +95,7 @@ paths:
       tags:
         - products
       summary: |
-        returns one product (lidvid) or all products versions (lid) with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns all product versions (lid) with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
       operationId: products-by-lidvid-all
       responses:
         '200':
@@ -196,7 +196,7 @@ paths:
       tags:
         - collections
       summary: |
-        returns one product with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns one product with the identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
       operationId: collections-by-lidvid
       responses:
         '200':
@@ -217,7 +217,7 @@ paths:
       tags:
         - collections
       summary: |
-        returns one product with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns one product with the identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
       operationId: collections-by-lidvid-latest
       responses:
         '200':
@@ -238,7 +238,7 @@ paths:
       tags:
         - collections
       summary: |
-        returns one product (lidvid) or all products versions (lid) with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns all collection versions (lid) with the identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
       operationId: collections-by-lidvid-all
       responses:
         '200':
@@ -263,7 +263,7 @@ paths:
       tags:
         - collection's containing bundles
       summary: |
-        returns one or more bundles that contain or reference the product specified by identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns one or more bundles that contain or reference the product specified by identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
       operationId: bundles-containing-collection
       responses:
         '200':
@@ -389,7 +389,7 @@ paths:
       tags:
         - bundles
       summary: |
-        returns one product with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns one product with the identifier selected from all PDS bundles. See identifier for details on how it determines what is returned.
       operationId: bundle-by-lidvid
       responses:
         '200':
@@ -410,7 +410,7 @@ paths:
       tags:
         - bundles
       summary: |
-        returns one product with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns one product with the identifier selected from all PDS bundles. See identifier for details on how it determines what is returned.
       operationId: bundle-by-lidvid-latest
       responses:
         '200':
@@ -431,7 +431,7 @@ paths:
       tags:
         - bundles
       summary: |
-        returns one product (lidvid) or all products versions (lid) with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns all product versions (lid) with the identifier selected from all PDS bundles. See identifier for details on how it determines what is returned.
       operationId: bundle-by-lidvid-all
       responses:
         '200':

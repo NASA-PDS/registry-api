@@ -9,18 +9,6 @@ import gov.nasa.pds.api.registry.RequestConstructionContext;
 
 public class RequestConstructionContextFactory
 {
-	/*
-}
-	public static RequestConstructionContext givenLidvid (String lidvid)
-	{ return new SimpleRequestConstructionContext(lidvid); }
-	
-	public static RequestConstructionContext listOfLidvids (List<String> lidvids)
-	{
-		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
-		kvps.put("lidvid", lidvids);
-		return new SimpleRequestConstructionContext(kvps);
-	}
-	*/
 	public static RequestConstructionContext given (String key, String value)
 	{
 		List<String> values = new ArrayList<String>();

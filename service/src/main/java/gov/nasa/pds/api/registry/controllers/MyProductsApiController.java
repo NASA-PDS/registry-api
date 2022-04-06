@@ -158,10 +158,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
     private void getContainingBundle(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
     {
-        String lidvid = productBO.getLatestLidVidFromLid(context.getLIDVID());
-        MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
+        MyProductsApiController.log.info("find all bundles containing the product lidvid: " + context.getLIDVID());
 
-        List<String> collectionLIDs = this.getCollectionLidvids(lidvid, true);
+        List<String> collectionLIDs = this.getCollectionLidvids(context.getLIDVID(), true);
 
         if (0 < collectionLIDs.size())
         {
@@ -169,7 +168,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
             		new SearchRequestBuilder(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs))
             			.build(context, this.searchConnection.getRegistryIndex()));
         }
-        else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + lidvid);
+        else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + context.getLIDVID());
     }
 
     @Override
@@ -246,12 +245,10 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
     
     private void getContainingCollection(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
-    {
-        String lidvid = this.productBO.getLatestLidVidFromLid(context.getLIDVID());
-    
-        MyProductsApiController.log.info("find all bundles containing the product lidvid: " + lidvid);
+    {    
+        MyProductsApiController.log.info("find all bundles containing the product lidvid: " + context.getLIDVID());
 
-        List<String> collectionLidvids = this.getCollectionLidvids(lidvid, false);
+        List<String> collectionLidvids = this.getCollectionLidvids(context.getLIDVID(), false);
         
         int size = collectionLidvids.size();
         if (size > 0 && context.getLimit() > 0 && context.getStart() < size)
@@ -264,7 +261,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         }
         else 
         {
-            MyProductsApiController.log.warn("Did not find a product with lidvid: " + lidvid);
+            MyProductsApiController.log.warn("Did not find a product with lidvid: " + context.getLIDVID());
         }
     }
 }
