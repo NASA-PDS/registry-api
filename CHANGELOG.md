@@ -1,16 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-03-30)
+## [v0.5.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.2-SNAPSHOT) (2022-03-30)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.2-SNAPSHOT...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v0.5.2-SNAPSHOT)
 
 **Other closed issues:**
 
 - Upgrade to OpenSearch java client [\#3](https://github.com/NASA-PDS/registry-api/issues/3)
-
-## [v0.5.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.2-SNAPSHOT) (2022-03-28)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v0.5.2-SNAPSHOT)
 
 ## [v0.5.1](https://github.com/NASA-PDS/registry-api/tree/v0.5.1) (2022-03-25)
 
