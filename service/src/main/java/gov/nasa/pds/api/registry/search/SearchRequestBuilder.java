@@ -23,6 +23,18 @@ public class SearchRequestBuilder
     
     public SearchRequestBuilder(RequestConstructionContext context)
     {
+    	if (context.getKeyValuePairs().size() > 0)
+    	{
+    		for (String key: context.getKeyValuePairs().keySet())
+    		if (context.isTerm())
+    		{ this.base.must (QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    		else
+    		{
+    			for (String value : context.getKeyValuePairs().get(key))
+    			{ this.base.must(QueryBuilders.matchQuery(key, value)); }
+    		}
+    	}
+
     	if (context.getKeywords().size() == 0 && context.getQueryString().length() > 0)
     		this.base.must (ProductQueryBuilderUtil.parseQueryString(context.getQueryString()));
 
