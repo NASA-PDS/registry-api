@@ -31,7 +31,7 @@ import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import io.swagger.annotations.ApiParam;
 
 
@@ -174,7 +174,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         if (0 < collectionLIDs.size())
         {
             context.setResponse(this.searchConnection.getRestHighLevelClient(),
-            		new SearchRequestBuilder(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs))
+            		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs))
             			.build(context, this.searchConnection.getRegistryIndex()));
         }
         else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + context.getLIDVID());
@@ -236,7 +236,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         fields.add(field);
         
         for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestBuilder(RequestConstructionContextFactory.given("product_lidvid", lidvid))
+        		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", lidvid))
         		.build (RequestBuildContextFactory.given(fields), this.searchConnection.getRegistryRefIndex())))
 		{
             if (kvp.get(field) instanceof String)

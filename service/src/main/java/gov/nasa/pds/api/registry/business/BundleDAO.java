@@ -22,7 +22,7 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 /**
  * Bundle Data Access Object (DAO). 
@@ -69,7 +69,7 @@ public class BundleDAO
                                "ref_lid_collection", "ref_lid_collection_secondary"));
     	
         // Get bundle by lidvid.
-        SearchRequest request = new SearchRequestBuilder(RequestConstructionContextFactory.given(bundleLidVid))
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid))
         		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getRegistryContext().getRegistryIndex());
         
         // Call opensearch
@@ -149,7 +149,7 @@ public class BundleDAO
                 Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary"));
 
         // Get bundle by lidvid.
-        SearchRequest request = new SearchRequestBuilder(RequestConstructionContextFactory.given(bundleLidVid))
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid))
         		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getRegistryContext().getRegistryIndex());
         
         // Call opensearch

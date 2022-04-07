@@ -29,7 +29,7 @@ import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 @Component
 public class MyProductsApiBareController implements ControlContext
@@ -61,7 +61,7 @@ public class MyProductsApiBareController implements ControlContext
     {
     	context.setResponse(new HitIterator(lidvids.size(),
     			this.searchConnection.getRestHighLevelClient(),
-    			new SearchRequestBuilder(RequestConstructionContextFactory.given("lidvid", lidvids))
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lidvid", lidvids))
     				.build(context, this.searchConnection.getRegistryIndex())),
     			real_total);
     }
@@ -70,7 +70,7 @@ public class MyProductsApiBareController implements ControlContext
     protected void getProducts(RequestAndResponseContext context) throws IOException
     {
     	context.setResponse(this.searchConnection.getRestHighLevelClient(),
-    			new SearchRequestBuilder(context).build(context, this.registryContext.getRegistryIndex()));
+    			new SearchRequestFactory(context).build(context, this.registryContext.getRegistryIndex()));
     }
  
 
@@ -155,7 +155,7 @@ public class MyProductsApiBareController implements ControlContext
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
     	context.setResponse(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestBuilder(context).build(context, this.registryContext.getRegistryIndex()));
+        		new SearchRequestFactory(context).build(context, this.registryContext.getRegistryIndex()));
     }
 
     
@@ -167,7 +167,7 @@ public class MyProductsApiBareController implements ControlContext
         {
             RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
             context.setResponse(this.searchConnection.getRestHighLevelClient(),
-            		new SearchRequestBuilder(context).build (context, this.searchConnection.getRegistryIndex()));            
+            		new SearchRequestFactory(context).build (context, this.searchConnection.getRegistryIndex()));            
 
             if (context.getResponse() == null)
             { 

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.RegistryContext;
 import gov.nasa.pds.api.registry.search.RegistryContextImpl;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest

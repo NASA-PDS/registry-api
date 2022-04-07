@@ -18,7 +18,7 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 
 /**
@@ -67,7 +67,7 @@ public class LidVidUtils
             String lid) throws IOException,LidVidNotFoundException
     {
     	lid = LidVidUtils.extractLidFromLidVid(lid);
-    	SearchRequest searchRequest = new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", lid))
+    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid))
     			.build(RequestBuildContextFactory.given("lidvid", reqContext.getPresetCriteria()), ctlContext.getRegistryContext().getRegistryIndex());
     	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
@@ -97,7 +97,7 @@ public class LidVidUtils
     	List<String> lidvids = new ArrayList<String>();
 
     	ctlContext.getConnection().getRestHighLevelClient().search(
-    			new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids)))
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids)))
     			.build(reqContext, ctlContext.getRegistryContext().getRegistryIndex()), RequestOptions.DEFAULT)
     	.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
     	return lidvids;

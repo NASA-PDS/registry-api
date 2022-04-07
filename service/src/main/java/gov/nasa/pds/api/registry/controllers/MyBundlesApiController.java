@@ -14,7 +14,7 @@ import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -298,7 +298,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         {
             for (final Map<String,Object> hit :
             	new HitIterator(this.searchConnection.getRestHighLevelClient(),
-            			new SearchRequestBuilder (RequestConstructionContextFactory.given ("collection_lidvid", clidvids))
+            			new SearchRequestFactory (RequestConstructionContextFactory.given ("collection_lidvid", clidvids))
             			.build(RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
             {
                 wlidvids.clear();

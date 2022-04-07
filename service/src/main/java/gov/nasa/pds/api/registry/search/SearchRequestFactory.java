@@ -13,11 +13,11 @@ import gov.nasa.pds.api.registry.business.BlobUtil;
 import gov.nasa.pds.api.registry.business.LidVidUtils;
 import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 
-public class SearchRequestBuilder
+public class SearchRequestFactory
 {
     final private BoolQueryBuilder base = QueryBuilders.boolQuery();
     
-    public SearchRequestBuilder(RequestConstructionContext context)
+    public SearchRequestFactory(RequestConstructionContext context)
     {
     	if (!context.getKeyValuePairs().isEmpty())
     	{
@@ -71,7 +71,7 @@ public class SearchRequestBuilder
     			.source(new SearchSourceBuilder()
     					.query(this.base)
     					.fetchSource(context.getFields().toArray(new String[0]),
-    							     SearchRequestBuilder.excludes (context.getFields())));
+    							     SearchRequestFactory.excludes (context.getFields())));
     }
     
     public BoolQueryBuilder getQueryBuilder(RequestBuildContext context)

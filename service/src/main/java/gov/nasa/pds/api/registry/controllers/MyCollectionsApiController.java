@@ -15,7 +15,7 @@ import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -225,7 +225,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         List<String> pageOfLidvids = new ArrayList<String>();
 
         for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestBuilder(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID()))
+        		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID()))
         				.build (RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
         {
             pageOfLidvids.clear();
@@ -317,7 +317,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")));
 
         context.setResponse(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestBuilder(RequestConstructionContextFactory.given("ref_lid_collection",
+        		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection",
                 context.getLIDVID().substring(0, context.getLIDVID().indexOf("::"))))
                 .build(context, this.searchConnection.getRegistryIndex()));
     }
