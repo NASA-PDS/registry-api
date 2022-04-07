@@ -84,8 +84,8 @@ public class BundleDAO
         // Get fields
         // LidVid references (e.g., OREX bundle)        
         Map<String, Object> fieldMap = hit.getSourceAsMap();
-        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
-        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
+        List<String> primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
+        List<String> secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
 
         List<String> lidVids = new ArrayList<String>();
         if(primaryIds != null) lidVids.addAll(primaryIds); 
@@ -107,8 +107,8 @@ public class BundleDAO
         }
         
         // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by Harvest
-        primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
+        primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
+        secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
 
         List<String> lids = new ArrayList<String>();
         if(primaryIds != null) lids.addAll(primaryIds); 
@@ -164,8 +164,8 @@ public class BundleDAO
         Map<String, Object> fieldMap = hit.getSourceAsMap();
 
         // Lid references (e.g., Kaguya bundle)
-        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
+        List<String> primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
+        List<String> secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
 
         List<String> ids = new ArrayList<String>();
         if(primaryIds != null) ids.addAll(primaryIds); 

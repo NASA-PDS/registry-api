@@ -84,7 +84,7 @@ public class LidVidUtils
     		}
     		Collections.sort(lidvids);
 
-            if (lidvids.size() == 0) throw new LidVidNotFoundException(lid);
+            if (lidvids.isEmpty()) throw new LidVidNotFoundException(lid);
     		else return lidvids.get(lidvids.size() - 1);
     	}
     	throw new LidVidNotFoundException(lid);
@@ -125,7 +125,7 @@ public class LidVidUtils
     			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
     			break;
     		case TYPED:
-    			result = lid == identifier ? LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid) : identifier; 
+    			result = lid.equals(identifier) ? LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid) : identifier; 
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
