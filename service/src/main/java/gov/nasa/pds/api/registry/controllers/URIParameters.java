@@ -23,7 +23,7 @@ import gov.nasa.pds.api.registry.business.ProductVersionSelector;
  *    business logic to indicate a Singular or Plural return type. See swagger.yml
  *    to understand Singular and Plural return types.
  */
-public class URIParameters implements UserContext
+class URIParameters implements UserContext
 {
 	private List<String> fields = new ArrayList<String>();
 	private String identifier = "";

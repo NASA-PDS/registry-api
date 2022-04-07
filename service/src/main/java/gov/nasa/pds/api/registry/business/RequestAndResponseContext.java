@@ -21,6 +21,7 @@ import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
+import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
