@@ -3,7 +3,6 @@ package gov.nasa.pds.api.registry.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,12 +35,8 @@ import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 public class MyProductsApiBareController implements ControlContext
 {    
     private static final Logger log = LoggerFactory.getLogger(MyProductsApiBareController.class);  
-    
     protected final ObjectMapper objectMapper;
-
     protected final HttpServletRequest request;   
-
-    protected Map<String, String> presetCriteria = new HashMap<String, String>();
     
     @Value("${server.contextPath}")
     protected String contextPath;
@@ -79,14 +74,14 @@ public class MyProductsApiBareController implements ControlContext
     }
  
 
-    protected ResponseEntity<Object> getProductsResponseEntity(URIParameters parameters)
+    protected ResponseEntity<Object> getProductsResponseEntity(URIParameters parameters, Map<String,String> preset)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
         	this.getProducts(context);                
         	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -118,14 +113,14 @@ public class MyProductsApiBareController implements ControlContext
     }    
     
     
-    protected ResponseEntity<Object> getAllProductsResponseEntity(URIParameters parameters)
+    protected ResponseEntity<Object> getAllProductsResponseEntity(URIParameters parameters, Map<String,String> preset)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
 
         try
         {            
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
             this.getProductsByLid(context);
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -164,13 +159,13 @@ public class MyProductsApiBareController implements ControlContext
     }
 
     
-    protected ResponseEntity<Object> getLatestProductResponseEntity(URIParameters parameters)
+    protected ResponseEntity<Object> getLatestProductResponseEntity(URIParameters parameters, Map<String,String> preset)
     {
         String accept = request.getHeader("Accept");
         
         try 
         {
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
             context.setResponse(this.searchConnection.getRestHighLevelClient(),
             		new SearchRequestBuilder(context).build (context, this.searchConnection.getRegistryIndex()));            
 

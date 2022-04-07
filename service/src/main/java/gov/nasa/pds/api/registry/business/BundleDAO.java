@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.business;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +15,8 @@ import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
@@ -29,12 +32,21 @@ import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
  */
 public class BundleDAO
 {
-    public void getBundleCollections() throws IOException, LidVidNotFoundException
+    @SuppressWarnings("unused")
+	private static final Logger log = LoggerFactory.getLogger(BundleDAO.class);
+
+    static public Map<String,String> searchConstraints()
+    {
+    	Map<String,String> preset = new HashMap<String,String>();
+    	preset.put("product_class", "Product_Bundle");
+    	return preset;
+    }
+
+    static public void getBundleCollections() throws IOException, LidVidNotFoundException
     {
         // TODO: Move code from the bundle controller here.
         throw new NotImplementedException();
     }
-
 
     /**
      * Get collections of a bundle by bundle LIDVID. 
@@ -58,7 +70,7 @@ public class BundleDAO
     	
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestBuilder(RequestConstructionContextFactory.given(bundleLidVid))
-        		.build(RequestBuildContextFactory.given(fields), ctlContext.getRegistryContext().getRegistryIndex());
+        		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getRegistryContext().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
@@ -69,9 +81,8 @@ public class BundleDAO
         else hit = hits.getAt(0);
 
         // Get fields
-        Map<String, Object> fieldMap = hit.getSourceAsMap();
-
         // LidVid references (e.g., OREX bundle)        
+        Map<String, Object> fieldMap = hit.getSourceAsMap();
         List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
         List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
 
@@ -111,14 +122,11 @@ public class BundleDAO
         // Get the latest versions of LIDs
         if(!lids.isEmpty())
         {
-            List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(ctlContext, reqBuildContext, lids);
-            if(latestLidVids != null && !latestLidVids.isEmpty())
-            {
-                // Combine LIDVID references and latest versions of "real" LID references
-                lidVids.addAll(latestLidVids);
-            }
+            List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(ctlContext,
+            		RequestBuildContextFactory.given(reqBuildContext.getFields(), CollectionDAO.searchConstraints()), lids);
+            lidVids.addAll(latestLidVids);
         }
-        
+       
         return lidVids;
     }
 
@@ -142,7 +150,7 @@ public class BundleDAO
 
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestBuilder(RequestConstructionContextFactory.given(bundleLidVid))
-        		.build(RequestBuildContextFactory.given(fields), ctlContext.getRegistryContext().getRegistryIndex());
+        		.build(RequestBuildContextFactory.given(fields, reqBuildContext.getPresetCriteria()), ctlContext.getRegistryContext().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;

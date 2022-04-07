@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
 public class ProductBusinessObject

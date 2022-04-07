@@ -23,7 +23,7 @@ import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.SearchUtil;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.model.Summary;
 
 public class RequestAndResponseContext implements RequestBuildContext,RequestConstructionContext
@@ -48,15 +48,23 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Map<String,String> preset, // default criteria when nothing else is defined
+    		Map<String,String> outPreset, // when first and last node of the endpoint criteria are the same
     		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
-    { return new RequestAndResponseContext(connection, parameters, preset, output_format); }
+    { return new RequestAndResponseContext(connection, parameters, outPreset, outPreset, output_format); }
+
+    static public RequestAndResponseContext buildRequestAndResponseContext(
+    		ControlContext connection, // webby criteria
+    		UserContext parameters,
+    		Map<String,String> outPreset, Map<String,String>resPreset, // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
+    		String output_format // the accept statement of the request that informs the output type
+    		) throws ApplicationTypeException,LidVidNotFoundException,IOException
+    { return new RequestAndResponseContext(connection, parameters, outPreset, resPreset, output_format); }
     
     private RequestAndResponseContext(
     		ControlContext controlContext,// webby criteria
     		UserContext parameters,
-    		Map<String,String> preset, // default criteria when nothing else is defined
+    		Map<String,String> outPreset, Map<String,String>resPreset, // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		String output_format // the accept statement of the request that informs the output type
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
@@ -82,9 +90,13 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.start = parameters.getStart();
     	this.limit = parameters.getLimit();
     	this.summaryOnly = parameters.getSummanryOnly();
-    	this.presetCriteria = preset;
+    	this.presetCriteria = outPreset;
     	this.selector = parameters.getSelector();
-    	this.lidvid = LidVidUtils.resolveLIDVID(parameters.getIdentifier(), parameters.getSelector(), controlContext, this);
+    	this.lidvid = LidVidUtils.resolveLIDVID(
+    			parameters.getIdentifier(),
+    			parameters.getSelector(),
+    			controlContext,
+    			RequestBuildContextFactory.given(fields, resPreset));
     }
 
     @Override

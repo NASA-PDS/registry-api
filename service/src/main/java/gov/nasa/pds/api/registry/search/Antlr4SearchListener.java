@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.nasa.pds.api.registry.business.SearchUtil;
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 

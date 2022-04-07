@@ -2,9 +2,12 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
+import gov.nasa.pds.api.registry.business.BundleDAO;
+import gov.nasa.pds.api.registry.business.CollectionDAO;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.business.LidVidUtils;
+import gov.nasa.pds.api.registry.business.ProductDAO;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -41,12 +44,8 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     private static final Logger log = LoggerFactory.getLogger(MyCollectionsApiController.class);
     
  
-    public MyCollectionsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        super(objectMapper, request);
-        
-        this.presetCriteria.put("product_class", "Product_Collection");
-    
-    }
+    public MyCollectionsApiController(ObjectMapper objectMapper, HttpServletRequest request)
+    { super(objectMapper, request); }
     
     
     @Override
@@ -55,7 +54,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: fields=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		)
     {
-        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
+        return this.getLatestProductResponseEntity(
+        		new URIParameters().setFields(fields).setIdentifier(identifier),
+        		CollectionDAO.searchConstraints());
     }
 
     @Override
@@ -64,7 +65,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: fields=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		)
     {
-        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
+        return this.getLatestProductResponseEntity(
+        		new URIParameters().setFields(fields).setIdentifier(identifier),
+        		CollectionDAO.searchConstraints());
     }
     
     
@@ -78,14 +81,16 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return getAllProductsResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setIdentifier(identifier)
-        		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.ALL)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));                
+        return getAllProductsResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setIdentifier(identifier)
+        			.setLimit(limit)
+        			.setSelector(ProductVersionSelector.ALL)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly),
+        		CollectionDAO.searchConstraints());                
     }
 
     
@@ -100,14 +105,16 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return this.getProductsResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setKeywords(keywords)
-        		.setLimit(limit)
-        		.setQuery(q)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));
+        return this.getProductsResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setKeywords(keywords)
+        			.setLimit(limit)
+        			.setQuery(q)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly),
+        		CollectionDAO.searchConstraints());
     }    
 
     
@@ -121,13 +128,14 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return getProductsOfACollectionResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setIdentifier(identifier)
-        		.setLimit(limit)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));
+        return getProductsOfACollectionResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setIdentifier(identifier)
+        			.setLimit(limit)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly));
     }
 
     
@@ -179,7 +187,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, ProductDAO.searchConstraints(), accept);
         	this.getProductChildren(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -276,7 +284,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         		.setSummanryOnly(summaryOnly);
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, BundleDAO.searchConstraints(), accept);
        	 	this.getContainingBundle(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }

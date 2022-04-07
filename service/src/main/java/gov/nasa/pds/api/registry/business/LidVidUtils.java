@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.business;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -11,17 +12,16 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.search.SearchHit;
-import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.AggregationBuilders;
-import org.opensearch.search.aggregations.bucket.terms.ParsedStringTerms;
-import org.opensearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.opensearch.search.aggregations.metrics.ParsedTopHits;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.sort.FieldSortBuilder;
 import org.opensearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 
@@ -32,23 +32,17 @@ import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
  */
 public class LidVidUtils
 {
-    /**
+	private static final String LIDVID_SEPARATOR = "::";
+	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
+	/**
      * Extract lid from lidvid.
      * @param identifier LIDVID or LID.
      * @return LID
      */
     public static String extractLidFromLidVid(String identifier)
     {
-        if(identifier == null) return null;
-        
-        // If this is a LIDVID, extract LID. Otherwise return as is.
-        int idx = identifier.indexOf("::");
-        if(idx > 0)
-        {
-            return identifier.substring(0, idx);
-        }
-
-        return identifier;
+        if (identifier == null) return null;
+        else return identifier.contains(LIDVID_SEPARATOR)?identifier.substring(0, identifier.indexOf(LIDVID_SEPARATOR)):identifier;
     }
     
     
@@ -61,44 +55,48 @@ public class LidVidUtils
      */
     public static List<String> getLatestLidVidsByLids(
     		ControlContext ctlContext,
-    		RequestBuildContext reqBuildContext,
-            Collection<String> lids) throws IOException
+    		RequestBuildContext reqContext,
+            Collection<String> lids) throws IOException,LidVidNotFoundException
     {
-        // Create request
-        SearchSourceBuilder src = buildGetLatestLidVidsRequest(lids, reqBuildContext);
-        src.timeout(new TimeValue(ctlContext.getRegistryContext().getTimeOutSeconds(), TimeUnit.SECONDS));
-        
-        SearchRequest esRequest = new SearchRequest(ctlContext.getRegistryContext().getRegistryIndex()).source(src);
-        
-        // Call opensearch
-        SearchResponse esResp = ctlContext.getConnection().getRestHighLevelClient().search(esRequest, RequestOptions.DEFAULT);
+    	List<String> lidvids = new ArrayList<String>(lids.size());
+    	
+    	for (String lid : lids)
+    	{
+    		try { lidvids.add (LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid)); }
+    		catch (LidVidNotFoundException e)
+    		{ log.error("Database is corrupted. Have reference to this lid but cannot find it: " + lid); }
+    	}
 
-        // Parse response
-        // (1) Terms aggregation (top level)
-        Aggregation agg = esResp.getAggregations().get("lids");
-        if(agg == null) return null;
-        ParsedStringTerms terms = (ParsedStringTerms)agg;
-
-        List<String> lidvids = new ArrayList<>(lids.size());
-        
-        for(Bucket buk: terms.getBuckets())
-        {
-            // (2) Top Hits aggregation (sub-aggregation)
-            agg = buk.getAggregations().get("latest");
-            if(agg == null) continue;
-            
-            ParsedTopHits topHits = (ParsedTopHits)agg;
-            SearchHit[] hits = topHits.getHits().getHits();
-            if(hits != null && hits.length > 0)
-            {
-                String lidvid = hits[0].getId();
-                lidvids.add(lidvid);
-            }
-        }
-        
-        return lidvids;
+    	return lidvids;
     }
     
+    public static String getLatestLidVidByLid(
+    		ControlContext ctlContext,
+    		RequestBuildContext reqContext,
+            String lid) throws IOException,LidVidNotFoundException
+    {
+    	lid = LidVidUtils.extractLidFromLidVid(lid);
+    	SearchRequest searchRequest = new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", lid))
+    			.build(RequestBuildContextFactory.given("lidvid", reqContext.getPresetCriteria()), ctlContext.getRegistryContext().getRegistryIndex());
+    	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest, 
+    			RequestOptions.DEFAULT);
+
+    	if (searchResponse != null)
+    	{
+    		ArrayList<String> lidvids = new ArrayList<String>();
+    		String lidvid;
+    		for (SearchHit searchHit : searchResponse.getHits())
+    		{
+    			lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
+    			lidvids.add(lidvid);                
+    		}
+    		Collections.sort(lidvids);
+
+            if (lidvids.size() == 0) throw new LidVidNotFoundException(lid);
+    		else return lidvids.get(lidvids.size() - 1);
+    	}
+    	throw new LidVidNotFoundException(lid);
+    }
     
     /**
      * Get all LIDVIDs by LIDs
@@ -113,7 +111,7 @@ public class LidVidUtils
             Collection<String> lids) throws IOException
     {
         // Create request
-        SearchSourceBuilder src = buildGetAllLidVidsRequest(reqContext, lids);
+        SearchSourceBuilder src = xxbuildGetAllLidVidsRequest(reqContext, lids);
         src.timeout(new TimeValue(ctlContext.getRegistryContext().getTimeOutSeconds(), TimeUnit.SECONDS));
         
         SearchRequest esRequest = new SearchRequest(ctlContext.getRegistryContext().getRegistryIndex()).source(src);
@@ -133,7 +131,7 @@ public class LidVidUtils
      * @param lids list of LIDs
      * @return opensearch query
      */
-    public static SearchSourceBuilder buildGetLatestLidVidsRequest(Collection<String> lids, RequestBuildContext context)
+    public static SearchSourceBuilder xxbuildGetLatestLidVidsRequest(Collection<String> lids, RequestBuildContext context)
     {
         if(lids == null || lids.isEmpty()) return null;
         
@@ -158,7 +156,7 @@ public class LidVidUtils
      * @param lids a list of LIDS
      * @return opensearch query
      */
-    public static SearchSourceBuilder buildGetAllLidVidsRequest(
+    public static SearchSourceBuilder xxbuildGetAllLidVidsRequest(
     		RequestBuildContext reqContext, Collection<String> lids)
     {
         if(lids == null || lids.isEmpty()) return null;
@@ -188,7 +186,7 @@ public class LidVidUtils
     			result = lid;
     			break;
     		case LATEST:
-    			result = LidVidDAO.getLatestLidVidByLid(ctlContext, reqContext, lid);
+    			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");

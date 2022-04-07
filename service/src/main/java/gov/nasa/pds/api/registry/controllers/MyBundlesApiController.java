@@ -3,9 +3,10 @@ package gov.nasa.pds.api.registry.controllers;
 
 import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.registry.business.BundleDAO;
+import gov.nasa.pds.api.registry.business.CollectionDAO;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.business.LidVidUtils;
+import gov.nasa.pds.api.registry.business.ProductDAO;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -42,19 +43,17 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
 
     @org.springframework.beans.factory.annotation.Autowired
-    public MyBundlesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        super(objectMapper, request);
-        
-        this.presetCriteria.put("product_class", "Product_Bundle");
-    
-    }
+    public MyBundlesApiController(ObjectMapper objectMapper, HttpServletRequest request)
+    { super(objectMapper, request); }
 
     @Override
     public ResponseEntity<Object> bundleByLidvid(
     		@ApiParam(value = "syntax: lidvid or lid  behavior (lid): returns one or more items whose lid matches this lid exactly. If the endpoint ends with the identifier or /latest then a signle result is returned and it is the highest version. If the endpoint ends with /all then all versions of the lid are returned.  behavior (lidvid): returns one and only one item whose lidvid matches this lidvid exactly.  note: the current lid/lidvid resolution will match all the lids that start with lid. In other words, it acts like a glob of foobar*. It behaves this way from first character to the last  note: simple sorting of the lidvid is being done to select the latest from the end of the list. However, the versions 1.0, 2.0, and 13.0 will sort to 1.0, 13.0, and 2.0 so the end of the list may not be the latest. ",required=true) @PathVariable("identifier") String identifier,
     		@ApiParam(value = "syntax: fileds=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields)
 	{
-        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
+        return this.getLatestProductResponseEntity(
+        		new URIParameters().setFields(fields).setIdentifier(identifier),
+        		BundleDAO.searchConstraints());
     }
 
     
@@ -63,7 +62,9 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     		@ApiParam(value = "syntax: lidvid or lid  behavior (lid): returns one or more items whose lid matches this lid exactly. If the endpoint ends with the identifier or /latest then a signle result is returned and it is the highest version. If the endpoint ends with /all then all versions of the lid are returned.  behavior (lidvid): returns one and only one item whose lidvid matches this lidvid exactly.  note: the current lid/lidvid resolution will match all the lids that start with lid. In other words, it acts like a glob of foobar*. It behaves this way from first character to the last  note: simple sorting of the lidvid is being done to select the latest from the end of the list. However, the versions 1.0, 2.0, and 13.0 will sort to 1.0, 13.0, and 2.0 so the end of the list may not be the latest. ",required=true) @PathVariable("identifier") String identifier,
     		@ApiParam(value = "syntax: fileds=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields)
     {
-        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
+        return this.getLatestProductResponseEntity(
+        		new URIParameters().setFields(fields).setIdentifier(identifier),
+        		BundleDAO.searchConstraints());
     }
 
     
@@ -77,14 +78,16 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
             )
     {
-        return this.getAllProductsResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setIdentifier(identifier)
-        		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.ALL)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));                
+        return this.getAllProductsResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setIdentifier(identifier)
+        			.setLimit(limit)
+        			.setSelector(ProductVersionSelector.ALL)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly),
+        		BundleDAO.searchConstraints());                
     }    
     
     
@@ -99,14 +102,16 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return this.getProductsResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setKeywords(keywords)
-        		.setLimit(limit)
-        		.setQuery(q)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));
+        return this.getProductsResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setKeywords(keywords)
+        			.setLimit(limit)
+        			.setQuery(q)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly),
+        		BundleDAO.searchConstraints());
     }    
     
     
@@ -187,7 +192,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             int end = context.getStart() + context.getLimit();
             if(end > size) end = size;
             List<String> ids = clidvids.subList(context.getStart(), end);
-            fillProductsFromLidvids(context, ids, -1);
+            this.fillProductsFromLidvids(context, ids, -1);
         }
         else 
         {
@@ -203,7 +208,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, CollectionDAO.searchConstraints(), BundleDAO.searchConstraints(), accept);
         	 this.getBundleCollections(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -252,7 +257,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, ProductDAO.searchConstraints(), BundleDAO.searchConstraints(), accept);
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -300,7 +305,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
                 wsize = 0;
 
                 if (hit.get("product_lidvid") instanceof String)
-                { wlidvids.add(LidVidUtils.resolveLIDVID (hit.get("product_lidvid").toString(), ProductVersionSelector.LATEST, this, context)); }
+                { wlidvids.add(hit.get("product_lidvid").toString()); }
                 else
                 {
                     @SuppressWarnings("unchecked")
@@ -313,8 +318,8 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
                 if (context.getStart() <= iteration || context.getStart() < iteration+wlidvids.size())
                 { plidvids.addAll(wlidvids.subList(context.getStart() <= iteration ? 0 : context.getStart()-iteration, wlidvids.size())); }
 
-                //if (limit <= plidvids.size()) { break; }
-                //else { iteration = iteration + wlidvids.size() + wsize; }
+                if (context.getLimit() <= plidvids.size()) { break; }
+                else { iteration = iteration + wlidvids.size() + wsize; }
                 iteration = iteration + wlidvids.size() + wsize;
             }
         }

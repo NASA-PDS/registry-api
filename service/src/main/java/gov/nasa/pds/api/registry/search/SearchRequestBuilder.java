@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.index.query.BoolQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
 
@@ -23,15 +22,15 @@ public class SearchRequestBuilder
     	{
     		for (String key: context.getKeyValuePairs().keySet())
     		if (context.isTerm())
-    		{ this.base.must (QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    		{ this.base.should(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
     		else
     		{
     			for (String value : context.getKeyValuePairs().get(key))
-    			{ this.base.must(QueryBuilders.matchQuery(key, value)); }
+    			{ this.base.should(QueryBuilders.matchQuery(key, value)); }
     		}
     	}
 
-    	if (!context.getKeywords().isEmpty() && !context.getQueryString().isBlank())
+    	if (context.getKeywords().isEmpty() && !context.getQueryString().isBlank())
     		this.base.must (ProductQueryBuilderUtil.parseQueryString(context.getQueryString()));
 
     	if (!context.getKeywords().isEmpty())
@@ -72,7 +71,7 @@ public class SearchRequestBuilder
     							     SearchRequestBuilder.excludes (context.getFields())));
     }
     
-    public QueryBuilder getQueryBuilder(RequestBuildContext context)
+    public BoolQueryBuilder getQueryBuilder(RequestBuildContext context)
     { 
         ProductQueryBuilderUtil.addArchiveStatusFilter(base);
     	ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());

@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.base.ProductsApi;
+import gov.nasa.pds.api.registry.business.BundleDAO;
+import gov.nasa.pds.api.registry.business.CollectionDAO;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.ProductDAO;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -39,10 +42,8 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     private static final Logger log = LoggerFactory.getLogger(MyProductsApiController.class);
     
     @org.springframework.beans.factory.annotation.Autowired
-    public MyProductsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        
-        super(objectMapper, request);
-    }
+    public MyProductsApiController(ObjectMapper objectMapper, HttpServletRequest request)
+    { super(objectMapper, request); }
     
     @Override
     public ResponseEntity<Object> products(
@@ -55,14 +56,16 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     		@ApiParam(value = "syntax: summary-only={true,false}  behavior: only return the summary when a list is returned. Useful to get the list of available properties. ", defaultValue = "false") @Valid @RequestParam(value = "summary-only", required = false, defaultValue="false") Boolean summaryOnly
     		)
     {
-        return this.getProductsResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setKeywords(keywords)
-        		.setLimit(limit)
-        		.setQuery(q)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));
+        return this.getProductsResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setKeywords(keywords)
+        			.setLimit(limit)
+        			.setQuery(q)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly),
+        		ProductDAO.searchConstraints());
     }
 
     @Override
@@ -71,7 +74,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     		@ApiParam(value = "syntax: fields=field1,field2,...  behavior: this parameter and the headder Accept: type determine what content is packaged for the result. While the types application/csv, application/kvp+json, and text/csv return only the fields requesteted, all of the other types have a minimal set of fields that must be returned. Duplicating a minimally required field in this parameter has not effect. The types vnd.nasa.pds.pds4+json and vnd.nasa.pds.pds4+xml have a complete set of fields that must be returned; meaning this parameter does not impact their content. When fields is not used, then the minimal set of fields, or all when minimal is an empty set, is returned.  notes: the blob fields are blocked unless specifically requrested and only for the *_/csv and application/kvp+csv types. ") @Valid @RequestParam(value = "fields", required = false) List<String> fields
     		)
     {
-        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
+        return this.getLatestProductResponseEntity(
+        		new URIParameters().setFields(fields).setIdentifier(identifier),
+        		ProductDAO.searchConstraints());
     }
 
     
@@ -82,7 +87,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     		)
     {
     	// FIXME: add fields
-        return this.getLatestProductResponseEntity(new URIParameters().setFields(fields).setIdentifier(identifier));
+        return this.getLatestProductResponseEntity(
+        		new URIParameters().setFields(fields).setIdentifier(identifier),
+        		ProductDAO.searchConstraints());
     }    
     
     
@@ -97,14 +104,16 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     		)
     {
     	// FIXME: add fields, sort, summary-only
-        return getAllProductsResponseEntity(new URIParameters()
-        		.setFields(fields)
-        		.setIdentifier(identifier)
-        		.setLimit(limit)
-        		.setSelector(ProductVersionSelector.ALL)
-        		.setSort(sort)
-        		.setStart(start)
-        		.setSummanryOnly(summaryOnly));
+        return getAllProductsResponseEntity(
+        		new URIParameters()
+        			.setFields(fields)
+        			.setIdentifier(identifier)
+        			.setLimit(limit)
+        			.setSelector(ProductVersionSelector.ALL)
+        			.setSort(sort)
+        			.setStart(start)
+        			.setSummanryOnly(summaryOnly),
+        		ProductDAO.searchConstraints());
     }    
     
     
@@ -130,7 +139,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, BundleDAO.searchConstraints(), ProductDAO.searchConstraints(), accept);
             this.getContainingBundle(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -193,7 +202,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, CollectionDAO.searchConstraints(), ProductDAO.searchConstraints(), accept);
             this.getContainingCollection(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
