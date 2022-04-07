@@ -1,31 +1,16 @@
 package gov.nasa.pds.api.registry.business;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchResponse;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
-import gov.nasa.pds.api.registry.RegistryContext;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.search.RegistryContextImpl;
-import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
@@ -35,55 +20,7 @@ public class ProductBusinessObject
     private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
     
     private static final String DEFAULT_NULL_VALUE = null; 
-    
-    private OpenSearchRegistryConnection openSearchConnection;
-    private RegistryContext registryContext;
 
-    private ObjectMapper objectMapper;
-    
-    static final String LIDVID_SEPARATOR = "::";
-    
-    public ProductBusinessObject(OpenSearchRegistryConnection esRegistryConnection) {
-        this.openSearchConnection = esRegistryConnection;
-        
-        this.registryContext = new RegistryContextImpl(
-                this.openSearchConnection.getRegistryIndex(),
-                this.openSearchConnection.getRegistryRefIndex(),
-                this.openSearchConnection.getTimeOutSeconds());
-       
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-    
-    public String xxgetLatestLidVidFromLid(String lid) throws IOException,LidVidNotFoundException
-    {
-        /*
-         * if lid is a lidvid then it return the same lidvid if available in the opensearch database
-         */
-        lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
-        SearchRequest searchRequest = new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", lid))
-        		.build(RequestBuildContextFactory.given("lidvid"), this.registryContext.getRegistryIndex());
-        SearchResponse searchResponse = this.openSearchConnection.getRestHighLevelClient().search(searchRequest, 
-                RequestOptions.DEFAULT);
-
-        if (searchResponse != null)
-        {
-        	ArrayList<String> lidvids = new ArrayList<String>();
-            String lidvid;
-            for (SearchHit searchHit : searchResponse.getHits())
-            {
-                lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
-                lidvids.add(lidvid);                
-            }
-            Collections.sort(lidvids);
-
-            if (lidvids.size() == 0) throw new LidVidNotFoundException(lid);
-            else return lidvids.get(lidvids.size() - 1);
-        }
-        else throw new LidVidNotFoundException(lid);
-    }
-       
-       
     private static XMLMashallableProperyValue object2PropertyValue(Object o) {
            XMLMashallableProperyValue pv = new XMLMashallableProperyValue();
            
