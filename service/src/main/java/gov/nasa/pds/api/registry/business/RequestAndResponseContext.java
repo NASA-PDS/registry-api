@@ -76,7 +76,6 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.format = this.find_match(output_format);
     	this.queryString = parameters.getQuery();
     	this.keywords = parameters.getKeywords();
-    	this.lidvid = LidVidUtils.resolveLIDVID(parameters.getIdentifier(), parameters.getSelector(), controlContext.getConnection());
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
     	this.sort = parameters.getSort();
@@ -85,6 +84,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.summaryOnly = parameters.getSummanryOnly();
     	this.presetCriteria = preset;
     	this.selector = parameters.getSelector();
+    	this.lidvid = LidVidUtils.resolveLIDVID(parameters.getIdentifier(), parameters.getSelector(), controlContext, this);
     }
 
     @Override

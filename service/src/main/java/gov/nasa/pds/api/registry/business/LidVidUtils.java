@@ -9,9 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.common.unit.TimeValue;
-import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.AggregationBuilders;
@@ -22,7 +20,10 @@ import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.sort.FieldSortBuilder;
 import org.opensearch.search.sort.SortOrder;
 
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
+import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestBuilder;
 
 
 /**
@@ -58,18 +59,19 @@ public class LidVidUtils
      * @return list of LIDVIDs
      * @throws IOException
      */
-    public static List<String> getLatestLidVidsByLids(OpenSearchRegistryConnection esConnection, 
+    public static List<String> getLatestLidVidsByLids(
+    		ControlContext ctlContext,
+    		RequestBuildContext reqBuildContext,
             Collection<String> lids) throws IOException
     {
         // Create request
-        SearchSourceBuilder src = buildGetLatestLidVidsRequest(lids);
-        src.timeout(new TimeValue(esConnection.getTimeOutSeconds(), TimeUnit.SECONDS));
+        SearchSourceBuilder src = buildGetLatestLidVidsRequest(lids, reqBuildContext);
+        src.timeout(new TimeValue(ctlContext.getRegistryContext().getTimeOutSeconds(), TimeUnit.SECONDS));
         
-        SearchRequest esRequest = new SearchRequest(esConnection.getRegistryIndex()).source(src);
+        SearchRequest esRequest = new SearchRequest(ctlContext.getRegistryContext().getRegistryIndex()).source(src);
         
         // Call opensearch
-        RestHighLevelClient client = esConnection.getRestHighLevelClient();
-        SearchResponse esResp = client.search(esRequest, RequestOptions.DEFAULT);
+        SearchResponse esResp = ctlContext.getConnection().getRestHighLevelClient().search(esRequest, RequestOptions.DEFAULT);
 
         // Parse response
         // (1) Terms aggregation (top level)
@@ -105,18 +107,19 @@ public class LidVidUtils
      * @return a list of LIDVIDs
      * @throws IOException an exception
      */
-    public static List<String> getAllLidVidsByLids(OpenSearchRegistryConnection esConnection, 
+    public static List<String> getAllLidVidsByLids(
+    		ControlContext ctlContext,
+    		RequestBuildContext reqContext,
             Collection<String> lids) throws IOException
     {
         // Create request
-        SearchSourceBuilder src = buildGetAllLidVidsRequest(lids);
-        src.timeout(new TimeValue(esConnection.getTimeOutSeconds(), TimeUnit.SECONDS));
+        SearchSourceBuilder src = buildGetAllLidVidsRequest(reqContext, lids);
+        src.timeout(new TimeValue(ctlContext.getRegistryContext().getTimeOutSeconds(), TimeUnit.SECONDS));
         
-        SearchRequest esRequest = new SearchRequest(esConnection.getRegistryIndex()).source(src);
+        SearchRequest esRequest = new SearchRequest(ctlContext.getRegistryContext().getRegistryIndex()).source(src);
         
         // Call opensearch
-        RestHighLevelClient client = esConnection.getRestHighLevelClient();
-        SearchResponse esResp = client.search(esRequest, RequestOptions.DEFAULT);
+        SearchResponse esResp = ctlContext.getConnection().getRestHighLevelClient().search(esRequest, RequestOptions.DEFAULT);
         
         // Parse response
         List<String> lidvids = new ArrayList<>();
@@ -130,7 +133,7 @@ public class LidVidUtils
      * @param lids list of LIDs
      * @return opensearch query
      */
-    public static SearchSourceBuilder buildGetLatestLidVidsRequest(Collection<String> lids)
+    public static SearchSourceBuilder buildGetLatestLidVidsRequest(Collection<String> lids, RequestBuildContext context)
     {
         if(lids == null || lids.isEmpty()) return null;
         
@@ -138,8 +141,8 @@ public class LidVidUtils
         
         // Query
         // FIXME: no, this needs to use the usual route and not do it on its own
-        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(0);
-
+        src.query(new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true))
+        		.getQueryBuilder(context)).fetchSource(false).size(0);
         // Aggregations
         src.aggregation(AggregationBuilders.terms("lids").field("lid").size(lids.size())
             .subAggregation(AggregationBuilders.topHits("latest").sort(new FieldSortBuilder("vid").order(SortOrder.DESC))
@@ -155,17 +158,23 @@ public class LidVidUtils
      * @param lids a list of LIDS
      * @return opensearch query
      */
-    public static SearchSourceBuilder buildGetAllLidVidsRequest(Collection<String> lids)
+    public static SearchSourceBuilder buildGetAllLidVidsRequest(
+    		RequestBuildContext reqContext, Collection<String> lids)
     {
         if(lids == null || lids.isEmpty()) return null;
 
         // FIXME: no, this needs to use the usual route and not do it on its own
         SearchSourceBuilder src = new SearchSourceBuilder();
-        src.query(QueryBuilders.termsQuery("lid", lids)).fetchSource(false).size(5000);
+        src.query(new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true))
+        		.getQueryBuilder(reqContext)).fetchSource(false).size(5000);
         return src;
     }
     
-    public static String resolveLIDVID (String identifier, ProductVersionSelector scope, OpenSearchRegistryConnection es) throws IOException, LidVidNotFoundException
+    public static String resolveLIDVID (
+    		String identifier,
+    		ProductVersionSelector scope,
+    		ControlContext ctlContext,
+    		RequestBuildContext reqContext) throws IOException, LidVidNotFoundException
     {
     	String result = identifier;
     	
@@ -179,7 +188,7 @@ public class LidVidUtils
     			result = lid;
     			break;
     		case LATEST:
-    			result = new LidVidDAO(es).getLatestLidVidByLid(lid);
+    			result = LidVidDAO.getLatestLidVidByLid(ctlContext, reqContext, lid);
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");

@@ -1,15 +1,12 @@
 package gov.nasa.pds.api.registry.search;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.opensearch.action.search.SearchRequest;
-import org.opensearch.common.unit.TimeValue;
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
-import org.opensearch.search.fetch.subphase.FetchSourceContext;
 
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
@@ -19,11 +16,10 @@ import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 public class SearchRequestBuilder
 {
     final private BoolQueryBuilder base = QueryBuilders.boolQuery();
-    final private SearchSourceBuilder srcBuilder = new SearchSourceBuilder();
     
     public SearchRequestBuilder(RequestConstructionContext context)
     {
-    	if (context.getKeyValuePairs().size() > 0)
+    	if (!context.getKeyValuePairs().isEmpty())
     	{
     		for (String key: context.getKeyValuePairs().keySet())
     		if (context.isTerm())
@@ -35,29 +31,22 @@ public class SearchRequestBuilder
     		}
     	}
 
-    	if (context.getKeywords().size() == 0 && context.getQueryString().length() > 0)
+    	if (!context.getKeywords().isEmpty() && !context.getQueryString().isBlank())
     		this.base.must (ProductQueryBuilderUtil.parseQueryString(context.getQueryString()));
 
-    	if (context.getKeywords().size() > 0)
+    	if (!context.getKeywords().isEmpty())
     	{
     		context.getKeywords().forEach((keyword) ->
     		{ this.base.should (QueryBuilders.queryStringQuery(keyword).field("title").field("description")); });
     	}
 
-    	if (context.getLIDVID().length() > 0)
+    	if (!context.getLIDVID().isBlank())
     	{
     		if (context.isTerm()) this.base.must(QueryBuilders.termQuery("lidvid", context.getLIDVID()));
     		else this.base.must(QueryBuilders.matchQuery("lidvid", context.getLIDVID()));
     	}
     }
 
-    public SearchRequestBuilder(QueryBuilder query, int from, int size)
-    {
-        srcBuilder.query(query);
-        srcBuilder.from(from);
-        srcBuilder.size(size);
-    }
-    
     static private String[] excludes (List<String> fields)
     {
     	String[] exclude, ex0 = new String[0], exbp = {BlobUtil.XML_BLOB_PROPERTY},
@@ -72,35 +61,6 @@ public class SearchRequestBuilder
     	return exclude;
     }
     
-    public void fetchSource(boolean fetchSource, String[] includedFields, String[] excludedFields)
-    {
-        if(fetchSource)
-        {
-            FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includedFields, excludedFields);
-            srcBuilder.fetchSource(fetchSourceContext);
-        }
-        else
-        {
-            srcBuilder.fetchSource(false);
-        }
-    }
-    
-    
-    public void setTimeoutSeconds(int timeOutSeconds)
-    {
-        srcBuilder.timeout(new TimeValue(timeOutSeconds, TimeUnit.SECONDS));
-    }
-    
-    
-    public SearchRequest build(String registryIndex)
-    {
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.source(srcBuilder);
-        searchRequest.indices(registryIndex);
-
-        return searchRequest;
-    }
-
     public SearchRequest build (RequestBuildContext context, String index)
     {
         ProductQueryBuilderUtil.addArchiveStatusFilter(base);
@@ -110,5 +70,12 @@ public class SearchRequestBuilder
     					.query(this.base)
     					.fetchSource(context.getFields().toArray(new String[0]),
     							     SearchRequestBuilder.excludes (context.getFields())));
+    }
+    
+    public QueryBuilder getQueryBuilder(RequestBuildContext context)
+    { 
+        ProductQueryBuilderUtil.addArchiveStatusFilter(base);
+    	ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());
+    	return this.base;
     }
 }

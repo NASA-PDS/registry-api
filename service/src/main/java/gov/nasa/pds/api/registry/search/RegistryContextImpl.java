@@ -16,10 +16,10 @@ public class RegistryContextImpl implements RegistryContext
 	}
 
 	@Override
-	public String getRegIndex() { return this.regIndex; }
+	public String getRegistryIndex() { return this.regIndex; }
 
 	@Override
-	public String getRefIndex() { return this.refIndex; }
+	public String getRegistryRefIndex() { return this.refIndex; }
 
 	@Override
 	public int getTimeOutSeconds() { return this.timeoutSeconds; }

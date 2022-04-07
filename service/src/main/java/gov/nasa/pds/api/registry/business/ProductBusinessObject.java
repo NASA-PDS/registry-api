@@ -42,9 +42,6 @@ public class ProductBusinessObject
     private ObjectMapper objectMapper;
     
     static final String LIDVID_SEPARATOR = "::";
-
-    private LidVidDAO lidVidDao;
-    private BundleDAO bundleDao;
     
     public ProductBusinessObject(OpenSearchRegistryConnection esRegistryConnection) {
         this.openSearchConnection = esRegistryConnection;
@@ -56,31 +53,16 @@ public class ProductBusinessObject
        
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        
-        lidVidDao = new LidVidDAO(esRegistryConnection);
-        bundleDao = new BundleDAO(esRegistryConnection);
     }
     
-
-    public LidVidDAO getLidVidDao()
-    {
-        return lidVidDao;
-    }
-
-    public BundleDAO getBundleDao()
-    {
-        return bundleDao;
-    }
-    
-    
-    public String getLatestLidVidFromLid(String lid) throws IOException,LidVidNotFoundException
+    public String xxgetLatestLidVidFromLid(String lid) throws IOException,LidVidNotFoundException
     {
         /*
          * if lid is a lidvid then it return the same lidvid if available in the opensearch database
          */
         lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
         SearchRequest searchRequest = new SearchRequestBuilder(RequestConstructionContextFactory.given("lid", lid))
-        		.build(RequestBuildContextFactory.given("lidvid"), this.registryContext.getRegIndex());
+        		.build(RequestBuildContextFactory.given("lidvid"), this.registryContext.getRegistryIndex());
         SearchResponse searchResponse = this.openSearchConnection.getRestHighLevelClient().search(searchRequest, 
                 RequestOptions.DEFAULT);
 

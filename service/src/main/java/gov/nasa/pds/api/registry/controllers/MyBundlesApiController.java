@@ -2,8 +2,10 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import gov.nasa.pds.api.base.BundlesApi;
+import gov.nasa.pds.api.registry.business.BundleDAO;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.LidVidUtils;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -171,18 +173,13 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     private void getBundleCollections(RequestAndResponseContext context) 
                     throws IOException, LidVidNotFoundException
     {
-        String lidvid = productBO.getLidVidDao().getLatestLidVidByLid(context.getLIDVID());
-        MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + lidvid);
+        MyBundlesApiController.log.info("Get bundle's collections. Bundle LIDVID = " + context.getLIDVID());
         
         List<String> clidvids = null;
         if(context.getSelector() == ProductVersionSelector.ALL)
-        {
-            clidvids = productBO.getBundleDao().getAllBundleCollectionLidVids(lidvid);
-        }
+        { clidvids = BundleDAO.getAllBundleCollectionLidVids(context.getLIDVID(), this, context); }
         else
-        {
-            clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
-        }
+        { clidvids = BundleDAO.getBundleCollectionLidVids(context.getLIDVID(), this, context); }
 
         int size = clidvids.size();
         if (size > 0 && context.getStart() < size && context.getLimit() > 0)
@@ -194,7 +191,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         }
         else 
         {
-            log.warn("Did not find any collections for bundle lidvid: " + lidvid);
+            log.warn("Did not find any collections for bundle lidvid: " + context.getLIDVID());
         }
     }
 
@@ -284,18 +281,17 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     
     private void getProductChildren(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
     {
-        String lidvid = this.productBO.getLatestLidVidFromLid(context.getLIDVID());
-        MyBundlesApiController.log.info("request bundle lidvid, children of products: " + lidvid);
+        MyBundlesApiController.log.info("request bundle lidvid, children of products: " + context.getLIDVID());
 
         int iteration=0,wsize=0;
-        List<String> clidvids = productBO.getBundleDao().getBundleCollectionLidVids(lidvid);
+        List<String> clidvids = BundleDAO.getBundleCollectionLidVids(context.getLIDVID(), this, context);
         
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();
 
         if (0 < clidvids.size())
         {
-            for (final Map<String,Object> hit : 
+            for (final Map<String,Object> hit :
             	new HitIterator(this.searchConnection.getRestHighLevelClient(),
             			new SearchRequestBuilder (RequestConstructionContextFactory.given ("collection_lidvid", clidvids))
             			.build(RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
@@ -304,7 +300,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
                 wsize = 0;
 
                 if (hit.get("product_lidvid") instanceof String)
-                { wlidvids.add(this.productBO.getLatestLidVidFromLid(hit.get("product_lidvid").toString())); }
+                { wlidvids.add(LidVidUtils.resolveLIDVID (hit.get("product_lidvid").toString(), ProductVersionSelector.LATEST, this, context)); }
                 else
                 {
                     @SuppressWarnings("unchecked")
@@ -322,7 +318,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
                 iteration = iteration + wlidvids.size() + wsize;
             }
         }
-        else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + lidvid);
+        else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + context.getLIDVID());
         
         MyBundlesApiController.log.info("found " + Integer.toString(plidvids.size()) + " products in this bundle");
 
@@ -331,6 +327,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             this.fillProductsFromLidvids(context,
                     plidvids.subList(0, plidvids.size() < context.getLimit() ? plidvids.size() : context.getLimit()), iteration);
         }
-        else MyBundlesApiController.log.warn ("Did not find any products for bundle lidvid: " + lidvid);
+        else MyBundlesApiController.log.warn ("Did not find any products for bundle lidvid: " + context.getLIDVID());
     }
 }

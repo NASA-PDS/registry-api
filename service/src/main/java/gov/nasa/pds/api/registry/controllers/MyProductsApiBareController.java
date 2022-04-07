@@ -24,7 +24,6 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RegistryContext;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -55,9 +54,6 @@ public class MyProductsApiBareController implements ControlContext
     OpenSearchRegistryConnection searchConnection;
     
     @Autowired
-    protected ProductBusinessObject productBO;
-    
-    @Autowired
     RegistryContext registryContext;
     
 
@@ -79,7 +75,7 @@ public class MyProductsApiBareController implements ControlContext
     protected void getProducts(RequestAndResponseContext context) throws IOException
     {
     	context.setResponse(this.searchConnection.getRestHighLevelClient(),
-    			new SearchRequestBuilder(context).build(context, this.registryContext.getRegIndex()));
+    			new SearchRequestBuilder(context).build(context, this.registryContext.getRegistryIndex()));
     }
  
 
@@ -164,7 +160,7 @@ public class MyProductsApiBareController implements ControlContext
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
     	context.setResponse(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestBuilder(context).build(context, this.registryContext.getRegIndex()));
+        		new SearchRequestBuilder(context).build(context, this.registryContext.getRegistryIndex()));
     }
 
     
@@ -236,14 +232,9 @@ public class MyProductsApiBareController implements ControlContext
     }
 
 	@Override
-	public ObjectMapper getObjectMapper() {
-		// TODO Auto-generated method stub
-		return this.objectMapper;
-	}
-
+	public ObjectMapper getObjectMapper() { return this.objectMapper; }
 	@Override
-	public OpenSearchRegistryConnection getConnection() {
-		// TODO Auto-generated method stub
-		return this.searchConnection;
-	}
+	public OpenSearchRegistryConnection getConnection() { return this.searchConnection; }
+	@Override
+	public RegistryContext getRegistryContext() { return this.registryContext; }
 }

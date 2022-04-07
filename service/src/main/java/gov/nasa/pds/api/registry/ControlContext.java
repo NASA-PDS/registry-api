@@ -11,4 +11,5 @@ public interface ControlContext
 	public ObjectMapper getObjectMapper();
 	public URL getBaseURL();
 	public OpenSearchRegistryConnection getConnection();
+	public RegistryContext getRegistryContext();
 }

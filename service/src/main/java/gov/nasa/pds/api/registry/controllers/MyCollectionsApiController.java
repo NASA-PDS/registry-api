@@ -4,6 +4,7 @@ package gov.nasa.pds.api.registry.controllers;
 import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.business.LidVidUtils;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -208,23 +209,21 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
     private void getProductChildren(RequestAndResponseContext context) throws IOException, LidVidNotFoundException
     {
-        String lidvid = this.productBO.getLatestLidVidFromLid(context.getLIDVID());
-    
-        MyCollectionsApiController.log.info("request collection lidvid, collections children: " + lidvid);
+        MyCollectionsApiController.log.info("request collection lidvid, collections children: " + context.getLIDVID());
 
         int iteration=0,wsize=0;
         List<String> productLidvids = new ArrayList<String>();
         List<String> pageOfLidvids = new ArrayList<String>();
 
         for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestBuilder(RequestConstructionContextFactory.given ("collection_lidvid", lidvid))
+        		new SearchRequestBuilder(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID()))
         				.build (RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
         {
             pageOfLidvids.clear();
             wsize = 0;
 
             if (kvp.get("product_lidvid") instanceof String)
-            { pageOfLidvids.add(this.productBO.getLatestLidVidFromLid(kvp.get("product_lidvid").toString())); }
+            { pageOfLidvids.add(LidVidUtils.resolveLIDVID (kvp.get("product_lidvid").toString(), ProductVersionSelector.LATEST, this, context)); }
             else
             {
                 @SuppressWarnings("unchecked")
@@ -252,7 +251,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
             this.fillProductsFromLidvids(context,
                     productLidvids.subList(0, productLidvids.size() < context.getLimit() ? productLidvids.size() : context.getLimit()), iteration);
         }
-        else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + lidvid);
+        else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + context.getLIDVID());
     }
 
 

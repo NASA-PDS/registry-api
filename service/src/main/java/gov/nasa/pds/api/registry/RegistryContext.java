@@ -2,7 +2,7 @@ package gov.nasa.pds.api.registry;
 
 public interface RegistryContext
 {
-	public String getRegIndex();
-	public String getRefIndex();
+	public String getRegistryIndex();
+	public String getRegistryRefIndex();
 	public int getTimeOutSeconds();
 }

@@ -20,6 +20,13 @@ class SimpleRequestConstructionContext implements RequestConstructionContext
 		this.lidvid = "";
 	}
 	
+	SimpleRequestConstructionContext (Map<String,List<String>> kvps, boolean asTerm)
+	{
+		this.isTerm = asTerm;
+		this.kvps = kvps;
+		this.lidvid = "";
+	}
+	
 	SimpleRequestConstructionContext (String lidvid)
 	{
 		this.isTerm = false;
