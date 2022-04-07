@@ -10,6 +10,7 @@ import org.opensearch.search.builder.SearchSourceBuilder;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.business.BlobUtil;
+import gov.nasa.pds.api.registry.business.LidVidUtils;
 import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 
 public class SearchRequestBuilder
@@ -41,8 +42,10 @@ public class SearchRequestBuilder
 
     	if (!context.getLIDVID().isBlank())
     	{
-    		if (context.isTerm()) this.base.must(QueryBuilders.termQuery("lidvid", context.getLIDVID()));
-    		else this.base.must(QueryBuilders.matchQuery("lidvid", context.getLIDVID()));
+    		String key = LidVidUtils.extractLidFromLidVid(context.getLIDVID()).equals(context.getLIDVID()) ? "lid" : "lidvid";
+
+    		if (context.isTerm()) this.base.must(QueryBuilders.termQuery(key, context.getLIDVID()));
+    		else this.base.must(QueryBuilders.matchQuery(key, context.getLIDVID()));
     	}
     }
 

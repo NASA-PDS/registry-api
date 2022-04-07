@@ -187,7 +187,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, ProductDAO.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, ProductDAO.searchConstraints(), CollectionDAO.searchConstraints(), accept);
         	this.getProductChildren(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -217,6 +217,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     
     private void getProductChildren(RequestAndResponseContext context) throws IOException, LidVidNotFoundException
     {
+    	// FIXME: this does not do latest/all correctly but need a dataset to test with
         MyCollectionsApiController.log.info("request collection lidvid, collections children: " + context.getLIDVID());
 
         int iteration=0,wsize=0;

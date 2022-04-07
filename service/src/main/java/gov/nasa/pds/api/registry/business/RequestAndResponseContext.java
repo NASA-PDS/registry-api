@@ -86,17 +86,17 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
+    	this.lidvid = LidVidUtils.resolveLIDVID(
+    			parameters.getIdentifier(),
+    			outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED,
+    			controlContext,
+    			RequestBuildContextFactory.given(fields, resPreset));
+    	this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
     	this.start = parameters.getStart();
-    	this.limit = parameters.getLimit();
     	this.summaryOnly = parameters.getSummanryOnly();
     	this.presetCriteria = outPreset;
     	this.selector = parameters.getSelector();
-    	this.lidvid = LidVidUtils.resolveLIDVID(
-    			parameters.getIdentifier(),
-    			parameters.getSelector(),
-    			controlContext,
-    			RequestBuildContextFactory.given(fields, resPreset));
     }
 
     @Override

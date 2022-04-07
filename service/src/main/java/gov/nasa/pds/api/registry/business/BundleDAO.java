@@ -150,7 +150,7 @@ public class BundleDAO
 
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestBuilder(RequestConstructionContextFactory.given(bundleLidVid))
-        		.build(RequestBuildContextFactory.given(fields, reqBuildContext.getPresetCriteria()), ctlContext.getRegistryContext().getRegistryIndex());
+        		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getRegistryContext().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
