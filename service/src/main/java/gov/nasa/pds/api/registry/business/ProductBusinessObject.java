@@ -16,7 +16,6 @@ import gov.nasa.pds.api.registry.search.SearchUtil;
 
 public class ProductBusinessObject
 {
-    
     private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
     
     private static final String DEFAULT_NULL_VALUE = null; 

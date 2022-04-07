@@ -117,13 +117,6 @@ public class OpenSearchConfig
 		return this.esRegistryConnection;
 	}
 
-	
-	@Bean("productBO")
-	public ProductBusinessObject ProductBusinessObject() {
-		return new ProductBusinessObject(this.openSearchRegistryConnection());
-	}
-
-    
 	@Bean("searchRequestBuilder")
 	public RegistryContext RegistrySearchRequestBuilder() {
 		
