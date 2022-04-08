@@ -25,6 +25,7 @@ import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
+import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImplBuilder;
 
 
 import org.slf4j.Logger;
@@ -46,32 +47,27 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 	
 	public OpenSearchRegistryConnectionImpl()
 	{
-	    this(Arrays.asList("localhost:9200"), "registry", "registry-refs", 5, null, null, false, true);
+		
+	    this(new OpenSearchRegistryConnectionImplBuilder());
 	}
 	
-	public OpenSearchRegistryConnectionImpl(List<String> hosts, 
-			String registryIndex,
-			String registryRefIndex,
-			int timeOutSeconds,
-			String username,
-			String password,
-			boolean ssl,
-			boolean sslCertificateVerification) {
+	public OpenSearchRegistryConnectionImpl(OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
+	
 		
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
 		OpenSearchRegistryConnectionImpl.log.info("Connection to open search");
-		for (String host : hosts) {
+		for (String host : connectionBuilder.getHosts()) {
 			String hostPort[] = host.split(":");
 			OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort[0] + ":" + hostPort[1]);
 			httpHosts.add(new HttpHost(hostPort[0], 
             		Integer.parseInt(hostPort[1]), 
-            		ssl?"https":"http"));
+            		connectionBuilder.isSsl()?"https":"http"));
 	    	
 			}
 		
-		RestClientBuilder builder;
-		
+		RestClientBuilder clientBuilder;
+		String username = connectionBuilder.getUsername();
 		if ((username != null) && !username.equals(""))  {
 		
 			
@@ -79,9 +75,9 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 			final CredentialsProvider credentialsProvider =
 				    new BasicCredentialsProvider();
 			credentialsProvider.setCredentials(AuthScope.ANY,
-			    new UsernamePasswordCredentials(username, password));
+			    new UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
 
-			builder = RestClient.builder(
+			clientBuilder = RestClient.builder(
 					httpHosts.toArray(new HttpHost[httpHosts.size()]))
 			    .setHttpClientConfigCallback(new HttpClientConfigCallback() {
 			        @Override
@@ -90,14 +86,14 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 			        	
 			        	try {
 				        	
-			        		if (ssl) {
+			        		if (connectionBuilder.isSsl()) {
 			        			OpenSearchRegistryConnectionImpl.log.info("Connection over SSL");
 					        	SSLContextBuilder sslBld = SSLContexts.custom(); 
 						        sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
 						        SSLContext sslContext = sslBld.build();
 	
 						        httpClientBuilder.setSSLContext(sslContext);
-						        if (!sslCertificateVerification) {
+						        if (!connectionBuilder.isSslCertificateCNVerification()) {
 						        	httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
 						        }
 			        		}
@@ -114,17 +110,17 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 		}
 		else {
 			OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection");
-			builder = RestClient.builder(
+			clientBuilder = RestClient.builder(
             		httpHosts.toArray(new HttpHost[httpHosts.size()])); 
 		}
 		
 		
-		this.restHighLevelClient = new RestHighLevelClient(builder);
+		this.restHighLevelClient = new RestHighLevelClient(clientBuilder);
     	
 		this.crossClusterNodes = checkCCSConfig();
-		this.registryIndex = createCCSIndexString(registryIndex);
-		this.registryRefIndex = createCCSIndexString(registryRefIndex);
-    	this.timeOutSeconds = timeOutSeconds;
+		this.registryIndex = createCCSIndexString(connectionBuilder.getRegistryIndex());
+		this.registryRefIndex = createCCSIndexString(connectionBuilder.getRegistryRefIndex());
+    	this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 		
 	}
 
