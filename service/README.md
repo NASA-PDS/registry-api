@@ -22,6 +22,7 @@ Follow instructions in README.txt in the decompressed folder
 
 ## Developers
 
+    
 ### Deployment
 
 Get a development release by cloning the current repository.
