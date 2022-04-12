@@ -55,11 +55,11 @@ jobs:
                 uses: docker/build-push-action@v2
                 with:
                     context: ./
-                    file: ./service/docker/Dockerfile.http
-                    # Honestly, I'm not sure what should go here:
+                    file: ${{github.event.client_payload.dockerfile}}
+                    # These are only used for Dockerfile.http:
                     build-args: |
-                        version=0.5.0-SNAPSHOT
-                    # Maybe just for this repository, we need a separate workflow for :latest vs :1.2.3?
+                        version=0.5.1
+                        jar_version=0.5.0-SNAPSHOT
                     platforms: linux/amd64,linux/arm64
                     push: true
                     tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:${{github.event.client_payload.image_tag}}
