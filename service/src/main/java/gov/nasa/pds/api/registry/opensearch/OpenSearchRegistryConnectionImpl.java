@@ -31,6 +31,8 @@ import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImplBuil
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
+
 public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConnection {
 	
     // key for getting the remotes from cross cluster config
@@ -50,16 +52,18 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 	    this(new OpenSearchRegistryConnectionImplBuilder());
 	}
 	
+	@SuppressWarnings("StringSplitter")
 	public OpenSearchRegistryConnectionImpl(OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
 			
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 		
 		OpenSearchRegistryConnectionImpl.log.info("Connection to open search");
 		for (String host : connectionBuilder.getHosts()) {
-			String hostPort[] = host.split(":");
-			OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort[0] + ":" + hostPort[1]);
-			httpHosts.add(new HttpHost(hostPort[0], 
-            		Integer.parseInt(hostPort[1]), 
+			
+			List<String> hostPort = Splitter.on(':').splitToList(host);
+			OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort.get(0) + ":" + hostPort.get(1));
+			httpHosts.add(new HttpHost(hostPort.get(0), 
+            		Integer.parseInt(hostPort.get(1)), 
             		connectionBuilder.isSsl()?"https":"http"));
 	    	
 			}
