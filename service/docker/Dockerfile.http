@@ -1,11 +1,14 @@
 FROM openjdk:11-slim
 
 # Get arguments from the build command line
+#
+# See https://github.com/NASA-PDS/registry-api/issues/114#issuecomment-1086019492 for the
+# rationale behind both `version` and `jar_version`.
+ARG version
 ARG version \
     jar_version=$version
 
 ENV VERSION=$version
-ENV JAR_VERSION=$jar_version
 
 # Build up the OS
 RUN apt-get update \
@@ -26,11 +29,9 @@ COPY README.md /usr/local/registry-api-service
 EXPOSE 80
 
 # Use this if producing a Docker image from a release
-RUN set -ex \
- && cd /usr/local/registry-api-service \
- && curl -L \
-         https://github.com/NASA-PDS/registry-api/releases/download/v${VERSION}/registry-api-service-${JAR_VERSION}.jar \
-         -o registry-api-service.jar \
+RUN cd /usr/local/registry-api-service \
+ && curl --location --output registry-api-service.jar --fail --silent \
+    https://github.com/NASA-PDS/registry-api/releases/download/v${VERSION}/registry-api-service-${jar_version}.jar \
  && rm -rf /var/lib/apt/lists/*
 
 # Run the sevice by default

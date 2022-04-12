@@ -13,11 +13,12 @@ respectively.
 
 The images are built from the base repository directory. An example build command line is:
 
-docker build --build-arg version=4.0.0-SNAPSHOT \
-             --build-arg keystore_pass=MyDogHasFleas \
-             --build-arg key_pass=SoDoesMyCat \
-             --tag pds/registry-api-service:4.0.0-SNAPSHOT \
-             --file docker/Dockerfile.https .
+docker image build \
+    --build-arg version=4.0.0-SNAPSHOT \
+    --build-arg jar_version=4.0.0-SNAPSHOT \
+    --build-arg keystore_pass=MyDogHasFleas \
+    --build-arg key_pass=SoDoesMyCat \
+    --tag pds/registry-api-service:4.0.0-SNAPSHOT \
+    --file docker/Dockerfile.https .
 
-
-
+Note that `version` and `jar_version` may be different in GitHub.
