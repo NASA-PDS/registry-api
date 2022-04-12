@@ -3,9 +3,11 @@ FROM openjdk:11-slim
 # Get arguments from the build command line
 ARG version \
     keystore_pass \
-    key_pass
+    key_pass \
+    jar_version=$version
 
 ENV VERSION=$version
+ENV JAR_VERSION=$jar_version
 
 # Build up the OS
 RUN apt-get update && \
@@ -15,7 +17,7 @@ RUN apt-get update && \
 # Make room for the app and capture the version
 RUN mkdir /usr/local/registry-api-service \
  && cd /usr/local/registry-api-service \
- && echo ${VERSION} > version.txt
+ && echo "Release version : " ${VERSION} " / Jar version : " ${JAR_VERSION}  > version.txt
 
 # Copy the data into the building container
 COPY LICENSE.md /usr/local/registry-api-service
@@ -29,10 +31,8 @@ EXPOSE 443
 RUN set -ex \
  && cd /usr/local/registry-api-service \
  && curl -L \
-         https://github.com/NASA-PDS/registry-api-service/releases/download/v${VERSION}/registry-api-service-${VERSION}.jar \
+         https://github.com/NASA-PDS/registry-api/releases/download/v${VERSION}/registry-api-service-${JAR_VERSION}.jar \
          -o registry-api-service.jar
-
-# TODO: Set-up bind dir for application.properties here...
 
 # Now generate/store the self signed cert.
 RUN cd /usr/local/registry-api-service \
@@ -43,9 +43,7 @@ RUN cd /usr/local/registry-api-service \
 # Run the sevice by default
 WORKDIR /usr/local/registry-api-service
 
-# TODO: the bind-dir needs to be added to the classpath as the first entry so the config file is assured to be picked up
 CMD ["java", \
-     # "-cp", "<bind_dir>", \
      "-cp", "/usr/local/registry-api-service", \
      "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
      "gov.nasa.pds.api.registry.SpringBootMain"]
