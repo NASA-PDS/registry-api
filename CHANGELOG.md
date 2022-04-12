@@ -1,16 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-04-12)
+## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-04-12)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0-SNAPSHOT...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v1.0.0-SNAPSHOT)
 
 **Defects:**
 
 - Invalid or corrupted registry-api-service.jar file in registry-api-service docker image [\#114](https://github.com/NASA-PDS/registry-api/issues/114) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-
-## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-04-12)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v1.0.0-SNAPSHOT)
 
 **Other closed issues:**
 
