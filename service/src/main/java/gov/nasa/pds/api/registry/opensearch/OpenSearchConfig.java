@@ -3,18 +3,12 @@ package gov.nasa.pds.api.registry.opensearch;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import gov.nasa.pds.api.registry.RegistryContext;
-import gov.nasa.pds.api.registry.SystemConstants;
-import gov.nasa.pds.api.registry.business.ProductBusinessObject;
-import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
 import gov.nasa.pds.api.registry.search.RegistryContextImpl;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImplBuilder;
 
 /* Keep this eventhough not directly referenced
  * 
