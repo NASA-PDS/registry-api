@@ -26,7 +26,7 @@ paths:
       tags:
         - products
       summary: |
-        returns all PDS data products, including bundles, collections, documentation, context and observational products.
+        returns all PDS data products, including bundles, collections, documentation, context and observational products that meet all given constraints.
       operationId: products
       responses:
         '200':
@@ -68,7 +68,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
   /products/{identifier}/latest:
     get:
       tags:
@@ -89,13 +89,13 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
   /products/{identifier}/all:
     get:
       tags:
         - products
       summary: |
-        returns all product versions (lid) with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
+        returns all product versions with the identifier (lid) selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
       operationId: products-by-lidvid-all
       responses:
         '200':
@@ -110,7 +110,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -135,7 +135,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -160,7 +160,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -170,7 +170,7 @@ paths:
       tags:
         - collections
       summary: |
-        returns all PDS collections.
+        returns all PDS collections that meet all given constraints.
       operationId: get collection
       responses:
         '200':
@@ -211,7 +211,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
   /collections/{identifier}/latest:
     get:
       tags:
@@ -232,13 +232,13 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
   /collections/{identifier}/all:
     get:
       tags:
         - collections
       summary: |
-        returns all collection versions (lid) with the identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
+        returns all collection versions with the identifier (lid) selected from all PDS collections. See identifier for details on how it determines what is returned.
       operationId: collections-by-lidvid-all
       responses:
         '200':
@@ -253,7 +253,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -278,7 +278,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -303,7 +303,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -328,7 +328,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -353,7 +353,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -363,7 +363,7 @@ paths:
       tags:
         - bundles
       summary: |
-        returns all PDS bundles
+        returns all PDS bundles that meet all given constraints.
       operationId: get bundles
       responses:
         '200':
@@ -404,7 +404,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
   /bundles/{identifier}/latest:
     get:
       tags:
@@ -425,13 +425,13 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
   /bundles/{identifier}/all:
     get:
       tags:
         - bundles
       summary: |
-        returns all product versions (lid) with the identifier selected from all PDS bundles. See identifier for details on how it determines what is returned.
+        returns all product versions with the identifier (lid) selected from all PDS bundles. See identifier for details on how it determines what is returned.
       operationId: bundle-by-lidvid-all
       responses:
         '200':
@@ -446,7 +446,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -471,7 +471,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -496,7 +496,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -521,7 +521,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -546,7 +546,7 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identified"
+      - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
@@ -571,7 +571,7 @@ components:
         type: array
         items:
           type: string
-    Identified:
+    Identifier:
       name: identifier
       in: path
       description: |
@@ -595,7 +595,6 @@ components:
 
         behavior: free text search on title and description (if set q is ignored
 
-        notes: is this implemented?
       required: false
       schema:
         type: array
