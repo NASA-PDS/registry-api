@@ -978,7 +978,17 @@ components:
       required:
         - label_url
       properties:
+        archive_status:
+          type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
         creation_date_time:
+          type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+        label_url:
           type: string
           xml:
             prefix: 'pds_api'
@@ -989,11 +999,6 @@ components:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
         version:
-          type: string
-          xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
-        label_url:
           type: string
           xml:
             prefix: 'pds_api'
@@ -1068,7 +1073,7 @@ components:
             ops:file_size:
               type: string
             ops:md5_checksum:
-              type: string        
+              type: string
         ops:Data_Files:
           type: array
           items:
@@ -1085,4 +1090,11 @@ components:
               ops:md5_checksum:
                 type: string
               ops:mime_type:
+                type: string
+        ops:Tracking_Meta:
+          type: array
+          items:
+            type: object
+            properties:
+              ops:archive_status:
                 type: string

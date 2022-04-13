@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4MetadataOpsDataFiles;
 import gov.nasa.pds.model.Pds4MetadataOpsLabelFileInfo;
+import gov.nasa.pds.model.Pds4MetadataOpsTrackingMeta;
 import gov.nasa.pds.model.Pds4Product;
 
 
@@ -39,6 +40,9 @@ public class Pds4ProductFactory
     public static final String FLD_LABEL_FILE_REF = "ops:Label_File_Info/ops:file_ref";
     public static final String FLD_LABEL_FILE_SIZE = "ops:Label_File_Info/ops:file_size";
     public static final String FLD_LABEL_FILE_MD5 = "ops:Label_File_Info/ops:md5_checksum";
+
+    // Tracking_Meta
+    public static final String FLD_TRACK_META_ARCHIVE_STATUS = "ops:Tracking_Meta/ops:archive_status";
 
     // Node Name
     public static final String FLD_NODE_NAME = "ops:Harvest_Info/ops:node_name";
@@ -97,7 +101,7 @@ public class Pds4ProductFactory
         meta.setNodeName((String)fieldMap.get(FLD_NODE_NAME));
         meta.setOpsLabelFileInfo(createLabelFile(fieldMap));
         meta.setOpsDataFiles(createDataFiles(fieldMap));
-        
+        meta.setOpsTrackingMeta(createTrackingMeta(fieldMap));
         return meta;
     }
     
@@ -185,5 +189,15 @@ public class Pds4ProductFactory
             
             return items;
         }
+    }
+    
+    private static List<Pds4MetadataOpsTrackingMeta> createTrackingMeta (Map<String, Object> fieldMap)
+    {
+    	List<Pds4MetadataOpsTrackingMeta> items = new ArrayList<Pds4MetadataOpsTrackingMeta>();
+    	Pds4MetadataOpsTrackingMeta item = new Pds4MetadataOpsTrackingMeta();
+
+    	items.add(item);
+    	item.setOpsarchiveStatus((String)fieldMap.get(FLD_TRACK_META_ARCHIVE_STATUS));
+    	return items;
     }
 }
