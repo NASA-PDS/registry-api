@@ -40,10 +40,6 @@ public class LidVidUtils
     
     /**
      * Get latest versions of LIDs
-     * @param esConnection opensearch connection
-     * @param lids list of LIDs
-     * @return list of LIDVIDs
-     * @throws IOException
      */
     public static List<String> getLatestLidVidsByLids(
     		ControlContext ctlContext,
