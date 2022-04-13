@@ -82,7 +82,7 @@ jobs:
                 with:
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
                     event-type: roundup-success
-                    client-payload: '{"ref": "${{github.ref}}", "image_tag": "latest"}'
+                    client-payload: '{"ref": "${{github.ref}}", "image_tag": "latest", "dockerfile": "./service/docker/Dockerfile.local"}'
 
 ...
 

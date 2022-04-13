@@ -1,16 +1,24 @@
 # Changelog
 
+## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-04-12)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v1.0.0-SNAPSHOT)
+
+**Defects:**
+
+- Invalid or corrupted registry-api-service.jar file in registry-api-service docker image [\#114](https://github.com/NASA-PDS/registry-api/issues/114) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Upgrade to OpenSearch java client [\#3](https://github.com/NASA-PDS/registry-api/issues/3)
+
 ## [v0.5.1](https://github.com/NASA-PDS/registry-api/tree/v0.5.1) (2022-03-25)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.0...v0.5.1)
 
 ## [v0.5.0](https://github.com/NASA-PDS/registry-api/tree/v0.5.0) (2022-03-25)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.0-SNAPSHOT...v0.5.0)
-
-## [v0.5.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v0.5.0-SNAPSHOT) (2022-03-25)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v0.5.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/66b22b0ede8c41921a37521433fa15a57f33513d...v0.5.0)
 
 **Requirements:**
 
