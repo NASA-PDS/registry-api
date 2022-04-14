@@ -23,11 +23,11 @@ public class SearchRequestFactory
     	{
     		for (String key: context.getKeyValuePairs().keySet())
     		if (context.isTerm())
-    		{ this.base.should(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    		{ this.base.must(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
     		else
     		{
     			for (String value : context.getKeyValuePairs().get(key))
-    			{ this.base.should(QueryBuilders.matchQuery(key, value)); }
+    			{ this.base.must(QueryBuilders.matchQuery(key, value)); }
     		}
     	}
 
@@ -37,15 +37,14 @@ public class SearchRequestFactory
     	if (!context.getKeywords().isEmpty())
     	{
     		context.getKeywords().forEach((keyword) ->
-    		{ this.base.should (QueryBuilders.queryStringQuery(keyword).field("title").field("description")); });
+    		{ this.base.must (QueryBuilders.queryStringQuery(keyword).field("title").field("description")); });
     	}
 
     	if (!context.getLIDVID().isBlank())
     	{
     		String key = LidVidUtils.extractLidFromLidVid(context.getLIDVID()).equals(context.getLIDVID()) ? "lid" : "lidvid";
 
-    		if (context.isTerm()) this.base.must(QueryBuilders.termQuery(key, context.getLIDVID()));
-    		else this.base.must(QueryBuilders.matchQuery(key, context.getLIDVID()));
+    		this.base.must(QueryBuilders.termQuery(key, context.getLIDVID())); // term is exact match which lidvid look should be
     	}
     }
 

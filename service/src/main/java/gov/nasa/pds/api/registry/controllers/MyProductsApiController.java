@@ -236,7 +236,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         fields.add(field);
         
         for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", lidvid))
+        		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", lidvid, true))
         		.build (RequestBuildContextFactory.given(fields), this.searchConnection.getRegistryRefIndex())))
 		{
             if (kvp.get(field) instanceof String)

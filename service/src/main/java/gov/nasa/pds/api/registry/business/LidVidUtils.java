@@ -64,7 +64,7 @@ public class LidVidUtils
             String lid) throws IOException,LidVidNotFoundException
     {
     	lid = LidVidUtils.extractLidFromLidVid(lid);
-    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid))
+    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid, true))
     			.build(RequestBuildContextFactory.given("lidvid", reqContext.getPresetCriteria()), ctlContext.getRegistryContext().getRegistryIndex());
     	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);

@@ -224,7 +224,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         List<String> pageOfLidvids = new ArrayList<String>();
 
         for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID()))
+        		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID(), true))
         				.build (RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
         {
             pageOfLidvids.clear();
@@ -317,7 +317,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         context.setResponse(this.searchConnection.getRestHighLevelClient(),
         		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection",
-                context.getLIDVID().substring(0, context.getLIDVID().indexOf("::"))))
+        				LidVidUtils.extractLidFromLidVid(context.getLIDVID()), true))
                 .build(context, this.searchConnection.getRegistryIndex()));
     }
 }

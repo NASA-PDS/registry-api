@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.registry.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,12 @@ public class RequestConstructionContextFactory
 		return new SimpleRequestConstructionContext(kvps);
 	}
 
-	public static RequestConstructionContext given (String key, String value)
+	public static RequestConstructionContext given (String key, String value, boolean isTerm)
 	{
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<String>(Arrays.asList(value));
 		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
 		kvps.put(key, values);
-		values.add(value);
-		return new SimpleRequestConstructionContext(kvps);
+		return new SimpleRequestConstructionContext(kvps, isTerm);
 	}
 
 	public static RequestConstructionContext given (String key, List<String> values)
