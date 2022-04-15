@@ -17,15 +17,15 @@ public class RequestConstructionContextFactory
 	{
 		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
 		kvps.put("lidvid", lidvids);
-		return new SimpleRequestConstructionContext(kvps);
+		return new SimpleRequestConstructionContext(kvps, true);
 	}
 
-	public static RequestConstructionContext given (String key, String value, boolean isTerm)
+	public static RequestConstructionContext given (String key, String value, boolean asTerm)
 	{
 		List<String> values = new ArrayList<String>(Arrays.asList(value));
 		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
 		kvps.put(key, values);
-		return new SimpleRequestConstructionContext(kvps, isTerm);
+		return new SimpleRequestConstructionContext(kvps, asTerm);
 	}
 
 	public static RequestConstructionContext given (String key, List<String> values, boolean asTerm)
