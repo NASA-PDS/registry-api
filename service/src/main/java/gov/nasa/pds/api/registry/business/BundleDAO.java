@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.search.SearchHit;
@@ -43,17 +41,10 @@ public class BundleDAO
     	return preset;
     }
 
-    static public void getBundleCollections() throws IOException, LidVidNotFoundException
-    {
-        // TODO: Move code from the bundle controller here.
-        throw new NotImplementedException();
-    }
-
     /**
      * Get collections of a bundle by bundle LIDVID. 
      * If a bundle has LIDVID collection references, then those collections are returned. 
      * If a bundle has LID collection references, then the latest versions of collections are returned.
-     * @param bundleLidVid bundle LIDVID (Could not pass LID here)
      * @return a list of collection LIDVIDs
      * @throws IOException IO exception
      * @throws LidVidNotFoundException LIDVID not found exception

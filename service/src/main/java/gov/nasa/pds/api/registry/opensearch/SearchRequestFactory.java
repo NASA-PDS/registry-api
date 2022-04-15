@@ -78,7 +78,7 @@ public class SearchRequestFactory
     
     public SearchRequest build (RequestBuildContext context, String index)
     {
-    	if (index == this.regContext.getRegistryIndex())
+    	if (this.regContext.getRegistryIndex().equals(index))
     	{
     		ProductQueryBuilderUtil.addArchiveStatusFilter(base);
     		ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());
