@@ -192,8 +192,11 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         {
             int end = context.getStart() + context.getLimit();
             if(end > size) end = size;
+            
             List<String> ids = clidvids.subList(context.getStart(), end);
-            this.fillProductsFromLidvids(context, ids, -1);
+            this.fillProductsFromLidvids(context,
+            		RequestBuildContextFactory.given(context.getFields(), CollectionDAO.searchConstraints()),
+            		ids, -1);
         }
         else 
         {
@@ -299,7 +302,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         {
             for (final Map<String,Object> hit :
             	new HitIterator(this.searchConnection.getRestHighLevelClient(),
-            			new SearchRequestFactory (RequestConstructionContextFactory.given ("collection_lidvid", clidvids))
+            			new SearchRequestFactory (RequestConstructionContextFactory.given ("collection_lidvid", clidvids, false))
             			.build(RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
             {
                 wlidvids.clear();
@@ -330,7 +333,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
         if (plidvids.size() > 0 && context.getLimit() > 0)
         {
-            this.fillProductsFromLidvids(context,
+            this.fillProductsFromLidvids(context, RequestBuildContextFactory.given(context.getFields()),
                     plidvids.subList(0, plidvids.size() < context.getLimit() ? plidvids.size() : context.getLimit()), iteration);
         }
         else MyBundlesApiController.log.warn ("Did not find any products for bundle lidvid: " + context.getLIDVID());

@@ -75,8 +75,7 @@ public class BundleDAO
         
         // Call opensearch
         SearchHit hit;
-        SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT)
-        		.getHits();
+        SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
         if(hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
         	throw new LidVidNotFoundException(bundleLidVid);
         else hit = hits.getAt(0);

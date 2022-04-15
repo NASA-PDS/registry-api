@@ -94,7 +94,7 @@ public class LidVidUtils
     	List<String> lidvids = new ArrayList<String>();
 
     	ctlContext.getConnection().getRestHighLevelClient().search(
-    			new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids)))
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true))
     			.build(reqContext, ctlContext.getRegistryContext().getRegistryIndex()), RequestOptions.DEFAULT)
     	.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
     	return lidvids;

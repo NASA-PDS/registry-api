@@ -23,11 +23,21 @@ public class SearchRequestFactory
     	{
     		for (String key: context.getKeyValuePairs().keySet())
     		if (context.isTerm())
-    		{ this.base.must(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    		{ 
+    			if (context.getKeyValuePairs().get(key).size() == 1)
+    			{ this.base.must(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    			else
+    			{ this.base.should(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    		}
     		else
     		{
-    			for (String value : context.getKeyValuePairs().get(key))
-    			{ this.base.must(QueryBuilders.matchQuery(key, value)); }
+    			if (context.getKeyValuePairs().get(key).size() == 1)
+    			{ this.base.must(QueryBuilders.matchQuery(key, context.getKeyValuePairs().get(key).get(0))); }
+    			else
+    			{
+    				for (String value : context.getKeyValuePairs().get(key))
+    				{ this.base.should(QueryBuilders.matchQuery(key, value)); }
+    			}
     		}
     	}
 

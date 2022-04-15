@@ -28,13 +28,6 @@ public class RequestConstructionContextFactory
 		return new SimpleRequestConstructionContext(kvps, isTerm);
 	}
 
-	public static RequestConstructionContext given (String key, List<String> values)
-	{
-		Map<String,List<String>> kvps = new HashMap<String,List<String>>();
-		kvps.put(key, values);
-		return new SimpleRequestConstructionContext(kvps);
-	}
-
 	public static RequestConstructionContext given (String key, List<String> values, boolean asTerm)
 	{
 		Map<String,List<String>> kvps = new HashMap<String,List<String>>();

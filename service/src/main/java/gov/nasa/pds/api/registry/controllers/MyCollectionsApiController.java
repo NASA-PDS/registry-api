@@ -256,7 +256,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         if (productLidvids.size() > 0 && context.getLimit() > 0)
         {
-            this.fillProductsFromLidvids(context,
+            this.fillProductsFromLidvids(context, RequestBuildContextFactory.given(context.getFields()),
                     productLidvids.subList(0, productLidvids.size() < context.getLimit() ? productLidvids.size() : context.getLimit()), iteration);
         }
         else MyCollectionsApiController.log.warn("Did not find any products for collection lidvid: " + context.getLIDVID());

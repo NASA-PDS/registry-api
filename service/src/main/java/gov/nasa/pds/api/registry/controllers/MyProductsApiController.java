@@ -174,7 +174,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         if (0 < collectionLIDs.size())
         {
             context.setResponse(this.searchConnection.getRestHighLevelClient(),
-            		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs))
+            		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs, false))
             			.build(context, this.searchConnection.getRegistryIndex()));
         }
         else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + context.getLIDVID());
@@ -266,7 +266,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
             if(end > size) end = size; 
             List<String> ids = collectionLidvids.subList(context.getStart(), end);
             
-            this.fillProductsFromLidvids(context, ids, collectionLidvids.size()); 
+            this.fillProductsFromLidvids(context,
+            		RequestBuildContextFactory.given(context.getFields(), CollectionDAO.searchConstraints()),
+            		ids, collectionLidvids.size()); 
         }
         else 
         {

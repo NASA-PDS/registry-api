@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RegistryContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
@@ -57,12 +58,12 @@ public class MyProductsApiBareController implements ControlContext
         this.request = context;
     }
 
-    protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
+    protected void fillProductsFromLidvids (RequestAndResponseContext context, RequestBuildContext buildContext, List<String> lidvids, int real_total) throws IOException
     {
     	context.setResponse(new HitIterator(lidvids.size(),
     			this.searchConnection.getRestHighLevelClient(),
-    			new SearchRequestFactory(RequestConstructionContextFactory.given("lidvid", lidvids))
-    				.build(context, this.searchConnection.getRegistryIndex())),
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lidvid", lidvids, true))
+    				.build(buildContext, this.searchConnection.getRegistryIndex())),
     			real_total);
     }
 
