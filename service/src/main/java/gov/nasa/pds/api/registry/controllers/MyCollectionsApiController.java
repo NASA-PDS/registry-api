@@ -12,10 +12,10 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -223,9 +223,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         List<String> productLidvids = new ArrayList<String>();
         List<String> pageOfLidvids = new ArrayList<String>();
 
-        for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID(), true))
-        				.build (RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
+        for (final Map<String,Object> kvp : new HitIterator(this.connectionContext.getRestHighLevelClient(),
+        		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", context.getLIDVID(), true), this.connectionContext)
+        				.build (RequestBuildContextFactory.given ("product_lidvid"), this.connectionContext.getRegistryRefIndex())))
         {
             pageOfLidvids.clear();
             wsize = 0;
@@ -315,9 +315,9 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + context.getLIDVID());
         MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")));
 
-        context.setResponse(this.searchConnection.getRestHighLevelClient(),
+        context.setResponse(this.connectionContext.getRestHighLevelClient(),
         		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection",
-        				LidVidUtils.extractLidFromLidVid(context.getLIDVID()), true))
-                .build(context, this.searchConnection.getRegistryIndex()));
+        				LidVidUtils.extractLidFromLidVid(context.getLIDVID()), true), this.connectionContext)
+                .build(context, this.connectionContext.getRegistryIndex()));
     }
 }

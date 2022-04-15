@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 
-public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConnection {
+import gov.nasa.pds.api.registry.ConnectionContext;
+
+public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 	
     // key for getting the remotes from cross cluster config
 	public static String CLUSTER_REMOTE_KEY = "cluster.remote";

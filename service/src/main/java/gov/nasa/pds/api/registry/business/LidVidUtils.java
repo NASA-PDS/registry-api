@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 
 
 /**
@@ -64,8 +64,8 @@ public class LidVidUtils
             String lid) throws IOException,LidVidNotFoundException
     {
     	lid = LidVidUtils.extractLidFromLidVid(lid);
-    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid, true))
-    			.build(RequestBuildContextFactory.given("lidvid", reqContext.getPresetCriteria()), ctlContext.getRegistryContext().getRegistryIndex());
+    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid, true), ctlContext.getConnection())
+    			.build(RequestBuildContextFactory.given("lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
     	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
 
@@ -94,8 +94,8 @@ public class LidVidUtils
     	List<String> lidvids = new ArrayList<String>();
 
     	ctlContext.getConnection().getRestHighLevelClient().search(
-    			new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true))
-    			.build(reqContext, ctlContext.getRegistryContext().getRegistryIndex()), RequestOptions.DEFAULT)
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true), ctlContext.getConnection())
+    			.build(reqContext, ctlContext.getConnection().getRegistryIndex()), RequestOptions.DEFAULT)
     	.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
     	return lidvids;
     }

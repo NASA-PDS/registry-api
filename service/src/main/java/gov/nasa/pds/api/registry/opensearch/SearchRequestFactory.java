@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.search;
+package gov.nasa.pds.api.registry.opensearch;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
 
+import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.business.BlobUtil;
@@ -16,9 +17,12 @@ import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
 public class SearchRequestFactory
 {
     final private BoolQueryBuilder base = QueryBuilders.boolQuery();
+    final private ConnectionContext regContext;
     
-    public SearchRequestFactory(RequestConstructionContext context)
+    public SearchRequestFactory(RequestConstructionContext context, ConnectionContext registry)
     {
+    	this.regContext = registry;
+
     	if (!context.getKeyValuePairs().isEmpty())
     	{
     		for (String key: context.getKeyValuePairs().keySet())
@@ -74,19 +78,16 @@ public class SearchRequestFactory
     
     public SearchRequest build (RequestBuildContext context, String index)
     {
-        ProductQueryBuilderUtil.addArchiveStatusFilter(base);
-    	ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());
+    	if (index == this.regContext.getRegistryIndex())
+    	{
+    		ProductQueryBuilderUtil.addArchiveStatusFilter(base);
+    		ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());
+    	}
+
     	return new SearchRequest().indices(index)
     			.source(new SearchSourceBuilder()
     					.query(this.base)
     					.fetchSource(context.getFields().toArray(new String[0]),
     							     SearchRequestFactory.excludes (context.getFields())));
-    }
-    
-    public BoolQueryBuilder getQueryBuilder(RequestBuildContext context)
-    { 
-        ProductQueryBuilderUtil.addArchiveStatusFilter(base);
-    	ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());
-    	return this.base;
     }
 }

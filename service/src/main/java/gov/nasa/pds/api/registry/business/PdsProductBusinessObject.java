@@ -12,7 +12,7 @@ import org.opensearch.search.SearchHits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.PropertyArrayValues;

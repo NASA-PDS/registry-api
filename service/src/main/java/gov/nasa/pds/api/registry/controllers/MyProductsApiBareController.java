@@ -20,17 +20,16 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.ControlContext;
-import gov.nasa.pds.api.registry.RegistryContext;
+import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 
 @Component
 public class MyProductsApiBareController implements ControlContext
@@ -45,14 +44,9 @@ public class MyProductsApiBareController implements ControlContext
     @Autowired
     protected HttpServletRequest context;
     
-    // TODO remove and replace by BusinessObjects 
     @Autowired
-    OpenSearchRegistryConnection searchConnection;
+    ConnectionContext connectionContext;
     
-    @Autowired
-    RegistryContext registryContext;
-    
-
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {
         this.objectMapper = objectMapper;
         this.request = context;
@@ -61,17 +55,17 @@ public class MyProductsApiBareController implements ControlContext
     protected void fillProductsFromLidvids (RequestAndResponseContext context, RequestBuildContext buildContext, List<String> lidvids, int real_total) throws IOException
     {
     	context.setResponse(new HitIterator(lidvids.size(),
-    			this.searchConnection.getRestHighLevelClient(),
-    			new SearchRequestFactory(RequestConstructionContextFactory.given("lidvid", lidvids, true))
-    				.build(buildContext, this.searchConnection.getRegistryIndex())),
+    			this.connectionContext.getRestHighLevelClient(),
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lidvid", lidvids, true), this.connectionContext)
+    				.build(buildContext, this.connectionContext.getRegistryIndex())),
     			real_total);
     }
 
     
     protected void getProducts(RequestAndResponseContext context) throws IOException
     {
-    	context.setResponse(this.searchConnection.getRestHighLevelClient(),
-    			new SearchRequestFactory(context).build(context, this.registryContext.getRegistryIndex()));
+    	context.setResponse(this.connectionContext.getRestHighLevelClient(),
+    			new SearchRequestFactory(context, this.connectionContext).build(context, this.connectionContext.getRegistryIndex()));
     }
  
 
@@ -155,8 +149,8 @@ public class MyProductsApiBareController implements ControlContext
     
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
-    	context.setResponse(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestFactory(context).build(context, this.registryContext.getRegistryIndex()));
+    	context.setResponse(this.connectionContext.getRestHighLevelClient(),
+        		new SearchRequestFactory(context, this.connectionContext).build(context, this.connectionContext.getRegistryIndex()));
     }
 
     
@@ -167,8 +161,8 @@ public class MyProductsApiBareController implements ControlContext
         try 
         {
             RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
-            context.setResponse(this.searchConnection.getRestHighLevelClient(),
-            		new SearchRequestFactory(context).build (context, this.searchConnection.getRegistryIndex()));            
+            context.setResponse(this.connectionContext.getRestHighLevelClient(),
+            		new SearchRequestFactory(context, this.connectionContext).build (context, this.connectionContext.getRegistryIndex()));            
 
             if (context.getResponse() == null)
             { 
@@ -230,7 +224,5 @@ public class MyProductsApiBareController implements ControlContext
 	@Override
 	public ObjectMapper getObjectMapper() { return this.objectMapper; }
 	@Override
-	public OpenSearchRegistryConnection getConnection() { return this.searchConnection; }
-	@Override
-	public RegistryContext getRegistryContext() { return this.registryContext; }
+	public ConnectionContext getConnection() { return this.connectionContext; }
 }

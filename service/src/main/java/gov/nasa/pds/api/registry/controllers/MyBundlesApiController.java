@@ -11,10 +11,10 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -301,13 +301,17 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         if (0 < clidvids.size())
         {
             for (final Map<String,Object> hit :
-            	new HitIterator(this.searchConnection.getRestHighLevelClient(),
-            			new SearchRequestFactory (RequestConstructionContextFactory.given ("collection_lidvid", clidvids, false))
-            			.build(RequestBuildContextFactory.given ("product_lidvid"), this.searchConnection.getRegistryRefIndex())))
+            	new HitIterator(this.connectionContext.getRestHighLevelClient(),
+            			new SearchRequestFactory (RequestConstructionContextFactory.given ("collection_lidvid", clidvids, false), this.connectionContext)
+            			.build(RequestBuildContextFactory.given ("product_lidvid"), this.connectionContext.getRegistryRefIndex())))
             {
                 wlidvids.clear();
                 wsize = 0;
 
+                log.info("*******************");
+                log.info("********* lidvids: " + hit.get("product_lidvid"));
+                log.info("*******************");
+                
                 if (hit.get("product_lidvid") instanceof String)
                 { wlidvids.add(hit.get("product_lidvid").toString()); }
                 else
@@ -328,8 +332,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             }
         }
         else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + context.getLIDVID());
-        
-        MyBundlesApiController.log.info("found " + Integer.toString(plidvids.size()) + " products in this bundle");
 
         if (plidvids.size() > 0 && context.getLimit() > 0)
         {

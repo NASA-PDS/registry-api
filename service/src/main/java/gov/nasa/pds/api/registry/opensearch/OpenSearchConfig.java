@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import gov.nasa.pds.api.registry.RegistryContext;
-import gov.nasa.pds.api.registry.search.RegistryContextImpl;
+import gov.nasa.pds.api.registry.ConnectionContext;
 
 /* Keep this eventhough not directly referenced
  * 
@@ -117,12 +116,12 @@ public class OpenSearchConfig
 		this.ssl = ssl;
 	}
 	
-	private OpenSearchRegistryConnection esRegistryConnection = null;
+	private ConnectionContext connection = null;
 
-	@Bean("esRegistryConnection")
-	public OpenSearchRegistryConnection openSearchRegistryConnection() {
+	@Bean("connection")
+	public ConnectionContext connectionContext() {
 		
-		if (esRegistryConnection == null) {
+		if (connection == null) {
 			
 			OpenSearchRegistryConnectionImplBuilder connectionBuilder = new OpenSearchRegistryConnectionImplBuilder(this);
 
@@ -139,20 +138,9 @@ public class OpenSearchConfig
             	connectionBuilder.setESHostsFromEnvOrDefault();
             }
 			
-			this.esRegistryConnection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
+			this.connection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
 
 		}
-		return this.esRegistryConnection;
-	}
-
-	@Bean("searchRequestBuilder")
-	public RegistryContext RegistrySearchRequestBuilder() {
-		
-		OpenSearchRegistryConnection esRegistryConnection = this.openSearchRegistryConnection();
-		
-		return new RegistryContextImpl(
-     			esRegistryConnection.getRegistryIndex(),
-     			esRegistryConnection.getRegistryRefIndex(),
-    			esRegistryConnection.getTimeOutSeconds());
+		return this.connection;
 	}
 }

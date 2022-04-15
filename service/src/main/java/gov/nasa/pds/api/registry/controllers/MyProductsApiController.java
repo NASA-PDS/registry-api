@@ -28,10 +28,10 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 import io.swagger.annotations.ApiParam;
 
 
@@ -173,9 +173,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         if (0 < collectionLIDs.size())
         {
-            context.setResponse(this.searchConnection.getRestHighLevelClient(),
-            		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs, false))
-            			.build(context, this.searchConnection.getRegistryIndex()));
+            context.setResponse(this.connectionContext.getRestHighLevelClient(),
+            		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection", collectionLIDs, false), this.connectionContext)
+            			.build(context, this.connectionContext.getRegistryIndex()));
         }
         else MyProductsApiController.log.warn ("No parent collection for product LIDVID: " + context.getLIDVID());
     }
@@ -235,9 +235,9 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         String field = noVer ? "collection_lid" : "collection_lidvid";
         fields.add(field);
         
-        for (final Map<String,Object> kvp : new HitIterator(this.searchConnection.getRestHighLevelClient(),
-        		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", lidvid, true))
-        		.build (RequestBuildContextFactory.given(fields), this.searchConnection.getRegistryRefIndex())))
+        for (final Map<String,Object> kvp : new HitIterator(this.connectionContext.getRestHighLevelClient(),
+        		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", lidvid, true), this.connectionContext)
+        		.build (RequestBuildContextFactory.given(fields), this.connectionContext.getRegistryRefIndex())))
 		{
             if (kvp.get(field) instanceof String)
             { lidvids.add(kvp.get(field).toString()); }

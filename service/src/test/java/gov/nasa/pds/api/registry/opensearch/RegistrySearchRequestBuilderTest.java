@@ -18,9 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.RegistryContext;
-import gov.nasa.pds.api.registry.search.RegistryContextImpl;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.ConnectionContext;
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest
@@ -28,7 +26,7 @@ class RegistrySearchRequestBuilderTest {
 
 	private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilderTest.class);
 
-	private RegistryContext requestBuilder  = new RegistryContextImpl("registry", "registry-refs", 60); 
+	//private ConnectionContext requestBuilder  = new RegistryContextImpl("registry", "registry-refs", 60); 
 	
 	public static Map<String, String> queryMap;
 	static {

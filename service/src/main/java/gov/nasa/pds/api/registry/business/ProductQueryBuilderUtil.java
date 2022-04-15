@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
-import gov.nasa.pds.api.registry.search.Antlr4SearchListener;
 
 
 @Component
