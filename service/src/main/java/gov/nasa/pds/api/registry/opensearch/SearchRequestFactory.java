@@ -31,7 +31,10 @@ public class SearchRequestFactory
     			if (context.getKeyValuePairs().get(key).size() == 1)
     			{ this.base.must(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
     			else
-    			{ this.base.should(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
+    			{
+    				if ("lidvid".equals (key)) this.base.filter(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key)));
+    				else this.base.should(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key)));
+    			}
     		}
     		else
     		{

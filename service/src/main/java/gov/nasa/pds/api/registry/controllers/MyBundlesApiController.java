@@ -292,7 +292,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     {
         MyBundlesApiController.log.info("request bundle lidvid, children of products: " + context.getLIDVID());
 
-        int iteration=0,wsize=0;
+        int iteration=0;
         List<String> clidvids = BundleDAO.getBundleCollectionLidVids(context.getLIDVID(), this, context);
         
         List<String> plidvids = new ArrayList<String>();   
@@ -306,11 +306,6 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             			.build(RequestBuildContextFactory.given ("product_lidvid"), this.connectionContext.getRegistryRefIndex())))
             {
                 wlidvids.clear();
-                wsize = 0;
-
-                log.info("*******************");
-                log.info("********* lidvids: " + hit.get("product_lidvid"));
-                log.info("*******************");
                 
                 if (hit.get("product_lidvid") instanceof String)
                 { wlidvids.add(hit.get("product_lidvid").toString()); }
@@ -318,17 +313,13 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
                 {
                     @SuppressWarnings("unchecked")
                     List<String> plids = (List<String>)hit.get("product_lidvid");
-
-                    if (context.getStart() <= iteration || context.getStart() < iteration+plids.size()) { wlidvids.addAll(plids); }
-                    else { wsize = plids.size(); } 
+                    wlidvids.addAll(plids);
                 }
 
-                if (context.getStart() <= iteration || context.getStart() < iteration+wlidvids.size())
+                if ((context.getStart() <= iteration || context.getStart() < iteration+wlidvids.size()) && plidvids.size() <= context.getLimit())
                 { plidvids.addAll(wlidvids.subList(context.getStart() <= iteration ? 0 : context.getStart()-iteration, wlidvids.size())); }
 
-                if (context.getLimit() <= plidvids.size()) { break; }
-                else { iteration = iteration + wlidvids.size() + wsize; }
-                iteration = iteration + wlidvids.size() + wsize;
+                iteration = iteration + wlidvids.size();
             }
         }
         else MyBundlesApiController.log.warn ("Did not find any collections for bundle lidvid: " + context.getLIDVID());

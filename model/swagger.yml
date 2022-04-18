@@ -16,10 +16,6 @@ servers:
   - url: https://pds.nasa.gov/api/registry/1.0
     description: production server
 
-tag:
-  name: PDS
-  description: Planetary Data System
-
 paths:
   /products:
     get:
@@ -817,6 +813,7 @@ components:
         namespace: 'http://pds.nasa.gov/api'
     pdsProduct:
       type: object
+      description: default PDS product description format for the API.
       required:
        - id
        - metadata
@@ -904,6 +901,7 @@ components:
             $ref: '#/components/schemas/pdsProduct'
     wyriwygProduct:
       type: object
+      description: minimalistic description of a pds product with only the key value pairs requested by the user (what you request is what you get)
       required:
         - key_value_pairs
       properties:
@@ -1032,6 +1030,7 @@ components:
         }
     pds4Product:
       type: object
+      description: PDS product description as structured by the PDS4 information model (https://pds.nasa.gov/datastandards/documents/im/)
       required:
         - id
       properties:
@@ -1043,8 +1042,6 @@ components:
         pds4:
           type: object
           description: PDS4 JSON
-      description:
-        PDS4 Label
     pds4Products:
       type: object
       required:

@@ -284,7 +284,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         		.setSummanryOnly(summaryOnly);
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, BundleDAO.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, BundleDAO.searchConstraints(), CollectionDAO.searchConstraints(), accept);
        	 	this.getContainingBundle(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -313,7 +313,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     private void getContainingBundle(RequestAndResponseContext context) throws IOException,LidVidNotFoundException
     {
         MyCollectionsApiController.log.info("find all bundles containing the collection lidvid: " + context.getLIDVID());
-        MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + context.getLIDVID().substring(0, context.getLIDVID().indexOf("::")));
+        MyCollectionsApiController.log.info("find all bundles containing the collection lid: " + LidVidUtils.extractLidFromLidVid(context.getLIDVID()));
 
         context.setResponse(this.connectionContext.getRestHighLevelClient(),
         		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection",
