@@ -1,4 +1,3 @@
 api.pds.nasa.gov.api_search_query_lexer
-tt
-gov.nasa.pds.api.registry.elasticsearch
 gov.nasa.pds.api.registry.configuration
+gov.nasa.pds.api.registry.opensearch
