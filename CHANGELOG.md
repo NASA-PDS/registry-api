@@ -1,20 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-04-19)
+## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-04-19)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0-SNAPSHOT...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v1.0.0-SNAPSHOT)
 
 **Requirements:**
 
 - As a user, I want to see the version of the API specification in the URL of the service [\#8](https://github.com/NASA-PDS/registry-api/issues/8)
-
-**Other closed issues:**
-
-- Update download repository in Registry API Service dockerfiles [\#115](https://github.com/NASA-PDS/registry-api/issues/115)
-
-## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-04-12)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v1.0.0-SNAPSHOT)
 
 **Defects:**
 
@@ -22,6 +14,7 @@
 
 **Other closed issues:**
 
+- Update download repository in Registry API Service dockerfiles [\#115](https://github.com/NASA-PDS/registry-api/issues/115)
 - Upgrade to OpenSearch java client [\#3](https://github.com/NASA-PDS/registry-api/issues/3)
 
 ## [v0.5.1](https://github.com/NASA-PDS/registry-api/tree/v0.5.1) (2022-03-25)
