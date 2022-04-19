@@ -1,5 +1,27 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-04-19)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...«unknown»)
+
+**Requirements:**
+
+- As an API caller\(user\) I want to specify fields for endpoints given a lidvid [\#80](https://github.com/NASA-PDS/registry-api/issues/80)
+
+**Improvements:**
+
+- Remove the home controller from the swagger-ui [\#108](https://github.com/NASA-PDS/registry-api/issues/108)
+
+**Defects:**
+
+- Update all endpoints to only allow access to public data. [\#113](https://github.com/NASA-PDS/registry-api/issues/113) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- documentation does not match behavior [\#106](https://github.com/NASA-PDS/registry-api/issues/106) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- LID -\> LIDVID conversion not consistent in registry-api [\#79](https://github.com/NASA-PDS/registry-api/issues/79) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
+
+## [v1.0.0](https://github.com/NASA-PDS/registry-api/tree/v1.0.0) (2022-04-19)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0-SNAPSHOT...v1.0.0)
+
 ## [v1.0.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.0-SNAPSHOT) (2022-04-19)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v0.5.1...v1.0.0-SNAPSHOT)
