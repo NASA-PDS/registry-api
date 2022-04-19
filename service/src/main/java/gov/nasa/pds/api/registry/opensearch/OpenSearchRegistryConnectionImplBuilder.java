@@ -9,9 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.SystemConstants;
 import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchConfig;
 
-public class OpenSearchRegistryConnectionImplBuilder {
+class OpenSearchRegistryConnectionImplBuilder {
 
 	private static final String DEFAULT_ES_HOST = "localhost:9200";
 	

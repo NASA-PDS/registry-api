@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.ConnectionContext;
 
 //@ExtendWith(SpringExtension.class)
 //@SpringBootTest
@@ -26,7 +26,7 @@ class RegistrySearchRequestBuilderTest {
 
 	private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilderTest.class);
 
-	private RegistrySearchRequestBuilder requestBuilder  = new RegistrySearchRequestBuilder();; 
+	//private ConnectionContext requestBuilder  = new RegistryContextImpl("registry", "registry-refs", 60); 
 	
 	public static Map<String, String> queryMap;
 	static {
@@ -103,9 +103,11 @@ class RegistrySearchRequestBuilderTest {
 				
 				queryString = queryEntry.getKey();
 				List<String> fields = new ArrayList<String>(Arrays.asList("title","ops:Label_File_Info.ops:md5_checksum"));
-				searchRequest = this.requestBuilder.getSearchCollectionRequest(
+				searchRequest = null; /* FIXME: later
+				        new SearchRequestBuilder().build();
+						this.requestBuilder.getSearchCollectionRequest(
 						queryString, null,
-						fields, 0, 10);
+						fields, 0, 10); */
 				
 				/* Write test input in a file */
 				String escapedQueryString;

@@ -3,14 +3,12 @@ package gov.nasa.pds.api.registry.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,28 +19,24 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
-import gov.nasa.pds.api.registry.business.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.business.LidVidUtils;
-import gov.nasa.pds.api.registry.business.ProductBusinessObject;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
+import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.search.KVPQueryBuilder;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 
 @Component
-public class MyProductsApiBareController {
-    
+public class MyProductsApiBareController implements ControlContext
+{    
     private static final Logger log = LoggerFactory.getLogger(MyProductsApiBareController.class);  
-    
     protected final ObjectMapper objectMapper;
-
     protected final HttpServletRequest request;   
-
-    protected Map<String, String> presetCriteria = new HashMap<String, String>();
     
     @Value("${server.contextPath}")
     protected String contextPath;
@@ -50,56 +44,39 @@ public class MyProductsApiBareController {
     @Autowired
     protected HttpServletRequest context;
     
-    // TODO remove and replace by BusinessObjects 
     @Autowired
-    OpenSearchRegistryConnection esRegistryConnection;
+    ConnectionContext connectionContext;
     
-    @Autowired
-    protected ProductBusinessObject productBO;
-    
-    @Autowired
-    RegistrySearchRequestBuilder searchRequestBuilder;
-    
-
     public MyProductsApiBareController(ObjectMapper objectMapper, HttpServletRequest context) {
         this.objectMapper = objectMapper;
         this.request = context;
     }
 
-    protected void fillProductsFromLidvids (RequestAndResponseContext context, List<String> lidvids, int real_total) throws IOException
+    protected void fillProductsFromLidvids (RequestAndResponseContext context, RequestBuildContext buildContext, List<String> lidvids, int real_total) throws IOException
     {
-        KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
-        bld.setFilterByArchiveStatus(true);
-        bld.setKVP("lidvid", lidvids);
-        bld.setFields(context.getFields());
-        SearchRequest req = bld.buildTermQuery();
-        
-        HitIterator itr = new HitIterator(lidvids.size(), 
-                esRegistryConnection.getRestHighLevelClient(), req);
-        
-    	context.setResponse(itr, real_total);
+    	context.setResponse(new HitIterator(lidvids.size(),
+    			this.connectionContext.getRestHighLevelClient(),
+    			new SearchRequestFactory(RequestConstructionContextFactory.given("lidvid", lidvids, true), this.connectionContext)
+    				.build(buildContext, this.connectionContext.getRegistryIndex())),
+    			real_total);
     }
 
     
     protected void getProducts(RequestAndResponseContext context) throws IOException
     {
-        SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductsRequest(
-        		context.getQueryString(),
-        		context.getKeyword(),
-        		context.getFields(), context.getStart(), context.getLimit(), this.presetCriteria);
-        context.setResponse(this.esRegistryConnection.getRestHighLevelClient(), searchRequest);
+    	context.setResponse(this.connectionContext.getRestHighLevelClient(),
+    			new SearchRequestFactory(context, this.connectionContext).build(context, this.connectionContext.getRegistryIndex()));
     }
  
 
-    protected ResponseEntity<Object> getProductsResponseEntity(String q, String keyword, int start, int limit,
-            List<String> fields, List<String> sort, boolean onlySummary)
+    protected ResponseEntity<Object> getProductsResponseEntity(URIParameters parameters, Map<String,String> preset)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), q, keyword, start, limit, fields, sort, onlySummary, this.presetCriteria, accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
         	this.getProducts(context);                
         	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -113,6 +90,11 @@ public class MyProductsApiBareController {
             log.error("Couldn't serialize response for content type " + accept, e);
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        catch (LidVidNotFoundException e)
+        {
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+        }
         catch (NothingFoundException e)
         {
         	log.warn("Could not find any matching reference(s) in database.");
@@ -120,21 +102,20 @@ public class MyProductsApiBareController {
         }
         catch (ParseCancellationException pce)
         {
-            log.error("Could not parse the query string: " + q, pce);
+            log.error("Could not parse the query string: " + parameters.getQuery(), pce);
             return new ResponseEntity<Object>(ErrorFactory.build(pce, this.request), HttpStatus.BAD_REQUEST);
         }
     }    
     
     
-    protected ResponseEntity<Object> getAllProductsResponseEntity(String identifier, int start, int limit)
+    protected ResponseEntity<Object> getAllProductsResponseEntity(URIParameters parameters, Map<String,String> preset)
     {
         String accept = this.request.getHeader("Accept");
         log.debug("accept value is " + accept);
 
         try
         {            
-            String lidvid = LidVidUtils.extractLidFromLidVid(identifier);
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this.objectMapper, this.getBaseURL(), lidvid, start, limit, this.presetCriteria, accept);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
             this.getProductsByLid(context);
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -147,6 +128,11 @@ public class MyProductsApiBareController {
         {
             log.error("Couldn't serialize response for content type " + accept, e);
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (LidVidNotFoundException e)
+        {
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
+            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)
         {
@@ -163,32 +149,24 @@ public class MyProductsApiBareController {
     
     public void getProductsByLid(RequestAndResponseContext context) throws IOException 
     {
-        SearchRequest req = searchRequestBuilder.getSearchProductsByLid(context.getLIDVID(), context.getStart(), context.getLimit());
-        context.setSingularResponse(this.esRegistryConnection.getRestHighLevelClient(), req);
+    	context.setResponse(this.connectionContext.getRestHighLevelClient(),
+        		new SearchRequestFactory(context, this.connectionContext).build(context, this.connectionContext.getRegistryIndex()));
     }
 
     
-    protected ResponseEntity<Object> getLatestProductResponseEntity(String lidvid)
+    protected ResponseEntity<Object> getLatestProductResponseEntity(URIParameters parameters, Map<String,String> preset)
     {
         String accept = request.getHeader("Accept");
         
         try 
         {
-            lidvid = this.productBO.getLidVidDao().getLatestLidVidByLid(lidvid);
-            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(
-                    this.objectMapper, this.getBaseURL(), lidvid, this.presetCriteria, accept);
-            
-            KVPQueryBuilder bld = new KVPQueryBuilder(esRegistryConnection.getRegistryIndex());
-            bld.setFilterByArchiveStatus(true);
-            bld.setKVP("lidvid", lidvid);
-            bld.setFields(context.getFields());            
-            SearchRequest request = bld.buildTermQuery();
-            
-            context.setResponse(esRegistryConnection.getRestHighLevelClient(), request);
+            RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, preset, accept);
+            context.setResponse(this.connectionContext.getRestHighLevelClient(),
+            		new SearchRequestFactory(context, this.connectionContext).build (context, this.connectionContext.getRegistryIndex()));            
 
             if (context.getResponse() == null)
             { 
-            	log.warn("Could not find any matches for LIDVID: " + lidvid);
+            	log.warn("Could not find any matches for LIDVID: " + context.getLIDVID());
             	return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
@@ -205,7 +183,7 @@ public class MyProductsApiBareController {
         }
         catch (LidVidNotFoundException e)
         {
-            log.warn("Could not find lid(vid) in database: " + lidvid);
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)
@@ -221,7 +199,8 @@ public class MyProductsApiBareController {
                 || ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));
     }
  
-    protected URL getBaseURL() {
+    @Override
+    public URL getBaseURL() {
         try {
             MyProductsApiBareController.log.debug("contextPath is: " + this.contextPath);
             
@@ -241,4 +220,9 @@ public class MyProductsApiBareController {
             return null;
         }
     }
+
+	@Override
+	public ObjectMapper getObjectMapper() { return this.objectMapper; }
+	@Override
+	public ConnectionContext getConnection() { return this.connectionContext; }
 }

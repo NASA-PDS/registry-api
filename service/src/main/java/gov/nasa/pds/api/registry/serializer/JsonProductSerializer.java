@@ -3,9 +3,6 @@ package gov.nasa.pds.api.registry.serializer;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
@@ -13,10 +10,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class JsonProductSerializer extends MappingJackson2HttpMessageConverter {
-	
-	private static final Logger log = LoggerFactory.getLogger(JsonProductSerializer.class);
-	
+public class JsonProductSerializer extends MappingJackson2HttpMessageConverter
+{		
 	public JsonProductSerializer()
 	{
 		super();

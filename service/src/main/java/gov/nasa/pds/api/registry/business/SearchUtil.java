@@ -1,28 +1,19 @@
-package gov.nasa.pds.api.registry.search;
+package gov.nasa.pds.api.registry.business;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.business.EntityProduct;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.Reference;
-import gov.nasa.pds.model.Summary;
 
 public class SearchUtil {
 	
@@ -146,24 +137,11 @@ public class SearchUtil {
 		return product;
 	}	
 
-	static public PdsProduct ESentityProductToAPIProduct(EntityProduct ep, URL baseURL) {
-		log.debug("convert ES object to API object without XML label");
+	static public PdsProduct entityProductToAPIProduct(EntityProduct ep, URL baseURL) {
+		log.debug("convert EntityProduct (ep) to API object without XML label");
 		
 		PdsProduct product = new PdsProduct();
 		
 		return addPropertiesFromESEntity(product, ep, baseURL);
-	}
-	
-	static public List<Map<String,Object>> collate (RestHighLevelClient client, SearchRequest request, Summary summary) throws IOException
-	{
-    	List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
-    	SearchHits findings = client.search(request, RequestOptions.DEFAULT).getHits(); 
-    	
-    	summary.hits((int)findings.getTotalHits().value);
-    	for (SearchHit hit : findings)
-    	{
-    		results.add(hit.getSourceAsMap());
-    	}
-    	return results;
 	}
 }

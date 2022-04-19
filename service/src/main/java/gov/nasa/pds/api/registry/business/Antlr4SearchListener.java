@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.search;
+package gov.nasa.pds.api.registry.business;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

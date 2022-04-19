@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ESResponseUtils
+public class ResponseUtils
 {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static List<String> getFieldValues(Map<String, Object> fieldMap, String fieldName)

@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,97 +14,60 @@ import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.util.StringTokenizer;
 
+import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.RequestConstructionContext;
+import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
+import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
-import gov.nasa.pds.api.registry.search.SearchUtil;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
 import gov.nasa.pds.model.Summary;
 
-public class RequestAndResponseContext
+public class RequestAndResponseContext implements RequestBuildContext,RequestConstructionContext
 {
     private static final Logger log = LoggerFactory.getLogger(RequestAndResponseContext.class);
 
     final private long begin_processing = System.currentTimeMillis();
+    final private ControlContext controlContext;
 	final private String queryString;
-	final private String keyword;
+	final private List<String> keywords;
 	final private String lidvid;
     final private List<String> fields;
     final private List<String> sort;
     final private int start;
     final private int limit;
     final private Map<String, String> presetCriteria;
-    final private boolean onlySummary;
+    final private boolean summaryOnly;
     final private ProductVersionSelector selector;
     final private String format;
     final private Map<String, ProductBusinessLogic> formatters;
-    final private ObjectMapper om;
-    final private URL baseURL;
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		Map<String,String> preset, // default criteria when nothing else is defined
+    		ControlContext connection, // webby criteria
+    		UserContext parameters,
+    		Map<String,String> outPreset, // when first and last node of the endpoint criteria are the same
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, 0, 10, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, preset, output_format); }
+    		) throws ApplicationTypeException,LidVidNotFoundException,IOException
+    { return new RequestAndResponseContext(connection, parameters, outPreset, outPreset, output_format); }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		int start, int limit, // page information
-    		Map<String,String> preset, // default criteria when nothing else is defined
+    		ControlContext connection, // webby criteria
+    		UserContext parameters,
+    		Map<String,String> outPreset, Map<String,String>resPreset, // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, new ArrayList<String>(), new ArrayList<String>(), false, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ingore all the data and just return keywords found
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String lidvid,
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ingore all the data and just return keywords found
-    		ProductVersionSelector selector, // all, latest, orginal
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, null, null, lidvid, start, limit, fields, sort, summaryOnly, selector, preset, output_format); }
+    		) throws ApplicationTypeException,LidVidNotFoundException,IOException
+    { return new RequestAndResponseContext(connection, parameters, outPreset, resPreset, output_format); }
     
-    static public RequestAndResponseContext buildRequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String q, String keyword, // search criteria
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ignore all the data and just return keywords found
-    		Map<String,String> preset, // default criteria when nothing else is defined
-    		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
-    { return new RequestAndResponseContext(om, base, q, keyword, null, start, limit, fields, sort, summaryOnly, ProductVersionSelector.ORIGINAL, preset, output_format); }
-
     private RequestAndResponseContext(
-    		ObjectMapper om, URL base, // webby criteria
-    		String q, String keyword, // search criteria
-    		String lidvid, // specific lidvid to find
-    		int start, int limit, // page information
-    		List<String> fields, List<String> sort, // fields
-    		boolean summaryOnly, // ignore all the data and just return keywords found
-    		ProductVersionSelector selector, // all, latest, original
-    		Map<String,String> preset, // default criteria when nothing else is defined
+    		ControlContext controlContext,// webby criteria
+    		UserContext parameters,
+    		Map<String,String> outPreset, Map<String,String>resPreset, // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		String output_format // the accept statement of the request that informs the output type
-    		) throws ApplicationTypeException
+    		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
     	formatters.put("*/*", new PdsProductBusinessObject());
@@ -118,33 +80,45 @@ public class RequestAndResponseContext
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
     	formatters.put("text/xml", new PdsProductBusinessObject());
+    	this.controlContext = controlContext;
     	this.formatters = formatters;
     	this.format = this.find_match(output_format);
-    	this.baseURL = base;
-    	this.om = om;
-    	this.queryString = q;
-    	this.keyword = keyword;
-    	this.lidvid = lidvid;
+    	this.queryString = parameters.getQuery();
+    	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();
-    	this.fields.addAll(this.add_output_needs (fields));
-    	this.sort = sort == null ? new ArrayList<String>() : sort;
-    	this.start = start;
-    	this.limit = limit;
-    	this.onlySummary = summaryOnly;
-    	this.presetCriteria = preset;
-    	this.selector = selector;
+    	this.fields.addAll(this.add_output_needs (parameters.getFields()));
+    	this.lidvid = LidVidUtils.resolveLIDVID(
+    			parameters.getIdentifier(),
+    			outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED,
+    			controlContext,
+    			RequestBuildContextFactory.given(fields, resPreset));
+    	this.limit = parameters.getLimit();
+    	this.sort = parameters.getSort();
+    	this.start = parameters.getStart();
+    	this.summaryOnly = parameters.getSummanryOnly();
+    	this.presetCriteria = outPreset;
+    	this.selector = parameters.getSelector();
     }
-    
-    public String getKeyword() { return this.keyword; }
+
+    @Override
+    public List<String> getKeywords() { return this.keywords; }
+    @Override
+    public Map<String, List<String>> getKeyValuePairs() { return new HashMap<String,List<String>>(); }
+    @Override
     public String getLIDVID() { return this.lidvid; }
 	public final List<String> getFields() { return this.fields; }
 	public final List<String> getSort() { return this.sort; }
 	public int getStart() { return this.start; }
 	public int getLimit() { return this.limit; }
-	public boolean isOnlySummary() { return this.onlySummary; }
+	@Override
 	public String getQueryString() { return this.queryString; }
 	public final Map<String, String> getPresetCriteria() { return this.presetCriteria; };
 	public ProductVersionSelector getSelector() { return this.selector; }
+
+	public boolean isSingular() { return this.getStart() == -1 && this.getLimit() == 0; }
+	public boolean isSummaryOnly() { return this.summaryOnly; }
+	@Override
+	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
 
 	private List<String> add_output_needs (List<String> given) throws ApplicationTypeException
 	{
@@ -154,8 +128,8 @@ public class RequestAndResponseContext
 
 		if (this.formatters.containsKey(this.format))
 		{ 
-			this.formatters.get(this.format).setBaseURL(this.baseURL);
-			this.formatters.get(this.format).setObjectMapper(this.om);
+			this.formatters.get(this.format).setBaseURL(this.controlContext.getBaseURL());
+			this.formatters.get(this.format).setObjectMapper(this.controlContext.getObjectMapper());
 			max_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
 			min_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMinimallyRequiredFields());
 		}
@@ -218,9 +192,10 @@ public class RequestAndResponseContext
 		if (response == null)
 		{
 			log.warn("Could not find any data given these conditions");
-			log.warn("   fields: " + String.valueOf(this.getFields()));
+			log.warn("   fields: " + String.valueOf(this.getFields().size()));
 			for (String field : this.getFields()) log.warn("      " + field);
-			log.warn("   keyword: " + this.getKeyword());
+			log.warn("   keyword: " + String.valueOf(this.getKeywords().size()));
+			for (String keyword : this.getKeywords()) log.warn("    " + keyword);
 			log.warn("   lidvid: " + this.getLIDVID());
 			log.warn("   limit: " + String.valueOf(this.getLimit()));
 			log.warn("   query string: " + String.valueOf(this.getQueryString()));
@@ -228,7 +203,7 @@ public class RequestAndResponseContext
 			log.warn("   sorting: " + String.valueOf(this.getSort().size()));
 			for (String sort : this.getSort()) log.warn("      " + sort);
 			log.warn("   start: " + String.valueOf(this.getStart()));
-			log.warn("   summary: " + String.valueOf(this.isOnlySummary()));
+			log.warn("   summary: " + String.valueOf(this.isSummaryOnly()));
 			throw new NothingFoundException();
 		}
 		return response;
@@ -241,7 +216,7 @@ public class RequestAndResponseContext
 		summary.setStart(this.getStart());
 		summary.setLimit(this.getLimit());
 		summary.setSort(this.getSort());
-		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.onlySummary));
+		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.summaryOnly));
 		summary.setProperties(new ArrayList<String>());
 		
 		if (0 < real_total) summary.setHits(real_total);
@@ -267,7 +242,7 @@ public class RequestAndResponseContext
 			summary.setHits(total_hits);
 
 			if (uniqueProperties != null) summary.setProperties(uniqueProperties);
-			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.onlySummary);
+			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.summaryOnly);
 
 			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 		}
@@ -275,22 +250,27 @@ public class RequestAndResponseContext
 	
 	public void setResponse(RestHighLevelClient client, SearchRequest request) throws IOException
 	{
-        request.source().size(this.getLimit());
-        request.source().from(this.getStart());
-        this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
-	}
+		if (this.isSingular())
+        {
+        	SearchHits hits;
 
-	public void setSingularResponse(RestHighLevelClient client, SearchRequest request) throws IOException
-	{
-        request.source().size(this.getLimit());
-        request.source().from(this.getStart());
-        SearchHits hits = client.search(request, RequestOptions.DEFAULT).getHits();
-        
-        if (hits != null && hits.getTotalHits().value == 1L) this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
+        	request.source().size(2);
+	        request.source().from(0);
+            hits = client.search(request, RequestOptions.DEFAULT).getHits();
+
+            if (hits != null && hits.getTotalHits() != null && hits.getTotalHits().value == 1L)
+        	{ this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields); }
+        	else
+        	{
+        		log.error("Too many or too few lidvids which is just wrong.");
+        		throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+        	}
+        }
         else
         {
-        	log.error("Too many or too few lidvids which is just wrong.");
-        	throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+			request.source().size(this.getLimit());
+			request.source().from(this.getStart());
+        	this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
         }
 	}
 }

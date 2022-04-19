@@ -2,20 +2,26 @@ package gov.nasa.pds.api.registry.business;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.NotImplementedException;
-
-import org.opensearch.action.get.GetRequest;
-import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.search.fetch.subphase.FetchSourceContext;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
+import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
 
 /**
  * Bundle Data Access Object (DAO). 
@@ -25,60 +31,51 @@ import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
  */
 public class BundleDAO
 {
-    private OpenSearchRegistryConnection esConnection;
-    
-    /**
-     * Constructor
-     * @param esConnection opensearch connection
-     */
-    public BundleDAO(OpenSearchRegistryConnection esConnection)
-    {
-        this.esConnection = esConnection;
-    }
-    
-    
-    public void getBundleCollections(String lidvid, int start, int limit, List<String> fields, 
-            List<String> sort, boolean onlySummary) throws IOException, LidVidNotFoundException
-    {
-        // TODO: Move code from the bundle controller here.
-        throw new NotImplementedException();
-    }
+    @SuppressWarnings("unused")
+	private static final Logger log = LoggerFactory.getLogger(BundleDAO.class);
 
+    static public Map<String,String> searchConstraints()
+    {
+    	Map<String,String> preset = new HashMap<String,String>();
+    	preset.put("product_class", "Product_Bundle");
+    	return preset;
+    }
 
     /**
      * Get collections of a bundle by bundle LIDVID. 
      * If a bundle has LIDVID collection references, then those collections are returned. 
      * If a bundle has LID collection references, then the latest versions of collections are returned.
-     * @param bundleLidVid bundle LIDVID (Could not pass LID here)
      * @return a list of collection LIDVIDs
      * @throws IOException IO exception
      * @throws LidVidNotFoundException LIDVID not found exception
      */
-    public List<String> getBundleCollectionLidVids(String bundleLidVid) 
+    static public List<String> getBundleCollectionLidVids(
+    		String bundleLidVid,
+    		ControlContext ctlContext,
+    		RequestBuildContext reqBuildContext) 
             throws IOException, LidVidNotFoundException
     {
-        // Get bundle by lidvid.
-        GetRequest esRequest = new GetRequest(esConnection.getRegistryIndex(), bundleLidVid);
-        
         // Fetch collection references only.
-        String[] includes = { 
-                "ref_lidvid_collection", "ref_lidvid_collection_secondary",
-                "ref_lid_collection", "ref_lid_collection_secondary"
-        };
-        FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includes, null);
-        esRequest.fetchSourceContext(fetchSourceContext);
+    	List<String> fields = new ArrayList<String>(
+    			Arrays.asList("ref_lidvid_collection","ref_lidvid_collection_secondary",
+                               "ref_lid_collection", "ref_lid_collection_secondary"));
+    	
+        // Get bundle by lidvid.
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid), ctlContext.getConnection())
+        		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
-        RestHighLevelClient client = esConnection.getRestHighLevelClient();
-        GetResponse esResponse = client.get(esRequest, RequestOptions.DEFAULT);
-        if(!esResponse.isExists()) throw new LidVidNotFoundException(bundleLidVid);
+        SearchHit hit;
+        SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
+        if(hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
+        	throw new LidVidNotFoundException(bundleLidVid);
+        else hit = hits.getAt(0);
 
         // Get fields
-        Map<String, Object> fieldMap = esResponse.getSourceAsMap();
-
         // LidVid references (e.g., OREX bundle)        
-        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
-        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
+        Map<String, Object> fieldMap = hit.getSourceAsMap();
+        List<String> primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
+        List<String> secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
 
         List<String> lidVids = new ArrayList<String>();
         if(primaryIds != null) lidVids.addAll(primaryIds); 
@@ -100,8 +97,8 @@ public class BundleDAO
         }
         
         // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by Harvest
-        primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
+        primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
+        secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
 
         List<String> lids = new ArrayList<String>();
         if(primaryIds != null) lids.addAll(primaryIds); 
@@ -116,14 +113,11 @@ public class BundleDAO
         // Get the latest versions of LIDs
         if(!lids.isEmpty())
         {
-            List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(esConnection, lids);
-            if(latestLidVids != null && !latestLidVids.isEmpty())
-            {
-                // Combine LIDVID references and latest versions of "real" LID references
-                lidVids.addAll(latestLidVids);
-            }
+            List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(ctlContext,
+            		RequestBuildContextFactory.given(reqBuildContext.getFields(), CollectionDAO.searchConstraints()), lids);
+            lidVids.addAll(latestLidVids);
         }
-        
+       
         return lidVids;
     }
 
@@ -135,30 +129,33 @@ public class BundleDAO
      * @throws IOException IO exception 
      * @throws LidVidNotFoundException LIDVID not found exception
      */
-    public List<String> getAllBundleCollectionLidVids(String bundleLidVid) 
+    static public List<String> getAllBundleCollectionLidVids(
+    		String bundleLidVid,
+    		ControlContext ctlContext,
+    		RequestBuildContext reqBuildContext)
             throws IOException, LidVidNotFoundException
     {
-        // Get bundle by lidvid.
-        GetRequest esRequest = new GetRequest(esConnection.getRegistryIndex(), bundleLidVid);
-        
         // Fetch collection references only.
-        String[] includes = { 
-                "ref_lid_collection", "ref_lid_collection_secondary"
-        };
-        FetchSourceContext fetchSourceContext = new FetchSourceContext(true, includes, null);
-        esRequest.fetchSourceContext(fetchSourceContext);
+        List<String> fields = new ArrayList<String>(
+                Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary"));
+
+        // Get bundle by lidvid.
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid), ctlContext.getConnection())
+        		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
-        RestHighLevelClient client = esConnection.getRestHighLevelClient();
-        GetResponse esResponse = client.get(esRequest, RequestOptions.DEFAULT);
-        if(!esResponse.isExists()) throw new LidVidNotFoundException(bundleLidVid);
+        SearchHit hit;
+        SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
+        if (hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
+        	throw new LidVidNotFoundException(bundleLidVid);
+        else hit = hits.getAt(0);
 
         // Get fields
-        Map<String, Object> fieldMap = esResponse.getSourceAsMap();
+        Map<String, Object> fieldMap = hit.getSourceAsMap();
 
         // Lid references (e.g., Kaguya bundle)
-        List<String> primaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        List<String> secondaryIds = ESResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
+        List<String> primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
+        List<String> secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
 
         List<String> ids = new ArrayList<String>();
         if(primaryIds != null) ids.addAll(primaryIds); 
@@ -167,7 +164,7 @@ public class BundleDAO
         if(!ids.isEmpty())
         {
             // Get the latest versions of LIDs (Return LIDVIDs)
-            ids = LidVidUtils.getAllLidVidsByLids(esConnection, ids);
+            ids = LidVidUtils.getAllLidVidsByLids(ctlContext, reqBuildContext, ids);
             return ids;
         }
         

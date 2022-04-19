@@ -25,8 +25,6 @@ import org.springframework.stereotype.Component;
 
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
-import gov.nasa.pds.api.registry.search.Antlr4SearchListener;
-import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
 @Component
@@ -37,7 +35,6 @@ public class ProductQueryBuilderUtil
     @Value("${filter.archiveStatus}")
     private String propArchiveStatusFilter;
     private static List<String> archiveStatusFilter;
-
 
     /**
      * Init archive status filter
@@ -120,7 +117,7 @@ public class ProductQueryBuilderUtil
      * @param presetCriteria preset criteria
      * @return a query
      */
-    public static QueryBuilder createKeywordQuery(String keyword, Map<String, String> presetCriteria)
+   public static QueryBuilder createKeywordQuery(String keyword, Map<String, String> presetCriteria)
     {
         // Lucene query
         QueryStringQueryBuilder luceneQuery = QueryBuilders.queryStringQuery(keyword);
@@ -159,7 +156,7 @@ public class ProductQueryBuilderUtil
     }
 
     
-    private static BoolQueryBuilder parseQueryString(String queryString)
+    public static BoolQueryBuilder parseQueryString(String queryString)
     {
         CodePointCharStream input = CharStreams.fromString(queryString);
         SearchLexer lex = new SearchLexer(input);

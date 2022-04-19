@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.search;
+package gov.nasa.pds.api.registry.opensearch;
 
 import java.io.IOException;
 import java.util.Iterator;

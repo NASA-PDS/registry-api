@@ -1,103 +1,24 @@
 package gov.nasa.pds.api.registry.business;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchResponse;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nasa.pds.model.PropertyArrayValues;
 import gov.nasa.pds.api.model.xml.XMLMashallableProperyValue;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnection;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.search.SearchUtil;
 
 
 public class ProductBusinessObject
 {
-    
     private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
     
     private static final String DEFAULT_NULL_VALUE = null; 
-    
-    private OpenSearchRegistryConnection openSearchConnection;
-    private RegistrySearchRequestBuilder searchRequestBuilder;
 
-    private ObjectMapper objectMapper;
-    
-    static final String LIDVID_SEPARATOR = "::";
-
-    private LidVidDAO lidVidDao;
-    private BundleDAO bundleDao;
-    
-    public ProductBusinessObject(OpenSearchRegistryConnection esRegistryConnection) {
-        this.openSearchConnection = esRegistryConnection;
-        
-        this.searchRequestBuilder = new RegistrySearchRequestBuilder(
-                this.openSearchConnection.getRegistryIndex(),
-                this.openSearchConnection.getRegistryRefIndex(),
-                this.openSearchConnection.getTimeOutSeconds());
-       
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        
-        lidVidDao = new LidVidDAO(esRegistryConnection);
-        bundleDao = new BundleDAO(esRegistryConnection);
-    }
-    
-
-    public LidVidDAO getLidVidDao()
-    {
-        return lidVidDao;
-    }
-
-    public BundleDAO getBundleDao()
-    {
-        return bundleDao;
-    }
-    
-    
-    public String getLatestLidVidFromLid(String lid) throws IOException,LidVidNotFoundException
-    {
-        /*
-         * if lid is a lidvid then it return the same lidvid if available in the opensearch database
-         */
-        lid = !lid.contains(LIDVID_SEPARATOR)?lid+LIDVID_SEPARATOR:lid;
-        SearchRequest searchRequest = this.searchRequestBuilder.getSearchProductRequestHasLidVidPrefix(lid);
-            
-        SearchResponse searchResponse = this.openSearchConnection.getRestHighLevelClient().search(searchRequest, 
-                RequestOptions.DEFAULT);
-
-        if (searchResponse != null)
-        {
-        	ArrayList<String> lidvids = new ArrayList<String>();
-            String lidvid;
-            for (SearchHit searchHit : searchResponse.getHits())
-            {
-                lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
-                lidvids.add(lidvid);                
-            }
-            Collections.sort(lidvids);
-
-            if (lidvids.size() == 0) throw new LidVidNotFoundException(lid);
-            else return lidvids.get(lidvids.size() - 1);
-        }
-        else throw new LidVidNotFoundException(lid);
-    }
-       
-       
     private static XMLMashallableProperyValue object2PropertyValue(Object o) {
            XMLMashallableProperyValue pv = new XMLMashallableProperyValue();
            

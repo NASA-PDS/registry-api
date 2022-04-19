@@ -6,7 +6,6 @@ import javax.net.ssl.SSLContext;
 
 import java.util.Set;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -25,7 +24,6 @@ import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImplBuilder;
 
 
 import org.slf4j.Logger;
@@ -33,7 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 
-public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConnection {
+import gov.nasa.pds.api.registry.ConnectionContext;
+
+public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 	
     // key for getting the remotes from cross cluster config
 	public static String CLUSTER_REMOTE_KEY = "cluster.remote";
@@ -52,7 +52,6 @@ public class OpenSearchRegistryConnectionImpl implements OpenSearchRegistryConne
 	    this(new OpenSearchRegistryConnectionImplBuilder());
 	}
 	
-	@SuppressWarnings("StringSplitter")
 	public OpenSearchRegistryConnectionImpl(OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
 			
 		List<HttpHost> httpHosts = new ArrayList<HttpHost>();

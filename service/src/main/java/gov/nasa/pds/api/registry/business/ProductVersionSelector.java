@@ -21,5 +21,9 @@ public enum ProductVersionSelector
     /**
      * Latest version of a product
      */
-    LATEST
+    LATEST,
+    /**
+     * What the user typed but latest if a LID
+     */
+    TYPED
 }

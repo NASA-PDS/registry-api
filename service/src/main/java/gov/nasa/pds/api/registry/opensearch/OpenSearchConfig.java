@@ -3,16 +3,11 @@ package gov.nasa.pds.api.registry.opensearch;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import gov.nasa.pds.api.registry.SystemConstants;
-import gov.nasa.pds.api.registry.business.ProductBusinessObject;
-import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
-import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImplBuilder;
+import gov.nasa.pds.api.registry.ConnectionContext;
 
 /* Keep this eventhough not directly referenced
  * 
@@ -23,8 +18,8 @@ import gov.nasa.pds.api.registry.opensearch.OpenSearchRegistryConnectionImplBuil
  */
 
 @Configuration 
-public class OpenSearchConfig { 
-	
+public class OpenSearchConfig
+{ 	
 	private static final Logger log = LoggerFactory.getLogger(OpenSearchConfig.class);
 
 	// This default for ES hosts is set in the constructor since we first want to check
@@ -121,12 +116,12 @@ public class OpenSearchConfig {
 		this.ssl = ssl;
 	}
 	
-	private OpenSearchRegistryConnection esRegistryConnection = null;
+	private ConnectionContext connection = null;
 
-	@Bean("esRegistryConnection")
-	public OpenSearchRegistryConnection openSearchRegistryConnection() {
+	@Bean("connection")
+	public ConnectionContext connectionContext() {
 		
-		if (esRegistryConnection == null) {
+		if (connection == null) {
 			
 			OpenSearchRegistryConnectionImplBuilder connectionBuilder = new OpenSearchRegistryConnectionImplBuilder(this);
 
@@ -143,33 +138,9 @@ public class OpenSearchConfig {
             	connectionBuilder.setESHostsFromEnvOrDefault();
             }
 			
-			this.esRegistryConnection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
+			this.connection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
 
 		}
-		return this.esRegistryConnection;
+		return this.connection;
 	}
-
-	
-	@Bean("productBO")
-	public ProductBusinessObject ProductBusinessObject() {
-		return new ProductBusinessObject(this.openSearchRegistryConnection());
-	}
-
-    
-	@Bean("searchRequestBuilder")
-	public RegistrySearchRequestBuilder RegistrySearchRequestBuilder() {
-		
-		OpenSearchRegistryConnection esRegistryConnection = this.openSearchRegistryConnection();
-		
-		return new RegistrySearchRequestBuilder(
-     			esRegistryConnection.getRegistryIndex(),
-     			esRegistryConnection.getRegistryRefIndex(),
-    			esRegistryConnection.getTimeOutSeconds());
-	}
-    
-
-
-
-	
-
 }

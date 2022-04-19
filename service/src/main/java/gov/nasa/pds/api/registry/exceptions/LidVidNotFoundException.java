@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.business;
+package gov.nasa.pds.api.registry.exceptions;
 
 
 public class LidVidNotFoundException extends Exception {

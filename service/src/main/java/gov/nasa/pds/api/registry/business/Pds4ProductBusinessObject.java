@@ -12,7 +12,7 @@ import org.opensearch.search.SearchHits;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.opensearch.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
@@ -50,7 +50,10 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
     	    Pds4ProductFactory.FLD_LABEL_FILE_SIZE,
     	    Pds4ProductFactory.FLD_LABEL_FILE_MD5,
 
-    	    // Node Name
+    	    // Tracking Meta
+    	    Pds4ProductFactory.FLD_TRACK_META_ARCHIVE_STATUS,
+
+    		// Node Name
     	    Pds4ProductFactory.FLD_NODE_NAME};
 
     	this.PDS4_PRODUCT_FIELDS = temp;

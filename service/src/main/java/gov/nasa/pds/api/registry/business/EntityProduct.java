@@ -24,7 +24,8 @@ public class EntityProduct {
 			"ref_lid_investigation",
 			"ref_lid_target",
 			"vid",
-			"ops:Label_File_Info/ops:file_ref"
+			"ops:Label_File_Info/ops:file_ref",
+			"ops:Tracking_Meta/ops:archive_status"
 	};
 	
 	@JsonProperty("lidvid")
@@ -72,6 +73,9 @@ public class EntityProduct {
 	@JsonProperty("ops:Label_File_Info/ops:file_ref")
 	private String pds4FileReference;
 	
+	@JsonProperty("ops:Tracking_Meta/ops:archive_status")
+	private String archive_status;
+
 	private Map<String, Object> properties;
 	
 	public void setProperties(Map<String, Object> properties) {
@@ -141,4 +145,5 @@ public class EntityProduct {
 		return version;
 	}
 	
+	public String getArchiveStatus() { return this.archive_status; }
 }
