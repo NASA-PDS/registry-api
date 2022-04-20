@@ -3,7 +3,7 @@ info:
   description: |
     Registry API enabling advanced search on PDS data and metadata. The API provides end-points to search for bundles, collections and any PDS products with advanced search queries. It also enables to browse the archive hierarchically downward (e.g. collection/s products) or upward (e.g. bundles containing a product).
     The detailed syntax for querying the end-point is given in the reference documentation.
-  version: 1.0.0-SNAPSHOT
+  version: 1.1.0-SNAPSHOT
   title: Registry API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -1072,26 +1072,22 @@ components:
             ops:md5_checksum:
               type: string
         ops:Data_Files:
-          type: array
-          items:
-            type: object
-            properties:
-              ops:file_name:
-                type: string
-              ops:file_ref:
-                type: string
-              ops:creation_date:
-                type: string
-              ops:file_size:
-                type: string
-              ops:md5_checksum:
-                type: string
-              ops:mime_type:
-                type: string
+          type: object
+          properties:
+            ops:file_name:
+              type: string
+            ops:file_ref:
+              type: string
+            ops:creation_date:
+              type: string
+            ops:file_size:
+              type: string
+            ops:md5_checksum:
+              type: string
+            ops:mime_type:
+              type: string
         ops:Tracking_Meta:
-          type: array
-          items:
-            type: object
-            properties:
-              ops:archive_status:
-                type: string
+          type: object
+          properties:
+            ops:archive_status:
+              type: string
