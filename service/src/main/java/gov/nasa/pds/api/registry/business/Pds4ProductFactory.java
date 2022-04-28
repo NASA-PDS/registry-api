@@ -125,7 +125,7 @@ public class Pds4ProductFactory
     }
     
 
-    private static Pds4MetadataOpsDataFiles createDataFiles(Map<String, Object> fieldMap)
+    private static List<Pds4MetadataOpsDataFiles> createDataFiles(Map<String, Object> fieldMap)
     {
         Pds4MetadataOpsDataFiles item = new Pds4MetadataOpsDataFiles();
         String val = (String)fieldMap.get(FLD_DATA_FILE_NAME);

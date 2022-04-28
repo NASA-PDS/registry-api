@@ -1072,20 +1072,22 @@ components:
             ops:md5_checksum:
               type: string
         ops:Data_Files:
-          type: object
-          properties:
-            ops:file_name:
-              type: string
-            ops:file_ref:
-              type: string
-            ops:creation_date:
-              type: string
-            ops:file_size:
-              type: string
-            ops:md5_checksum:
-              type: string
-            ops:mime_type:
-              type: string
+          type: array
+          items:
+            type: object
+              properties:
+                ops:file_name:
+                  type: string
+                ops:file_ref:
+                  type: string
+                ops:creation_date:
+                  type: string
+                ops:file_size:
+                  type: string
+                ops:md5_checksum:
+                  type: string
+                ops:mime_type:
+                  type: string
         ops:Tracking_Meta:
           type: object
           properties:
