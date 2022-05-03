@@ -2,7 +2,7 @@
 
 There's one Dockerfile here that can be used to make images for development and production.
 
-👉 **Note:** It's a security risk to include private keys in images. As a result, we've removed the old `Dockerfile.https` and `Dockerfile.https.dev`. We've also removed all the other `Dockerfile.*` files to eliminate confusion.
+👉 **Note:** It's a security risk to include private keys in images. As a result, we've removed the old `Dockerfile.https` and `Dockerfile.https.dev`. We've also removed all the other `Dockerfile.*` files to eliminate confusion, except for `Dockerfile.local`; see below.
 
 To build an image, run:
 
@@ -27,3 +27,7 @@ Building an image from a released jar file:
 ```console
 $ docker image build --build-arg api_jar=https://github.com/NASA-PDS/registry-api/releases/download/v1.0.0/registry-api-service-1.0.0.jar --tag nasapds/registry-api-service:1.0.0 --file service/docker/Dockerfile .
 ```
+
+## 📍 Dockerfile.local
+
+You can ignore `Dockerfile.local` unless you're @al-niessner.
