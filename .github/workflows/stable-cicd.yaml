@@ -87,7 +87,7 @@ jobs:
                 with:
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
                     event-type: roundup-success
-                    client-payload: '{"ref": "${{github.ref}}", "image_tag": "${{steps.tagger.outputs.image_tag}}", "dockerfile": "./service/docker/Dockerfile.http"}'
+                    client-payload: '{"ref": "${{github.ref}}", "image_tag": "${{steps.tagger.outputs.image_tag}}", "dockerfile": "./service/docker/Dockerfile", "api_jar": "https://github.com/NASA-PDS/registry-api/releases/download/v${{steps.tagger.outputs.image_tag}}/registry-api-service-${{steps.tagger.outputs.image_tag}}.jar"}'
 
 ...
 
