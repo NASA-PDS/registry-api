@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.controllers;
+package gov.nasa.pds.api.registry.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,9 @@ import gov.nasa.pds.api.registry.business.ProductVersionSelector;
  */
 class URIParameters implements UserContext
 {
+	private String accept = "applicaation/json";
 	private List<String> fields = new ArrayList<String>();
+	private String group = "";
 	private String identifier = "";
 	private List<String> keywords = new ArrayList<String>();
 	private Integer limit = Integer.valueOf(0);
@@ -33,10 +35,14 @@ class URIParameters implements UserContext
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
 	private List<String> sort = new ArrayList<String>();
 	private Integer start = Integer.valueOf(-1);
-	private Boolean summanryOnly = Boolean.valueOf(false);
-	
+	private String version = "latest";
+
+	@Override
+	public String getAccept() { return accept; }
 	@Override
 	public List<String> getFields() { return fields; }
+	@Override
+	public String getGroup() { return group; }
 	@Override
 	public String getIdentifier() { return identifier; }
 	@Override
@@ -52,59 +58,61 @@ class URIParameters implements UserContext
 	@Override
 	public Integer getStart() { return start; }
 	@Override
-	public Boolean getSummanryOnly() { return summanryOnly; }
+	public String getVersion() { return version; }
 
+	public URIParameters setAccept(String accept)
+	{
+		if (accept != null) this.accept = accept;
+		return this;
+	}
 	public URIParameters setFields(List<String> fields)
 	{
 		if (fields != null) this.fields = fields;
 		return this;
 	}
-
+	public URIParameters setGroup(String group)
+	{
+		if (group != null) this.group = group;
+		return this;
+	}
 	public URIParameters setIdentifier(String identifier)
 	{
 		if (identifier != null) this.identifier = identifier;
 		return this;
 	}
-
 	public URIParameters setKeywords(List<String> keywords)
 	{
 		if (keywords != null) this.keywords = keywords;
 		return this;
 	}
-
 	public URIParameters setLimit(Integer limit)
 	{
 		if (limit != null) this.limit = limit;
 		return this;
 	}
-
 	public URIParameters setQuery(String query)
 	{
 		if (query != null) this.query = query;
 		return this;
 	}
-
 	public URIParameters setSelector(ProductVersionSelector selector)
 	{
 		if (selector != null) this.selector = selector;
 		return this;
 	}
-
 	public URIParameters setSort(List<String> sort)
 	{
 		if (sort != null) this.sort = sort;
 		return this;
 	}
-
 	public URIParameters setStart(Integer start)
 	{
 		if (start != null) this.start = start;
 		return this;
 	}
-
-	public URIParameters setSummanryOnly(Boolean summanryOnly)
+	public URIParameters setVersion(String version)
 	{
-		if (summanryOnly != null) this.summanryOnly = summanryOnly;
+		if (version != null) this.version = version;
 		return this;
 	}
 }

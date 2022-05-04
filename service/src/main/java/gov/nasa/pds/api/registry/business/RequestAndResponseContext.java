@@ -49,24 +49,21 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Map<String,String> outPreset, // when first and last node of the endpoint criteria are the same
-    		String output_format // the accept statement of the request that informs the output type
+    		Map<String,String> outPreset // when first and last node of the endpoint criteria are the same
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
-    { return new RequestAndResponseContext(connection, parameters, outPreset, outPreset, output_format); }
+    { return new RequestAndResponseContext(connection, parameters, outPreset, outPreset); }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Map<String,String> outPreset, Map<String,String>resPreset, // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
-    		String output_format // the accept statement of the request that informs the output type
+    		Map<String,String> outPreset, Map<String,String>resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
-    { return new RequestAndResponseContext(connection, parameters, outPreset, resPreset, output_format); }
+    { return new RequestAndResponseContext(connection, parameters, outPreset, resPreset); }
     
     private RequestAndResponseContext(
     		ControlContext controlContext,// webby criteria
     		UserContext parameters,
-    		Map<String,String> outPreset, Map<String,String>resPreset, // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
-    		String output_format // the accept statement of the request that informs the output type
+    		Map<String,String> outPreset, Map<String,String>resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
@@ -82,7 +79,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	formatters.put("text/xml", new PdsProductBusinessObject());
     	this.controlContext = controlContext;
     	this.formatters = formatters;
-    	this.format = this.find_match(output_format);
+    	this.format = this.find_match(parameters.getAccept());
     	this.queryString = parameters.getQuery();
     	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();

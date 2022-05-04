@@ -6,7 +6,9 @@ import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 
 public interface UserContext
 {
+	public String getAccept();
 	public List<String> getFields();
+	public String getGroup();
 	public String getIdentifier();
 	public List<String> getKeywords();
 	public Integer getLimit();
@@ -14,5 +16,5 @@ public interface UserContext
 	public ProductVersionSelector getSelector();
 	public List<String> getSort();
 	public Integer getStart();
-	public Boolean getSummanryOnly();
+	public String getVersion();
 }

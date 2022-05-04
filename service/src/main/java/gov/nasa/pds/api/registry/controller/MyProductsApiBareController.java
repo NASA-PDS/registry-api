@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.controllers;
+package gov.nasa.pds.api.registry.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.controllers;
+package gov.nasa.pds.api.registry.controller;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;

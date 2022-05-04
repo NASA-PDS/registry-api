@@ -3,7 +3,7 @@ info:
   description: |
     Registry API enabling advanced search on PDS data and metadata. The API provides end-points to search for bundles, collections and any PDS products with advanced search queries. It also enables to browse the archive hierarchically downward (e.g. collection/s products) or upward (e.g. bundles containing a product).
     The detailed syntax for querying the end-point is given in the reference documentation.
-  version: 1.1.0-SNAPSHOT
+  version: refactored
   title: Registry API
   termsOfService: 'http://pds.nasa.gov'
   contact:
@@ -17,13 +17,13 @@ servers:
     description: production server
 
 paths:
-  /products:
+  /{group}:
     get:
       tags:
         - products
       summary: |
-        returns all PDS data products, including bundles, collections, documentation, context and observational products that meet all given constraints.
-      operationId: products
+        returns all PDS products of the given PDS product class that meet all given constraints.
+      operationId: group-list
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -37,20 +37,20 @@ paths:
           $ref: "#/components/responses/Error"
       parameters:
         - $ref: "#/components/parameters/Fields"
+        - $ref: "#/components/parameters/Group"
         - $ref: "#/components/parameters/Keyword"
         - $ref: "#/components/parameters/Limit"
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/Start"
-        - $ref: "#/components/parameters/SummaryOnly"
 
-  /products/{identifier}:
+  /{identifier}:
     get:
       tags:
         - products
       summary: |
-        returns one product with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
-      operationId: products-by-lidvid
+        returns one PDS Product with the identifier selected from all PDS Products, including bundles, collections, data, documentation, context and observational products. See identifier for details on how it determines what is returned.
+      operationId: select-by-lidvid
       responses:
         '200':
           $ref: "#/components/responses/Singular"
@@ -65,13 +65,13 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-  /products/{identifier}/latest:
+  /{identifier}/latest:
     get:
       tags:
         - products
       summary: |
-        returns one product with the identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
-      operationId: products-by-lidvid-latest
+        returns one PDS Product with the identifier selected from all PDS Products. See identifier for details on how it determines what is returned.
+      operationId: select-by-lidvid-latest
       responses:
         '200':
           $ref: "#/components/responses/Singular"
@@ -86,13 +86,15 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-  /products/{identifier}/all:
+  /{identifier}/all:
     get:
       tags:
         - products
       summary: |
-        returns all product versions with the identifier (lid) selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
-      operationId: products-by-lidvid-all
+        returns all product versions with the identifier (lid) selected from all PDS Products. See identifier for details on how it determines what is returned.
+        
+        note: if given a lidvid, it will be translated to a lid
+      operationId: select-by-lidvid-all
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -110,14 +112,13 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /products/{identifier}/bundles:
+  /{group}/referencing/{identifier}:
     get:
       tags:
-        - products containing bundles
+        - product references
       summary: |
-        returns one or more bundles that contain or reference the product specified by identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.
-      operationId: bundles-containing-product
+        returns one or more PDS Products of the specificed class that contain or reference the specified product identifier. See identifier for details on how it determines what is returned.
+      operationId: ref-by-select-lidvid
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -131,18 +132,18 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Group"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /products/{identifier}/collections:
+  /{group}/referencing/{identifier}/{versions}:
     get:
       tags:
-        - product containing collections
+        - product references
       summary: |
-        returns one or more collections that contain or reference the product specified by identifier selected from all PDS data products, including bundles, collections, documentation, context and observational products. See identifier for details on how it determines what is returned.        
-      operationId: collections-containing-product
+        returns one or more PDS Products of the specificed class that reference the product identifier. See identifier for details on how it determines what is returned.
+      operationId: ref-by-select-lidvid-vers
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -156,86 +157,19 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Group"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /collections:
+      - $ref: "#/components/parameters/Versions"
+  /{identifier}/referencing/{group}:
     get:
       tags:
-        - collections
+        - product references
       summary: |
-        returns all PDS collections that meet all given constraints.
-      operationId: get collection
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-      parameters:
-        - $ref: "#/components/parameters/Fields"
-        - $ref: "#/components/parameters/Keyword"
-        - $ref: "#/components/parameters/Limit"
-        - $ref: "#/components/parameters/Query"
-        - $ref: "#/components/parameters/Sort"
-        - $ref: "#/components/parameters/Start"
-        - $ref: "#/components/parameters/SummaryOnly"
-  /collections/{identifier}:
-    get:
-      tags:
-        - collections
-      summary: |
-        returns one product with the identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
-      operationId: collections-by-lidvid
-      responses:
-        '200':
-          $ref: "#/components/responses/Singular"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-  /collections/{identifier}/latest:
-    get:
-      tags:
-        - collections
-      summary: |
-        returns one product with the identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
-      operationId: collections-by-lidvid-latest
-      responses:
-        '200':
-          $ref: "#/components/responses/Singular"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-  /collections/{identifier}/all:
-    get:
-      tags:
-        - collections
-      summary: |
-        returns all collection versions with the identifier (lid) selected from all PDS collections. See identifier for details on how it determines what is returned.
-      operationId: collections-by-lidvid-all
+        returns one or more PDS Products of the specificed class that the specified product identifier contains or references. See identifier for details on how it determines what is returned.
+      operationId: ref-to-select-lidvid
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -249,18 +183,18 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Group"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /collections/{identifier}/bundles:
+  /{identifier}/referencing/{group}/{versions}:
     get:
       tags:
-        - collection's containing bundles
+        - product references
       summary: |
-        returns one or more bundles that contain or reference the product specified by identifier selected from all PDS collections. See identifier for details on how it determines what is returned.
-      operationId: bundles-containing-collection
+        returns one or more PDS Products of the specificed class that the specified product identifier contains or references. See identifier for details on how it determines what is returned.
+      operationId: ref-to-select-lidvid-vers
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -274,279 +208,12 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Group"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /collections/{identifier}/products:
-    get:
-      tags:
-        - collection's products
-      summary: |
-        returns one or more latest version products that are contained or referenced by the collection specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: products-of-a-collection
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /collections/{identifier}/products/latest:
-    get:
-      tags:
-        - collection's products
-      summary: |
-        returns one or more latest version products that are contained or referenced by the collection specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: products-of-a-collection-latest
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /collections/{identifier}/products/all:
-    get:
-      tags:
-        - collection's products
-      summary:  |
-        returns one or more products that are contained or referenced by the collection specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: products-of-a-collection-all
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /bundles:
-    get:
-      tags:
-        - bundles
-      summary: |
-        returns all PDS bundles that meet all given constraints.
-      operationId: get bundles
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-      parameters:
-        - $ref: "#/components/parameters/Fields"
-        - $ref: "#/components/parameters/Keyword"
-        - $ref: "#/components/parameters/Limit"
-        - $ref: "#/components/parameters/Query"
-        - $ref: "#/components/parameters/Sort"
-        - $ref: "#/components/parameters/Start"
-        - $ref: "#/components/parameters/SummaryOnly"
-  /bundles/{identifier}:
-    get:
-      tags:
-        - bundles
-      summary: |
-        returns one product with the identifier selected from all PDS bundles. See identifier for details on how it determines what is returned.
-      operationId: bundle-by-lidvid
-      responses:
-        '200':
-          $ref: "#/components/responses/Singular"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-  /bundles/{identifier}/latest:
-    get:
-      tags:
-        - bundles
-      summary: |
-        returns one product with the identifier selected from all PDS bundles. See identifier for details on how it determines what is returned.
-      operationId: bundle-by-lidvid-latest
-      responses:
-        '200':
-          $ref: "#/components/responses/Singular"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-  /bundles/{identifier}/all:
-    get:
-      tags:
-        - bundles
-      summary: |
-        returns all product versions with the identifier (lid) selected from all PDS bundles. See identifier for details on how it determines what is returned.
-      operationId: bundle-by-lidvid-all
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /bundles/{identifier}/collections:
-    get:
-      tags:
-        - bundle's collections
-      summary: |
-        returns one or more latest version collections that are contained or referenced by the bundle specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: collections-of-a-bundle
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /bundles/{identifier}/collections/latest:
-    get:
-      tags:
-        - bundle's collections
-      summary: |
-        returns one or more latest version collections that are contained or referenced by the bundle specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: collections-of-a-bundle-latest
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /bundles/{identifier}/collections/all:
-    get:
-      tags:
-        - bundle's collections
-      summary: |
-        returns one or more collections that are contained or referenced by the bundle specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: collections-of-a-bundle-all
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
-  /bundles/{identifier}/products:
-    get:
-      tags:
-        - bundle's products
-      summary: |
-        returns one or more latest version products that are contained or referenced by the bundle specified by identifier. See identifier for details on how it determines what is returned.
-      operationId: products-of-a-bundle
-      responses:
-        '200':
-          $ref: "#/components/responses/Plural"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters:
-      - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Identifier"
-      - $ref: "#/components/parameters/Limit"
-      - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/SummaryOnly"
+      - $ref: "#/components/parameters/Versions"
 
 externalDocs:
   description: Find out more information on the PDS API Specification
@@ -567,6 +234,17 @@ components:
         type: array
         items:
           type: string
+    Group:
+      name: group
+      in: path
+      description: |
+        syntax: one of the allowable enum values
+        
+        This is a shortcut for doing a query with ...
+      required: true
+      schema:
+        type: string
+        enum: [any,bundle,collection]
     Identifier:
       name: identifier
       in: path
@@ -603,10 +281,12 @@ components:
         syntax: limit=10
 
         behavior: maximum number of matching results returned, for pagination
+        
+        note: limit=0 returns just the summary
       required: false
       schema:
         type: integer
-        minimum: 1
+        minimum: 0
         default: 100
     Query:
       name: q
@@ -644,16 +324,17 @@ components:
         type: integer
         minimum: 0
         default: 0
-    SummaryOnly:
-      name: summary-only
-      in: query
+    Versions:
+      name: versions
+      in: path
       description: |
-        syntax: summary-only={true,false}
-
-        behavior: only return the summary when a list is returned. Useful to get the list of available properties.
+        syntax: one of the allowable enum values
+        
+        This is a shortcut for doing a query with ...
+      required: true
       schema:
-        type: boolean
-        default: false
+        type: string
+        enum: [all,latest]
   responses:
     Error:
       description: Unsuccessful request
