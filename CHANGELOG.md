@@ -1,14 +1,14 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-04-29)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-05-04)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...«unknown»)
 
-**Improvements:**
+**Defects:**
 
-- lidvid resolution need to use \_search instead of \_doc elasticsearch requests  [\#105](https://github.com/NASA-PDS/registry-api/issues/105)
+- Registry API Service docker container fails to start with error: Unable to access jarfile /usr/local/registry-api-service/registry-api-service.jar [\#128](https://github.com/NASA-PDS/registry-api/issues/128) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
-## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-04-19)
+## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-04-29)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.1.0-SNAPSHOT)
 
@@ -19,6 +19,7 @@
 **Improvements:**
 
 - Remove the home controller from the swagger-ui [\#108](https://github.com/NASA-PDS/registry-api/issues/108)
+- lidvid resolution need to use \_search instead of \_doc elasticsearch requests  [\#105](https://github.com/NASA-PDS/registry-api/issues/105)
 
 **Defects:**
 
