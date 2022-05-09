@@ -2,19 +2,19 @@ package gov.nasa.pds.api.registry.controller;
 
 
 import gov.nasa.pds.api.base.BundlesApi;
-import gov.nasa.pds.api.registry.business.BundleDAO;
-import gov.nasa.pds.api.registry.business.CollectionDAO;
+import gov.nasa.pds.api.registry.business.RefLogicBundle;
+import gov.nasa.pds.api.registry.business.RefLogicCollection;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
-import gov.nasa.pds.api.registry.business.ProductDAO;
+import gov.nasa.pds.api.registry.business.RefLogicProduct;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.opensearch.HitIterator;
-import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -54,7 +54,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     {
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		BundleDAO.searchConstraints());
+        		RefLogicBundle.searchConstraints());
     }
 
     
@@ -65,7 +65,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
     {
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		BundleDAO.searchConstraints());
+        		RefLogicBundle.searchConstraints());
     }
 
     
@@ -88,7 +88,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		BundleDAO.searchConstraints());                
+        		RefLogicBundle.searchConstraints());                
     }    
     
     
@@ -112,7 +112,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		BundleDAO.searchConstraints());
+        		RefLogicBundle.searchConstraints());
     }    
     
     
@@ -183,9 +183,9 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         
         List<String> clidvids = null;
         if(context.getSelector() == ProductVersionSelector.ALL)
-        { clidvids = BundleDAO.getAllBundleCollectionLidVids(context.getLIDVID(), this, context); }
+        { clidvids = RefLogicBundle.getAllBundleCollectionLidVids(context.getLIDVID(), this, context); }
         else
-        { clidvids = BundleDAO.getBundleCollectionLidVids(context.getLIDVID(), this, context); }
+        { clidvids = RefLogicBundle.getBundleCollectionLidVids(context.getLIDVID(), this, context); }
 
         int size = clidvids.size();
         if (size > 0 && context.getStart() < size && context.getLimit() > 0)
@@ -195,7 +195,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
             
             List<String> ids = clidvids.subList(context.getStart(), end);
             this.fillProductsFromLidvids(context,
-            		RequestBuildContextFactory.given(context.getFields(), CollectionDAO.searchConstraints()),
+            		RequestBuildContextFactory.given(context.getFields(), RefLogicCollection.searchConstraints()),
             		ids, -1);
         }
         else 
@@ -212,7 +212,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, CollectionDAO.searchConstraints(), BundleDAO.searchConstraints(), accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicCollection.searchConstraints(), RefLogicBundle.searchConstraints(), accept);
         	 this.getBundleCollections(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -261,7 +261,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, ProductDAO.searchConstraints(), BundleDAO.searchConstraints(), accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicProduct.searchConstraints(), RefLogicBundle.searchConstraints(), accept);
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
@@ -293,7 +293,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
         MyBundlesApiController.log.info("request bundle lidvid, children of products: " + context.getLIDVID());
 
         int iteration=0;
-        List<String> clidvids = BundleDAO.getBundleCollectionLidVids(context.getLIDVID(), this, context);
+        List<String> clidvids = RefLogicBundle.getBundleCollectionLidVids(context.getLIDVID(), this, context);
         
         List<String> plidvids = new ArrayList<String>();   
         List<String> wlidvids = new ArrayList<String>();

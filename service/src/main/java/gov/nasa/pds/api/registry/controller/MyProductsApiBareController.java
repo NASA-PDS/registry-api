@@ -27,9 +27,9 @@ import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.opensearch.HitIterator;
-import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 @Component
 public class MyProductsApiBareController implements ControlContext

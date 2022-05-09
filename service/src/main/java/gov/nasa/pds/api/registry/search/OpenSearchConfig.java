@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.opensearch;
+package gov.nasa.pds.api.registry.search;
 
 import java.util.List;
 import org.slf4j.Logger;

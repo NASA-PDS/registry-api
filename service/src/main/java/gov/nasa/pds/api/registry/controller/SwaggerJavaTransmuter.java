@@ -105,6 +105,82 @@ public class SwaggerJavaTransmuter implements ControlContext, GroupApi, Identifi
 				.setStart(start));
 	}
 
+	@Override
+	public ResponseEntity<Object> groupReferencingId(
+			String group,
+			String identifier,
+			@Valid List<String> fields,
+			@Min(0) @Valid Integer limit,
+			@Valid List<String> sort,
+			@Min(0) @Valid Integer start)
+	{
+		return this.processs(new GroupReferencingId(), new URIParameters()
+				.setGroup(group)
+				.setIdentifier(identifier)
+				.setFields(fields)
+				.setLimit(limit)
+				.setSort(sort)
+				.setStart(start));
+	}
+
+	@Override
+	public ResponseEntity<Object> groupReferencingIdVers(
+			String group,
+			String identifier,
+			String versions,
+			@Valid List<String> fields,
+			@Min(0) @Valid Integer limit,
+			@Valid List<String> sort,
+			@Min(0) @Valid Integer start)
+	{
+		return this.processs(new GroupReferencingId(), new URIParameters()
+				.setGroup(group)
+				.setIdentifier(identifier)
+				.setVersion(versions)
+				.setFields(fields)
+				.setLimit(limit)
+				.setSort(sort)
+				.setStart(start));
+	}
+
+	@Override
+	public ResponseEntity<Object> idReferencingGroup(
+			String group,
+			String identifier,
+			@Valid List<String> fields,
+			@Min(0) @Valid Integer limit,
+			@Valid List<String> sort,
+			@Min(0) @Valid Integer start)
+	{
+		return this.processs(new IdReferencingGroup(), new URIParameters()
+				.setGroup(group)
+				.setIdentifier(identifier)
+				.setFields(fields)
+				.setLimit(limit)
+				.setSort(sort)
+				.setStart(start));
+	}
+
+	@Override
+	public ResponseEntity<Object> idReferencingGroupVers(
+			String group,
+			String identifier,
+			String versions,
+			@Valid List<String> fields,
+			@Min(0) @Valid Integer limit,
+			@Valid List<String> sort,
+			@Min(0) @Valid Integer start)
+	{
+		return this.processs(new IdReferencingGroup(), new URIParameters()
+				.setGroup(group)
+				.setIdentifier(identifier)
+				.setVersion(versions)
+				.setFields(fields)
+				.setLimit(limit)
+				.setSort(sort)
+				.setStart(start));
+	}
+
 	private ResponseEntity<Object> processs (EndpointHandler handler, URIParameters parameters)
 	{
         try { return handler.transmute(this, parameters.setAccept(this.request.getHeader("Accept"))); } 
@@ -140,82 +216,6 @@ public class SwaggerJavaTransmuter implements ControlContext, GroupApi, Identifi
         return (((this.context.getScheme() == "https")  && (this.context.getServerPort() == 443)) 
                 || ((this.context.getScheme() == "http")  && (this.context.getServerPort() == 80)));
     }
-
-	@Override
-	public ResponseEntity<Object> refBySelectLidvid(
-			String group,
-			String identifier,
-			@Valid List<String> fields,
-			@Min(0) @Valid Integer limit,
-			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
-	{
-		return this.processs(null, new URIParameters()
-				.setGroup(group)
-				.setIdentifier(identifier)
-				.setFields(fields)
-				.setLimit(limit)
-				.setSort(sort)
-				.setStart(start));
-	}
-
-	@Override
-	public ResponseEntity<Object> refBySelectLidvidVers(
-			String group,
-			String identifier,
-			String versions,
-			@Valid List<String> fields,
-			@Min(0) @Valid Integer limit,
-			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
-	{
-		return this.processs(null, new URIParameters()
-				.setGroup(group)
-				.setIdentifier(identifier)
-				.setVersion(versions)
-				.setFields(fields)
-				.setLimit(limit)
-				.setSort(sort)
-				.setStart(start));
-	}
-
-	@Override
-	public ResponseEntity<Object> refToSelectLidvid(
-			String group,
-			String identifier,
-			@Valid List<String> fields,
-			@Min(0) @Valid Integer limit,
-			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
-	{
-		return this.processs(null, new URIParameters()
-				.setGroup(group)
-				.setIdentifier(identifier)
-				.setFields(fields)
-				.setLimit(limit)
-				.setSort(sort)
-				.setStart(start));
-	}
-
-	@Override
-	public ResponseEntity<Object> refToSelectLidvidVers(
-			String group,
-			String identifier,
-			String versions,
-			@Valid List<String> fields,
-			@Min(0) @Valid Integer limit,
-			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
-	{
-		return this.processs(null, new URIParameters()
-				.setGroup(group)
-				.setIdentifier(identifier)
-				.setVersion(versions)
-				.setFields(fields)
-				.setLimit(limit)
-				.setSort(sort)
-				.setStart(start));
-	}
 
 	@Override
 	public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields)

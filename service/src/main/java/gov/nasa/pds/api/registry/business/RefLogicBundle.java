@@ -17,11 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 /**
  * Bundle Data Access Object (DAO). 
@@ -29,12 +32,13 @@ import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
  * 
  * @author karpenko
  */
-public class BundleDAO
+public class RefLogicBundle implements ReferencingLogic
 {
     @SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(BundleDAO.class);
+	private static final Logger log = LoggerFactory.getLogger(RefLogicBundle.class);
 
-    static public Map<String,String> searchConstraints()
+    @Override
+    public Map<String,String> constraints()
     {
     	Map<String,String> preset = new HashMap<String,String>();
     	preset.put("product_class", "Product_Bundle");
@@ -62,7 +66,7 @@ public class BundleDAO
     	
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
+        		.build(RequestBuildContextFactory.given(fields, RefLogicBundle.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
@@ -114,7 +118,7 @@ public class BundleDAO
         if(!lids.isEmpty())
         {
             List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(ctlContext,
-            		RequestBuildContextFactory.given(reqBuildContext.getFields(), CollectionDAO.searchConstraints()), lids);
+            		RequestBuildContextFactory.given(reqBuildContext.getFields(), RefLogicCollection.searchConstraints()), lids);
             lidVids.addAll(latestLidVids);
         }
        
@@ -141,7 +145,7 @@ public class BundleDAO
 
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields, BundleDAO.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
+        		.build(RequestBuildContextFactory.given(fields, RefLogicBundle.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
@@ -170,5 +174,19 @@ public class BundleDAO
         
         return new ArrayList<String>(0);
     }
+
+	@Override
+	public RequestAndResponseContext find(UserContext input)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RequestAndResponseContext given(UserContext input)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.opensearch.HitIterator;
+import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
 import gov.nasa.pds.model.WyriwygProductKeyValuePairs;

@@ -118,7 +118,7 @@ paths:
         - product references
       summary: |
         returns one or more PDS Products of the specificed class that contain or reference the specified product identifier. See identifier for details on how it determines what is returned.
-      operationId: ref-by-select-lidvid
+      operationId: group-referencing-id
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -143,7 +143,7 @@ paths:
         - product references
       summary: |
         returns one or more PDS Products of the specificed class that reference the product identifier. See identifier for details on how it determines what is returned.
-      operationId: ref-by-select-lidvid-vers
+      operationId: group-referencing-id-vers
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -169,7 +169,7 @@ paths:
         - product references
       summary: |
         returns one or more PDS Products of the specificed class that the specified product identifier contains or references. See identifier for details on how it determines what is returned.
-      operationId: ref-to-select-lidvid
+      operationId: id-referencing-group
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -194,7 +194,7 @@ paths:
         - product references
       summary: |
         returns one or more PDS Products of the specificed class that the specified product identifier contains or references. See identifier for details on how it determines what is returned.
-      operationId: ref-to-select-lidvid-vers
+      operationId: id-referencing-group--vers
       responses:
         '200':
           $ref: "#/components/responses/Plural"

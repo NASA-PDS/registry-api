@@ -12,20 +12,15 @@ import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
-class Standard implements EndpointHandler {
-
+class IdReferencingGroup implements EndpointHandler
+{
 	@Override
 	public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
-			throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException, UnknownGroupNameException
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException,
+			UnknownGroupNameException
 	{
-        RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext
-        		(control, content, new SwaggerGroupEnumTransmuter().transform(content.getGroup()).constraints());
-    	context.setResponse(control.getConnection().getRestHighLevelClient(),
-    			new SearchRequestFactory(context, control.getConnection())
-    				.build(context, control.getConnection().getRegistryIndex()));
+		RequestAndResponseContext context = new SwaggerGroupEnumTransmuter().transform(content.getGroup()).given(content);
 		return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
 	}
-
 }

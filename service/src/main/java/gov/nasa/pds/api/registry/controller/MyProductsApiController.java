@@ -19,19 +19,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.base.ProductsApi;
-import gov.nasa.pds.api.registry.business.BundleDAO;
-import gov.nasa.pds.api.registry.business.CollectionDAO;
+import gov.nasa.pds.api.registry.business.RefLogicBundle;
+import gov.nasa.pds.api.registry.business.RefLogicCollection;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
-import gov.nasa.pds.api.registry.business.ProductDAO;
+import gov.nasa.pds.api.registry.business.RefLogicProduct;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.opensearch.HitIterator;
-import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import io.swagger.annotations.ApiParam;
 
 
@@ -65,7 +65,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		ProductDAO.searchConstraints());
+        		RefLogicProduct.searchConstraints());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     {
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		ProductDAO.searchConstraints());
+        		RefLogicProduct.searchConstraints());
     }
 
     
@@ -89,7 +89,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	// FIXME: add fields
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		ProductDAO.searchConstraints());
+        		RefLogicProduct.searchConstraints());
     }    
     
     
@@ -113,7 +113,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		ProductDAO.searchConstraints());
+        		RefLogicProduct.searchConstraints());
     }    
     
     
@@ -139,7 +139,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, BundleDAO.searchConstraints(), ProductDAO.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicBundle.searchConstraints(), RefLogicProduct.searchConstraints(), accept);
             this.getContainingBundle(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -202,7 +202,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, CollectionDAO.searchConstraints(), ProductDAO.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicCollection.searchConstraints(), RefLogicProduct.searchConstraints(), accept);
             this.getContainingCollection(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -267,7 +267,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
             List<String> ids = collectionLidvids.subList(context.getStart(), end);
             
             this.fillProductsFromLidvids(context,
-            		RequestBuildContextFactory.given(context.getFields(), CollectionDAO.searchConstraints()),
+            		RequestBuildContextFactory.given(context.getFields(), RefLogicCollection.searchConstraints()),
             		ids, collectionLidvids.size()); 
         }
         else 

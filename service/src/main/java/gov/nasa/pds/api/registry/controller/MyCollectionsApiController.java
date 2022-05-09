@@ -2,20 +2,20 @@ package gov.nasa.pds.api.registry.controller;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
-import gov.nasa.pds.api.registry.business.BundleDAO;
-import gov.nasa.pds.api.registry.business.CollectionDAO;
+import gov.nasa.pds.api.registry.business.RefLogicBundle;
+import gov.nasa.pds.api.registry.business.RefLogicCollection;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidUtils;
-import gov.nasa.pds.api.registry.business.ProductDAO;
+import gov.nasa.pds.api.registry.business.RefLogicProduct;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
-import gov.nasa.pds.api.registry.opensearch.HitIterator;
-import gov.nasa.pds.api.registry.opensearch.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.opensearch.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.opensearch.SearchRequestFactory;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -55,7 +55,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     {
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		CollectionDAO.searchConstraints());
+        		RefLogicCollection.searchConstraints());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
     {
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		CollectionDAO.searchConstraints());
+        		RefLogicCollection.searchConstraints());
     }
     
     
@@ -89,7 +89,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		CollectionDAO.searchConstraints());                
+        		RefLogicCollection.searchConstraints());                
     }
 
     
@@ -113,7 +113,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		CollectionDAO.searchConstraints());
+        		RefLogicCollection.searchConstraints());
     }    
 
     
@@ -186,7 +186,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, ProductDAO.searchConstraints(), CollectionDAO.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicProduct.searchConstraints(), RefLogicCollection.searchConstraints(), accept);
         	this.getProductChildren(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -284,7 +284,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         		.setSummanryOnly(summaryOnly);
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, BundleDAO.searchConstraints(), CollectionDAO.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicBundle.searchConstraints(), RefLogicCollection.searchConstraints(), accept);
        	 	this.getContainingBundle(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
