@@ -9,6 +9,8 @@ import gov.nasa.pds.api.registry.RequestBuildContext;
 
 public class RequestBuildContextFactory
 {
+	public static RequestBuildContext empty() { return new SimpleRequestBuildContext(); }
+
 	public static RequestBuildContext given (String field)
 	{ return new SimpleRequestBuildContext(new ArrayList<String>(Arrays.asList(field))); }
 	

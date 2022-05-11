@@ -84,7 +84,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
-    	this.lidvid = LidVidUtils.resolveLIDVID(
+    	this.lidvid = LidVidUtils.resolve(
     			parameters.getIdentifier(),
     			outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED,
     			controlContext,

@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.registry.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,12 @@ class SimpleRequestBuildContext implements RequestBuildContext
 	final private List<String> fields;
 	final private Map<String,String> preset;
 	
+	SimpleRequestBuildContext ()
+	{
+		this.fields = new ArrayList<String>();
+		this.preset = new HashMap<String,String>();
+	}
+
 	SimpleRequestBuildContext (List<String> fields)
 	{
 		this.fields = fields;

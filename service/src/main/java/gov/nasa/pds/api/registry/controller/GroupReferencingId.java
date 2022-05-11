@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.business.ReferencingLogicTransmuter;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
@@ -20,7 +21,8 @@ class GroupReferencingId implements EndpointHandler
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException,
 			UnknownGroupNameException
 	{
-		RequestAndResponseContext context = new SwaggerGroupEnumTransmuter().transform(content.getGroup()).find(content);
+		RequestAndResponseContext context = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl()
+				.find(control, content);
 		return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
 	}
 }

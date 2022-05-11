@@ -6,7 +6,7 @@ import gov.nasa.pds.api.registry.business.RefLogicBundle;
 import gov.nasa.pds.api.registry.business.RefLogicCollection;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.business.LidVidUtils;
-import gov.nasa.pds.api.registry.business.RefLogicProduct;
+import gov.nasa.pds.api.registry.business.RefLogicAny;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -186,7 +186,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicProduct.searchConstraints(), RefLogicCollection.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicAny.searchConstraints(), RefLogicCollection.searchConstraints(), accept);
         	this.getProductChildren(context);
        	 	return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -231,7 +231,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
             wsize = 0;
 
             if (kvp.get("product_lidvid") instanceof String)
-            { pageOfLidvids.add(LidVidUtils.resolveLIDVID (kvp.get("product_lidvid").toString(), ProductVersionSelector.LATEST, this, context)); }
+            { pageOfLidvids.add(LidVidUtils.resolve (kvp.get("product_lidvid").toString(), ProductVersionSelector.LATEST, this, context)); }
             else
             {
                 @SuppressWarnings("unchecked")

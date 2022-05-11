@@ -99,8 +99,8 @@ public class LidVidUtils
     	.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
     	return lidvids;
     }
-    
-    public static String resolveLIDVID (
+
+    public static String resolve (
     		String identifier,
     		ProductVersionSelector scope,
     		ControlContext ctlContext,

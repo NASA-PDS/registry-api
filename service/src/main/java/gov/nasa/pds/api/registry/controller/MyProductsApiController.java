@@ -22,7 +22,7 @@ import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.business.RefLogicBundle;
 import gov.nasa.pds.api.registry.business.RefLogicCollection;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
-import gov.nasa.pds.api.registry.business.RefLogicProduct;
+import gov.nasa.pds.api.registry.business.RefLogicAny;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -65,7 +65,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		RefLogicProduct.searchConstraints());
+        		RefLogicAny.searchConstraints());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     {
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		RefLogicProduct.searchConstraints());
+        		RefLogicAny.searchConstraints());
     }
 
     
@@ -89,7 +89,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
     	// FIXME: add fields
         return this.getLatestProductResponseEntity(
         		new URIParameters().setFields(fields).setIdentifier(identifier),
-        		RefLogicProduct.searchConstraints());
+        		RefLogicAny.searchConstraints());
     }    
     
     
@@ -113,7 +113,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
         			.setSort(sort)
         			.setStart(start)
         			.setSummanryOnly(summaryOnly),
-        		RefLogicProduct.searchConstraints());
+        		RefLogicAny.searchConstraints());
     }    
     
     
@@ -139,7 +139,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicBundle.searchConstraints(), RefLogicProduct.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicBundle.searchConstraints(), RefLogicAny.searchConstraints(), accept);
             this.getContainingBundle(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }
@@ -202,7 +202,7 @@ public class MyProductsApiController extends MyProductsApiBareController impleme
 
         try
         {
-        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicCollection.searchConstraints(), RefLogicProduct.searchConstraints(), accept);
+        	RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicCollection.searchConstraints(), RefLogicAny.searchConstraints(), accept);
             this.getContainingCollection(context);              
             return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
         }

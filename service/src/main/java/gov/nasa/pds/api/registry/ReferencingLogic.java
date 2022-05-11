@@ -6,6 +6,7 @@ import java.util.Map;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 
 public interface ReferencingLogic
 {
@@ -21,7 +22,8 @@ public interface ReferencingLogic
 	 * @param input
 	 * @return
 	 */
-	public RequestAndResponseContext find(UserContext input) throws ApplicationTypeException, IOException, LidVidNotFoundException;
+	public RequestAndResponseContext find(ControlContext context, UserContext input)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException;
 
 	/**
 	 * Find all of the PDS items of the given ID that reference the specified Group.
@@ -29,5 +31,6 @@ public interface ReferencingLogic
 	 * @param input
 	 * @return
 	 */
-	public RequestAndResponseContext given(UserContext input) throws ApplicationTypeException, IOException, LidVidNotFoundException;
+	public RequestAndResponseContext given(ControlContext context, UserContext input)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException;
 }

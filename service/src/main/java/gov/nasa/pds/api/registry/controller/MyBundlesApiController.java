@@ -5,7 +5,7 @@ import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.registry.business.RefLogicBundle;
 import gov.nasa.pds.api.registry.business.RefLogicCollection;
 import gov.nasa.pds.api.registry.business.ErrorFactory;
-import gov.nasa.pds.api.registry.business.RefLogicProduct;
+import gov.nasa.pds.api.registry.business.RefLogicAny;
 import gov.nasa.pds.api.registry.business.ProductVersionSelector;
 import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -261,7 +261,7 @@ public class MyBundlesApiController extends MyProductsApiBareController implemen
 
          try
          {
-        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicProduct.searchConstraints(), RefLogicBundle.searchConstraints(), accept);
+        	 RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(this, parameters, RefLogicAny.searchConstraints(), RefLogicBundle.searchConstraints(), accept);
              this.getProductChildren(context);
         	 return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
          }
