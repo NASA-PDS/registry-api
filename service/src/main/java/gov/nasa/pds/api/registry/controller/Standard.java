@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.UserContext;
-import gov.nasa.pds.api.registry.business.ReferencingLogicTransmuter;
-import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
+import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
+import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 class Standard implements EndpointHandler

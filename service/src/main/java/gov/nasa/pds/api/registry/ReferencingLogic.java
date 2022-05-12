@@ -3,10 +3,10 @@ package gov.nasa.pds.api.registry;
 import java.io.IOException;
 import java.util.Map;
 
-import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
+import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 
 public interface ReferencingLogic
 {

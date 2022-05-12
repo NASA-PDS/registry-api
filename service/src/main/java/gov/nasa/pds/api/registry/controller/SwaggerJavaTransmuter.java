@@ -22,11 +22,11 @@ import gov.nasa.pds.api.base.GroupApi;
 import gov.nasa.pds.api.base.IdentifierApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.ControlContext;
-import gov.nasa.pds.api.registry.business.ErrorFactory;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
+import gov.nasa.pds.api.registry.model.ErrorFactory;
 
 public class SwaggerJavaTransmuter implements ControlContext, GroupApi, IdentifierApi
 {

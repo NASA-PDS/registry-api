@@ -2,7 +2,7 @@ package gov.nasa.pds.api.registry;
 
 import java.util.List;
 
-import gov.nasa.pds.api.registry.business.ProductVersionSelector;
+import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 public interface UserContext
 {

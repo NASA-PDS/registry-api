@@ -2,16 +2,16 @@ package gov.nasa.pds.api.registry.controller;
 
 
 import gov.nasa.pds.api.base.CollectionsApi;
-import gov.nasa.pds.api.registry.business.RefLogicBundle;
-import gov.nasa.pds.api.registry.business.RefLogicCollection;
-import gov.nasa.pds.api.registry.business.ErrorFactory;
-import gov.nasa.pds.api.registry.business.LidVidUtils;
-import gov.nasa.pds.api.registry.business.RefLogicAny;
-import gov.nasa.pds.api.registry.business.ProductVersionSelector;
-import gov.nasa.pds.api.registry.business.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
+import gov.nasa.pds.api.registry.model.ErrorFactory;
+import gov.nasa.pds.api.registry.model.LidVidUtils;
+import gov.nasa.pds.api.registry.model.ProductVersionSelector;
+import gov.nasa.pds.api.registry.model.RefLogicAny;
+import gov.nasa.pds.api.registry.model.RefLogicBundle;
+import gov.nasa.pds.api.registry.model.RefLogicCollection;
+import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;

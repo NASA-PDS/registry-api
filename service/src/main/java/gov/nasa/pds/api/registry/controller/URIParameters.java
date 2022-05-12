@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.UserContext;
-import gov.nasa.pds.api.registry.business.ProductVersionSelector;
+import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 /*
  * Maybe not the most obvious properties class or bean or whatever name but

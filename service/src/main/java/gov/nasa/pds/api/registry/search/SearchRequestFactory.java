@@ -10,9 +10,9 @@ import org.opensearch.search.builder.SearchSourceBuilder;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
-import gov.nasa.pds.api.registry.business.BlobUtil;
-import gov.nasa.pds.api.registry.business.LidVidUtils;
-import gov.nasa.pds.api.registry.business.ProductQueryBuilderUtil;
+import gov.nasa.pds.api.registry.model.BlobUtil;
+import gov.nasa.pds.api.registry.model.LidVidUtils;
+import gov.nasa.pds.api.registry.model.ProductQueryBuilderUtil;
 
 public class SearchRequestFactory
 {
