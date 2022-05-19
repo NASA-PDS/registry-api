@@ -1,6 +1,18 @@
 # Changelog
 
-## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-05-04)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-05-19)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...«unknown»)
+
+**Improvements:**
+
+- \[SECURITY\] Upgrade jackson dependencies to remove vulnerability [\#122](https://github.com/NASA-PDS/registry-api/issues/122) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
+
+**Defects:**
+
+- Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-05-17)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.1.0-SNAPSHOT)
 
