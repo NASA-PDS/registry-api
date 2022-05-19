@@ -12,7 +12,7 @@ import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 
-public class RefLogicAny implements ReferencingLogic
+class RefLogicAny implements ReferencingLogic
 {
 	@Override
     public Map<String,String> constraints()
@@ -20,6 +20,9 @@ public class RefLogicAny implements ReferencingLogic
     	Map<String,String> preset = new HashMap<String,String>();
     	return preset;
     }
+
+	private boolean isGrandchild (ReferencingLogicTransmuter idType)
+	{ return !(idType == ReferencingLogicTransmuter.Collection || idType != ReferencingLogicTransmuter.Collection); }
 
 	private ReferencingLogicTransmuter resolveID (ControlContext context, UserContext input)
 			throws IOException, LidVidNotFoundException, UnknownGroupNameException
@@ -30,77 +33,38 @@ public class RefLogicAny implements ReferencingLogic
 			             "product_class"));
 	}
 
-	@Override
-	public RequestAndResponseContext find(ControlContext context, UserContext input)
+	private RequestAndResponseContext search(ControlContext context, UserContext input, boolean isIdToGroup)
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException
 	{
 		// find all of the given group that reference the specified ID
 		ReferencingLogicTransmuter groupType = ReferencingLogicTransmuter.getBySwaggerGroup(input.getGroup());
 		ReferencingLogicTransmuter idType = this.resolveID(context, input);
 		
-		if (groupType == ReferencingLogicTransmuter.Bundle)
-		{
-			if (idType == ReferencingLogicTransmuter.Bundle) ;// TODO: ?? what does one do here ??
-			else if (idType == ReferencingLogicTransmuter.Collection) return RefLogicCollection.parents();
-			else return this.grandparents();
-		}
-		else if (groupType == ReferencingLogicTransmuter.Collection)
-		{
-			if (idType == ReferencingLogicTransmuter.Bundle) ;// TODO: ?? what does one do here ??
-			else if (idType == ReferencingLogicTransmuter.Collection) ;// TODO: ?? what does one do here ??
-			else return this.parents();
-		}
-		else
-		{
-			if (idType == ReferencingLogicTransmuter.Bundle)
-			{
-				// TODO: ?? what does one do here ?? --what product classes reference a bundle?
-			}
-			else if (idType == ReferencingLogicTransmuter.Collection)
-			{
-				// TODO: ?? what does one do here ?? --what product classes reference a collection?
-			}
-			else
-			{
-			}
-		}
-		return null;
+		if (idType == ReferencingLogicTransmuter.Bundle && groupType == ReferencingLogicTransmuter.Collection)
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicBundle.children(context, input.getSelector(), input));
+		if (idType == ReferencingLogicTransmuter.Bundle && this.isGrandchild(groupType))
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicBundle.grandchildren(context, input.getSelector(), input));
+		if (idType == ReferencingLogicTransmuter.Collection && groupType == ReferencingLogicTransmuter.Bundle)
+			return RefLogicCollection.parents();
+		if (idType == ReferencingLogicTransmuter.Collection && this.isGrandchild(groupType))
+			return RefLogicCollection.children();
+		if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Bundle)
+			return this.grandparents();
+		if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Collection)
+			return this.parents();
+
+		return isIdToGroup ? this.idToGroup() : this.groupToId();
 	}
 
 	@Override
+	public RequestAndResponseContext find(ControlContext context, UserContext input)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException
+	{ return this.search(context, input, false); }
+
+			@Override
 	public RequestAndResponseContext given(ControlContext context, UserContext input)
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException
-	{
-		// find all of the specified groups the given ID references
-		ReferencingLogicTransmuter groupType = ReferencingLogicTransmuter.getBySwaggerGroup(input.getGroup());
-		ReferencingLogicTransmuter idType = this.resolveID(context, input);
-		
-		if (idType == ReferencingLogicTransmuter.Bundle)
-		{
-			if (groupType == ReferencingLogicTransmuter.Bundle) ; // TODO: ?? what does one do here ??
-			else if (groupType == ReferencingLogicTransmuter.Collection) return RefLogicBundle.children();
-			else return RefLogicBundle.grandchildren();
-		}
-		else if (idType == ReferencingLogicTransmuter.Collection)
-		{
-			if (groupType == ReferencingLogicTransmuter.Bundle) ; // TODO: ?? what does one do here ??
-			else if (groupType == ReferencingLogicTransmuter.Collection) ; // TODO: ?? what does one do here ??
-			else return RefLogicCollection.children();
-		}
-		else
-		{
-			if (groupType == ReferencingLogicTransmuter.Bundle)
-			{
-				// TODO: ?? what does one do here ?? --what product classes references a bundle?
-			}
-			else if (groupType == ReferencingLogicTransmuter.Collection)
-			{
-				// TODO: ?? what does one do here ?? --what product classes references a collection?
-			}
-			else
-			{
-			}
-		}
-		return null;
-	}
+	{ return this.search(context, input, true); }
 }

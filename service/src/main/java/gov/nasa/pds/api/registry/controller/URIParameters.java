@@ -1,10 +1,15 @@
 package gov.nasa.pds.api.registry.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.model.LidVidUtils;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 
 /*
  * Maybe not the most obvious properties class or bean or whatever name but
@@ -30,6 +35,7 @@ class URIParameters implements UserContext
 	private String group = "";
 	private String identifier = "";
 	private List<String> keywords = new ArrayList<String>();
+	private String lidvid = "";
 	private Integer limit = Integer.valueOf(0);
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
@@ -49,6 +55,8 @@ class URIParameters implements UserContext
 	public List<String> getKeywords() { return keywords; }
 	@Override
 	public Integer getLimit() { return limit; }
+	@Override
+	public String getLidVid() { return lidvid; }
 	@Override
 	public String getQuery() { return query; }
 	@Override
@@ -90,14 +98,15 @@ class URIParameters implements UserContext
 		if (limit != null) this.limit = limit;
 		return this;
 	}
+	public URIParameters setLidVid(ControlContext control) throws IOException, LidVidNotFoundException
+	{
+		this.lidvid = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.TYPED,
+				control, RequestBuildContextFactory.empty());
+		return this;
+	}
 	public URIParameters setQuery(String query)
 	{
 		if (query != null) this.query = query;
-		return this;
-	}
-	public URIParameters setSelector(ProductVersionSelector selector)
-	{
-		if (selector != null) this.selector = selector;
 		return this;
 	}
 	public URIParameters setSort(List<String> sort)
@@ -112,7 +121,12 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setVersion(String version)
 	{
-		if (version != null) this.version = version;
+		if (version != null)
+		{
+			this.version = version;
+			if ("all".equalsIgnoreCase(version)) this.selector = ProductVersionSelector.ALL;
+			else this.selector = ProductVersionSelector.LATEST;
+		}
 		return this;
 	}
 }

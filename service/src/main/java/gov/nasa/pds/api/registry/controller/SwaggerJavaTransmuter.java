@@ -183,7 +183,7 @@ public class SwaggerJavaTransmuter implements ControlContext, GroupApi, Identifi
 
 	private ResponseEntity<Object> processs (EndpointHandler handler, URIParameters parameters)
 	{
-        try { return handler.transmute(this, parameters.setAccept(this.request.getHeader("Accept"))); } 
+        try { return handler.transmute(this, parameters.setAccept(this.request.getHeader("Accept")).setLidVid(this)); } 
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);

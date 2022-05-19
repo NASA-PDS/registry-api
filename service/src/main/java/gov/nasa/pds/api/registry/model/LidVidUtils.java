@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
@@ -31,6 +32,8 @@ public class LidVidUtils
 	private static final String LIDVID_SEPARATOR = "::";
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
 
+	public static LidvidsContext allOfThem (String id) { return new Unlimited(id); }
+	
 	public static String extractLidFromLidVid(String identifier)
     {
         if (identifier == null) return null;
@@ -46,7 +49,7 @@ public class LidVidUtils
     		RequestBuildContext reqContext,
             Collection<String> lids) throws IOException,LidVidNotFoundException
     {
-    	List<String> lidvids = new ArrayList<String>(lids.size());
+    	List<String> lidvids = new ArrayList<String>();
     	
     	for (String lid : lids)
     	{
@@ -93,10 +96,13 @@ public class LidVidUtils
     {
     	List<String> lidvids = new ArrayList<String>();
 
-    	ctlContext.getConnection().getRestHighLevelClient().search(
-    			new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true), ctlContext.getConnection())
-    			.build(reqContext, ctlContext.getConnection().getRegistryIndex()), RequestOptions.DEFAULT)
-    	.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
+    	if (0 < lids.size())
+    	{
+    		ctlContext.getConnection().getRestHighLevelClient().search(
+    				new SearchRequestFactory(RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true), ctlContext.getConnection())
+    				.build(reqContext, ctlContext.getConnection().getRegistryIndex()), RequestOptions.DEFAULT)
+    		.getHits().forEach((hit) -> { lidvids.add(hit.getId()); });
+    	}
     	return lidvids;
     }
 

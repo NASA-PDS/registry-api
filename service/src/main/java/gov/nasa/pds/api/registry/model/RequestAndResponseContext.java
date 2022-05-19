@@ -41,10 +41,15 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private int start;
     final private int limit;
     final private Map<String, String> presetCriteria;
-    final private boolean summaryOnly;
     final private ProductVersionSelector selector;
     final private String format;
     final private Map<String, ProductBusinessLogic> formatters;
+
+    static public RequestAndResponseContext buildRequestAndResponseContext(
+    		ControlContext connection, // webby criteria
+    		UserContext parameters,
+    		Pagination<String> lidvids) { throws ApplicationTypeException,LidVidNotFoundException,IOException
+    {}
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
@@ -92,7 +97,6 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
     	this.start = parameters.getStart();
-    	this.summaryOnly = parameters.getSummanryOnly();
     	this.presetCriteria = outPreset;
     	this.selector = parameters.getSelector();
     }
@@ -113,7 +117,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public ProductVersionSelector getSelector() { return this.selector; }
 
 	public boolean isSingular() { return this.getStart() == -1 && this.getLimit() == 0; }
-	public boolean isSummaryOnly() { return this.summaryOnly; }
+	public boolean isSummaryOnly() { return this.limit == 0; }
 	@Override
 	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
 
@@ -213,7 +217,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		summary.setStart(this.getStart());
 		summary.setLimit(this.getLimit());
 		summary.setSort(this.getSort());
-		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.summaryOnly));
+		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.isSummaryOnly()));
 		summary.setProperties(new ArrayList<String>());
 		
 		if (0 < real_total) summary.setHits(real_total);
@@ -239,7 +243,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			summary.setHits(total_hits);
 
 			if (uniqueProperties != null) summary.setProperties(uniqueProperties);
-			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.summaryOnly);
+			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.isSummaryOnly());
 
 			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 		}

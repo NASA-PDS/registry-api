@@ -17,9 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
-import gov.nasa.pds.api.registry.RequestBuildContext;
-import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
@@ -32,7 +31,7 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
  * 
  * @author karpenko
  */
-public class RefLogicBundle implements ReferencingLogic
+class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 {
     @SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(RefLogicBundle.class);
@@ -45,6 +44,23 @@ public class RefLogicBundle implements ReferencingLogic
     	return preset;
     }
 
+    static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
+    		throws ApplicationTypeException, IOException, LidVidNotFoundException
+    {
+    	return selection == ProductVersionSelector.ALL ?
+    			getAllBundleCollectionLidVids(uid, control) : 
+    			getBundleCollectionLidVids(uid, control);
+    }
+
+    static Pagination<String> grandchildren (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
+    		throws ApplicationTypeException, IOException, LidVidNotFoundException
+    {
+    	PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
+    	for (String cid : getBundleCollectionLidVids(LidVidUtils.allOfThem(uid.getLidVid()), control).page())
+    	{ ids.addAll(RefLogicCollection.children (control, selection, LidVidUtils.allOfThem(cid)).page()); }
+    	return ids;
+    }
+
     /**
      * Get collections of a bundle by bundle LIDVID. 
      * If a bundle has LIDVID collection references, then those collections are returned. 
@@ -53,10 +69,9 @@ public class RefLogicBundle implements ReferencingLogic
      * @throws IOException IO exception
      * @throws LidVidNotFoundException LIDVID not found exception
      */
-    static public List<String> getBundleCollectionLidVids(
-    		String bundleLidVid,
-    		ControlContext ctlContext,
-    		RequestBuildContext reqBuildContext) 
+    static private Pagination<String> getBundleCollectionLidVids(
+    		LidvidsContext idContext,
+    		ControlContext ctlContext) 
             throws IOException, LidVidNotFoundException
     {
         // Fetch collection references only.
@@ -65,64 +80,56 @@ public class RefLogicBundle implements ReferencingLogic
                                "ref_lid_collection", "ref_lid_collection_secondary"));
     	
         // Get bundle by lidvid.
-        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields, RefLogicBundle.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
+        		.build(RequestBuildContextFactory.given(fields,
+        				ReferencingLogicTransmuter.Bundle.impl().constraints()),
+        				ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
         SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
         if(hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
-        	throw new LidVidNotFoundException(bundleLidVid);
+        	throw new LidVidNotFoundException(idContext.getLidVid());
         else hit = hits.getAt(0);
 
         // Get fields
-        // LidVid references (e.g., OREX bundle)        
+        // LidVid references (e.g., OREX bundle)
+        List<String> ids = new ArrayList<String>();
         Map<String, Object> fieldMap = hit.getSourceAsMap();
-        List<String> primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection");
-        List<String> secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lidvid_collection_secondary");
-
-        List<String> lidVids = new ArrayList<String>();
-        if(primaryIds != null) lidVids.addAll(primaryIds); 
-        if(secondaryIds != null) lidVids.addAll(secondaryIds);
-
+        PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
+        
+        ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection")));
+        ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection_secondary")));
+        
         // !!! NOTE !!! 
         // Harvest converts LIDVID references to LID references and stores them in
         // "ref_lid_collection" and "ref_lid_collection_secondary" fields.
         // To get "real" LID references, we have to exclude LIDVID references from these fields.
         Set<String> lidsToRemove = new TreeSet<String>();
-        for(String lidVid: lidVids)
+        for(String id: ids)
         {
-            int idx = lidVid.indexOf("::");
+            int idx = id.indexOf("::");
             if(idx > 0)
             {
-                String lid = lidVid.substring(0, idx);
+                String lid = id.substring(0, idx);
                 lidsToRemove.add(lid);
             }
         }
         
         // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by Harvest
-        primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
-
         List<String> lids = new ArrayList<String>();
-        if(primaryIds != null) lids.addAll(primaryIds); 
-        if(secondaryIds != null) lids.addAll(secondaryIds);
+        lids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
+        lids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
         
         // Get "real" LIDs
         if(!lidsToRemove.isEmpty())
-        {
-            lids.removeAll(lidsToRemove);
-        }
+        { lids.removeAll(lidsToRemove); }
 
         // Get the latest versions of LIDs
-        if(!lids.isEmpty())
-        {
-            List<String> latestLidVids = LidVidUtils.getLatestLidVidsByLids(ctlContext,
-            		RequestBuildContextFactory.given(reqBuildContext.getFields(), RefLogicCollection.searchConstraints()), lids);
-            lidVids.addAll(latestLidVids);
-        }
-       
-        return lidVids;
+        lidvids.addAll(LidVidUtils.getLatestLidVidsByLids(ctlContext,
+        		RequestBuildContextFactory.given("lid",
+        				ReferencingLogicTransmuter.Collection.impl().constraints()), lids));       
+        return lidvids;
     }
 
     
@@ -133,10 +140,9 @@ public class RefLogicBundle implements ReferencingLogic
      * @throws IOException IO exception 
      * @throws LidVidNotFoundException LIDVID not found exception
      */
-    static public List<String> getAllBundleCollectionLidVids(
-    		String bundleLidVid,
-    		ControlContext ctlContext,
-    		RequestBuildContext reqBuildContext)
+    static private Pagination<String> getAllBundleCollectionLidVids(
+    		LidvidsContext idContext,
+    		ControlContext ctlContext)
             throws IOException, LidVidNotFoundException
     {
         // Fetch collection references only.
@@ -144,49 +150,30 @@ public class RefLogicBundle implements ReferencingLogic
                 Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary"));
 
         // Get bundle by lidvid.
-        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidVid), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields, RefLogicBundle.searchConstraints()), ctlContext.getConnection().getRegistryIndex());
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
+        		.build(RequestBuildContextFactory.given(fields, ReferencingLogicTransmuter.Bundle.impl().constraints()), ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
         SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
         if (hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
-        	throw new LidVidNotFoundException(bundleLidVid);
+        	throw new LidVidNotFoundException(idContext.getLidVid());
         else hit = hits.getAt(0);
 
         // Get fields
         Map<String, Object> fieldMap = hit.getSourceAsMap();
 
         // Lid references (e.g., Kaguya bundle)
-        List<String> primaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection");
-        List<String> secondaryIds = ResponseUtils.getFieldValues(fieldMap, "ref_lid_collection_secondary");
-
         List<String> ids = new ArrayList<String>();
-        if(primaryIds != null) ids.addAll(primaryIds); 
-        if(secondaryIds != null) ids.addAll(secondaryIds);
-        
-        if(!ids.isEmpty())
-        {
-            // Get the latest versions of LIDs (Return LIDVIDs)
-            ids = LidVidUtils.getAllLidVidsByLids(ctlContext, reqBuildContext, ids);
-            return ids;
-        }
-        
-        return new ArrayList<String>(0);
+        PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
+
+        ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
+        ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
+        ids = LidVidUtils.getAllLidVidsByLids(ctlContext, 
+        		RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()),
+        		ids);
+        lidvids.addAll(ids);
+        return lidvids;
     }
-
-	@Override
-	public RequestAndResponseContext find(UserContext input)
-			throws ApplicationTypeException, IOException, LidVidNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RequestAndResponseContext given(UserContext input)
-			throws ApplicationTypeException, IOException, LidVidNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
