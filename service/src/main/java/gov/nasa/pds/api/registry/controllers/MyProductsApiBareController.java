@@ -88,7 +88,7 @@ public class MyProductsApiBareController implements ControlContext
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (LidVidNotFoundException e)
         {
@@ -127,7 +127,7 @@ public class MyProductsApiBareController implements ControlContext
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (LidVidNotFoundException e)
         {
@@ -179,7 +179,7 @@ public class MyProductsApiBareController implements ControlContext
         catch (IOException e) 
         {
             log.error("Couldn't get or serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (LidVidNotFoundException e)
         {

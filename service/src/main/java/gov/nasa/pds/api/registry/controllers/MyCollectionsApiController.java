@@ -204,7 +204,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (NothingFoundException e)
         {
@@ -296,7 +296,7 @@ public class MyCollectionsApiController extends MyProductsApiBareController impl
         catch (IOException e)
         {
             log.error("Couldn't serialize response for content type " + accept, e);
-            return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Object>(ErrorFactory.build(this.request), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch (LidVidNotFoundException e)
         {
