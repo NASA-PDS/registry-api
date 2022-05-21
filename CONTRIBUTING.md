@@ -27,8 +27,8 @@ Lastly, the code is divided into packages that very roughly group the functional
 **api.registry.configuration**  
   - AWS, spring-boot, and swagger configuration information
 
-**api.registry.controllers**  
-  - bidirectional transmutation between registry Java design/implementation and the swagger model (auto generated code)
+**api.registry.controller**  
+  - *control* bidirectional transmutation between registry Java design/implementation and the swagger model (auto generated code)
 
 **api.registry.exceptions**  
   - all locally defined exceptions

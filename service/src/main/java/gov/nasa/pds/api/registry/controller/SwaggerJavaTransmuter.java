@@ -19,8 +19,8 @@ import org.springframework.stereotype.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.base.GroupApi;
-import gov.nasa.pds.api.base.IdentifierApi;
+import gov.nasa.pds.api.base.GidApi;
+import gov.nasa.pds.api.base.UidApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -30,7 +30,7 @@ import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ErrorFactory;
 
 @Controller
-public class SwaggerJavaTransmuter implements ControlContext, GroupApi, IdentifierApi
+public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 {
     private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);  
     private final ObjectMapper objectMapper;

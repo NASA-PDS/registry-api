@@ -28,6 +28,8 @@ public enum ReferencingLogicTransmuter
 	{
 		ReferencingLogicTransmuter resultant = null;
 		
+		if (name.length() == 0) return ReferencingLogicTransmuter.Any;
+
 		for (ReferencingLogicTransmuter pc : ReferencingLogicTransmuter.values())
 		{
 			if (name.equals(usingPDSName ? pc.pds_name : pc.swagger_name))
@@ -55,7 +57,7 @@ public enum ReferencingLogicTransmuter
 
 	public static ReferencingLogicTransmuter getBySwaggerGroup (String name) throws UnknownGroupNameException
 	{
-		try { return ReferencingLogicTransmuter.get(name, true); }
+		try { return ReferencingLogicTransmuter.get(name, false); }
 		catch (NothingFoundException nfe)
 		{
 			Set<String> known = new HashSet<String>();

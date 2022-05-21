@@ -34,7 +34,7 @@ import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ",  "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.search"})
+@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ",  "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.search"})
 public class WebMVCConfig implements WebMvcConfigurer
 {   
 	private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
