@@ -11,7 +11,8 @@ public enum ReferencingLogicTransmuter
 {
 	Any(new RefLogicAny(), "", "any"),
 	Bundle(new RefLogicBundle(), "Product_Bundle", "bundle"),
-	Collection(new RefLogicCollection(), "Product_Collection", "collection");
+	Collection(new RefLogicCollection(), "Product_Collection", "collection"),
+	Product(new RefLogicProduct(), "", "product");
 	
 	final private ReferencingLogic refLogic;
 	final private String pds_name;

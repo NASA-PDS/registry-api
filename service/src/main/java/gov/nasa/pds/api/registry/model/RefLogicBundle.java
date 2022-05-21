@@ -56,8 +56,8 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     		throws ApplicationTypeException, IOException, LidVidNotFoundException
     {
     	PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
-    	for (String cid : getBundleCollectionLidVids(LidVidUtils.allOfThem(uid.getLidVid()), control).page())
-    	{ ids.addAll(RefLogicCollection.children (control, selection, LidVidUtils.allOfThem(cid)).page()); }
+    	for (String cid : getBundleCollectionLidVids(new Unlimited(uid.getLidVid()), control).page())
+    	{ ids.addAll(RefLogicCollection.children (control, selection, new Unlimited(cid)).page()); }
     	return ids;
     }
 

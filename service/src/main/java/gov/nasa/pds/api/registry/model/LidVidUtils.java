@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
-import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
@@ -31,8 +30,6 @@ public class LidVidUtils
 {
 	private static final String LIDVID_SEPARATOR = "::";
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
-
-	public static LidvidsContext allOfThem (String id) { return new Unlimited(id); }
 	
 	public static String extractLidFromLidVid(String identifier)
     {

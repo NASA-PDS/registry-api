@@ -8,10 +8,11 @@ import gov.nasa.pds.api.registry.LidvidsContext;
 
 class PaginationLidvidBuilder implements Pagination<String>
 {
-	public int current = 0;
 	final public int limit;
 	final public int start;
 	final public List<String> page = new ArrayList<String>();
+
+	private int total = 0;
 
 	PaginationLidvidBuilder (LidvidsContext bounds)
 	{
@@ -22,13 +23,16 @@ class PaginationLidvidBuilder implements Pagination<String>
 	void addAll (List<String> data)
 	{
 		int remaining = this.limit - this.page.size();
+		int skip = this.start - this.total;
 
-		if (this.start <= this.current && 0 < remaining)
+		if (0 < remaining && this.start <= this.total + data.size() - 1)
 		{
-			if (data.size() <= remaining) page.addAll(data);
-			else page.addAll(data.subList(0, remaining));
+			if (this.start <= this.total && data.size() <= remaining) page.addAll(data);
+			else if (this.start <= this.total) page.addAll(data.subList(0, remaining));
+			else if (data.size() - skip <= remaining) page.addAll(data.subList(skip, data.size()));
+			else page.addAll(data.subList(skip, remaining));
 		}
-		this.current += data.size();		
+		this.total += data.size();		
 	}
 
 	void add (Object sourceMapValue) { this.addAll(this.convert(null)); }
@@ -53,6 +57,6 @@ class PaginationLidvidBuilder implements Pagination<String>
 	public int start() { return this.start; }
 
 	@Override
-	public int total() { return this.current; }
+	public int total() { return this.total; }
 
 }

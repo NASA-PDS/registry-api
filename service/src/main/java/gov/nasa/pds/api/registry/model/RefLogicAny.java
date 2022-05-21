@@ -47,15 +47,20 @@ class RefLogicAny implements ReferencingLogic
 			return RequestAndResponseContext.buildRequestAndResponseContext
 					(context, input, RefLogicBundle.grandchildren(context, input.getSelector(), input));
 		if (idType == ReferencingLogicTransmuter.Collection && groupType == ReferencingLogicTransmuter.Bundle)
-			return RefLogicCollection.parents();
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicCollection.parents(context, input.getSelector(), input));
 		if (idType == ReferencingLogicTransmuter.Collection && this.isGrandchild(groupType))
-			return RefLogicCollection.children();
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicCollection.children(context, input.getSelector(), input));
 		if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Bundle)
-			return this.grandparents();
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicProduct.grandparents(context, input.getSelector(), input));
 		if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Collection)
-			return this.parents();
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicProduct.parents(context, input.getSelector(), input));
 
-		return isIdToGroup ? this.idToGroup() : this.groupToId();
+		throw new IOException("Waiting on implementation until references are figured out in database");
+		// FIXME: return isIdToGroup ? this.idToGroup() : this.groupToId();
 	}
 
 	@Override

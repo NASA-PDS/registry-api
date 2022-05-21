@@ -1,8 +1,13 @@
 package gov.nasa.pds.api.registry.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.LidvidsContext;
@@ -39,7 +44,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         				.build (RequestBuildContextFactory.given ("product_lid"), control.getConnection().getRegistryRefIndex())))
         {
         	productLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control,
-        			RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Any.impl().constraints()),
+        			RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Product.impl().constraints()),
         			productLidvids.convert(kvp.get("product_lid"))));
         }
         return productLidvids;
@@ -55,5 +60,30 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         				.build (RequestBuildContextFactory.given ("product_lidvid"), control.getConnection().getRegistryRefIndex())))
         { productLidvids.add(kvp.get("product_lidvid")); }
         return productLidvids;
+    }
+    
+    static Pagination<String> parents (ControlContext control, ProductVersionSelector selection,  LidvidsContext uid)
+    		throws IOException, LidVidNotFoundException
+    {
+    	List<String> sortedLids;
+    	Set<String> lids = new HashSet<String>();
+        PaginationLidvidBuilder bundleLidvids = new PaginationLidvidBuilder(uid);
+        for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
+        		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection",
+        				LidVidUtils.extractLidFromLidVid(uid.getLidVid()), true), control.getConnection())
+                .build(RequestBuildContextFactory.given("lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
+                		control.getConnection().getRegistryIndex())))
+        {
+        	lids.addAll(bundleLidvids.convert(kvp.get("lid")));
+        }
+        sortedLids = new ArrayList<String>(lids);
+        Collections.sort(sortedLids);
+        
+        if (selection == ProductVersionSelector.ALL)
+        	bundleLidvids.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));
+        else 
+        	bundleLidvids.addAll (LidVidUtils.getLatestLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));
+
+        return bundleLidvids;
     }
 }

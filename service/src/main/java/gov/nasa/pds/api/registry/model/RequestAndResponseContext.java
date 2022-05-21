@@ -25,6 +25,8 @@ import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.model.Summary;
 
 public class RequestAndResponseContext implements RequestBuildContext,RequestConstructionContext
@@ -48,8 +50,16 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Pagination<String> lidvids) { throws ApplicationTypeException,LidVidNotFoundException,IOException
-    {}
+    		Pagination<String> lidvids) throws ApplicationTypeException,LidVidNotFoundException,IOException
+    {
+    	Map<String,String> any = ReferencingLogicTransmuter.Any.impl().constraints();
+    	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, any, any);
+    	response.setResponse(connection.getConnection().getRestHighLevelClient()
+    			.search(new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
+    					.build(response, connection.getConnection().getRegistryIndex()),
+    					RequestOptions.DEFAULT).getHits());
+    	return response;
+    }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
