@@ -1,5 +1,13 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-05-21)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...«unknown»)
+
+**Defects:**
+
+- \[SECURITY\] Log4j vulnerability in lexer [\#137](https://github.com/NASA-PDS/registry-api/issues/137) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+
 ## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-05-19)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.1.0-SNAPSHOT)
