@@ -17,7 +17,7 @@ servers:
     description: production server
 
 paths:
-  /{group}:
+  /gid/{group}:
     get:
       tags:
         - products
@@ -44,7 +44,7 @@ paths:
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/Start"
 
-  /{identifier}:
+  /uid/{identifier}:
     get:
       tags:
         - products
@@ -65,7 +65,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-  /{identifier}/latest:
+  /uid/{identifier}/latest:
     get:
       tags:
         - products
@@ -86,7 +86,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-  /{identifier}/all:
+  /uid/{identifier}/all:
     get:
       tags:
         - products
@@ -112,7 +112,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-  /{group}/referencing/{identifier}:
+  /gid/{group}/referencing/{identifier}:
     get:
       tags:
         - product references
@@ -137,7 +137,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-  /{group}/referencing/{identifier}/{versions}:
+  /gid/{group}/referencing/{identifier}/{versions}:
     get:
       tags:
         - product references
@@ -163,7 +163,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
-  /{identifier}/referencing/{group}:
+  /uid/{identifier}/referencing/{group}:
     get:
       tags:
         - product references
@@ -188,7 +188,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-  /{identifier}/referencing/{group}/{versions}:
+  /uid/{identifier}/referencing/{group}/{versions}:
     get:
       tags:
         - product references
