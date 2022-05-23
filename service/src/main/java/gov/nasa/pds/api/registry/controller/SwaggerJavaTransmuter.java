@@ -240,6 +240,7 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 				.setFields(fields)
 				.setLimit(limit)
 				.setSort(sort)
+				.setStart(start)
 				.setVersion("all"));
 	}
 

@@ -2,8 +2,18 @@
 import helpers
 import unittest
 
+def test_bad_group():
+    ep = '/gid/notreal'
+    status,data = helpers.fetch_kvp_json (helpers.make_url (ep))
+    assert 406 == status
+    assert 'message' in data
+    assert 'request' in data
+    assert data['message'].startswith ("Unknown group 'notreal'. All known groups:")
+    assert data['request'] == ep
+    return
+
 def test_bad_lidvid():
-    ep = '/bundles/notreal'
+    ep = '/uid/notreal'
     status,data = helpers.fetch_kvp_json (helpers.make_url (ep))
     assert 404 == status
     assert 'message' in data
@@ -14,7 +24,7 @@ def test_bad_lidvid():
 
 class TestBundles(unittest.TestCase):
     def test_bundles(self):
-        status,resp = helpers.fetch_kvp_json (helpers.make_url ('/bundles'))
+        status,resp = helpers.fetch_kvp_json (helpers.make_url ('/gid/bundle'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -27,7 +37,7 @@ class TestBundles(unittest.TestCase):
     def test_lidvid(self):
         lidvid = self.test_bundles()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/bundles/' + lidvid))
+                                              (f'/uid/{lidvid}'))
         self.assertEqual (200, status)
         self.assertIn ('lidvid', resp)
         self.assertEqual (lidvid, resp['lidvid'])
@@ -36,7 +46,7 @@ class TestBundles(unittest.TestCase):
     def test_lidvid_latest(self):
         lidvid = self.test_bundles()
         status,resp = helpers.fetch_kvp_json(helpers.make_url
-                                             ('/bundles/' + lidvid + '/latest'))
+                                             (f'/uid/{lidvid}/latest'))
         self.assertEqual (200, status)
         self.assertIn ('lidvid', resp)
         self.assertEqual (lidvid, resp['lidvid'])
@@ -45,7 +55,7 @@ class TestBundles(unittest.TestCase):
     def test_lidvid_all(self):
         lidvid = self.test_bundles()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/bundles/' + lidvid + '/all'))
+                                              (f'/uid/{lidvid}/all'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -58,8 +68,8 @@ class TestBundles(unittest.TestCase):
 
     def test_collections(self):
         lidvid = self.test_bundles()
-        status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/bundles/' + lidvid + '/collections'))
+        status,resp = helpers.fetch_kvp_json \
+                   (helpers.make_url (f'/uid/{lidvid}/referencing/collection'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -71,8 +81,8 @@ class TestBundles(unittest.TestCase):
 
     def test_collections_latest(self):
         lidvid = self.test_bundles()
-        status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/bundles/' + lidvid + '/collections/latest'))
+        status,resp = helpers.fetch_kvp_json \
+            (helpers.make_url (f'/uid/{lidvid}/referencing/collection/latest'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -84,8 +94,8 @@ class TestBundles(unittest.TestCase):
 
     def test_collections_all(self):
         lidvid = self.test_bundles()
-        status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/bundles/' + lidvid + '/collections/all'))
+        status,resp = helpers.fetch_kvp_json \
+               (helpers.make_url (f'/uid/{lidvid}/referencing/collection/all'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -97,8 +107,8 @@ class TestBundles(unittest.TestCase):
 
     def test_products(self):
         lidvid = self.test_bundles()
-        status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/bundles/' + lidvid + '/products'))
+        status,resp = helpers.fetch_kvp_json\
+                      (helpers.make_url (f'/uid/{lidvid}/referencing/product'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -112,8 +122,8 @@ class TestBundles(unittest.TestCase):
 class TestCollections(unittest.TestCase):
     def test_bundles(self):
         lidvid = self.test_collections()
-        status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/collections/' + lidvid + '/bundles'))
+        status,resp = helpers.fetch_kvp_json \
+                      (helpers.make_url (f'/uid/{lidvid}/referencing/bundle'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -124,7 +134,8 @@ class TestCollections(unittest.TestCase):
         return
 
     def test_collections(self):
-        status,resp = helpers.fetch_kvp_json (helpers.make_url ('/collections'))
+        status,resp = helpers.fetch_kvp_json \
+                      (helpers.make_url ('/gid/collection'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -137,7 +148,7 @@ class TestCollections(unittest.TestCase):
     def test_lidvid(self):
         lidvid = self.test_collections()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/collections/' + lidvid))
+                                              (f'/uid/{lidvid}'))
         self.assertEqual (200, status)
         self.assertIn ('lidvid', resp)
         self.assertEqual (lidvid, resp['lidvid'])
@@ -146,7 +157,7 @@ class TestCollections(unittest.TestCase):
     def test_lidvid_latest(self):
         lidvid = self.test_collections()
         status,resp = helpers.fetch_kvp_json(helpers.make_url
-                                             ('/collections/' + lidvid + '/latest'))
+                                             (f'/uid/{lidvid}/latest'))
         self.assertEqual (200, status)
         self.assertIn ('lidvid', resp)
         self.assertEqual (lidvid, resp['lidvid'])
@@ -155,7 +166,7 @@ class TestCollections(unittest.TestCase):
     def test_lidvid_all(self):
         lidvid = self.test_collections()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/collections/' + lidvid + '/all'))
+                                              (f'/uid/{lidvid}/all'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -169,7 +180,7 @@ class TestCollections(unittest.TestCase):
     def test_products(self):
         lidvid = self.test_collections()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/collections/' + lidvid + '/products'))
+                                              (f'/uid/{lidvid}/referencing/product'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -182,7 +193,7 @@ class TestCollections(unittest.TestCase):
     def test_products_latest(self):
         lidvid = self.test_collections()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/collections/' + lidvid + '/products/latest'))
+                                              (f'/uid/{lidvid}/referencing/product/latest'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -195,7 +206,7 @@ class TestCollections(unittest.TestCase):
     def test_products_all(self):
         lidvid = self.test_collections()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/collections/' + lidvid + '/products/all'))
+                                              (f'/uid/{lidvid}/referencing/product/all'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -208,7 +219,7 @@ class TestCollections(unittest.TestCase):
 
 class TestProducts(unittest.TestCase):
     def test_products(self):
-        status,resp = helpers.fetch_kvp_json (helpers.make_url ('/products'))
+        status,resp = helpers.fetch_kvp_json (helpers.make_url ('/gid/product'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -221,7 +232,7 @@ class TestProducts(unittest.TestCase):
     def test_lidvid(self):
         lidvid = self.test_products()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/products/' + lidvid))
+                                              (f'/uid/{lidvid}'))
         self.assertEqual (200, status)
         self.assertIn ('lidvid', resp)
         self.assertEqual (lidvid, resp['lidvid'])
@@ -230,7 +241,7 @@ class TestProducts(unittest.TestCase):
     def test_lidvid_latest(self):
         lidvid = self.test_products()
         status,resp = helpers.fetch_kvp_json(helpers.make_url
-                                             ('/products/' + lidvid + '/latest'))
+                                             (f'/uid/{lidvid}/latest'))
         self.assertEqual (200, status)
         self.assertIn ('lidvid', resp)
         self.assertEqual (lidvid, resp['lidvid'])
@@ -239,7 +250,7 @@ class TestProducts(unittest.TestCase):
     def test_lidvid_all(self):
         lidvid = self.test_products()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/products/' + lidvid + '/all'))
+                                              (f'/uid/{lidvid}/all'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -253,7 +264,7 @@ class TestProducts(unittest.TestCase):
     def test_collections(self):
         lidvid = self.test_products()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/products/' + lidvid + '/collections'))
+                                              (f'/gid/collection/referencing/{lidvid}'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])
@@ -266,7 +277,7 @@ class TestProducts(unittest.TestCase):
     def test_bundles(self):
         lidvid = self.test_products()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/products/' + lidvid + '/bundles'))
+                                              ('/gid/bundle/referencing/{lidvid}'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])

@@ -23,6 +23,7 @@ import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
+import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
@@ -50,10 +51,11 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Pagination<String> lidvids) throws ApplicationTypeException,LidVidNotFoundException,IOException
+    		Pagination<String> lidvids) throws ApplicationTypeException,LidVidNotFoundException,IOException,UnknownGroupNameException
     {
     	Map<String,String> any = ReferencingLogicTransmuter.Any.impl().constraints();
-    	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, any, any);
+    	Map<String,String> preset = ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
+    	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, preset, any);
     	response.setResponse(connection.getConnection().getRestHighLevelClient()
     			.search(new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
     					.build(response, connection.getConnection().getRegistryIndex()),

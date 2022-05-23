@@ -22,7 +22,7 @@ class RefLogicAny implements ReferencingLogic
     }
 
 	private boolean isGrandchild (ReferencingLogicTransmuter idType)
-	{ return !(idType == ReferencingLogicTransmuter.Collection || idType != ReferencingLogicTransmuter.Collection); }
+	{ return !(idType == ReferencingLogicTransmuter.Bundle || idType == ReferencingLogicTransmuter.Collection); }
 
 	private ReferencingLogicTransmuter resolveID (ControlContext context, UserContext input)
 			throws IOException, LidVidNotFoundException, UnknownGroupNameException

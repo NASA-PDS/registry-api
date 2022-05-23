@@ -35,12 +35,13 @@ class PaginationLidvidBuilder implements Pagination<String>
 		this.total += data.size();		
 	}
 
-	void add (Object sourceMapValue) { this.addAll(this.convert(null)); }
+	void add (Object sourceMapValue) { this.addAll(this.convert(sourceMapValue)); }
 
 	List<String> convert (Object sourceMapValue)
 	{
 		@SuppressWarnings("unchecked")
-		List<String> values = sourceMapValue instanceof List ? (List<String>)sourceMapValue : Arrays.asList((String)sourceMapValue);
+		List<String> values = sourceMapValue instanceof List ? (List<String>)sourceMapValue :
+			(sourceMapValue == null ? new ArrayList(): Arrays.asList((String)sourceMapValue));
 		return values;
 	}
 
