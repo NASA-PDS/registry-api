@@ -277,7 +277,7 @@ class TestProducts(unittest.TestCase):
     def test_bundles(self):
         lidvid = self.test_products()
         status,resp = helpers.fetch_kvp_json (helpers.make_url
-                                              ('/gid/bundle/referencing/{lidvid}'))
+                                              (f'/gid/bundle/referencing/{lidvid}'))
         self.assertEqual (200, status)
         self.assertIn ('summary', resp)
         self.assertIn ('hits', resp['summary'])

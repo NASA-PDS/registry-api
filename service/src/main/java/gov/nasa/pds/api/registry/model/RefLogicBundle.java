@@ -58,7 +58,6 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     	PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
     	for (String cid : getBundleCollectionLidVids(new Unlimited(uid.getLidVid()), control).page())
     	{ ids.addAll(RefLogicCollection.children (control, selection, new Unlimited(cid)).page()); }
-
     	return ids;
     }
 

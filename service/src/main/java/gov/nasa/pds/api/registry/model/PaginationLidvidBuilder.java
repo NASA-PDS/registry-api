@@ -8,9 +8,9 @@ import gov.nasa.pds.api.registry.LidvidsContext;
 
 class PaginationLidvidBuilder implements Pagination<String>
 {
-	final public int limit;
-	final public int start;
-	final public List<String> page = new ArrayList<String>();
+	final private int limit;
+	final private int start;
+	final private List<String> page = new ArrayList<String>();
 
 	private int total = 0;
 
