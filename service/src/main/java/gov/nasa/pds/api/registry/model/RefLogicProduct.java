@@ -50,7 +50,7 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
         		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", uid.getLidVid(), true), control.getConnection())
         		.build (RequestBuildContextFactory.given("collection_lid"), control.getConnection().getRegistryRefIndex())))
 		{ lids.addAll(parents.convert(kvp.get("collection_lid"))); }
-        sorted_lids = new ArrayList<String>();
+        sorted_lids = new ArrayList<String>(lids);
         Collections.sort(sorted_lids);
 
         if (selection == ProductVersionSelector.ALL)
