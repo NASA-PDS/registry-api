@@ -56,10 +56,12 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	Map<String,String> any = ReferencingLogicTransmuter.Any.impl().constraints();
     	Map<String,String> preset = ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
     	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, preset, any);
-    	response.setResponse(connection.getConnection().getRestHighLevelClient()
-    			.search(new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
-    					.build(response, connection.getConnection().getRegistryIndex()),
-    					RequestOptions.DEFAULT).getHits());
+    	SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
+				.build(response, connection.getConnection().getRegistryIndex());
+    	
+    	request.source().size(lidvids.size());
+    	response.setResponse(connection.getConnection().getRestHighLevelClient().search
+    			(request, RequestOptions.DEFAULT).getHits());
     	return response;
     }
 
