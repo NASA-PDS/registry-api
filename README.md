@@ -26,7 +26,7 @@ Start the prerequisites:
 
 ## Start the application from a released package
 
-Get the latest stable release https://github.com/NASA-PDS/registry-api-service/releases
+Get the latest stable release https://github.com/NASA-PDS/registry-api/releases
 
 Download the zip or tar.gz file.
 
