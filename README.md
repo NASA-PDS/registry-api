@@ -28,7 +28,7 @@ Start the prerequisites:
 
 Get the latest stable release https://github.com/NASA-PDS/registry-api/releases
 
-Download the zip or tar.gz file.
+Download the zip or tar.gz 'registry-api-service-1.0.0-bin' file.
 
 Follow instructions in README.txt in the decompressed folder    
 
