@@ -16,6 +16,8 @@ import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.errorprone.annotations.Immutable;
+
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
@@ -31,6 +33,7 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
  * 
  * @author karpenko
  */
+@Immutable
 class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 {
     @SuppressWarnings("unused")

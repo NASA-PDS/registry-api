@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.errorprone.annotations.Immutable;
+
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
@@ -12,6 +14,7 @@ import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 
+@Immutable
 class RefLogicAny implements ReferencingLogic
 {
 	@Override

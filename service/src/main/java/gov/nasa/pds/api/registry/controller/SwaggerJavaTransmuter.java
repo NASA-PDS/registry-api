@@ -215,10 +215,9 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 
 	private boolean proxyRunsOnDefaultPort()
 	{
-        return ((("https".equals(this.context.getScheme()))  && (this.context.getServerPort() == 443)) 
-                || (("http".equals(this.context.getScheme()))  && (this.context.getServerPort() == 80)));
+        return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443)) 
+                || ("http".equals(this.context.getScheme())  && (this.context.getServerPort() == 80)));
     }
-
 	@Override
 	public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields)
 	{

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.errorprone.annotations.Immutable;
+
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
@@ -18,6 +20,7 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
+@Immutable
 class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 {
     @Override
