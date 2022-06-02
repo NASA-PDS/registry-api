@@ -2,6 +2,7 @@ package gov.nasa.pds.api.registry.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,9 +29,8 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
 	@Override
 	public GroupConstraint constraints() 
 	{
-    	Map<String,String> preset = new HashMap<String,String>();
-    	preset.put("product_class", "Product_Bundle");
-    	preset.put("product_class", "Product_Collection");
+    	Map<String,List<String>> preset = new HashMap<String,List<String>>();
+    	preset.put("product_class", Arrays.asList("Product_Bundle","Product_Collection"));
 		return GroupConstraintImpl.buildNot(preset);
 	}
 

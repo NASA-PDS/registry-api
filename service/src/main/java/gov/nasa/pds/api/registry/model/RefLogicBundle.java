@@ -44,8 +44,8 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     @Override
     public GroupConstraint constraints()
     {
-    	Map<String,String> preset = new HashMap<String,String>();
-    	preset.put("product_class", "Product_Bundle");
+    	Map<String,List<String>> preset = new HashMap<String,List<String>>();
+    	preset.put("product_class", Arrays.asList("Product_Bundle"));
     	return GroupConstraintImpl.buildAll(preset);
     }
 

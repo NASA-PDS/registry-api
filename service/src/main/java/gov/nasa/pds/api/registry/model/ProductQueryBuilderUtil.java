@@ -103,17 +103,17 @@ public class ProductQueryBuilderUtil
     {
         if(presetCriteria != null)
         {
-            presetCriteria.all().forEach((key, value) -> 
+            presetCriteria.all().forEach((key, list) -> 
             {
-                boolQuery.must(QueryBuilders.termQuery(key, value));
+                list.forEach(value -> { boolQuery.must(QueryBuilders.termQuery(key, value)); });
             });
-            presetCriteria.any().forEach((key, value) -> 
+            presetCriteria.any().forEach((key, list) -> 
             {
-                boolQuery.filter(QueryBuilders.termQuery(key, value));
+            	list.forEach(value -> { boolQuery.filter(QueryBuilders.termQuery(key, value)); });
             });
-            presetCriteria.not().forEach((key, value) -> 
+            presetCriteria.not().forEach((key, list) -> 
             {
-                boolQuery.mustNot(QueryBuilders.termQuery(key, value));
+            	list.forEach(value -> { boolQuery.mustNot(QueryBuilders.termQuery(key, value)); });
             });
         }
     }
