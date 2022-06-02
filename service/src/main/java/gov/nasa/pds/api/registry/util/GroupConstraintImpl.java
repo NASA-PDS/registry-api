@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.errorprone.annotations.Immutable;
+
 import gov.nasa.pds.api.registry.GroupConstraint;
 
+@Immutable
 public class GroupConstraintImpl implements GroupConstraint
 {
 	final private Map<String,List<String>> all;
