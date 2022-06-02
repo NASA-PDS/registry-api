@@ -140,10 +140,6 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     
     /**
      * Get all versions of bundle's collections by bundle LIDVID.
-     * @param bundleLidVid bundle LIDVID (Could not pass LID here)
-     * @return a list of collection LIDVIDs
-     * @throws IOException IO exception 
-     * @throws LidVidNotFoundException LIDVID not found exception
      */
     static private Pagination<String> getAllBundleCollectionLidVids(
     		LidvidsContext idContext,
