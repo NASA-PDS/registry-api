@@ -17,9 +17,9 @@ public class GroupConstraintImpl implements GroupConstraint
 
 	private GroupConstraintImpl(Map<String,List<String>> all, Map<String,List<String>> any, Map<String,List<String>>not)
 	{
-		this.all = all;
-		this.any = any;
-		this.not = not;
+		this.all = Map.copyOf(all);
+		this.any = Map.copyOf(any);
+		this.not = Map.copyOf(not);
 	}
 
 	@Override
@@ -31,18 +31,15 @@ public class GroupConstraintImpl implements GroupConstraint
 
 	final private static Map<String,List<String>> EMPTY = new HashMap<String,List<String>>();
 	public static GroupConstraint empty() { return new GroupConstraintImpl(EMPTY, EMPTY, EMPTY); }
-	public static GroupConstraint buildAll(Map<String,List<String>> map)
-	{ return new GroupConstraintImpl(new HashMap<String,List<String>>(map), EMPTY, EMPTY); }
-	public static GroupConstraint buildAny(Map<String,List<String>> map)
-	{ return new GroupConstraintImpl(EMPTY, new HashMap<String,List<String>>(map), EMPTY); }
-	public static GroupConstraint buildNot(Map<String,List<String>> map)
-	{ return new GroupConstraintImpl(EMPTY, EMPTY, new HashMap<String,List<String>>(map)); }
+	public static GroupConstraint buildAll(Map<String,List<String>> map) { return new GroupConstraintImpl(map, EMPTY, EMPTY); }
+	public static GroupConstraint buildAny(Map<String,List<String>> map) { return new GroupConstraintImpl(EMPTY, map, EMPTY); }
+	public static GroupConstraint buildNot(Map<String,List<String>> map) { return new GroupConstraintImpl(EMPTY, EMPTY, map); }
 	public static GroupConstraint buildAllAny(Map<String,List<String>> allmap, Map<String,List<String>> anymap)
-	{ return new GroupConstraintImpl(new HashMap<String,List<String>>(allmap), new HashMap<String,List<String>>(anymap), EMPTY); }
+	{ return new GroupConstraintImpl(allmap, anymap, EMPTY); }
 	public static GroupConstraint buildAllNot(Map<String,List<String>> allmap, Map<String,List<String>> notmap)
-	{ return new GroupConstraintImpl(new HashMap<String,List<String>>(allmap), EMPTY, new HashMap<String,List<String>>(notmap)); }
+	{ return new GroupConstraintImpl(allmap, EMPTY, notmap); }
 	public static GroupConstraint buildAnyNot(Map<String,List<String>> anymap, Map<String,List<String>> notmap)
-	{ return new GroupConstraintImpl(EMPTY, new HashMap<String,List<String>>(anymap), new HashMap<String,List<String>>(notmap)); }
+	{ return new GroupConstraintImpl(EMPTY, anymap, notmap); }
 	public static GroupConstraint build (Map<String,List<String>> allmap, Map<String,List<String>> anymap, Map<String,List<String>> notmap)
-	{ return new GroupConstraintImpl(new HashMap<String,List<String>>(allmap), new HashMap<String,List<String>>(anymap), new HashMap<String,List<String>>(notmap)); }
+	{ return new GroupConstraintImpl(allmap, anymap, notmap); }
 }
