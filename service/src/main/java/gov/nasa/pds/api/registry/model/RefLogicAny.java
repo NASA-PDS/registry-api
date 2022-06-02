@@ -1,28 +1,25 @@
 package gov.nasa.pds.api.registry.model;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.QuickSearch;
+import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 @Immutable
 class RefLogicAny implements ReferencingLogic
 {
 	@Override
-    public Map<String,String> constraints()
-    {
-    	Map<String,String> preset = new HashMap<String,String>();
-    	return preset;
-    }
+    public GroupConstraint constraints()
+    { return GroupConstraintImpl.empty(); }
 
 	private boolean isGrandchild (ReferencingLogicTransmuter idType)
 	{ return !(idType == ReferencingLogicTransmuter.Bundle || idType == ReferencingLogicTransmuter.Collection); }

@@ -3,8 +3,8 @@ package gov.nasa.pds.api.registry.search;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 
 public class RequestBuildContextFactory
@@ -17,9 +17,9 @@ public class RequestBuildContextFactory
 	public static RequestBuildContext given (List<String> fields)
 	{ return new SimpleRequestBuildContext(fields); }
 	
-	public static RequestBuildContext given (String field, Map<String,String> preset)
+	public static RequestBuildContext given (String field, GroupConstraint preset)
 	{ return new SimpleRequestBuildContext(new ArrayList<String>(Arrays.asList(field)), preset); }
 	
-	public static RequestBuildContext given (List<String> fields, Map<String,String> preset)
+	public static RequestBuildContext given (List<String> fields, GroupConstraint preset)
 	{ return new SimpleRequestBuildContext(fields, preset); }
 }

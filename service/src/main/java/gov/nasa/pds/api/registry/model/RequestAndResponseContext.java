@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.ibm.icu.util.StringTokenizer;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.UserContext;
@@ -43,7 +44,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private List<String> sort;
     final private int start;
     final private int limit;
-    final private Map<String, String> presetCriteria;
+    final private GroupConstraint presetCriteria;
     final private ProductVersionSelector selector;
     final private String format;
     final private Map<String, ProductBusinessLogic> formatters;
@@ -53,8 +54,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     		UserContext parameters,
     		Pagination<String> lidvids) throws ApplicationTypeException,LidVidNotFoundException,IOException,UnknownGroupNameException
     {
-    	Map<String,String> any = ReferencingLogicTransmuter.Any.impl().constraints();
-    	Map<String,String> preset = ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
+    	GroupConstraint any = ReferencingLogicTransmuter.Any.impl().constraints();
+    	GroupConstraint preset = ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
     	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, preset, any);
     	SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
 				.build(response, connection.getConnection().getRegistryIndex());
@@ -68,21 +69,21 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Map<String,String> outPreset // when first and last node of the endpoint criteria are the same
+    		GroupConstraint outPreset // when first and last node of the endpoint criteria are the same
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     { return new RequestAndResponseContext(connection, parameters, outPreset, outPreset); }
 
     static public RequestAndResponseContext buildRequestAndResponseContext(
     		ControlContext connection, // webby criteria
     		UserContext parameters,
-    		Map<String,String> outPreset, Map<String,String>resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
+    		GroupConstraint outPreset, GroupConstraint resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     { return new RequestAndResponseContext(connection, parameters, outPreset, resPreset); }
     
     private RequestAndResponseContext(
     		ControlContext controlContext,// webby criteria
     		UserContext parameters,
-    		Map<String,String> outPreset, Map<String,String>resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
+    		GroupConstraint outPreset, GroupConstraint resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
     	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
@@ -127,7 +128,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public int getLimit() { return this.limit; }
 	@Override
 	public String getQueryString() { return this.queryString; }
-	public final Map<String, String> getPresetCriteria() { return this.presetCriteria; };
+	public final GroupConstraint getPresetCriteria() { return this.presetCriteria; };
 	public ProductVersionSelector getSelector() { return this.selector; }
 
 	public boolean isSingular() { return this.getStart() == -1 && this.getLimit() == 0; }

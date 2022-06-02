@@ -2,7 +2,6 @@ package gov.nasa.pds.api.registry.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 
@@ -65,7 +65,7 @@ public class ProductQueryBuilderUtil
      * @param presetCriteria preset criteria
      * @return a query
      */
-    public static QueryBuilder createPqlQuery(String queryString, List<String> fields, Map<String, String> presetCriteria)
+    public static QueryBuilder createPqlQuery(String queryString, List<String> fields, GroupConstraint presetCriteria)
     {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
@@ -99,13 +99,21 @@ public class ProductQueryBuilderUtil
     }
 
     
-    public static void addPresetCriteria(BoolQueryBuilder boolQuery, Map<String, String> presetCriteria)
+    public static void addPresetCriteria(BoolQueryBuilder boolQuery, GroupConstraint presetCriteria)
     {
         if(presetCriteria != null)
         {
-            presetCriteria.forEach((key, value) -> 
+            presetCriteria.all().forEach((key, value) -> 
+            {
+                boolQuery.must(QueryBuilders.termQuery(key, value));
+            });
+            presetCriteria.any().forEach((key, value) -> 
             {
                 boolQuery.filter(QueryBuilders.termQuery(key, value));
+            });
+            presetCriteria.not().forEach((key, value) -> 
+            {
+                boolQuery.mustNot(QueryBuilders.termQuery(key, value));
             });
         }
     }
@@ -117,7 +125,7 @@ public class ProductQueryBuilderUtil
      * @param presetCriteria preset criteria
      * @return a query
      */
-   public static QueryBuilder createKeywordQuery(String keyword, Map<String, String> presetCriteria)
+   public static QueryBuilder createKeywordQuery(String keyword, GroupConstraint presetCriteria)
     {
         // Lucene query
         QueryStringQueryBuilder luceneQuery = QueryBuilders.queryStringQuery(keyword);

@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.registry;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.google.errorprone.annotations.Immutable;
 
@@ -16,7 +15,7 @@ public interface ReferencingLogic
 	/**
 	 * Map the set of PDS constraints that define just PDS items that make up this Group. 
 	 */
-	public Map<String,String> constraints();
+	public GroupConstraint constraints();
 	
 	/**
 	 * Find all of the PDS items of the given Group that reference the specified ID.

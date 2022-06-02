@@ -1,30 +1,30 @@
 package gov.nasa.pds.api.registry.search;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 class SimpleRequestBuildContext implements RequestBuildContext
 {
 	final private List<String> fields;
-	final private Map<String,String> preset;
+	final private GroupConstraint preset;
 	
 	SimpleRequestBuildContext ()
 	{
 		this.fields = new ArrayList<String>();
-		this.preset = new HashMap<String,String>();
+		this.preset = GroupConstraintImpl.empty();
 	}
 
 	SimpleRequestBuildContext (List<String> fields)
 	{
 		this.fields = fields;
-		this.preset = new HashMap<String,String>();
+		this.preset = GroupConstraintImpl.empty();
 	}
 
-	SimpleRequestBuildContext (List<String> fields, Map<String,String> preset)
+	SimpleRequestBuildContext (List<String> fields, GroupConstraint preset)
 	{
 		this.fields = fields;
 		this.preset = preset;
@@ -34,5 +34,5 @@ class SimpleRequestBuildContext implements RequestBuildContext
 	public List<String> getFields() { return fields; }
 
 	@Override
-	public Map<String, String> getPresetCriteria() { return preset; }
+	public GroupConstraint getPresetCriteria() { return preset; }
 }

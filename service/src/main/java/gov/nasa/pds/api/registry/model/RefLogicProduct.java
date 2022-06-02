@@ -12,6 +12,7 @@ import java.util.Set;
 import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
@@ -19,14 +20,18 @@ import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 @Immutable
 class RefLogicProduct extends RefLogicAny implements ReferencingLogic
 {
 	@Override
-	public Map<String, String> constraints() 
+	public GroupConstraint constraints() 
 	{
-		return new HashMap<String,String>();
+    	Map<String,String> preset = new HashMap<String,String>();
+    	preset.put("product_class", "Product_Bundle");
+    	preset.put("product_class", "Product_Collection");
+		return GroupConstraintImpl.buildNot(preset);
 	}
 
     static Pagination<String> grandparents (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)

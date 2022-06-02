@@ -41,7 +41,7 @@ class PaginationLidvidBuilder implements Pagination<String>
 	{
 		@SuppressWarnings("unchecked")
 		List<String> values = sourceMapValue instanceof List ? (List<String>)sourceMapValue :
-			(sourceMapValue == null ? new ArrayList(): Arrays.asList((String)sourceMapValue));
+			(sourceMapValue == null ? new ArrayList<String>(): Arrays.asList((String)sourceMapValue));
 		return values;
 	}
 

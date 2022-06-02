@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -26,6 +27,7 @@ import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
+import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 /**
  * Bundle Data Access Object (DAO). 
@@ -40,11 +42,11 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 	private static final Logger log = LoggerFactory.getLogger(RefLogicBundle.class);
 
     @Override
-    public Map<String,String> constraints()
+    public GroupConstraint constraints()
     {
     	Map<String,String> preset = new HashMap<String,String>();
     	preset.put("product_class", "Product_Bundle");
-    	return preset;
+    	return GroupConstraintImpl.buildAll(preset);
     }
 
     static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
