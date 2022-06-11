@@ -110,7 +110,7 @@
   <dependencies>
     <!-- dependencies are needed for the client being generated -->
     <!--SpringFox dependencies -->
-    <dependency>
+    <!--dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger2</artifactId>
       <version>${springfox-version}</version>
@@ -119,8 +119,13 @@
       <groupId>io.springfox</groupId>
       <artifactId>springfox-swagger-ui</artifactId>
       <version>${springfox-version}</version>
-    </dependency>
-    
+    </dependency-->
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-boot-starter</artifactId>
+      <version>3.0.0</version>
+    </dependency>    
+
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
     <dependency>
       <groupId>org.springframework</groupId>

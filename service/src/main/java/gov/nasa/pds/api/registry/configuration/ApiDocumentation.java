@@ -22,7 +22,7 @@ public class ApiDocumentation {
 
     	String contextPath = this.contextPath.endsWith("/")?this.contextPath:this.contextPath+"/";
 
-        System.out.println(contextPath+"swagger-ui.html");
-        return "redirect:"+contextPath+"swagger-ui.html";
+        System.out.println(contextPath+"swagger-ui/index.html");
+        return "redirect:"+contextPath+"swagger-ui/index.html";
     }
 }
