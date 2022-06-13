@@ -11,13 +11,13 @@ import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.MatchQueryBuilder;
 import org.opensearch.index.query.RangeQueryBuilder;
 import org.opensearch.index.query.WildcardQueryBuilder;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import gov.nasa.pds.api.registry.business.Antlr4SearchListener;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
+import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
 
 public class Antlr4SearchListenerTest
 {

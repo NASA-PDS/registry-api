@@ -3,8 +3,9 @@ import os
 import requests
 
 def fetch_kvp_json (url:str):
-    result = requests.get(url + '?fields=lidvid',
-                          headers={'Accept':'application/kvp+json'})
+    url += '?fields=lidvid'
+    print ('url:', url)
+    result = requests.get(url, headers={'Accept':'application/kvp+json'})
     return result.status_code,result.json()
 
 def make_url (endpoint:str)->str:
