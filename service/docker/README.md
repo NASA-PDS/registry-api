@@ -28,6 +28,10 @@ Building an image from a released jar file:
 $ docker image build --build-arg api_jar=https://github.com/NASA-PDS/registry-api/releases/download/v1.0.0/registry-api-service-1.0.0.jar --tag nasapds/registry-api-service:1.0.0 --file service/docker/Dockerfile .
 ```
 
+## 📍 Dockerfile.aws
+
+This Dockerfile is used to make images for AWS deployments of the registry manager. It copies in an AWS-specific application.properties file which has been setup to inform the service to obtain certain properties as environment variable values that have been injected by the Elastic Container Service (ECS) runtime. An example of this is the Opensearch credentials from the Secrets Manager.
+
 ## 📍 Dockerfile.local
 
 You can ignore `Dockerfile.local` unless you're @al-niessner.
