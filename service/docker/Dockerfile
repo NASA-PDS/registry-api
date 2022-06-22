@@ -65,6 +65,7 @@ ADD $api_jar /usr/local/registry-api-service/registry-api-service.jar
 RUN : &&\
     apt-get update --quiet --yes &&\
     apt-get install --quiet --yes libtcnative-1 &&\
+    apt-get install curl -y &&\
     apt-get autoclean --quiet --yes &&\
     rm --recursive --force /var/lib/apt/lists/* &&\
     :
