@@ -53,7 +53,7 @@ Builds the application:
 
 
     cd service
-    mvn sprint-boot:run
+    mvn spring-boot:run
 
 
 ## Tests
