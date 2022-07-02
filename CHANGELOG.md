@@ -1,16 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-06-30)
+## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-06-30)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
 
 **Improvements:**
 
 - Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
-
-## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-06-13)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
 
 ## [v1.0.1](https://github.com/NASA-PDS/registry-api/tree/v1.0.1) (2022-06-09)
 
@@ -67,6 +63,7 @@
 **Requirements:**
 
 - As a user, I want to see the version of the API specification in the URL of the service [\#59](https://github.com/NASA-PDS/registry-api/issues/59)
+- As a user, I want to have a complete default fields \(for now at least\) [\#155](https://github.com/NASA-PDS/registry-api/issues/155)
 - As a user, I want the end-point /api to redirect to the API documentation [\#63](https://github.com/NASA-PDS/registry-api/issues/63)
 - As a user, I want the /products end point to work for any class of products [\#64](https://github.com/NASA-PDS/registry-api/issues/64)
 - As a user,  I want specific end points for products which are not collections or bundles [\#65](https://github.com/NASA-PDS/registry-api/issues/65)
