@@ -53,6 +53,9 @@ Builds the application:
     cd service
     mvn spring-boot:run
 
+## View Swagger UI
+
+Go to http://localhost:8080
 
 ## Tests
 
