@@ -1,5 +1,21 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-07-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...«unknown»)
+
+**Requirements:**
+
+- As a user, I want to have an administrator contact when I am getting an error 500 from the server [\#109](https://github.com/NASA-PDS/registry-api/issues/109)
+
+**Improvements:**
+
+- Support override of application.properties for AWS Docker image [\#117](https://github.com/NASA-PDS/registry-api/issues/117)
+
+**Other closed issues:**
+
+- add ops:Tracking\_Meta/ops:archive\_status to meta section of API response [\#101](https://github.com/NASA-PDS/registry-api/issues/101)
+
 ## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-07-05)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
