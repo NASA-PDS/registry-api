@@ -8,11 +8,11 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.opensearch.index.query.BoolQueryBuilder;
-import org.opensearch.index.query.MatchQueryBuilder;
 import org.opensearch.index.query.RangeQueryBuilder;
-import org.opensearch.index.query.WildcardQueryBuilder;
-import org.junit.Test;
+import org.opensearch.index.query.SimpleQueryStringBuilder;
+import org.opensearch.index.query.TermQueryBuilder;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import gov.nasa.pds.api.registry.business.Antlr4SearchListener;
@@ -62,9 +62,9 @@ public class Antlr4SearchListenerTest
 		Assertions.assertEquals (query.must().size(), 1);
 		Assertions.assertEquals (query.mustNot().size(), 0);
 		Assertions.assertEquals (query.should().size(), 0);
-		Assertions.assertTrue (query.must().get(0) instanceof WildcardQueryBuilder);
-		Assertions.assertEquals (((WildcardQueryBuilder)query.must().get(0)).fieldName(), "lid");
-		Assertions.assertEquals (((WildcardQueryBuilder)query.must().get(0)).value(), "*pdart14_meap");
+		Assertions.assertTrue (query.must().get(0) instanceof SimpleQueryStringBuilder);
+		Assertions.assertTrue (((SimpleQueryStringBuilder)query.must().get(0)).fields().containsKey("lid"));
+		Assertions.assertEquals (((SimpleQueryStringBuilder)query.must().get(0)).value(), "*pdart14_meap");
 	}
 
 	
@@ -77,9 +77,9 @@ public class Antlr4SearchListenerTest
         Assertions.assertEquals(query.must().size(), 0);
         Assertions.assertEquals(query.mustNot().size(), 1);
         Assertions.assertEquals(query.should().size(), 0);
-        Assertions.assertTrue(query.mustNot().get(0) instanceof WildcardQueryBuilder);
-        Assertions.assertEquals(((WildcardQueryBuilder) query.mustNot().get(0)).fieldName(), "lid");
-        Assertions.assertEquals(((WildcardQueryBuilder) query.mustNot().get(0)).value(), "pdart14_meap?");
+        Assertions.assertTrue(query.mustNot().get(0) instanceof SimpleQueryStringBuilder);
+        Assertions.assertTrue(((SimpleQueryStringBuilder) query.mustNot().get(0)).fields().containsKey("lid"));
+        Assertions.assertEquals(((SimpleQueryStringBuilder) query.mustNot().get(0)).value(), "pdart14_meap?");
     }
 
     
@@ -92,9 +92,9 @@ public class Antlr4SearchListenerTest
 		Assertions.assertEquals (query.must().size(), 1);
 		Assertions.assertEquals (query.mustNot().size(), 0);
 		Assertions.assertEquals (query.should().size(), 0);
-		Assertions.assertTrue (query.must().get(0) instanceof MatchQueryBuilder);
-		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).fieldName(), "lid");
-		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).value(), "*pdart14_meap?");
+		Assertions.assertTrue (query.must().get(0) instanceof TermQueryBuilder);
+		Assertions.assertEquals (((TermQueryBuilder)query.must().get(0)).fieldName(), "lid");
+		Assertions.assertEquals (((TermQueryBuilder)query.must().get(0)).value(), "*pdart14_meap?");
 	}
 
 
@@ -180,12 +180,12 @@ public class Antlr4SearchListenerTest
 
 		Assertions.assertEquals (query.must().size(), 0);
 		Assertions.assertEquals (query.mustNot().size(), 0);
-		Assertions.assertEquals (query.should().size(), 2);
-		Assertions.assertTrue (query.should().get(0) instanceof BoolQueryBuilder);
-		nest = (BoolQueryBuilder)query.should().get(0);
+		Assertions.assertEquals (query.filter().size(), 2);
+		Assertions.assertTrue (query.filter().get(0) instanceof BoolQueryBuilder);
+		nest = (BoolQueryBuilder)query.filter().get(0);
 		Assertions.assertEquals (nest.must().size(), 2);
 		Assertions.assertEquals (nest.mustNot().size(), 0);
-		Assertions.assertEquals (nest.should().size(), 0);
+		Assertions.assertEquals (nest.filter().size(), 0);
 		Assertions.assertTrue (nest.must().get(0) instanceof RangeQueryBuilder);
 		Assertions.assertTrue (nest.must().get(1) instanceof RangeQueryBuilder);
 		Assertions.assertEquals (((RangeQueryBuilder)nest.must().get(0)).fieldName(), "timestamp");
@@ -198,10 +198,10 @@ public class Antlr4SearchListenerTest
 		Assertions.assertEquals (((RangeQueryBuilder)nest.must().get(1)).to(), "27");
 		Assertions.assertTrue (((RangeQueryBuilder)nest.must().get(1)).includeLower());
 		Assertions.assertTrue (((RangeQueryBuilder)nest.must().get(1)).includeUpper());
-		nest = (BoolQueryBuilder)query.should().get(1);
+		nest = (BoolQueryBuilder)query.filter().get(1);
 		Assertions.assertEquals (nest.must().size(), 2);
 		Assertions.assertEquals (nest.mustNot().size(), 0);
-		Assertions.assertEquals (nest.should().size(), 0);
+		Assertions.assertEquals (nest.filter().size(), 0);
 		Assertions.assertTrue (nest.must().get(0) instanceof RangeQueryBuilder);
 		Assertions.assertTrue (nest.must().get(1) instanceof RangeQueryBuilder);
 		Assertions.assertEquals (((RangeQueryBuilder)nest.must().get(0)).fieldName(), "timestamp");
@@ -226,9 +226,9 @@ public class Antlr4SearchListenerTest
 		Assertions.assertEquals (query.must().size(), 1);
 		Assertions.assertEquals (query.mustNot().size(), 0);
 		Assertions.assertEquals (query.should().size(), 0);
-		Assertions.assertTrue (query.must().get(0) instanceof MatchQueryBuilder);
-		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).fieldName(), "ref_lid_target");
-		Assertions.assertEquals (((MatchQueryBuilder)query.must().get(0)).value(), "urn:nasa:pds:context:target:planet.mercury");
+		Assertions.assertTrue (query.must().get(0) instanceof TermQueryBuilder);
+		Assertions.assertEquals (((TermQueryBuilder)query.must().get(0)).fieldName(), "ref_lid_target");
+		Assertions.assertEquals (((TermQueryBuilder)query.must().get(0)).value(), "urn:nasa:pds:context:target:planet.mercury");
 	}
 	
 	@Test

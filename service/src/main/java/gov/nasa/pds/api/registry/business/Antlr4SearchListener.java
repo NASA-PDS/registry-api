@@ -13,9 +13,9 @@ import java.util.List;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.opensearch.index.query.BoolQueryBuilder;
-import org.opensearch.index.query.MatchQueryBuilder;
-import org.opensearch.index.query.WildcardQueryBuilder;
 import org.opensearch.index.query.RangeQueryBuilder;
+import org.opensearch.index.query.SimpleQueryStringBuilder;
+import org.opensearch.index.query.TermQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 
 public class Antlr4SearchListener extends SearchBaseListener
@@ -50,7 +50,7 @@ public class Antlr4SearchListener extends SearchBaseListener
 	 {
 		 for (QueryBuilder qb : musts) this.query.must(qb);
 		 for (QueryBuilder qb : nots) this.query.mustNot(qb);
-		 for (QueryBuilder qb : shoulds) this.query.should(qb);
+		 for (QueryBuilder qb : shoulds) this.query.filter(qb);
 	 }
 	 
 	 @Override
@@ -88,7 +88,7 @@ public class Antlr4SearchListener extends SearchBaseListener
 
 		 for (QueryBuilder qb : musts) group.must(qb);
 		 for (QueryBuilder qb : nots) group.mustNot(qb);
-		 for (QueryBuilder qb : shoulds) group.should(qb);
+		 for (QueryBuilder qb : shoulds) group.filter(qb);
 
 		 if (0 < depth)
 		 {
@@ -147,7 +147,7 @@ public class Antlr4SearchListener extends SearchBaseListener
 
         if (this.operator == operation.eq || this.operator == operation.ne)
         {
-            comparator = new MatchQueryBuilder(left, right);
+            comparator = new TermQueryBuilder(left, right);
         }
         else
         {
@@ -196,8 +196,7 @@ public class Antlr4SearchListener extends SearchBaseListener
         
         String right = ctx.STRINGVAL().getText();
         right = right.substring(1, right.length() - 1);
-        
-        QueryBuilder comparator = new WildcardQueryBuilder(left, right);
+        QueryBuilder comparator = new SimpleQueryStringBuilder(right).field(left).fuzzyMaxExpansions(0);
 
         if("not".equalsIgnoreCase(ctx.getChild(1).getText()))
         {
