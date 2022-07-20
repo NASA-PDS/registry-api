@@ -102,7 +102,7 @@ class RegistrySearchRequestBuilderTest {
 			for (Entry<String, String> queryEntry : RegistrySearchRequestBuilderTest.queryMap.entrySet()) {
 				
 				queryString = queryEntry.getKey();
-				List<String> fields = new ArrayList<String>(Arrays.asList("title","ops:Label_File_Info.ops:md5_checksum"));
+				List<String> fields = Arrays.asList("title","ops:Label_File_Info.ops:md5_checksum");
 				searchRequest = null; /* FIXME: later
 				        new SearchRequestBuilder().build();
 						this.requestBuilder.getSearchCollectionRequest(

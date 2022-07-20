@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.registry.search;
 
 import java.util.List;
+import java.util.Map;
 
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.index.query.BoolQueryBuilder;
@@ -25,22 +26,24 @@ public class SearchRequestFactory
 
     	if (!context.getKeyValuePairs().isEmpty())
     	{
-    		for (String key: context.getKeyValuePairs().keySet())
-    		if (context.isTerm())
-    		{ 
-    			if (context.getKeyValuePairs().get(key).size() == 1)
-    			{ this.base.must(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
-    			else
-    			{ this.base.filter(QueryBuilders.termsQuery(key, context.getKeyValuePairs().get(key))); }
-    		}
-    		else
+    		for (Map.Entry<String, List<String>> entry: context.getKeyValuePairs().entrySet())
     		{
-    			if (context.getKeyValuePairs().get(key).size() == 1)
-    			{ this.base.must(QueryBuilders.matchQuery(key, context.getKeyValuePairs().get(key).get(0))); }
+    			if (context.isTerm())
+    			{ 
+    				if (entry.getValue().size() == 1)
+    				{ this.base.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue().get(0))); }
+    				else
+    				{ this.base.filter(QueryBuilders.termsQuery(entry.getKey(), entry.getValue())); }
+    			}
     			else
     			{
-    				for (String value : context.getKeyValuePairs().get(key))
-    				{ this.base.filter(QueryBuilders.matchQuery(key, value)); }
+    				if (entry.getValue().size() == 1)
+    				{ this.base.must(QueryBuilders.matchQuery(entry.getKey(), entry.getValue().get(0))); }
+    				else
+    				{
+    					for (String value : entry.getValue())
+    					{ this.base.filter(QueryBuilders.matchQuery(entry.getKey(), value)); }
+    				}
     			}
     		}
     	}

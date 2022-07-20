@@ -40,6 +40,7 @@ class SimpleRequestConstructionContext implements RequestConstructionContext
 		this.kvps = new HashMap<String,List<String>>();
 		this.lidvid = lidvid;
 	}
+
 	@Override
 	public List<String> getKeywords() { return new ArrayList<String>(); }
 

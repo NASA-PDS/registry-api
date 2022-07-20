@@ -12,6 +12,7 @@ import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.QuickSearch;
+import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 @Immutable
@@ -29,7 +30,7 @@ class RefLogicAny implements ReferencingLogic
 	{
 		return ReferencingLogicTransmuter.getByProductClass(
 				QuickSearch.getValue(context.getConnection(),
-			             LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.TYPED, context, null),
+			             LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.TYPED, context, RequestBuildContextFactory.empty()),
 			             "product_class"));
 	}
 
