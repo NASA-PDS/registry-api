@@ -70,7 +70,7 @@ variable "aws_fg_image" {
 
 variable "aws_lb_listener_arn" {
   description = "ARN of the AWS LB listener to associated with the service target group"
-  default = "arn:aws:elasticloadbalancing:us-west-2:445837347542:listener/app/pds-en-ecs/7870b4ad486ca87b/085568f01bd7a139"
+  # default = "arn:aws:elasticloadbalancing:us-west-2:445837347542:listener/app/pds-en-ecs/7870b4ad486ca87b/085568f01bd7a139"
 }
 
 variable "http_header_forward_name" {
