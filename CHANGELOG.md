@@ -1,8 +1,16 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-07-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-07-20)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...«unknown»)
+
+**Improvements:**
+
+- Add back the Dockerfile used for the AWS/Fargate deployment [\#140](https://github.com/NASA-PDS/registry-api/issues/140)
+
+## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-07-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
 
 **Requirements:**
 
@@ -10,19 +18,12 @@
 
 **Improvements:**
 
+- Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
 - Support override of application.properties for AWS Docker image [\#117](https://github.com/NASA-PDS/registry-api/issues/117)
 
 **Other closed issues:**
 
 - add ops:Tracking\_Meta/ops:archive\_status to meta section of API response [\#101](https://github.com/NASA-PDS/registry-api/issues/101)
-
-## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-07-05)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
-
-**Improvements:**
-
-- Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
 
 ## [v1.0.1](https://github.com/NASA-PDS/registry-api/tree/v1.0.1) (2022-06-09)
 
