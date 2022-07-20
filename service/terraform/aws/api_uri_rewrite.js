@@ -11,14 +11,14 @@ function handler(event) {
     var request = event.request;
     var incomingUri = request.uri;
 
-    // split the uri
-    var uriParts = incomingUri.split("/");
+    // continue with the rewrite only if "/api/search*" is first in the URI
+    if (incomingUri.startsWith("/api/search")) {
 
-    // continue with the rewrite only if "/api/search" is first in the URI
-    if (uriParts[1].toLowerCase() == "api" && uriParts[2].toLowerCase() == "search" ) {
+        // split the uri
+        var uriParts = incomingUri.split("/");
 
-        // at a minimum service and version are required, otherwise fall through w/o changes
-        if (uriParts.length >= 4) {
+        // at a minimum service, version and command are required, otherwise fall through w/o changes
+        if (uriParts.length > 4 && uriParts[4].trim() != "") {
             // extract service and version which are placed in the HTTP header
             var resultHeader = uriParts[2] + "/" + uriParts[3];
 
@@ -33,7 +33,6 @@ function handler(event) {
             request.uri = newUri;
             request.headers['x-request-node'] = { "value" : resultHeader };
         }
-
     }
 
     return request;
