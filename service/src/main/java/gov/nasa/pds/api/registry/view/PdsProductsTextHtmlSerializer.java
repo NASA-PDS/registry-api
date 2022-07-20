@@ -38,7 +38,8 @@ public class PdsProductsTextHtmlSerializer extends AbstractHttpMessageConverter<
         OutputStream os = outputMessage.getBody();
         OutputStreamWriter wr = new OutputStreamWriter(os);
         mapper.setSerializationInclusion(Include.NON_NULL);
-        wr.write("<html><body><h1>JSON as text</h1><p><pre>");
+        Utilities.fix (t.getSummary());
+       wr.write("<html><body><h1>JSON as text</h1><p><pre>");
         wr.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(t));
         wr.write("</pre></p></body></html>");
         wr.close();

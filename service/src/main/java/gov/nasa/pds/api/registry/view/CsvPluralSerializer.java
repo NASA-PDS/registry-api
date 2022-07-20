@@ -39,6 +39,7 @@ public class CsvPluralSerializer extends AbstractHttpMessageConverter<WyriwygPro
         
         OutputStream os = outputMessage.getBody();
         OutputStreamWriter wr = new OutputStreamWriter(os);
+        Utilities.fix (t.getSummary());
         WyriwygSerializer.writeCSV(t, wr, mapper);
         wr.close();
 	}
