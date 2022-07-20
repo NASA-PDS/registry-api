@@ -60,6 +60,7 @@ public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Pds
         OutputStream os = msg.getBody();
         OutputStreamWriter wr = new OutputStreamWriter(os);
         
+        Utilities.fix (products.getSummary());
         wr.write("{\n");
         
         // Summary

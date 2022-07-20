@@ -52,6 +52,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
     		throws ApplicationTypeException, IOException, LidVidNotFoundException
     {
+    	log.info("Find children of a bundle");
     	return selection == ProductVersionSelector.ALL ?
     			getAllBundleCollectionLidVids(uid, control) : 
     			getBundleCollectionLidVids(uid, control);
@@ -60,6 +61,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     static Pagination<String> grandchildren (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
     		throws ApplicationTypeException, IOException, LidVidNotFoundException
     {
+    	log.info("Find grandchildren of a bundle");
     	PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
     	for (String cid : getBundleCollectionLidVids(new Unlimited(uid.getLidVid()), control).page())
     	{ ids.addAll(RefLogicCollection.children (control, selection, new Unlimited(cid)).page()); }
@@ -80,9 +82,8 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
             throws IOException, LidVidNotFoundException
     {
         // Fetch collection references only.
-    	List<String> fields = new ArrayList<String>(
-    			Arrays.asList("ref_lidvid_collection","ref_lidvid_collection_secondary",
-                               "ref_lid_collection", "ref_lid_collection_secondary"));
+    	List<String> fields = Arrays.asList("ref_lidvid_collection","ref_lidvid_collection_secondary",
+                                            "ref_lid_collection", "ref_lid_collection_secondary");
     	
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
@@ -147,8 +148,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
             throws IOException, LidVidNotFoundException
     {
         // Fetch collection references only.
-        List<String> fields = new ArrayList<String>(
-                Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary"));
+        List<String> fields = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary");
 
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())

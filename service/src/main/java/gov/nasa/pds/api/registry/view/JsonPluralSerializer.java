@@ -39,6 +39,7 @@ public class JsonPluralSerializer extends AbstractHttpMessageConverter<WyriwygPr
         
         OutputStream os = outputMessage.getBody();
         OutputStreamWriter wr = new OutputStreamWriter(os);
+        Utilities.fix (t.getSummary());
         WyriwygSerializer.writeJSON(t, wr, mapper);
         wr.close();
 	}

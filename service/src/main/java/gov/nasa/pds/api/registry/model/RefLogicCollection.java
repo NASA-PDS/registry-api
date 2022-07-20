@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
@@ -26,6 +29,8 @@ import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 @Immutable
 class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 {
+	private static final Logger log = LoggerFactory.getLogger(RefLogicCollection.class);
+
     @Override
     public GroupConstraint constraints()
     {
@@ -37,6 +42,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
     		throws IOException, LidVidNotFoundException
     {
+    	log.info("Find children of a collection -- both all and latest");
     	return selection == ProductVersionSelector.ALL ? RefLogicCollection.childrenAll(control, uid) : RefLogicCollection.childrenLatest(control, uid);
     }
 
@@ -71,16 +77,24 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     static Pagination<String> parents (ControlContext control, ProductVersionSelector selection,  LidvidsContext uid)
     		throws IOException, LidVidNotFoundException
     {
+    	List<String> keys = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary",
+    		                              "ref_lidvid_collection", "ref_lidvid_collection_secondary");
     	List<String> sortedLids;
     	Set<String> lids = new HashSet<String>();
+    	String lid = LidVidUtils.extractLidFromLidVid(uid.getLidVid());
         PaginationLidvidBuilder bundleLidvids = new PaginationLidvidBuilder(uid);
-        for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
-        		new SearchRequestFactory(RequestConstructionContextFactory.given("ref_lid_collection",
-        				LidVidUtils.extractLidFromLidVid(uid.getLidVid()), true), control.getConnection())
-                .build(RequestBuildContextFactory.given("lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
-                		control.getConnection().getRegistryIndex())))
+
+        log.info("Find parents of a colletion -- both all and latest");
+        log.info("Find parents of collenction: " + uid.getLidVid() + "  --- " + LidVidUtils.extractLidFromLidVid(uid.getLidVid()));
+        for (String key : keys)
         {
-        	lids.addAll(bundleLidvids.convert(kvp.get("lid")));
+        	for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
+        			new SearchRequestFactory(RequestConstructionContextFactory.given(key, lid, true), control.getConnection())
+        			.build(RequestBuildContextFactory.given("lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
+        					control.getConnection().getRegistryIndex())))
+        	{
+        		lids.addAll(bundleLidvids.convert(kvp.get("lid")));
+        	}
         }
         sortedLids = new ArrayList<String>(lids);
         Collections.sort(sortedLids);

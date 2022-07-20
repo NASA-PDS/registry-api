@@ -42,6 +42,7 @@ public class PdsProductsXMLSerializer extends AbstractHttpMessageConverter<PdsPr
 			OutputStream outputStream = outputMessage.getBody();
 			XmlMapper mapper = new XmlMapper();
 			XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
+	        Utilities.fix (products.getSummary());
 			outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 			outputFactory.setProperty(WstxInputProperties.P_RETURN_NULL_FOR_DEFAULT_NAMESPACE, true);
 			XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);

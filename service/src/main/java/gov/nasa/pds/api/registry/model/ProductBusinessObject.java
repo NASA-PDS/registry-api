@@ -52,51 +52,44 @@ public class ProductBusinessObject
             
             Map<String, XMLMashallableProperyValue> filteredMapJsonProperties  = new HashMap<String, XMLMashallableProperyValue>();
                         
-            if ((included_fields == null) || (included_fields.size() ==0)) {
-                
+            if ((included_fields == null) || (included_fields.size() == 0))
+            {
                 String apiProperty;
-                for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
-                    try {
+                for (Map.Entry<String, Object> entry : sourceAsMap.entrySet())
+                {
+                    try
+                    {
                         apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
-                        if ((excluded_fields == null)
-                                || !excluded_fields.contains(apiProperty))
-                     filteredMapJsonProperties.put(
+                        if ((excluded_fields == null) || !excluded_fields.contains(apiProperty))
+                        	filteredMapJsonProperties.put(
                              apiProperty, 
-                             ProductBusinessObject.object2PropertyValue(entry.getValue())
-                             );
-                    } catch (UnsupportedSearchProperty e) {
-                        log.warn("openSearch property " + entry.getKey() + " is not supported, ignored");
+                             ProductBusinessObject.object2PropertyValue(entry.getValue()));
                     }
+                    catch (UnsupportedSearchProperty e)
+                    { log.warn("openSearch property " + entry.getKey() + " is not supported, ignored"); }
                 }
-                
             }
-            else {      
-                
+            else 
+            {
                 String esField;
-                for (String field : included_fields) {
-                    
+                for (String field : included_fields)
+                {
                     esField = SearchUtil.jsonPropertyToOpenProperty(field);
-                
-                    if (sourceAsMap.containsKey(esField)) {
+
+                    if (sourceAsMap.containsKey(esField))
+                    {
                         filteredMapJsonProperties.put(
                                 field, 
-                                ProductBusinessObject.object2PropertyValue(sourceAsMap.get(esField))
-                                );
+                                ProductBusinessObject.object2PropertyValue(sourceAsMap.get(esField)));
                     }
-                    else {
+                    else
+                    {
                         filteredMapJsonProperties.put(
                                 field, 
-                                ProductBusinessObject.object2PropertyValue(ProductBusinessObject.DEFAULT_NULL_VALUE)
-                                );
+                                ProductBusinessObject.object2PropertyValue(ProductBusinessObject.DEFAULT_NULL_VALUE));
                     }
-                    
                 }
-                    
             }
-            
-            
             return filteredMapJsonProperties;
-                
-                
         }
 }

@@ -56,6 +56,7 @@ public class Pds4XmlProductsSerializer  extends AbstractHttpMessageConverter<Pds
 	          XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 	          outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);
 	          XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
+	          Utilities.fix (products.getSummary());
 	          writer.setPrefix(Pds4XmlProductSerializer.NAMESPACE_PREFIX, 
 		            		  Pds4XmlProductSerializer.NAMESPACE_URL);
 	          writer.writeStartElement(Pds4XmlProductSerializer.NAMESPACE_URL, "products");
