@@ -59,10 +59,9 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, preset, any);
     	SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
 				.build(response, connection.getConnection().getRegistryIndex());
-    	
     	request.source().size(lidvids.size());
     	response.setResponse(connection.getConnection().getRestHighLevelClient().search
-    			(request, RequestOptions.DEFAULT).getHits());
+    			(request, RequestOptions.DEFAULT).getHits(), null, lidvids.total());
     	return response;
     }
 

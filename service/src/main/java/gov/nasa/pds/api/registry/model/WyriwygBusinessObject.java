@@ -126,6 +126,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
             	products.addDataItem(product);
             }
         }
+		
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
 		this.products = products;
