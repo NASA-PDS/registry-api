@@ -198,7 +198,7 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
         }
         catch (LidVidNotFoundException e)
         {
-            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier(), e);
+            log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
         }
         catch (NothingFoundException e)
