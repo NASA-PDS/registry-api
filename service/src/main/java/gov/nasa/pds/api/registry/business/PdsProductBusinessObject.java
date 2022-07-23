@@ -59,7 +59,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 	@SuppressWarnings("unchecked")
 	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
-		int count = 0;
+		int count;
 		PdsProducts products = new PdsProducts();
 		Set<String> uniqueProperties = new TreeSet<String>();
 
