@@ -180,6 +180,14 @@ Go through this file line-by-line and replace the template values with your own.
                     </archive>
                 </configuration>
             </plugin>
+             <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <failOnError>false</failOnError>
+          <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
+        </configuration>
+      </plugin>
         </plugins>
     </build>
 
