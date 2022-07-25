@@ -59,6 +59,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 	@SuppressWarnings("unchecked")
 	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
 	{
+		int count;
 		PdsProducts products = new PdsProducts();
 		Set<String> uniqueProperties = new TreeSet<String>();
 
@@ -72,13 +73,14 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
                 products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
             }
         }
-		
+		count = products.getData().size();
+
 		if (onlySummary) products.setData(null);
 
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
 		this.products = products;
-		return products.getData().size();
+		return count;
 	}
 
 	@Override
