@@ -77,6 +77,9 @@ typescript
 *.javac
 .gwt/
 target/
+lexer/target
+service/target
+model/target
 
 # macOS specific stuff
 .DS_Store
