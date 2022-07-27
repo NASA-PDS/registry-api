@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.view;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -36,7 +37,7 @@ public class PdsProductsTextHtmlSerializer extends AbstractHttpMessageConverter<
 	{
         ObjectMapper mapper = new ObjectMapper();
         OutputStream os = outputMessage.getBody();
-        OutputStreamWriter wr = new OutputStreamWriter(os);
+        OutputStreamWriter wr = new OutputStreamWriter(os, Charset.defaultCharset());
         mapper.setSerializationInclusion(Include.NON_NULL);
         Utilities.fix (t.getSummary());
        wr.write("<html><body><h1>JSON as text</h1><p><pre>");
