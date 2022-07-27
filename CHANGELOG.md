@@ -1,8 +1,40 @@
 # Changelog
 
-## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-05-25)
+## [v1.0.2](https://github.com/NASA-PDS/registry-api/tree/v1.0.2) (2022-07-27)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.1.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...v1.0.2)
+
+**Defects:**
+
+- Cloudfront function api\_uri\_rewrite  does not check for empty command when parsing api URI [\#164](https://github.com/NASA-PDS/registry-api/issues/164)
+- fields parameter does not return values if more than one value is requested for CSV format [\#162](https://github.com/NASA-PDS/registry-api/issues/162) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- / is not returning swagger API doc [\#141](https://github.com/NASA-PDS/registry-api/issues/141) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
+**Other closed issues:**
+
+- apply bug fix on stable release [\#160](https://github.com/NASA-PDS/registry-api/issues/160)
+
+## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-07-20)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
+
+**Requirements:**
+
+- As a user, I want to have an administrator contact when I am getting an error 500 from the server [\#109](https://github.com/NASA-PDS/registry-api/issues/109)
+
+**Improvements:**
+
+- Add back the Dockerfile used for the AWS/Fargate deployment [\#140](https://github.com/NASA-PDS/registry-api/issues/140)
+- Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
+- Support override of application.properties for AWS Docker image [\#117](https://github.com/NASA-PDS/registry-api/issues/117)
+
+**Other closed issues:**
+
+- add ops:Tracking\_Meta/ops:archive\_status to meta section of API response [\#101](https://github.com/NASA-PDS/registry-api/issues/101)
+
+## [v1.0.1](https://github.com/NASA-PDS/registry-api/tree/v1.0.1) (2022-06-09)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.0.1)
 
 **Requirements:**
 
@@ -22,6 +54,10 @@
 - Update all endpoints to only allow access to public data. [\#113](https://github.com/NASA-PDS/registry-api/issues/113) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - documentation does not match behavior [\#106](https://github.com/NASA-PDS/registry-api/issues/106) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - LID -\> LIDVID conversion not consistent in registry-api [\#79](https://github.com/NASA-PDS/registry-api/issues/79) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
+
+**Other closed issues:**
+
+- Bump search version to 1.0 [\#143](https://github.com/NASA-PDS/registry-api/issues/143)
 
 ## [v1.0.0](https://github.com/NASA-PDS/registry-api/tree/v1.0.0) (2022-04-19)
 
@@ -51,6 +87,7 @@
 **Requirements:**
 
 - As a user, I want to see the version of the API specification in the URL of the service [\#59](https://github.com/NASA-PDS/registry-api/issues/59)
+- As a user, I want to have a complete default fields \(for now at least\) [\#155](https://github.com/NASA-PDS/registry-api/issues/155)
 - As a user, I want the end-point /api to redirect to the API documentation [\#63](https://github.com/NASA-PDS/registry-api/issues/63)
 - As a user, I want the /products end point to work for any class of products [\#64](https://github.com/NASA-PDS/registry-api/issues/64)
 - As a user,  I want specific end points for products which are not collections or bundles [\#65](https://github.com/NASA-PDS/registry-api/issues/65)
