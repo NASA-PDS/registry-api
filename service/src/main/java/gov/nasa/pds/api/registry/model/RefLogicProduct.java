@@ -29,7 +29,6 @@ import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 @Immutable
 class RefLogicProduct extends RefLogicAny implements ReferencingLogic
 {
-    @SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(RefLogicProduct.class);
 
     @Override
