@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.model.SearchUtil;
+import gov.nasa.pds.api.registry.business.SearchUtil;
 import gov.nasa.pds.model.Summary;
 
 class Utilities
