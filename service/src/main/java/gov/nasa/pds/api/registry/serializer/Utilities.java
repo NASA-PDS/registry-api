@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.view;
+package gov.nasa.pds.api.registry.serializer;
 
 import java.util.ArrayList;
 import java.util.List;
