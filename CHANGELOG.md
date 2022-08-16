@@ -1,5 +1,23 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-08-16)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...«unknown»)
+
+**Requirements:**
+
+- As a user I want consistent /type/lidvlid/{child,parent}/{latest,all} [\#126](https://github.com/NASA-PDS/registry-api/issues/126)
+
+**Defects:**
+
+- summary-only does not behave [\#167](https://github.com/NASA-PDS/registry-api/issues/167)
+- summary-only does not work on products of a collection [\#152](https://github.com/NASA-PDS/registry-api/issues/152) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- wildcard search in query parameter returning odd results [\#134](https://github.com/NASA-PDS/registry-api/issues/134) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Fix `like` functionality and document in the user's guide [\#159](https://github.com/NASA-PDS/registry-api/issues/159)
+
 ## [v1.0.2](https://github.com/NASA-PDS/registry-api/tree/v1.0.2) (2022-07-27)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...v1.0.2)
