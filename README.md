@@ -19,9 +19,7 @@ Based on `docker` you can easily start all the prerequisites as configured in th
     git clone https://github.com/NASA-PDS/registry.git
     
 
-Start the prerequisites:
-
-    docker compose --profile=dev-api up
+Start the prerequisites by following the [Quick Start Guide](https://github.com/NASA-PDS/registry/tree/main/docker#-quick-start-guide---with-default-configurations)
 
 
 ## Start the application from a released package
@@ -53,8 +51,11 @@ Builds the application:
 
 
     cd service
-    mvn sprint-boot:run
+    mvn spring-boot:run
 
+## View Swagger UI
+
+Go to http://localhost:8080
 
 ## Tests
 

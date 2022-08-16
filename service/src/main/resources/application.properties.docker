@@ -27,3 +27,6 @@ openSearch.ssl=false
 
 # Only show products with following archive statuses
 filter.archiveStatus=archived,certified
+
+# source version from maven
+registry.service.version=${project.version}

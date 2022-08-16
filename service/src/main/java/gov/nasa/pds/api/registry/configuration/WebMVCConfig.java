@@ -14,27 +14,27 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import gov.nasa.pds.api.registry.serializer.CsvErrorMessageSerializer;
-import gov.nasa.pds.api.registry.serializer.CsvPluralSerializer;
-import gov.nasa.pds.api.registry.serializer.CsvSingularSerializer;
-import gov.nasa.pds.api.registry.serializer.HtmlErrorMessageSerializer;
-import gov.nasa.pds.api.registry.serializer.JsonErrorMessageSerializer;
-import gov.nasa.pds.api.registry.serializer.JsonPluralSerializer;
-import gov.nasa.pds.api.registry.serializer.JsonProductSerializer;
-import gov.nasa.pds.api.registry.serializer.JsonSingularSerializer;
-import gov.nasa.pds.api.registry.serializer.Pds4JsonProductSerializer;
-import gov.nasa.pds.api.registry.serializer.Pds4JsonProductsSerializer;
-import gov.nasa.pds.api.registry.serializer.Pds4XmlProductSerializer;
-import gov.nasa.pds.api.registry.serializer.Pds4XmlProductsSerializer;
-import gov.nasa.pds.api.registry.serializer.PdsProductTextHtmlSerializer;
-import gov.nasa.pds.api.registry.serializer.PdsProductXMLSerializer;
-import gov.nasa.pds.api.registry.serializer.PdsProductsTextHtmlSerializer;
-import gov.nasa.pds.api.registry.serializer.PdsProductsXMLSerializer;
-import gov.nasa.pds.api.registry.serializer.XmlErrorMessageSerializer;
+import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
+import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
+import gov.nasa.pds.api.registry.view.CsvSingularSerializer;
+import gov.nasa.pds.api.registry.view.HtmlErrorMessageSerializer;
+import gov.nasa.pds.api.registry.view.JsonErrorMessageSerializer;
+import gov.nasa.pds.api.registry.view.JsonPluralSerializer;
+import gov.nasa.pds.api.registry.view.JsonProductSerializer;
+import gov.nasa.pds.api.registry.view.JsonSingularSerializer;
+import gov.nasa.pds.api.registry.view.Pds4JsonProductSerializer;
+import gov.nasa.pds.api.registry.view.Pds4JsonProductsSerializer;
+import gov.nasa.pds.api.registry.view.Pds4XmlProductSerializer;
+import gov.nasa.pds.api.registry.view.Pds4XmlProductsSerializer;
+import gov.nasa.pds.api.registry.view.PdsProductTextHtmlSerializer;
+import gov.nasa.pds.api.registry.view.PdsProductXMLSerializer;
+import gov.nasa.pds.api.registry.view.PdsProductsTextHtmlSerializer;
+import gov.nasa.pds.api.registry.view.PdsProductsXMLSerializer;
+import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ",  "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.opensearch"})
+@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ",  "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.search"})
 public class WebMVCConfig implements WebMvcConfigurer
 {   
 	private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
@@ -42,9 +42,6 @@ public class WebMVCConfig implements WebMvcConfigurer
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
 	{
-		registry.addResourceHandler("swagger-ui.html")
-		.addResourceLocations("classpath:/META-INF/resources/");
-
 		registry.addResourceHandler("/webjars/**")
 		.addResourceLocations("classpath:/META-INF/resources/webjars/");
     }

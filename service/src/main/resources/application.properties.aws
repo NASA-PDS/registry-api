@@ -24,3 +24,6 @@ openSearch.timeOutSeconds=60
 openSearch.username=
 openSearch.password=
 openSearch.ssl=true
+
+# source version from maven
+registry.service.version=${project.version}

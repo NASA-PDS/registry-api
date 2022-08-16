@@ -80,7 +80,7 @@ WORKDIR /usr/local/registry-api-service
 EXPOSE  80
 CMD     [ \
     "java", \
-    "-jar", "/usr/local/registry-api-service/registry-api-service.jar", ] \
+    "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
     "gov.nasa.pds.api.registry.SpringBootMain" \
 ]
 
