@@ -47,6 +47,7 @@ public class PdsProductsXMLSerializer extends AbstractHttpMessageConverter<PdsPr
 			XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
 			writer.setDefaultNamespace(null);
 			writer.writeStartElement("PdsProducts");
+	        Utilities.fix (products.getSummary());
 			mapper.writeValue (writer, products.getSummary());
 			for (PdsProduct product: products.getData()) mapper.writeValue (writer, product);
 			writer.writeEndElement();
