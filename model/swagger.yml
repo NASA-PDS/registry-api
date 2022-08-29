@@ -17,13 +17,31 @@ servers:
     description: production server
 
 paths:
-  /gid/{group}:
+  /classes:
     get:
       tags:
-        - products
+        - classes
+      summary: |
+        returns a list of the available PDS product class at this API. This is not all of the PDS product class available in the database, but simply the names that can be used in the /classes/{class} endpoints.
+      operationId: classes
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+  /classes/{class}:
+    get:
+      tags:
+        - classes
       summary: |
         returns all PDS products of the given PDS product class that meet all given constraints.
-      operationId: group-list
+      operationId: class-list
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -37,14 +55,116 @@ paths:
           $ref: "#/components/responses/Error"
       parameters:
         - $ref: "#/components/parameters/Fields"
-        - $ref: "#/components/parameters/Group"
+        - $ref: "#/components/parameters/Class"
         - $ref: "#/components/parameters/Keyword"
         - $ref: "#/components/parameters/Limit"
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/Start"
+  /classes/{class}/{identifier}/members:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that are members of the given PDS product class and lid/lidvid.
+      operationId: class-members
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+  /classes/{class}/{identifier}/members/members:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that are the members of the members of the given PDS product class and lid/lidvid.
+      operationId: class-members-members
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      #- $ref: "#/components/parameters/Versions"
+  /classes/{class}/{identifier}/member-of:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member.
+      operationId: class-member-of
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+  /classes/{class}/{identifier}/member-of/member-of:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member of its members.
+      operationId: class-member-of-of
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      #- $ref: "#/components/parameters/Versions"
 
-  /uid/{identifier}:
+  /products/{identifier}:
     get:
       tags:
         - products
@@ -65,7 +185,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-  /uid/{identifier}/latest:
+  /products/{identifier}/latest:
     get:
       tags:
         - products
@@ -86,7 +206,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-  /uid/{identifier}/all:
+  /products/{identifier}/all:
     get:
       tags:
         - products
@@ -112,13 +232,13 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-  /gid/{group}/referencing/{identifier}:
+  /products/{identifier}/members:
     get:
       tags:
-        - product references
+        - references
       summary: |
-        returns one or more PDS Products of the specificed class that contain or reference the specified product identifier. See identifier for details on how it determines what is returned.
-      operationId: group-referencing-id
+        returns all of the members of the given lid/lidvid
+      operationId: product-members
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -132,18 +252,18 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Group"
+      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-  /gid/{group}/referencing/{identifier}/{versions}:
+  /products/{identifier}/members/members:
     get:
       tags:
-        - product references
+        - references
       summary: |
-        returns one or more PDS Products of the specificed class that reference the product identifier. See identifier for details on how it determines what is returned.
-      operationId: group-referencing-id-vers
+        returns all of the members of the members of the given lid/lidvid
+      operationId: product-members-members
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -157,19 +277,19 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Group"
+      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/Versions"
-  /uid/{identifier}/referencing/{group}:
+      #- $ref: "#/components/parameters/Versions"
+  /products/{identifier}/member-of:
     get:
       tags:
-        - product references
+        - references
       summary: |
-        returns one or more PDS Products of the specificed class that the specified product identifier contains or references. See identifier for details on how it determines what is returned.
-      operationId: id-referencing-group
+        eturns one or more PDS Products that have the given PDS lid/lidvid as a member.
+      operationId: product-member-of
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -183,18 +303,18 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Group"
+      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-  /uid/{identifier}/referencing/{group}/{versions}:
+  /products/{identifier}/member-of/member-of:
     get:
       tags:
-        - product references
+        - references
       summary: |
-        returns one or more PDS Products of the specificed class that the specified product identifier contains or references. See identifier for details on how it determines what is returned.
-      operationId: id-referencing-group--vers
+        returns one or more PDS Products that have the given PDS lid/lidvid as a member of its members.
+      operationId: product-member-of-of
       responses:
         '200':
           $ref: "#/components/responses/Plural"
@@ -208,12 +328,498 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Group"
+      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      - $ref: "#/components/parameters/Versions"
+      #- $ref: "#/components/parameters/Versions"
+
+# begin deprecated: this is the older API that is clutter
+  /bundles/{identifier}:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid
+      responses:
+        '200':
+          $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+
+  /bundles/{identifier}/all:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid-all
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /bundles/{identifier}/latest:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid-latest
+      responses:
+        '200':
+          $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+
+  /bundles/{identifier}/collections:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid-collections
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /bundles/{identifier}/collections/all:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid-collections-all
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /bundles/{identifier}/collections/latest:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid-collections-latest
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /bundles/{identifier}/products:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundles-lidvid-products
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /collections/{identifier}:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid
+      responses:
+        '200':
+          $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+
+  /collections/{identifier}/all:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid-all
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /collections/{identifier}/latest:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid-latest
+      responses:
+        '200':
+          $ref: "#/components/responses/Singular"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+
+  /collections/{identifier}/bundles:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid-bundles
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /collections/{identifier}/products:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid-products
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /collections/{identifier}/products/all:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid-products-all
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /collections/{identifier}/products/latest:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collections-lidvid-products-latest
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /products/{identifier}/bundles:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: products-lidvid-bundles
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /products/{identifier}/bundles/all:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: products-lidivid-bundles-all
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /products/{identifier}/bundles/latest:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: products-lidvid-bundles-latest
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /products/{identifier}/collections:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: products-lidvid-collections
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /products/{identifier}/collections/all:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: products-lidvid-collections-all
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /products/{identifier}/collections/latest:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: products-lidvid-collections-latest
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+# end deprecated: for easy clutter removal
 
 externalDocs:
   description: Find out more information on the PDS API Specification
@@ -234,8 +840,8 @@ components:
         type: array
         items:
           type: string
-    Group:
-      name: group
+    Class:
+      name: class
       in: path
       description: |
         syntax: one of the allowable enum values
@@ -244,7 +850,7 @@ components:
       required: true
       schema:
         type: string
-        enum: [any,bundle,collection,product]
+        enum: [any,bundles,collections,documents,observational,products]
     Identifier:
       name: identifier
       in: path
@@ -255,7 +861,7 @@ components:
 
         behavior (lidvid): returns one and only one item whose lidvid matches this lidvid exactly.
 
-        note: the current lid/lidvid resolution will match all the lids that start with lid. In other words, it acts like a glob of foobar*. It behaves this way from first character to the last
+        note: the current lid/lidvid resolution will match all the lids that start with lid. In other words, it acts like a glob of foobar*. It behavesn this way from first character to the last
 
         note: simple sorting of the lidvid is being done to select the latest from the end of the list. However, the versions 1.0, 2.0, and 13.0 will sort to 1.0, 13.0, and 2.0 so the end of the list may not be the latest.
       required: true
