@@ -1,8 +1,19 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-08-16)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-08-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...«unknown»)
+
+**Defects:**
+
+- Swagger-UI does not display properly out-of-the-box  [\#174](https://github.com/NASA-PDS/registry-api/issues/174)
+- summary does not contain the property values [\#171](https://github.com/NASA-PDS/registry-api/issues/171) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- bundle of a product does not return result [\#150](https://github.com/NASA-PDS/registry-api/issues/150) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- /bundles/{identifier}/all does not return any results [\#118](https://github.com/NASA-PDS/registry-api/issues/118) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
+## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-08-16)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...v1.1.0-SNAPSHOT)
 
 **Requirements:**
 
@@ -10,7 +21,7 @@
 
 **Defects:**
 
-- summary-only does not behave [\#167](https://github.com/NASA-PDS/registry-api/issues/167)
+- summary-only does not work as expected [\#167](https://github.com/NASA-PDS/registry-api/issues/167)
 - summary-only does not work on products of a collection [\#152](https://github.com/NASA-PDS/registry-api/issues/152) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - wildcard search in query parameter returning odd results [\#134](https://github.com/NASA-PDS/registry-api/issues/134) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
@@ -20,21 +31,7 @@
 
 ## [v1.0.2](https://github.com/NASA-PDS/registry-api/tree/v1.0.2) (2022-07-27)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...v1.0.2)
-
-**Defects:**
-
-- Cloudfront function api\_uri\_rewrite  does not check for empty command when parsing api URI [\#164](https://github.com/NASA-PDS/registry-api/issues/164)
-- fields parameter does not return values if more than one value is requested for CSV format [\#162](https://github.com/NASA-PDS/registry-api/issues/162) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- / is not returning swagger API doc [\#141](https://github.com/NASA-PDS/registry-api/issues/141) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-
-**Other closed issues:**
-
-- apply bug fix on stable release [\#160](https://github.com/NASA-PDS/registry-api/issues/160)
-
-## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-07-20)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2)
 
 **Requirements:**
 
@@ -46,8 +43,15 @@
 - Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
 - Support override of application.properties for AWS Docker image [\#117](https://github.com/NASA-PDS/registry-api/issues/117)
 
+**Defects:**
+
+- Cloudfront function api\_uri\_rewrite  does not check for empty command when parsing api URI [\#164](https://github.com/NASA-PDS/registry-api/issues/164)
+- fields parameter does not return values if more than one value is requested for CSV format [\#162](https://github.com/NASA-PDS/registry-api/issues/162) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- / is not returning swagger API doc [\#141](https://github.com/NASA-PDS/registry-api/issues/141) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
 **Other closed issues:**
 
+- apply bug fix on stable release [\#160](https://github.com/NASA-PDS/registry-api/issues/160)
 - add ops:Tracking\_Meta/ops:archive\_status to meta section of API response [\#101](https://github.com/NASA-PDS/registry-api/issues/101)
 
 ## [v1.0.1](https://github.com/NASA-PDS/registry-api/tree/v1.0.1) (2022-06-09)
