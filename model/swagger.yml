@@ -26,7 +26,7 @@ paths:
       operationId: classes
       responses:
         '200':
-          $ref: "#/components/responses/Plural"
+          $ref: "#/components/responses/Singular"
         '400':
           $ref: "#/components/responses/Error"
         '404':
@@ -86,6 +86,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      #- $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/members/members:
     get:
       tags:
@@ -137,6 +138,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      #- $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/member-of/member-of:
     get:
       tags:
@@ -252,11 +254,11 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      #- $ref: "#/components/parameters/Versions"
   /products/{identifier}/members/members:
     get:
       tags:
@@ -277,7 +279,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -303,11 +304,11 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      #- $ref: "#/components/parameters/Versions"
   /products/{identifier}/member-of/member-of:
     get:
       tags:
@@ -328,7 +329,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -376,7 +376,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -422,7 +421,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -447,7 +445,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -472,7 +469,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -497,7 +493,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -543,7 +538,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -589,7 +583,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -614,7 +607,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -639,7 +631,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -664,7 +655,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -689,7 +679,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -714,7 +703,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -739,7 +727,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -764,7 +751,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -789,7 +775,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
@@ -814,7 +799,6 @@ paths:
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
-      - $ref: "#/components/parameters/Class"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
