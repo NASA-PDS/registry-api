@@ -25,6 +25,7 @@ import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ErrorFactory;
+import gov.nasa.pds.api.registry.model.LidVidUtils;
 
 @Controller
 public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter implements ControlContext
@@ -88,9 +89,10 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 	{
         try
         {
-        	this.verify (parameters);
-        	return handler.transmute(this, parameters.setAccept(this.request.getHeader("Accept")).setLidVid(this));
-        } 
+        	parameters.setAccept(this.request.getHeader("Accept")).setLidVid(this);
+        	if (parameters.getVerifyClassAndId()) LidVidUtils.verify (this, parameters);
+        	return handler.transmute(this, parameters);
+        }
         catch (ApplicationTypeException e)
         {
         	log.error("Application type not implemented", e);
@@ -134,12 +136,4 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
         return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443)) 
                 || ("http".equals(this.context.getScheme())  && (this.context.getServerPort() == 80)));
     }
-	
-	private void verify (URIParameters parameters) throws LidVidMismatchException
-	{
-		if (parameters.getVerifyClassAndId())
-		{
-			
-		}
-	}
 }

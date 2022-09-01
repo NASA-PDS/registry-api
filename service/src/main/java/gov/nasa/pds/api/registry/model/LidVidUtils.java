@@ -16,7 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.exceptions.LidVidMismatchException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
+import gov.nasa.pds.api.registry.search.QuickSearch;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
@@ -132,4 +136,19 @@ public class LidVidUtils
     	}
     	return result;
     }
+
+	public static void verify (ControlContext control, UserContext user)
+			throws IOException, LidVidMismatchException, UnknownGroupNameException
+	{
+		ReferencingLogicTransmuter expected_rlt = ReferencingLogicTransmuter.getBySwaggerGroup(user.getGroup());
+			
+		if (expected_rlt != ReferencingLogicTransmuter.Any)
+		{
+			String actual_group = QuickSearch.getValue(control.getConnection(), user.getLidVid(), "product_type");
+			ReferencingLogicTransmuter actual_rlt = ReferencingLogicTransmuter.getByProductClass(actual_group);
+			
+			if (actual_rlt != expected_rlt)
+				throw new LidVidMismatchException(user.getLidVid(), user.getGroup(), actual_group);
+		}
+	}
 }
