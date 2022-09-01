@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.view;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class ClassesSerializer extends AbstractHttpMessageConverter<List<String>
 			throws IOException, HttpMessageNotWritableException {
 		List<String> quoted = new ArrayList<String>(t.size());
         OutputStream os = outputMessage.getBody();
-        OutputStreamWriter wr = new OutputStreamWriter(os);
+        OutputStreamWriter wr = new OutputStreamWriter(os,Charset.defaultCharset());
         
         for (String name : t) quoted.add("\"" + name + "\"");
         wr.write("[");
