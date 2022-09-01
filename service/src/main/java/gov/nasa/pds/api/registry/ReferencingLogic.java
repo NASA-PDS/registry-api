@@ -6,6 +6,7 @@ import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 
@@ -28,4 +29,16 @@ public interface ReferencingLogic
 	 */
 	public RequestAndResponseContext given(ControlContext context, UserContext input)
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException;
+	
+	/**
+	 * Find descendants as in children or grandchildren
+	 */
+	public RequestAndResponseContext member(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException, UnknownGroupNameException;
+
+	/**
+	 * Find heredity as in parents or grandparents
+	 */
+	public RequestAndResponseContext memberOf(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException, UnknownGroupNameException;
 }

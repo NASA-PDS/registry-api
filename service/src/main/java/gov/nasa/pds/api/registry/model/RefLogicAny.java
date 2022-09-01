@@ -10,6 +10,7 @@ import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
@@ -69,8 +70,26 @@ class RefLogicAny implements ReferencingLogic
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException
 	{ return this.search(context, input, false); }
 
-			@Override
+	@Override
 	public RequestAndResponseContext given(ControlContext context, UserContext input)
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException
 	{ return this.search(context, input, true); }
+
+	@Override
+	public RequestAndResponseContext member(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException, UnknownGroupNameException
+	{
+		throw new MembershipException(input.getIdentifier(), "members", "product");
+	}
+
+	@Override
+	public RequestAndResponseContext memberOf(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException, UnknownGroupNameException
+	{
+		if (twoSteps)
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicProduct.grandparents(context, input.getSelector(), input));
+		return RequestAndResponseContext.buildRequestAndResponseContext
+				(context, input, RefLogicProduct.parents(context, input.getSelector(), input));
+	}
 }

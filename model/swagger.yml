@@ -92,7 +92,32 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /classes/{class}/{identifier}/members/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that are members of the given PDS product class and lid/lidvid.
+      operationId: class-members-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/members/members:
     get:
       tags:
@@ -118,7 +143,32 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /classes/{class}/{identifier}/members/members/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that are the members of the members of the given PDS product class and lid/lidvid.
+      operationId: class-members-members-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/member-of:
     get:
       tags:
@@ -144,7 +194,32 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /classes/{class}/{identifier}/member-of/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member.
+      operationId: class-member-of-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/member-of/member-of:
     get:
       tags:
@@ -170,7 +245,32 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /classes/{class}/{identifier}/member-of/member-of/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member of its members.
+      operationId: class-member-of-of-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Class"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
 
   /products/{identifier}:
     get:
@@ -264,7 +364,31 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /products/{identifier}/members/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns all of the members of the given lid/lidvid
+      operationId: product-members-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
   /products/{identifier}/members/members:
     get:
       tags:
@@ -289,7 +413,31 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /products/{identifier}/members/members/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns all of the members of the members of the given lid/lidvid
+      operationId: product-members-members-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
   /products/{identifier}/member-of:
     get:
       tags:
@@ -314,7 +462,31 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /products/{identifier}/member-of/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        eturns one or more PDS Products that have the given PDS lid/lidvid as a member.
+      operationId: product-member-of-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
   /products/{identifier}/member-of/member-of:
     get:
       tags:
@@ -339,7 +511,31 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      #- $ref: "#/components/parameters/Versions"
+  /products/{identifier}/member-of/member-of/{versions}:
+    get:
+      tags:
+        - references
+      summary: |
+        returns one or more PDS Products that have the given PDS lid/lidvid as a member of its members.
+      operationId: product-member-of-of-vers
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Versions"
 
 # begin deprecated: this is the older API that is clutter
   /bundles/{identifier}:

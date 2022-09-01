@@ -19,7 +19,11 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
+import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.exceptions.MembershipException;
+import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
@@ -106,4 +110,24 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 
         return bundleLidvids;
     }
+
+	@Override
+	public RequestAndResponseContext member(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
+			UnknownGroupNameException
+	{
+		if (twoSteps) throw new MembershipException(input.getIdentifier(), "members/members", "collections");
+		return RequestAndResponseContext.buildRequestAndResponseContext
+				(context, input, RefLogicCollection.children(context, input.getSelector(), input));
+	}
+
+	@Override
+	public RequestAndResponseContext memberOf(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
+			UnknownGroupNameException 
+	{
+		if (twoSteps) throw new MembershipException(input.getIdentifier(), "member-of/member-of", "collections");
+		return RequestAndResponseContext.buildRequestAndResponseContext
+				(context, input, RefLogicCollection.parents(context, input.getSelector(), input));
+	}
 }
