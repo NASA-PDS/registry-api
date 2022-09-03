@@ -144,7 +144,7 @@ public class LidVidUtils
 			
 		if (expected_rlt != ReferencingLogicTransmuter.Any)
 		{
-			String actual_group = QuickSearch.getValue(control.getConnection(), user.getLidVid(), "product_type");
+			String actual_group = QuickSearch.getValue(control.getConnection(), user.getLidVid(), "product_class");
 			ReferencingLogicTransmuter actual_rlt = ReferencingLogicTransmuter.getByProductClass(actual_group);
 			
 			if (actual_rlt != expected_rlt)
