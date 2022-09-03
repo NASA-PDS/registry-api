@@ -55,8 +55,12 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     		Pagination<String> lidvids) throws ApplicationTypeException,LidVidNotFoundException,IOException,UnknownGroupNameException
     {
     	GroupConstraint any = ReferencingLogicTransmuter.Any.impl().constraints();
+    	/**
+    	 * The line in this comment block is valid back when referencing was used and the user told us what group they
+    	 * wanted explicitly. With members, this is no longer true and the group is actually wrong in most cases.
     	GroupConstraint preset = ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
-    	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, preset, any);
+    	 */
+    	RequestAndResponseContext response = new RequestAndResponseContext (connection, parameters, any, any);
     	SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()), connection.getConnection())
 				.build(response, connection.getConnection().getRegistryIndex());
     	request.source().size(lidvids.size());
