@@ -1,17 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-08-29)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...«unknown»)
-
-**Defects:**
-
-- Swagger-UI does not display properly out-of-the-box  [\#174](https://github.com/NASA-PDS/registry-api/issues/174)
-- summary does not contain the property values [\#171](https://github.com/NASA-PDS/registry-api/issues/171) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- bundle of a product does not return result [\#150](https://github.com/NASA-PDS/registry-api/issues/150) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-- /bundles/{identifier}/all does not return any results [\#118](https://github.com/NASA-PDS/registry-api/issues/118) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-
-## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-08-16)
+## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-08-29)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...v1.1.0-SNAPSHOT)
 
@@ -21,9 +10,13 @@
 
 **Defects:**
 
+- Swagger-UI does not display properly out-of-the-box  [\#174](https://github.com/NASA-PDS/registry-api/issues/174)
+- summary does not contain the property values [\#171](https://github.com/NASA-PDS/registry-api/issues/171) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - summary-only does not work as expected [\#167](https://github.com/NASA-PDS/registry-api/issues/167)
 - summary-only does not work on products of a collection [\#152](https://github.com/NASA-PDS/registry-api/issues/152) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- bundle of a product does not return result [\#150](https://github.com/NASA-PDS/registry-api/issues/150) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - wildcard search in query parameter returning odd results [\#134](https://github.com/NASA-PDS/registry-api/issues/134) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- /bundles/{identifier}/all does not return any results [\#118](https://github.com/NASA-PDS/registry-api/issues/118) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
