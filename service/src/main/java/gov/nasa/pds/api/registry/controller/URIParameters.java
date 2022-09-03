@@ -30,6 +30,7 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
  */
 class URIParameters implements UserContext
 {
+	private boolean verifyClassAndId = false;
 	private String accept = "applicaation/json";
 	private List<String> fields = new ArrayList<String>();
 	private String group = "";
@@ -65,6 +66,7 @@ class URIParameters implements UserContext
 	public List<String> getSort() { return sort; }
 	@Override
 	public Integer getStart() { return start; }
+	public boolean getVerifyClassAndId() { return verifyClassAndId; }
 	@Override
 	public String getVersion() { return version; }
 
@@ -119,6 +121,11 @@ class URIParameters implements UserContext
 		if (start != null) this.start = start;
 		return this;
 	}
+	public URIParameters setVerifyClassAndId (boolean verify)
+	{
+		this.verifyClassAndId = verify;
+		return this;
+	}
 	public URIParameters setVersion(String version)
 	{
 		if (version != null)
@@ -126,6 +133,15 @@ class URIParameters implements UserContext
 			this.version = version;
 			if ("all".equalsIgnoreCase(version)) this.selector = ProductVersionSelector.ALL;
 			else this.selector = ProductVersionSelector.LATEST;
+		}
+		return this;
+	}
+	public URIParameters setVersion(ProductVersionSelector version)
+	{
+		if (version != null)
+		{
+			this.version = version.toString().toLowerCase();
+			this.selector = version;
 		}
 		return this;
 	}

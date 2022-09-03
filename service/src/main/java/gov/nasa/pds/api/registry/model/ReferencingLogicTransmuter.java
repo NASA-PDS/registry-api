@@ -1,6 +1,8 @@
 package gov.nasa.pds.api.registry.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import gov.nasa.pds.api.registry.ReferencingLogic;
@@ -10,9 +12,11 @@ import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 public enum ReferencingLogicTransmuter
 {
 	Any(new RefLogicAny(), "", "any"),
-	Bundle(new RefLogicBundle(), "Product_Bundle", "bundle"),
-	Collection(new RefLogicCollection(), "Product_Collection", "collection"),
-	Product(new RefLogicProduct(), "", "product");
+	Bundle(new RefLogicBundle(), "Product_Bundle", "bundles"),
+	Collection(new RefLogicCollection(), "Product_Collection", "collections"),
+	Document(new RefLogicDocument(), "Product_Collection", "documents"),
+	Observational(new RefLogicObservational(), "Product_Collection", "observationals"),
+	Product(new RefLogicProduct(), "", "products");
 	
 	final private ReferencingLogic refLogic;
 	final private String pds_name;
@@ -66,5 +70,13 @@ public enum ReferencingLogicTransmuter
 		}
 		
 	}
+
+	public static List<String> getSwaggerNames()
+	{
+		List<String> names = new ArrayList<String>();
+		for (ReferencingLogicTransmuter rlt : ReferencingLogicTransmuter.values()) names.add(rlt.swagger_name);
+		return names;
+	}
+
 	public ReferencingLogic impl() { return this.refLogic; }
 }

@@ -22,8 +22,11 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
+import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
+import gov.nasa.pds.api.registry.exceptions.MembershipException;
+import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
@@ -40,15 +43,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 {
 	private static final Logger log = LoggerFactory.getLogger(RefLogicBundle.class);
 
-    @Override
-    public GroupConstraint constraints()
-    {
-    	Map<String,List<String>> preset = new HashMap<String,List<String>>();
-    	preset.put("product_class", Arrays.asList("Product_Bundle"));
-    	return GroupConstraintImpl.buildAll(preset);
-    }
-
-    static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
+	static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
     		throws ApplicationTypeException, IOException, LidVidNotFoundException
     {
     	log.info("Find children of a bundle");
@@ -57,14 +52,43 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     			getBundleCollectionLidVids(uid, control);
     }
 
-    static Pagination<String> grandchildren (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
-    		throws ApplicationTypeException, IOException, LidVidNotFoundException
+
+	/**
+     * Get all versions of bundle's collections by bundle LIDVID.
+     */
+    static private Pagination<String> getAllBundleCollectionLidVids(
+    		LidvidsContext idContext,
+    		ControlContext ctlContext)
+            throws IOException, LidVidNotFoundException
     {
-    	log.info("Find grandchildren of a bundle");
-    	PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
-    	for (String cid : getBundleCollectionLidVids(new Unlimited(uid.getLidVid()), control).page())
-    	{ ids.addAll(RefLogicCollection.children (control, selection, new Unlimited(cid)).page()); }
-    	return ids;
+        // Fetch collection references only.
+        List<String> fields = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary");
+
+        // Get bundle by lidvid.
+        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
+        		.build(RequestBuildContextFactory.given(fields, ReferencingLogicTransmuter.Bundle.impl().constraints()), ctlContext.getConnection().getRegistryIndex());
+        
+        // Call opensearch
+        SearchHit hit;
+        SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
+        if (hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
+        	throw new LidVidNotFoundException(idContext.getLidVid());
+        else hit = hits.getAt(0);
+
+        // Get fields
+        Map<String, Object> fieldMap = hit.getSourceAsMap();
+
+        // Lid references (e.g., Kaguya bundle)
+        List<String> ids = new ArrayList<String>();
+        PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
+
+        ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
+        ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
+        ids = LidVidUtils.getAllLidVidsByLids(ctlContext, 
+        		RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()),
+        		ids);
+        lidvids.addAll(ids);
+        return lidvids;
     }
 
     /**
@@ -137,43 +161,43 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
         return lidvids;
     }
 
-    
-    /**
-     * Get all versions of bundle's collections by bundle LIDVID.
-     */
-    static private Pagination<String> getAllBundleCollectionLidVids(
-    		LidvidsContext idContext,
-    		ControlContext ctlContext)
-            throws IOException, LidVidNotFoundException
+    static Pagination<String> grandchildren (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
+    		throws ApplicationTypeException, IOException, LidVidNotFoundException
     {
-        // Fetch collection references only.
-        List<String> fields = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary");
-
-        // Get bundle by lidvid.
-        SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields, ReferencingLogicTransmuter.Bundle.impl().constraints()), ctlContext.getConnection().getRegistryIndex());
-        
-        // Call opensearch
-        SearchHit hit;
-        SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
-        if (hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
-        	throw new LidVidNotFoundException(idContext.getLidVid());
-        else hit = hits.getAt(0);
-
-        // Get fields
-        Map<String, Object> fieldMap = hit.getSourceAsMap();
-
-        // Lid references (e.g., Kaguya bundle)
-        List<String> ids = new ArrayList<String>();
-        PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
-
-        ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
-        ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
-        ids = LidVidUtils.getAllLidVidsByLids(ctlContext, 
-        		RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()),
-        		ids);
-        lidvids.addAll(ids);
-        return lidvids;
+    	log.info("Find grandchildren of a bundle");
+    	PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
+    	for (String cid : getBundleCollectionLidVids(new Unlimited(uid.getLidVid()), control).page())
+    	{ ids.addAll(RefLogicCollection.children (control, selection, new Unlimited(cid)).page()); }
+    	return ids;
     }
+
+    @Override
+    public GroupConstraint constraints()
+    {
+    	Map<String,List<String>> preset = new HashMap<String,List<String>>();
+    	preset.put("product_class", Arrays.asList("Product_Bundle"));
+    	return GroupConstraintImpl.buildAll(preset);
+    }
+
+    @Override
+	public RequestAndResponseContext member(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
+			UnknownGroupNameException
+	{
+		if (twoSteps)
+			return RequestAndResponseContext.buildRequestAndResponseContext
+					(context, input, RefLogicBundle.grandchildren(context, input.getSelector(), input));
+		return RequestAndResponseContext.buildRequestAndResponseContext
+				(context, input, RefLogicBundle.children(context, input.getSelector(), input));
+	}
+
+    
+    @Override
+	public RequestAndResponseContext memberOf(ControlContext context, UserContext input, boolean twoSteps)
+			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
+			UnknownGroupNameException
+	{
+		throw new MembershipException(input.getIdentifier(), "member-of", "bundle");
+	}
 
 }
