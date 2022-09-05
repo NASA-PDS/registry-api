@@ -82,3 +82,5 @@ target/
 .DS_Store
 ._*
 
+# terraform generated dir
+.terraform
