@@ -44,6 +44,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private List<String> sort;
     final private int start;
     final private int limit;
+    final private String node;
     final private GroupConstraint presetCriteria;
     final private ProductVersionSelector selector;
     final private String format;
@@ -110,6 +111,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     			controlContext,
     			RequestBuildContextFactory.given(fields, resPreset));
     	this.limit = parameters.getLimit();
+    	this.node = parameters.getNode();
     	this.sort = parameters.getSort();
     	this.start = parameters.getStart();
     	this.presetCriteria = outPreset;
@@ -126,6 +128,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public final List<String> getSort() { return this.sort; }
 	public int getStart() { return this.start; }
 	public int getLimit() { return this.limit; }
+	public String getNode() { return this.node; }
 	@Override
 	public String getQueryString() { return this.queryString; }
 	public final GroupConstraint getPresetCriteria() { return this.presetCriteria; };

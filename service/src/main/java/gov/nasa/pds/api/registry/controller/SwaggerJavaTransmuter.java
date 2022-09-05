@@ -95,7 +95,8 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 			@Min(0) @Valid Integer limit,
 			@Valid String q,
 			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
+			@Min(0) @Valid Integer start,
+			@Valid String node)
 	{
 		return this.processs(new Standard(), new URIParameters()
 				.setGroup(group)
@@ -104,7 +105,8 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 				.setLimit(limit)
 				.setQuery(q)
 				.setSort(sort)
-				.setStart(start));
+				.setStart(start)
+				.setNode(node));
 	}
 
 	@Override
@@ -114,7 +116,8 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 			@Valid List<String> fields,
 			@Min(0) @Valid Integer limit,
 			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
+			@Min(0) @Valid Integer start,
+			@Valid String node)
 	{
 		return this.processs(new GroupReferencingId(), new URIParameters()
 				.setGroup(group)
@@ -122,7 +125,8 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 				.setFields(fields)
 				.setLimit(limit)
 				.setSort(sort)
-				.setStart(start));
+				.setStart(start)
+				.setNode(node));
 	}
 
 	@Override
@@ -133,7 +137,8 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 			@Valid List<String> fields,
 			@Min(0) @Valid Integer limit,
 			@Valid List<String> sort,
-			@Min(0) @Valid Integer start)
+			@Min(0) @Valid Integer start,
+			@Valid String node)
 	{
 		return this.processs(new GroupReferencingId(), new URIParameters()
 				.setGroup(group)
@@ -142,7 +147,8 @@ public class SwaggerJavaTransmuter implements ControlContext, GidApi, UidApi
 				.setFields(fields)
 				.setLimit(limit)
 				.setSort(sort)
-				.setStart(start));
+				.setStart(start)
+				.setNode(node));
 	}
 
 	@Override

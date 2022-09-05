@@ -43,6 +43,7 @@ paths:
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/Start"
+        - $ref: "#/components/parameters/Node"
 
   /uid/{identifier}:
     get:
@@ -137,6 +138,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /gid/{group}/referencing/{identifier}/{versions}:
     get:
       tags:
@@ -163,6 +165,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /uid/{identifier}/referencing/{group}:
     get:
       tags:
@@ -335,6 +338,18 @@ components:
       schema:
         type: string
         enum: [all,latest]
+    Node:
+      name: node
+      in: query
+      description: |
+        syntax: node=sbn
+        
+        behavior: Specific node id/abbreviation with which to filter returned results
+
+        note: If omitted, no node filtering is applied
+      required: false
+      schema:
+        type: string
   responses:
     Error:
       description: Unsuccessful request

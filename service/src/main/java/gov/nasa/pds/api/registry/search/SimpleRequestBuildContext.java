@@ -11,23 +11,34 @@ class SimpleRequestBuildContext implements RequestBuildContext
 {
 	final private List<String> fields;
 	final private GroupConstraint preset;
+	final private String node;
 	
 	SimpleRequestBuildContext ()
 	{
 		this.fields = new ArrayList<String>();
 		this.preset = GroupConstraintImpl.empty();
+		this.node = "";
 	}
 
 	SimpleRequestBuildContext (List<String> fields)
 	{
 		this.fields = fields;
 		this.preset = GroupConstraintImpl.empty();
+		this.node = "";
 	}
-
+	
 	SimpleRequestBuildContext (List<String> fields, GroupConstraint preset)
 	{
 		this.fields = fields;
 		this.preset = preset;
+		this.node = "";
+	}
+
+	SimpleRequestBuildContext (List<String> fields, GroupConstraint preset, String node)
+	{
+		this.fields = fields;
+		this.preset = preset;
+		this.node = node;
 	}
 
 	@Override
@@ -35,4 +46,8 @@ class SimpleRequestBuildContext implements RequestBuildContext
 
 	@Override
 	public GroupConstraint getPresetCriteria() { return preset; }
+	
+	@Override
+	public String getNode() { return node; }
+
 }

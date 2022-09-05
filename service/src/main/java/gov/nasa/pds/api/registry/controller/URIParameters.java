@@ -42,6 +42,7 @@ class URIParameters implements UserContext
 	private List<String> sort = new ArrayList<String>();
 	private Integer start = Integer.valueOf(-1);
 	private String version = "latest";
+	private String node = "";
 
 	@Override
 	public String getAccept() { return accept; }
@@ -67,6 +68,8 @@ class URIParameters implements UserContext
 	public Integer getStart() { return start; }
 	@Override
 	public String getVersion() { return version; }
+	@Override
+	public String getNode() { return node; }
 
 	public URIParameters setAccept(String accept)
 	{
@@ -127,6 +130,11 @@ class URIParameters implements UserContext
 			if ("all".equalsIgnoreCase(version)) this.selector = ProductVersionSelector.ALL;
 			else this.selector = ProductVersionSelector.LATEST;
 		}
+		return this;
+	}
+	public URIParameters setNode(String node)
+	{
+		if (node != null) this.node = node;
 		return this;
 	}
 }

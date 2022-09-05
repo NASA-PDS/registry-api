@@ -99,6 +99,16 @@ public class ProductQueryBuilderUtil
     }
 
     
+    public static void addNodeFilter(BoolQueryBuilder boolQuery, String node)
+    {
+        log.debug("addNodeFilter: " + node);
+        
+        if(node == null || node.trim() == "") return;
+        
+        boolQuery.must(QueryBuilders.termsQuery("ops:Harvest_Info/ops:node_name", node));
+    }
+
+    
     public static void addPresetCriteria(BoolQueryBuilder boolQuery, GroupConstraint presetCriteria)
     {
         if(presetCriteria != null)
