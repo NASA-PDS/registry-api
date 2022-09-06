@@ -1,6 +1,14 @@
 # Changelog
 
-## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-08-29)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-09-06)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...«unknown»)
+
+**Other closed issues:**
+
+- Provide POC of multi-tenant registry [\#169](https://github.com/NASA-PDS/registry-api/issues/169)
+
+## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-09-03)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...v1.1.0-SNAPSHOT)
 
