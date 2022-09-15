@@ -35,6 +35,18 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 {
     private static final Logger log = LoggerFactory.getLogger(RequestAndResponseContext.class);
 
+	/*
+	 * Summary only is now specified as limit=0. However, by not retrieving any data from the registry, the list of
+	 * properties (i.e. the summary) cannot be constructed. This constant is the default limit/size used in the case 
+	 * summary-only has been requested. 
+	 *
+	 * It would be better if we could access the default defined in swagger.yml, but that is only available a couple 
+	 * of call levels above here. The code could be refectored such that summary only is determined at that level,
+	 * but it would be a significant change and require each endpoint method to handle it rather than centralized
+	 * here.
+	 */
+	private static final int SUMMARY_SAMPLE_SIZE = 100; 
+
     final private long begin_processing = System.currentTimeMillis();
     final private ControlContext controlContext;
 	final private String queryString;
@@ -154,7 +166,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		}
 		else
 		{
-                    String known = String.join(", ", this.formatters.keySet());
+			String known = String.join(", ", this.formatters.keySet());
 			log.warn("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
 			throw new ApplicationTypeException("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
 		}
@@ -287,7 +299,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
         }
         else
         {
-			request.source().size(this.getLimit());
+			if (!this.isSummaryOnly()) request.source().size(this.getLimit());
+			else request.source().size(this.SUMMARY_SAMPLE_SIZE);
 			request.source().from(this.getStart());
         	this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
         }
