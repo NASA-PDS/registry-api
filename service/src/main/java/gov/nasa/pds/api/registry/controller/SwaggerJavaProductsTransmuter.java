@@ -13,6 +13,13 @@ import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmuter implements ProductsApi
 {
 	@Override
+	public ResponseEntity<Object> productList(@Valid List<String> fields, @Valid List<String> keywords, 
+			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
+			@Min(0) @Valid Integer start) {
+		return super.classList("any", fields, keywords, limit, q, sort, start);
+	}
+
+	@Override
 	public ResponseEntity<Object> productMemberOf(String identifier, @Valid List<String> fields,
 			@Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
 		return this.processs(new Member(false, false), new URIParameters()
