@@ -31,7 +31,7 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 class URIParameters implements UserContext
 {
 	private boolean verifyClassAndId = false;
-	private String accept = "applicaation/json";
+	private String accept = "application/json";
 	private List<String> fields = new ArrayList<String>();
 	private String group = "";
 	private String identifier = "";
