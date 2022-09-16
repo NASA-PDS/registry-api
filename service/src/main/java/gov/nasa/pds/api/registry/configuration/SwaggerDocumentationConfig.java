@@ -21,7 +21,7 @@ public class SwaggerDocumentationConfig {
 
 	ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("PDS federated API")
+            .title("PDS Federated API")
             .description("Federated PDS API which provides actionable end points standardized between the different nodes. ")
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
