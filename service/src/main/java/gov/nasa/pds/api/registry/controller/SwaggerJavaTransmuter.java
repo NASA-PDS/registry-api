@@ -145,6 +145,14 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
     }
 
 	@Override
+	public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords, 
+			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
+			@Min(0) @Valid Integer start) {
+		// TODO Auto-generated method stub
+		return super.bundleList(fields, keywords, limit, q, sort, start);
+	}
+
+	@Override
 	public ResponseEntity<Object> bundlesLidvid(String identifier, @Valid List<String> fields) {
 		// TODO Auto-generated method stub
 		return super.bundlesLidvid(identifier, fields);
@@ -192,6 +200,14 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 	}
 
 	@Override
+	public ResponseEntity<Object> collectionList(@Valid List<String> fields, @Valid List<String> keywords, 
+			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
+			@Min(0) @Valid Integer start) {
+		// TODO Auto-generated method stub
+		return super.collectionList(fields, keywords, limit, q, sort, start);
+	}
+
+	@Override
 	public ResponseEntity<Object> collectionsLidvid(String identifier, @Valid List<String> fields) {
 		// TODO Auto-generated method stub
 		return super.collectionsLidvid(identifier, fields);
@@ -236,6 +252,14 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 			@Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
 		// TODO Auto-generated method stub
 		return super.collectionsLidvidProductsLatest(identifier, fields, limit, sort, start);
+	}
+
+	@Override
+	public ResponseEntity<Object> productList(@Valid List<String> fields, @Valid List<String> keywords, 
+			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
+			@Min(0) @Valid Integer start) {
+		// TODO Auto-generated method stub
+		return super.productList(fields, keywords, limit, q, sort, start);
 	}
 
 	@Override

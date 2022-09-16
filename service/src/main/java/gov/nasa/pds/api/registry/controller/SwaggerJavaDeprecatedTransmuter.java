@@ -15,6 +15,13 @@ import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransmuter implements BundlesApi, CollectionsApi, ProductsApi
 {
 	@Override
+	public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords, 
+			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
+			@Min(0) @Valid Integer start) {
+		return super.classList("bundles", fields, keywords, limit, q, sort, start);
+	}
+
+	@Override
 	public ResponseEntity<Object> bundlesLidvid(String identifier, @Valid List<String> fields) {
 		return this.processs(new Standard(), new URIParameters()
 				.setGroup("bundles")
@@ -73,6 +80,13 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 	}
 
 	@Override
+	public ResponseEntity<Object> collectionList(@Valid List<String> fields, @Valid List<String> keywords, 
+			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
+			@Min(0) @Valid Integer start) {
+		return super.classList("collections", fields, keywords, limit, q, sort, start);
+	}
+
+	@Override
 	public ResponseEntity<Object> collectionsLidvid(String identifier, @Valid List<String> fields) {
 		return this.processs(new Standard(), new URIParameters()
 				.setGroup("collections")
@@ -97,7 +111,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 	public ResponseEntity<Object> collectionsLidvidBundles(String identifier,
 			@Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
 			@Min(0) @Valid Integer start) {
-		return this.classMemberOf("collection", identifier, fields, limit, sort, start);
+		return this.classMemberOf("collections", identifier, fields, limit, sort, start);
 	}
 
 	@Override

@@ -44,6 +44,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private List<String> sort;
     final private int start;
     final private int limit;
+    final private boolean summaryOnly;
     final private GroupConstraint presetCriteria;
     final private ProductVersionSelector selector;
     final private String format;
@@ -112,7 +113,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     			outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED,
     			controlContext,
     			RequestBuildContextFactory.given(fields, resPreset));
-    	this.limit = parameters.getLimit();
+   		this.summaryOnly = parameters.isSummaryOnly();
+   		this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
     	this.start = parameters.getStart();
     	this.presetCriteria = outPreset;
@@ -134,8 +136,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public final GroupConstraint getPresetCriteria() { return this.presetCriteria; };
 	public ProductVersionSelector getSelector() { return this.selector; }
 
-	public boolean isSingular() { return this.getStart() == -1 && this.getLimit() == 0; }
-	public boolean isSummaryOnly() { return this.limit == 0; }
+	public boolean isSingular() { return this.getStart() == -1 && this.isSummaryOnly(); } // isSummaryOnly implies original limit value == 0
+	public boolean isSummaryOnly() { return summaryOnly; }
 	@Override
 	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
 
@@ -154,7 +156,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		}
 		else
 		{
-                    String known = String.join(", ", this.formatters.keySet());
+			String known = String.join(", ", this.formatters.keySet());
 			log.warn("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
 			throw new ApplicationTypeException("The Accept header value " + String.valueOf(this.format) + " is not supported, supported values are " + known);
 		}
@@ -234,6 +236,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		summary.setQ(this.getQueryString());
 		summary.setStart(this.getStart());
 		summary.setLimit(this.getLimit());
+		if (this.isSummaryOnly()) summary.setLimit(0);
 		summary.setSort(this.getSort());
 		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.isSummaryOnly()));
 		summary.setProperties(new ArrayList<String>());
@@ -257,6 +260,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			summary.setQ(this.getQueryString());
 			summary.setStart(this.getStart());
 			summary.setLimit(this.getLimit());
+			if (this.isSummaryOnly()) summary.setLimit(0);
 			summary.setSort(this.getSort());
 			summary.setHits(total_hits);
 

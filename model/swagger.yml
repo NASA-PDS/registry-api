@@ -272,6 +272,32 @@ paths:
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
 
+  /products:
+    get:
+      tags:
+        - products
+      summary: |
+        returns all PDS data products, including bundles, collections, documentation, context and observational products taht meet all given constraints.
+      operationId: product-list
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Keyword"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
   /products/{identifier}:
     get:
       tags:
@@ -443,7 +469,7 @@ paths:
       tags:
         - references
       summary: |
-        eturns one or more PDS Products that have the given PDS lid/lidvid as a member.
+        returns one or more PDS Products that have the given PDS lid/lidvid as a member.
       operationId: product-member-of
       responses:
         '200':
@@ -467,7 +493,7 @@ paths:
       tags:
         - references
       summary: |
-        eturns one or more PDS Products that have the given PDS lid/lidvid as a member.
+        returns one or more PDS Products that have the given PDS lid/lidvid as a member.
       operationId: product-member-of-vers
       responses:
         '200':
@@ -538,6 +564,31 @@ paths:
       - $ref: "#/components/parameters/Versions"
 
 # begin deprecated: this is the older API that is clutter
+  /bundles:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: bundle-list
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Keyword"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
   /bundles/{identifier}:
     get:
       tags:
@@ -697,6 +748,31 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Sort"
+      - $ref: "#/components/parameters/Start"
+
+  /collections:
+    get:
+      tags:
+        - deprecated
+      summary: deprecated
+      operationId: collection-list
+      responses:
+        '200':
+          $ref: "#/components/responses/Plural"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Fields"
+      - $ref: "#/components/parameters/Keyword"
+      - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
 
