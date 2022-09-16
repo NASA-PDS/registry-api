@@ -52,7 +52,7 @@ This requirement is not impacted by the current version
 
 
 This requirement is not impacted by the current version
-## As a user,  I want specific end points for products which are not collections or bundles ([#12](https://github.com/NASA-PDS/registry-api/issues/12)) 
+## As a user,  I want to query for products from any PDS4 product type ([#12](https://github.com/NASA-PDS/registry-api/issues/12)) 
 
 
 This requirement is not impacted by the current version
@@ -89,6 +89,10 @@ This requirement is not impacted by the current version
 
 This requirement is not impacted by the current version
 ## As a user, I want to get the product identifiers in a application/kvp+json format ([#132](https://github.com/NASA-PDS/registry-api/issues/132)) 
+
+
+This requirement is not impacted by the current version
+## As a user, I want to be able to paginate over any number of results returned from a query. ([#176](https://github.com/NASA-PDS/registry-api/issues/176)) 
 
 
 This requirement is not impacted by the current version
