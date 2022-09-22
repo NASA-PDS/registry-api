@@ -1,8 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/NASA-PDS/registry-api/tree/1.1.0) (2022-09-22)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0...1.1.0)
+
+**Defects:**
+
+- Sub-project should inherit parent project version in order to be able to automate versioning using mvn commands [\#182](https://github.com/NASA-PDS/registry-api/issues/182) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
+
+## [v1.1.0](https://github.com/NASA-PDS/registry-api/tree/v1.1.0) (2022-09-16)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.0...v1.1.0)
+
 ## [release/1.1.0](https://github.com/NASA-PDS/registry-api/tree/release/1.1.0) (2022-09-16)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...release/1.1.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...release/1.1.0)
 
 **Requirements:**
 
@@ -12,20 +24,13 @@
 
 - limit=0 is not providing list of properties \(fka summary-only\) [\#179](https://github.com/NASA-PDS/registry-api/issues/179) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - The /products, /bundles & /collections endpoints are missing from the API [\#178](https://github.com/NASA-PDS/registry-api/issues/178)
-- `fields` query parameter does not work consistently across all response formats [\#172](https://github.com/NASA-PDS/registry-api/issues/172) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- summary-only does not work on products of a collection [\#152](https://github.com/NASA-PDS/registry-api/issues/152) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- swagger-ui does not show the expected version [\#149](https://github.com/NASA-PDS/registry-api/issues/149) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-
-## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-09-06)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2...v1.1.0-SNAPSHOT)
-
-**Defects:**
-
 - Swagger-UI does not display properly out-of-the-box  [\#174](https://github.com/NASA-PDS/registry-api/issues/174)
+- `fields` query parameter does not work consistently across all response formats [\#172](https://github.com/NASA-PDS/registry-api/issues/172) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - summary does not contain the property values [\#171](https://github.com/NASA-PDS/registry-api/issues/171) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - summary-only does not work as expected [\#167](https://github.com/NASA-PDS/registry-api/issues/167) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- summary-only does not work on products of a collection [\#152](https://github.com/NASA-PDS/registry-api/issues/152) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - bundle of a product does not return result [\#150](https://github.com/NASA-PDS/registry-api/issues/150) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- swagger-ui does not show the expected version [\#149](https://github.com/NASA-PDS/registry-api/issues/149) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - wildcard search in query parameter returning odd results [\#134](https://github.com/NASA-PDS/registry-api/issues/134) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - /bundles/{identifier}/all does not return any results [\#118](https://github.com/NASA-PDS/registry-api/issues/118) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
