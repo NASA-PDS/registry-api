@@ -180,20 +180,74 @@ Go through this file line-by-line and replace the template values with your own.
                     </archive>
                 </configuration>
             </plugin>
-             <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <failOnError>false</failOnError>
-          <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
-        </configuration>
-      </plugin>
         </plugins>
     </build>
 
     <!-- Other handy items get inherited from the parent POM, but you can override these here -->
     <developers/>
-    <profiles/>
+    <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                  <goal>test-jar</goal>
+                </goals> 
+              </execution>
+            </executions>
+          </plugin>
+          <!--
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.3.0</version>
+            <configuration>
+              <source>1.8</source>
+              <failOnError>false</failOnError>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    </profiles>
     <distributionManagement/>
     <reporting/>
     <licenses/>

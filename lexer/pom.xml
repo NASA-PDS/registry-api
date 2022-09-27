@@ -152,6 +152,7 @@ POSSIBILITY OF SUCH DAMAGE.
 		    </executions>
 		</plugin>
 		
+        <!--
         <plugin>
            <groupId>org.apache.maven.plugins</groupId>
            <artifactId>maven-javadoc-plugin</artifactId>
@@ -168,6 +169,7 @@ POSSIBILITY OF SUCH DAMAGE.
              </execution>
            </executions>
          </plugin>
+         -->
       
       <!-- Disable Site for now -->
       <plugin>
