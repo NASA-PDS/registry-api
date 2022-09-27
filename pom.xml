@@ -81,7 +81,7 @@ Go through this file line-by-line and replace the template values with your own.
     -->
     <artifactId>registry-api</artifactId>
     <!-- The third part of the Maven coorindate is the version identifier of the artifact: -->
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.1.3</version>
     <!-- The final part is the kind: here we make a `jar`, but there's `war`, `ejb`, `ear`, `maven-plugin`, etc.: -->
     <packaging>pom</packaging>
 
