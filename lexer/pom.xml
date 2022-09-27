@@ -152,6 +152,7 @@ POSSIBILITY OF SUCH DAMAGE.
 		    </executions>
 		</plugin>
 		
+        <!-- TODO: Restore -->
         <!--
         <plugin>
            <groupId>org.apache.maven.plugins</groupId>

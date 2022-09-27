@@ -84,6 +84,7 @@
 	</executions>
 
       </plugin>
+      <!-- TODO: Restore -->
       <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -102,7 +103,7 @@
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
-         </plugins>    
+    </plugins>    
   </build>
   
   <distributionManagement>
