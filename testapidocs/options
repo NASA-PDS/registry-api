@@ -17,7 +17,7 @@
 -docencoding
 'UTF-8'
 -doctitle
-'gov.nasa.pds:registry 1.1.1 Test API'
+'gov.nasa.pds:registry 1.1.2 Test API'
 -link
 '../apidocs'
 -linkoffline
@@ -25,4 +25,4 @@
 -use
 -version
 -windowtitle
-'gov.nasa.pds:registry 1.1.1 Test API'
+'gov.nasa.pds:registry 1.1.2 Test API'
