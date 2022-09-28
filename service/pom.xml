@@ -74,11 +74,6 @@
       </plugin>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-site-plugin</artifactId>
-	<version>3.8.2</version>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-assembly-plugin</artifactId>
 	<version>3.1.1</version>
 	<executions>
@@ -105,29 +100,6 @@
 
 
   </build>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <site>
-      <id>dummy URL to enabling doc staging</id>
-      <url>https://{project.artifactId}</url>
-    </site>
-  </distributionManagement>
-
-  <scm>
-    <url>https://github.com/NASA-PDS/registry-api-service</url>
-    <connection>scm:git:git@github.com/NASA-PDS/registry-api-service.git</connection>
-    <developerConnection>scm:git:git@github.com:NASA-PDS/registry-api-service.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
-
 
   <dependencies>
 
@@ -358,19 +330,5 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <repositories>
-    <repository>
-      <id>oss.sonatype.org-snapshot</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-	<enabled>true</enabled>
-      </releases>
-      <snapshots>
-	<enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
 
 </project>

@@ -53,23 +53,6 @@ POSSIBILITY OF SUCH DAMAGE.
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
   
   </properties>
-  
- <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <site>
-      <id>dummy URL to enabling doc staging</id>
-      <url>https://{project.artifactId}</url>
-    </site>
-  </distributionManagement> 
- 
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -110,15 +93,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-compiler-plugin.version}</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      
-      <plugin>
 		    <groupId>org.antlr</groupId>
 		    <artifactId>antlr4-maven-plugin</artifactId>
 		    <version>${antlr4.version}</version>
@@ -130,9 +104,6 @@ POSSIBILITY OF SUCH DAMAGE.
 		        </execution>
 		    </executions>
 	   </plugin>
-	      
-	      
-	      
 	   <plugin>
 		    <artifactId>maven-jar-plugin</artifactId>
 		    <version>3.0.1</version>
@@ -151,34 +122,6 @@ POSSIBILITY OF SUCH DAMAGE.
 		        </execution>
 		    </executions>
 		</plugin>
-		
-        <plugin>
-           <groupId>org.apache.maven.plugins</groupId>
-           <artifactId>maven-javadoc-plugin</artifactId>
-           <configuration>
-             <source>11</source>
-             <failOnError>false</failOnError>
-           </configuration>
-           <executions>
-             <execution>
-               <id>attach-javadocs</id>
-               <goals>
-                 <goal>jar</goal>
-               </goals>
-             </execution>
-           </executions>
-         </plugin>
-      
-      <!-- Disable Site for now -->
-      <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-          <skipDeploy>true</skipDeploy>
-        </configuration>
-      </plugin>
-			      
-      
     </plugins>
   </build>
 
@@ -186,7 +129,6 @@ POSSIBILITY OF SUCH DAMAGE.
     <url>https://github.com/NASA-PDS/registry-api/tree/main/lexer</url>
     <connection>scm:git:git://github.com/NASA-PDS/registry-api.git</connection>
     <developerConnection>scm:git:git@github.com:NASA-PDS/registry-api.git</developerConnection>
-    <tag>v1.0.0</tag>
   </scm>
 
 
