@@ -1,5 +1,29 @@
 # Changelog
 
+## [release/1.1.9](https://github.com/NASA-PDS/registry-api/tree/release/1.1.9) (2022-09-28)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.7...release/1.1.9)
+
+## [release/1.1.7](https://github.com/NASA-PDS/registry-api/tree/release/1.1.7) (2022-09-27)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.6...release/1.1.7)
+
+## [release/1.1.6](https://github.com/NASA-PDS/registry-api/tree/release/1.1.6) (2022-09-27)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.5...release/1.1.6)
+
+## [release/1.1.5](https://github.com/NASA-PDS/registry-api/tree/release/1.1.5) (2022-09-27)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.4...release/1.1.5)
+
+## [release/1.1.4](https://github.com/NASA-PDS/registry-api/tree/release/1.1.4) (2022-09-27)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.3SNAPSHOT...release/1.1.4)
+
+## [v1.1.3SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.3SNAPSHOT) (2022-09-27)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.3...v1.1.3SNAPSHOT)
+
 ## [release/1.1.3](https://github.com/NASA-PDS/registry-api/tree/release/1.1.3) (2022-09-27)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.2...release/1.1.3)
@@ -57,7 +81,7 @@
 
 ## [v1.0.2](https://github.com/NASA-PDS/registry-api/tree/v1.0.2) (2022-07-27)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.2-SNAPSHOT...v1.0.2)
 
 **Requirements:**
 
@@ -66,7 +90,6 @@
 **Improvements:**
 
 - Add back the Dockerfile used for the AWS/Fargate deployment [\#140](https://github.com/NASA-PDS/registry-api/issues/140)
-- Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
 - Support override of application.properties for AWS Docker image [\#117](https://github.com/NASA-PDS/registry-api/issues/117)
 
 **Defects:**
@@ -80,9 +103,34 @@
 - apply bug fix on stable release [\#160](https://github.com/NASA-PDS/registry-api/issues/160)
 - add ops:Tracking\_Meta/ops:archive\_status to meta section of API response [\#101](https://github.com/NASA-PDS/registry-api/issues/101)
 
+## [v1.0.2-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.0.2-SNAPSHOT) (2022-07-05)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.1...v1.0.2-SNAPSHOT)
+
+**Improvements:**
+
+- Refactor API endpoints for simpler architecture/design/implementation to maintain/extend [\#131](https://github.com/NASA-PDS/registry-api/issues/131)
+
 ## [v1.0.1](https://github.com/NASA-PDS/registry-api/tree/v1.0.1) (2022-06-09)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.0.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.0-SNAPSHOT...v1.0.1)
+
+**Improvements:**
+
+- \[SECURITY\] Upgrade jackson dependencies to remove vulnerability [\#122](https://github.com/NASA-PDS/registry-api/issues/122) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
+
+**Defects:**
+
+- \[SECURITY\] Log4j vulnerability in lexer [\#137](https://github.com/NASA-PDS/registry-api/issues/137) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+- Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Bump search version to 1.0 [\#143](https://github.com/NASA-PDS/registry-api/issues/143)
+
+## [v1.1.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.1.0-SNAPSHOT) (2022-05-17)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.1.0-SNAPSHOT)
 
 **Requirements:**
 
@@ -90,22 +138,15 @@
 
 **Improvements:**
 
-- \[SECURITY\] Upgrade jackson dependencies to remove vulnerability [\#122](https://github.com/NASA-PDS/registry-api/issues/122) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - Remove the home controller from the swagger-ui [\#108](https://github.com/NASA-PDS/registry-api/issues/108)
 - lidvid resolution need to use \_search instead of \_doc elasticsearch requests  [\#105](https://github.com/NASA-PDS/registry-api/issues/105)
 
 **Defects:**
 
-- \[SECURITY\] Log4j vulnerability in lexer [\#137](https://github.com/NASA-PDS/registry-api/issues/137) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Registry API Service docker container fails to start with error: Unable to access jarfile /usr/local/registry-api-service/registry-api-service.jar [\#128](https://github.com/NASA-PDS/registry-api/issues/128) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Update all endpoints to only allow access to public data. [\#113](https://github.com/NASA-PDS/registry-api/issues/113) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - documentation does not match behavior [\#106](https://github.com/NASA-PDS/registry-api/issues/106) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - LID -\> LIDVID conversion not consistent in registry-api [\#79](https://github.com/NASA-PDS/registry-api/issues/79) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
-
-**Other closed issues:**
-
-- Bump search version to 1.0 [\#143](https://github.com/NASA-PDS/registry-api/issues/143)
 
 ## [v1.0.0](https://github.com/NASA-PDS/registry-api/tree/v1.0.0) (2022-04-19)
 
