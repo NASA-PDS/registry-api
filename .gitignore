@@ -33,9 +33,9 @@
 # Object files
 *.o
 *.pkl
-*.py[cod]
+*.pyc
 
-# Static libraries
+# Libraries
 *.lib
 *.a
 
@@ -47,9 +47,6 @@
 # IntelliJ files
 .idea/
 *.iml
-
-# Sublime Text files
-*.sublime-*
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -64,14 +61,17 @@
 
 # Temporary files
 *~
-.*.swp
-var/
+src/test/temp/
 
 # other stuff
 *.xpr
 *.swp
-bin/
-typescript
+/bin/
+.*.swp
+*.sublime-*
+*.DS_Store
+pom.xml.versionsBackup
+*\#
 
 # Java stuff
 *.javac
@@ -83,5 +83,3 @@ model/target
 
 # macOS specific stuff
 .DS_Store
-._*
-

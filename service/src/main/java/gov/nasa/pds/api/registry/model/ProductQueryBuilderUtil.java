@@ -61,7 +61,8 @@ public class ProductQueryBuilderUtil
     
     /**
      * Create PDS query language query
-     * @param req request parameters
+     * @param queryString PDS query language search query 
+     * @param fields List of must match fields
      * @param presetCriteria preset criteria
      * @return a query
      */
@@ -121,7 +122,7 @@ public class ProductQueryBuilderUtil
     
     /**
      * Create full-text / keyword query (Uses Lucene query language for now)
-     * @param req request parameters
+     * @param keyword search keyword
      * @param presetCriteria preset criteria
      * @return a query
      */
