@@ -52,12 +52,12 @@ Go through this file line-by-line and replace the template values with your own.
     Maven (and other compatible build tools) resolve this automatically, but you can find the source of this
     parent at https://github.com/NASA-PDS/pdsen-maven-parent
     -->
-    <parent>
+<!--    <parent>
         <groupId>gov.nasa</groupId>
         <artifactId>pds</artifactId>
         <version>1.13.0</version>
     </parent>
-  
+-->  
     <!-- My project metadata here -->
     <properties>
         <!-- Obviously put in your own project name instead of `myproject` -->
@@ -132,12 +132,69 @@ Go through this file line-by-line and replace the template values with your own.
         </dependency>
     </dependencies>
 
-    <!--<build>
-        <!-\-
+    <build>
+        <plugins>
+        <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+                <serverId>ossrh</serverId>
+                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.9.1</version>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>3.0.0-M4</version>
+            <configuration>
+                <tagNameFormat>v@{project.version}</tagNameFormat>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>3.0.0-M1</version>
+            <executions>
+                <execution>
+                    <id>default-install</id>
+                    <phase>install</phase>
+                    <goals>
+                        <goal>install</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M3</version>
+        </plugin>
+        <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>3.0.0-M3</version>
+        </plugin>
+        </plugins>
+        <!--
         Resources (files) are non-code parts of a project that the code-parts access during run time; these
         should be bundled in a jar (or war, or whatever) and get specified here
-        -\->
-        <resources>
+        -->
+        <!--<resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
@@ -188,15 +245,147 @@ Go through this file line-by-line and replace the template values with your own.
           <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
         </configuration>
       </plugin>
-        </plugins>
-    </build>-->
+      </plugins>-->
+    </build>
 
     <!-- Other handy items get inherited from the parent POM, but you can override these here -->
     <developers/>
-    <profiles/>
-    <distributionManagement/>
-    <reporting/>
-    <licenses/>
-    <organization/>  <!-- ← Might not be implemented in parent pom yet -->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                    <goal>test-jar</goal>
+                                </goals> 
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <site>
+            <id>dummy URL to enabling doc staging</id>
+            <url>https://{project.artifactId}</url>
+        </site>
+    </distributionManagement>
+    
+    <repositories>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.2</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependencies</report>
+                            <report>issue-management</report>
+                            <report>licenses</report>
+                            <report>mailing-lists</report>
+                            <report>team</report>
+                            <report>summary</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changes-plugin</artifactId>
+                <version>2.12.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>changes-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <failOnError>false</failOnError>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-linkcheck-plugin</artifactId>
+                <version>1.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
