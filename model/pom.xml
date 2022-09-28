@@ -52,7 +52,6 @@
   
   
   <build>
-    <sourceDirectory>.</sourceDirectory>
     <plugins>
     <plugin>
 	<groupId>io.swagger.codegen.v3</groupId>
@@ -102,24 +101,6 @@
       </plugin>
          </plugins>    
   </build>
-  
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <site>
-      <id>dummy URL to enabling doc staging</id>
-      <url>https://{project.artifactId}</url>
-    </site>
-  </distributionManagement>
-  
-  
   
   <dependencies>
     <!-- dependencies are needed for the client being generated -->
@@ -254,18 +235,5 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
-  <repositories>
-    <repository>
-      <id>oss.sonatype.org-snapshot</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories> 
   
 </project>
