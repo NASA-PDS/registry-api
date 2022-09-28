@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
   <parent>
     <groupId>gov.nasa.pds</groupId>
     <artifactId>registry-api</artifactId>
-    <version>1.1.7</version>
+    <version>1.1.8</version>
   </parent>
 
   <groupId>gov.nasa.pds.registry-api</groupId>
@@ -152,8 +152,6 @@ POSSIBILITY OF SUCH DAMAGE.
 		    </executions>
 		</plugin>
 		
-        <!-- TODO: Restore -->
-        <!--
         <plugin>
            <groupId>org.apache.maven.plugins</groupId>
            <artifactId>maven-javadoc-plugin</artifactId>
@@ -170,7 +168,6 @@ POSSIBILITY OF SUCH DAMAGE.
              </execution>
            </executions>
          </plugin>
-         -->
       
       <!-- Disable Site for now -->
       <plugin>

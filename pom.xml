@@ -81,7 +81,7 @@ Go through this file line-by-line and replace the template values with your own.
     -->
     <artifactId>registry-api</artifactId>
     <!-- The third part of the Maven coorindate is the version identifier of the artifact: -->
-    <version>1.1.7</version>
+    <version>1.1.8</version>
     <!-- The final part is the kind: here we make a `jar`, but there's `war`, `ejb`, `ear`, `maven-plugin`, etc.: -->
     <packaging>pom</packaging>
 
@@ -132,11 +132,11 @@ Go through this file line-by-line and replace the template values with your own.
         </dependency>
     </dependencies>
 
-    <build>
-        <!--
+    <!--<build>
+        <!-\-
         Resources (files) are non-code parts of a project that the code-parts access during run time; these
         should be bundled in a jar (or war, or whatever) and get specified here
-        -->
+        -\->
         <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
@@ -146,15 +146,15 @@ Go through this file line-by-line and replace the template values with your own.
                 </includes>
                 <targetPath>gov/nasa/pds/mypackage</targetPath>
             </resource>
-            <!-- You can give <testResources> for resources needed during the test phase -->
+            <!-\- You can give <testResources> for resources needed during the test phase -\->
         </resources>
 
-        <!--
+        <!-\-
         Plugins tell Maven how to operate the various lifecycle phases; include extra as needed, such
         as for CORBA stub generation from `.idl` files, or even more modern things.
-        -->
+        -\->
         <plugins>
-            <!--
+            <!-\-
             Other plugins get inherited, such as maven-compiler-plugin and maver-surefire-plugin,
             so we don't need to repeat them here.
 
@@ -163,7 +163,7 @@ Go through this file line-by-line and replace the template values with your own.
 
             You can find some plugins at: https://maven.apache.org/plugins/
             Note that other plugins exist and may be published elsewhere.
-            -->
+            -\->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -180,150 +180,22 @@ Go through this file line-by-line and replace the template values with your own.
                     </archive>
                 </configuration>
             </plugin>
-            <!-- TODO: restore -->
-            <!--
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                  <failOnError>false</failOnError>
-                  <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
-                </configuration>
-              </plugin>
-            -->
-            <!-- TODO: Remove -->
-            <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                    <skipDeploy>true</skipDeploy>
-                </configuration>
-            </plugin>
+             <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <failOnError>false</failOnError>
+          <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
+        </configuration>
+      </plugin>
         </plugins>
-    </build>
+    </build>-->
 
     <!-- Other handy items get inherited from the parent POM, but you can override these here -->
     <developers/>
-    <profiles>
-    <!-- TODO: Remove -->
-      <profile>
-        <id>release</id>
-        <build>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-source-plugin</artifactId>
-              <version>3.2.0</version>
-              <executions>
-                <execution>
-                  <id>attach-sources</id>
-                  <phase>prepare-package</phase>
-                  <goals>
-                    <goal>jar-no-fork</goal>
-                    <goal>test-jar</goal>
-                  </goals> 
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>3.3.0</version>
-              <configuration>
-                <source>1.8</source>
-                <failOnError>false</failOnError>
-                <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
-              </configuration>
-              <executions>
-                <execution>
-                  <id>attach-javadocs</id>
-                  <goals>
-                    <goal>jar</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                    <skipDeploy>true</skipDeploy>
-                </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <version>3.0.1</version>
-              <executions>
-                <execution>
-                  <id>sign-artifacts</id>
-                  <phase>verify</phase>
-                  <goals>
-                    <goal>sign</goal>
-                  </goals>
-                  <configuration>
-                    <gpgArguments>
-                      <arg>--pinentry-mode</arg>
-                      <arg>loopback</arg>
-                    </gpgArguments>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-        </plugins>
-      </build>
-    </profile>
-    </profiles>
+    <profiles/>
     <distributionManagement/>
-    <reporting>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.1.2</version>
-          <reportSets>
-            <reportSet>
-              <reports>
-                <report>dependencies</report>
-                <report>issue-management</report>
-                <report>licenses</report>
-                <report>mailing-lists</report>
-                <report>team</report>
-                <report>summary</report>
-                <report>scm</report>
-              </reports>
-            </reportSet>
-          </reportSets>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-changes-plugin</artifactId>
-          <version>2.12.1</version>
-          <reportSets>
-            <reportSet>
-              <reports>
-                <report>changes-report</report>
-              </reports>
-            </reportSet>
-            </reportSets>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.3.0</version>
-          <configuration>
-            <source>1.8</source>
-            <failOnError>false</failOnError>
-            <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-linkcheck-plugin</artifactId>
-          <version>1.2</version>
-        </plugin>
-      </plugins>
-    </reporting>
+    <reporting/>
     <licenses/>
     <organization/>  <!-- ← Might not be implemented in parent pom yet -->
 
