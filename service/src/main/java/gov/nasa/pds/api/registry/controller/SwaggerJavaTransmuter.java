@@ -94,6 +94,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 
 	protected ResponseEntity<Object> processs (EndpointHandler handler, URIParameters parameters)
 	{
+		long begin = System.currentTimeMillis();
         try
         {
         	parameters.setAccept(this.request.getHeader("Accept")).setLidVid(this);
@@ -136,6 +137,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
         	log.error("Group name not implemented", e);
         	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_ACCEPTABLE);
         }
+        finally { log.info("Transmuter processing of request took: " + (System.currentTimeMillis() - begin) + " ms"); }
 	}
 
 	private boolean proxyRunsOnDefaultPort()
