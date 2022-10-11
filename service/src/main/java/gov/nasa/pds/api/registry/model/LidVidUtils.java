@@ -138,7 +138,7 @@ public class LidVidUtils
     }
 
 	public static void verify (ControlContext control, UserContext user)
-			throws IOException, LidVidMismatchException, UnknownGroupNameException
+			throws IOException, LidVidMismatchException, LidVidNotFoundException, UnknownGroupNameException
 	{
 		ReferencingLogicTransmuter expected_rlt = ReferencingLogicTransmuter.getBySwaggerGroup(user.getGroup());
 			
