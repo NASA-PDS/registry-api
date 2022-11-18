@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-10-11)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.2.0-SNAPSHOT)
+
 ## [v1.1.10](https://github.com/NASA-PDS/registry-api/tree/v1.1.10) (2022-09-29)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.10...v1.1.10)
