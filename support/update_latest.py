@@ -26,12 +26,6 @@ def _log_level (input:str)->int:
     except ValueError: result = getattr (logging, input)
     return result
 
-def add_doc (reg, doc, id):
-    response = requests.put ('https://localhost:9200/' + reg + '/_doc/' + id,
-                             auth=('admin', 'admin'), json=doc, verify=False)
-    print (id, response)
-    return
-
 def cli():
     ap = argparse.ArgumentParser(description='''Update latest index from registry index
 
