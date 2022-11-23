@@ -25,7 +25,7 @@ def cli():
 The program sweeps through the registry index to find the earliest and latest "ops:Harvest_Info/ops:harvest_date_time".''',
                                  epilog='''EXAMPLES:
 
-- command for opensearch running in a container with the sockets published at 9200 for data ingested for full day March 11, 2020:
+- command for opensearch running in a container with harvested data:
                                  
   harvest_range.py -b https://localhost:9200 -p admin -u admin
 
