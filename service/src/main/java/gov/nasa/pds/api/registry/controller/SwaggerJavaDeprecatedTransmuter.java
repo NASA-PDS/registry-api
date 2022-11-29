@@ -100,7 +100,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 			@Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
 			@Min(0) @Valid Integer start) {
 		return this.processs(new Standard(), new URIParameters()
-				.setGroup("bundles")
+				.setGroup("collections")
 				.setIdentifier(identifier)
 				.setFields(fields)
 				.setVerifyClassAndId(true)
@@ -117,7 +117,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 	@Override
 	public ResponseEntity<Object> collectionsLidvidLatest(String identifier, @Valid List<String> fields) {
 		return this.processs(new Standard(), new URIParameters()
-				.setGroup("bundles")
+				.setGroup("collections")
 				.setIdentifier(identifier)
 				.setFields(fields)
 				.setVerifyClassAndId(true)
