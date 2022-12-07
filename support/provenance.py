@@ -3,7 +3,7 @@
 import argparse
 import collections
 import json
-import logging; log = logging.getLogger('update_latest')
+import logging; log = logging.getLogger('provenance')
 import os
 import requests
 import sys
@@ -40,7 +40,7 @@ The program sweeps through the registry index to find all the lidvids and existi
 
 - command for opensearch running in a cluster
 
-  update_latest.py -b https://search-en-prod-di7dor7quy7qwv3husi2wt5tde.us-west-2.es.amazonaws.com -c naif-prod-ccs rms-prod sbnumd-prod-ccs geo-prod-ccs atm-prod-ccs sbnpsi-prod-ccs img-prod-ccs -u admin -p admin
+  provenance.py -b https://search-en-prod-di7dor7quy7qwv3husi2wt5tde.us-west-2.es.amazonaws.com -c naif-prod-ccs rms-prod sbnumd-prod-ccs geo-prod-ccs atm-prod-ccs sbnpsi-prod-ccs img-prod-ccs -u admin -p admin
 ''',
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument ('-b', '--base-URL', required=True, type=str)
@@ -67,6 +67,7 @@ The program sweeps through the registry index to find all the lidvids and existi
     provenance = troll_registry (host)
     updates = get_historic (provenance, args.reset)
     if updates: update_docs (host, updates)
+    log.info ('completed CLI processing')
     return
 
 def get_historic (provenance:{str:str}, reset:bool)->{str:str}:
