@@ -6,6 +6,7 @@ import datetime
 import json
 import logging; log = logging.getLogger('update_latest')
 import os
+import pickle
 import requests
 import sys
 import urllib.parse
@@ -96,6 +97,7 @@ or with full date time (both work the same)
     log.info ('reduce lidvids to unique lids')
     unique_lids = sorted({lidvid.split('::')[0] for lidvid in lidvids})
     lidvids = unique_lidvids (unique_lids, lidvids)[0]
+    with open ('/home/niessner/Scratch/ingested.pkl','bw') as file: pickle.dump ((lids, lidvids), file)
     latest_lidvids = get_latest (host, unique_lids)
     latest_lidvids,discard = unique_lidvids (unique_lids, latest_lidvids)
 
@@ -183,7 +185,7 @@ def get_latest (host:HOST, lids:[str])->[str]:
     path = 'latest/_search?scroll=10m'
     query = {'query':{'terms':{'lid':lids}},
              '_source':{'includes':['lidvid']},
-             'size':100}
+             'size':10000}
 
     while more_data:
         response = requests.get (urllib.parse.urljoin (host.url, path),
@@ -207,7 +209,7 @@ def get_latest (host:HOST, lids:[str])->[str]:
             log.info ('   progress: %d of %d (%d%%)', len(lidvids),
                       data['hits']['total']['value'],
                       int(round(len(lidvids)/data['hits']['total']['value']*100)))
-            pass
+        else: more_data = False
         pass
 
     if 'scroll_id' in query:
@@ -219,9 +221,6 @@ def get_latest (host:HOST, lids:[str])->[str]:
 
     log.info ('found %d lidvids for %d lids', len(lidvids), len(lids))
     return lidvids
-
-def is_newer (a:str, b:str)->bool:
-    return True if not a else _vid_as_tuple_of_int(a) < _vid_as_tuple_of_int(b)
 
 def merge_indices (new:{str:str}, latest:{str,str})->([str],[str]):
     log.info ('starting merge process')
@@ -272,7 +271,7 @@ def troll_registry (host:HOST, begin:datetime.datetime, end:datetime.datetime):
                                  'format':'yyyy-MM-dd HH:mm:ss'}
                       }},
               '_source':{'includes':['lidvid']},
-              'size':100 }
+              'size':10000 }
     while more_data:
         resp = requests.get (urllib.parse.urljoin (host.url, path),
                              auth=(host.username, host.password),
@@ -305,14 +304,16 @@ def troll_registry (host:HOST, begin:datetime.datetime, end:datetime.datetime):
     return lidvids
 
 def unique_lidvids (lids:{str}, lidvids:{str})->{str}:
-    log.info ('unique and latest version lidvid given lid')
-    if len(lids) == len(lidvids): return lidvids
-
+    log.info ('latest version lidvid given unique lids (%d) from %d lidvids',
+              len(lids), len(lidvids))
+    aggregates = {lid:[] for lid in lids}
     discard = []
     result = {}
-    for lid in lids:
-        subset = {lidvid for lidvid in filter(lambda lv,l=lid:lv.startswith(l),
-                                              lidvids)}
+    for lidvid in lidvids:
+        lid = lidvid.split('::')[0]
+        aggregates[lid].append (lidvid)
+        pass
+    for lid,subset in aggregates.items():
         ordered = sorted(subset, key=_vid_as_tuple_of_int, reverse=True)
         discard.extend (ordered[1:])
         result[lid] = ordered[0] if ordered else None
