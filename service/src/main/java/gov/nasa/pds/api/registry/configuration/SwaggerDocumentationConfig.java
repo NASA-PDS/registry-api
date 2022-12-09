@@ -15,6 +15,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-07-24T09:48:37.812-07:00[America/Los_Angeles]")
 @Configuration
 public class SwaggerDocumentationConfig {
+	
+	
 
 	@Value("${registry.service.version:undefined}")
 	private String version;
