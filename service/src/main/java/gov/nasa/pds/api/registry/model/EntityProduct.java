@@ -38,12 +38,12 @@ public class EntityProduct {
 	private String productClass;
 	
 	@JsonProperty("pds:Time_Coordinates/pds:start_date_time")
-	private String start_date_time;
+	private List<String> start_date_time; //test
 	
 	@JsonProperty("pds:Time_Coordinates/pds:stop_date_time")
-	private String stop_date_time;
+	private List<String> stop_date_time; //test
 
-	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY) 
 	@JsonProperty("pds:Modification_Detail/pds:modification_date")
     private List<String> modification_date;
     
@@ -71,7 +71,8 @@ public class EntityProduct {
 	private String version; 
 	
 	@JsonProperty("ops:Label_File_Info/ops:file_ref")
-	private String pds4FileReference;
+	private List<String> pds4FileReference; //test
+	
 	
 	@JsonProperty("ops:Tracking_Meta/ops:archive_status")
 	private String archive_status;
@@ -120,15 +121,15 @@ public class EntityProduct {
 
 	
 	public String getPDS4FileRef() {
-		return this.pds4FileReference;
+		return this.pds4FileReference.get(0);
 	}
 	
 	public String getStartDateTime() {
-		return start_date_time;
+		return start_date_time.get(0);
 	}
 
 	public String getStopDateTime() {
-		return stop_date_time;
+		return stop_date_time.get(0);
 	}
 
 
