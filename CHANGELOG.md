@@ -6,16 +6,20 @@
 
 **Defects:**
 
+- Stable Roundup can no longer trigger Imaging workflow [\#188](https://github.com/NASA-PDS/registry-api/issues/188)
+
+## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-12)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.2.0-SNAPSHOT)
+
+**Defects:**
+
 - /all suffix returns a message which I don't understand [\#190](https://github.com/NASA-PDS/registry-api/issues/190) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
 
 - Adapt code to new harvest behavior where all source properties in OpenSearch are arrays [\#203](https://github.com/NASA-PDS/registry-api/issues/203)
 - Add CORS header to registry API deployment [\#189](https://github.com/NASA-PDS/registry-api/issues/189)
-
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-11-18)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.2.0-SNAPSHOT)
 
 ## [v1.1.10](https://github.com/NASA-PDS/registry-api/tree/v1.1.10) (2022-09-29)
 
