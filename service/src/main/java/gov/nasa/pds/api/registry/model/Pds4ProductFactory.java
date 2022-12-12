@@ -62,14 +62,21 @@ public class Pds4ProductFactory
         if(fieldMap == null) return prod;
                 
         // Pds4 JSON BLOB
+        String blob = null;
         String decoded_blob = null;
         try
         { 
-        	if (isJSON) decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_JSON_BLOB)));
+        	
+        	if (isJSON) 
+        	{
+        		blob = getVal(fieldMap,FLD_JSON_BLOB);
+        		decoded_blob = BlobUtil.blobToString(String.valueOf(blob));
+        	}
         	else
         	{
         		int first,last;
-        		decoded_blob = BlobUtil.blobToString(String.valueOf(fieldMap.get(FLD_XML_BLOB)));
+        		blob = getVal(fieldMap, FLD_XML_BLOB);
+        		decoded_blob = BlobUtil.blobToString(String.valueOf(blob));
         		decoded_blob = decoded_blob.replaceAll("\r", "");
         		first = decoded_blob.indexOf("<?");
         		while (0 <= first)
@@ -98,7 +105,9 @@ public class Pds4ProductFactory
     {
         Pds4Metadata meta = new Pds4Metadata();
 
-        meta.setNodeName((String)fieldMap.get(FLD_NODE_NAME));
+        ArrayList<String> nodeNames = (ArrayList<String>)fieldMap.get(FLD_NODE_NAME);
+        String nodeName = nodeNames.get(0);
+        meta.setNodeName(nodeName);
         meta.setOpsLabelFileInfo(createLabelFile(fieldMap));
         meta.setOpsDataFiles(createDataFiles(fieldMap));
         meta.setOpsTrackingMeta(createTrackingMeta(fieldMap));
@@ -106,23 +115,36 @@ public class Pds4ProductFactory
     }
     
     
+    @SuppressWarnings("unchecked")
+	private static String getVal(Map<String, Object> fieldMap, String fieldName)
+    {
+    	return ((ArrayList<String>)fieldMap.get(fieldName)).get(0);
+    }
+    
     private static Pds4MetadataOpsLabelFileInfo createLabelFile(Map<String, Object> fieldMap)
     {
-        Object obj = fieldMap.get(FLD_LABEL_FILE_NAME);
-        if(obj == null) return null;
+        ArrayList<String> vals = (ArrayList<String>)fieldMap.get(FLD_LABEL_FILE_NAME);
+        
+        if(vals == null) return null;
 
         Pds4MetadataOpsLabelFileInfo item = new Pds4MetadataOpsLabelFileInfo();
 
-        String val = (String)obj;
+        String val = vals.get(0);
         item.setOpsfileName(val);
-        val = (String)fieldMap.get(FLD_LABEL_FILE_CREATION);
+        
+        
+        val = getVal(fieldMap, FLD_LABEL_FILE_CREATION);
         item.setOpscreationDate(val);
-        val = (String)fieldMap.get(FLD_LABEL_FILE_REF);
+        
+        val = getVal(fieldMap, FLD_LABEL_FILE_REF);
         item.setOpsfileRef(val);
-        val = (String)fieldMap.get(FLD_LABEL_FILE_SIZE);
+        
+        val = getVal(fieldMap, FLD_LABEL_FILE_SIZE);
         item.setOpsfileSize(val);
-        val = (String)fieldMap.get(FLD_LABEL_FILE_MD5);
+        
+        val = getVal(fieldMap, FLD_LABEL_FILE_MD5);
         item.setOpsmd5Checksum(val);
+        
         return item;
     }
 
@@ -130,33 +152,21 @@ public class Pds4ProductFactory
 	private static List<Pds4MetadataOpsDataFiles> createDataFiles(Map<String, Object> fieldMap)
     {
         List<Pds4MetadataOpsDataFiles> items = new ArrayList<Pds4MetadataOpsDataFiles>();
-        Object val = fieldMap.get(FLD_DATA_FILE_NAME);
+        ArrayList<String> vals = (ArrayList<String>)fieldMap.get(FLD_DATA_FILE_NAME);
         Pds4MetadataOpsDataFiles item = new Pds4MetadataOpsDataFiles();
         
-        if (val instanceof List)
+        
+        for (int i=0 ; i < ((List)vals).size() ; i++)
         {
-        	for (int i=0 ; i < ((List)val).size() ; i++)
-        	{
-            	item.setOpsfileName((String)((List)fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
-            	item.setOpscreationDate((String)((List)fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
-            	item.opsfileRef((String)((List)fieldMap.get(FLD_DATA_FILE_REF)).get(i));
-            	item.setOpsfileSize((String)((List)fieldMap.get(FLD_DATA_FILE_SIZE)).get(i));
-            	item.setOpsmd5Checksum((String)((List)fieldMap.get(FLD_DATA_FILE_MD5)).get(i));
-            	item.setOpsmimeType((String)((List)fieldMap.get(FLD_DATA_FILE_MIME_TYPE)).get(i));
-            	items.add(item);
-            	item = new Pds4MetadataOpsDataFiles();
-        	}
-        }
-        else
-        {
-        	item.setOpsfileName((String)val);
-        	item.setOpscreationDate((String)fieldMap.get(FLD_DATA_FILE_CREATION));
-        	item.opsfileRef((String)fieldMap.get(FLD_DATA_FILE_REF));
-        	item.setOpsfileSize((String)fieldMap.get(FLD_DATA_FILE_SIZE));
-        	item.setOpsmd5Checksum((String)fieldMap.get(FLD_DATA_FILE_MD5));
-        	item.setOpsmimeType((String)fieldMap.get(FLD_DATA_FILE_MIME_TYPE));
+        	item.setOpsfileName((String)((List)fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
+        	item.setOpscreationDate((String)((List)fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
+        	item.opsfileRef((String)((List)fieldMap.get(FLD_DATA_FILE_REF)).get(i));
+        	item.setOpsfileSize((String)((List)fieldMap.get(FLD_DATA_FILE_SIZE)).get(i));
+        	item.setOpsmd5Checksum((String)((List)fieldMap.get(FLD_DATA_FILE_MD5)).get(i));
+        	item.setOpsmimeType((String)((List)fieldMap.get(FLD_DATA_FILE_MIME_TYPE)).get(i));
         	items.add(item);
-        }
+        	item = new Pds4MetadataOpsDataFiles();
+    	}
         return items;
     }
     
