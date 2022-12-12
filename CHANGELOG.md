@@ -1,6 +1,19 @@
 # Changelog
 
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-10-11)
+## [1.1.10](https://github.com/NASA-PDS/registry-api/tree/1.1.10) (2022-12-12)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...1.1.10)
+
+**Defects:**
+
+- /all suffix returns a message which I don't understand [\#190](https://github.com/NASA-PDS/registry-api/issues/190) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Adapt code to new harvest behavior where all source properties in OpenSearch are arrays [\#203](https://github.com/NASA-PDS/registry-api/issues/203)
+- Add CORS header to registry API deployment [\#189](https://github.com/NASA-PDS/registry-api/issues/189)
+
+## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-11-18)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.2.0-SNAPSHOT)
 
@@ -134,7 +147,6 @@
 
 - \[SECURITY\] Log4j vulnerability in lexer [\#137](https://github.com/NASA-PDS/registry-api/issues/137) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Registry API Service docker container fails to start with error: Unable to access jarfile /usr/local/registry-api-service/registry-api-service.jar [\#128](https://github.com/NASA-PDS/registry-api/issues/128) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Update all endpoints to only allow access to public data. [\#113](https://github.com/NASA-PDS/registry-api/issues/113) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - documentation does not match behavior [\#106](https://github.com/NASA-PDS/registry-api/issues/106) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - LID -\> LIDVID conversion not consistent in registry-api [\#79](https://github.com/NASA-PDS/registry-api/issues/79) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
