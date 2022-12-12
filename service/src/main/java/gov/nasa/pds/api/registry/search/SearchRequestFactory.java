@@ -87,6 +87,7 @@ public class SearchRequestFactory
     	{
     		if (context.justLatest())
     		{
+    			// when keyword makes it to registry index, change from a post filter to mustNot() of the query
     			stopband = QueryBuilders.boolQuery();
     			ProductQueryBuilderUtil.addHistoryStopband (stopband);
     		}
@@ -97,7 +98,7 @@ public class SearchRequestFactory
 
     	return new SearchRequest().indices(index)
     			.source(new SearchSourceBuilder()
-    					.postFilter(stopband)
+    					.postFilter(stopband) // when keyword makes it to registry index, change from post to query
     					.query(this.base)
     					.fetchSource(context.getFields().toArray(new String[0]),
     							     SearchRequestFactory.excludes (context.getFields())));
