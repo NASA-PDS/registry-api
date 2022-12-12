@@ -81,14 +81,23 @@ public class SearchRequestFactory
     
     public SearchRequest build (RequestBuildContext context, String index)
     {
+    	BoolQueryBuilder stopband = null;
+
     	if (this.regContext.getRegistryIndex().equals(index))
     	{
-    		ProductQueryBuilderUtil.addArchiveStatusFilter(base);
-    		ProductQueryBuilderUtil.addPresetCriteria(base, context.getPresetCriteria());
+    		if (context.justLatest())
+    		{
+    			stopband = QueryBuilders.boolQuery();
+    			ProductQueryBuilderUtil.addHistoryStopband (stopband);
+    		}
+
+    		ProductQueryBuilderUtil.addArchiveStatusFilter(this.base);
+    		ProductQueryBuilderUtil.addPresetCriteria(this.base, context.getPresetCriteria());
     	}
 
     	return new SearchRequest().indices(index)
     			.source(new SearchSourceBuilder()
+    					.postFilter(stopband)
     					.query(this.base)
     					.fetchSource(context.getFields().toArray(new String[0]),
     							     SearchRequestFactory.excludes (context.getFields())));

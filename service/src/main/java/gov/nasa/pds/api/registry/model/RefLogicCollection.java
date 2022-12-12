@@ -57,10 +57,10 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 
         for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
         		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", uid.getLidVid(), true), control.getConnection())
-        				.build (RequestBuildContextFactory.given ("product_lid"), control.getConnection().getRegistryRefIndex())))
+        				.build (RequestBuildContextFactory.given (false, "product_lid"), control.getConnection().getRegistryRefIndex())))
         {
         	productLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control,
-        			RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Product.impl().constraints()),
+        			RequestBuildContextFactory.given(false, "lidvid", ReferencingLogicTransmuter.Product.impl().constraints()),
         			productLidvids.convert(kvp.get("product_lid"))));
         }
         return productLidvids;
@@ -73,7 +73,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 
         for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
         		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", uid.getLidVid(), true), control.getConnection())
-        				.build (RequestBuildContextFactory.given ("product_lidvid"), control.getConnection().getRegistryRefIndex())))
+        				.build (RequestBuildContextFactory.given (true, "product_lidvid"), control.getConnection().getRegistryRefIndex())))
         { productLidvids.add(kvp.get("product_lidvid")); }
         return productLidvids;
     }
@@ -94,7 +94,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         {
         	for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
         			new SearchRequestFactory(RequestConstructionContextFactory.given(key, lid, true), control.getConnection())
-        			.build(RequestBuildContextFactory.given("lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
+        			.build(RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
         					control.getConnection().getRegistryIndex())))
         	{
         		lids.addAll(bundleLidvids.convert(kvp.get("lid")));
