@@ -71,9 +71,15 @@
 	</executions>
 	<configuration>
 	  <mainClass>gov.nasa.pds.api.registry.SpringBootMain</mainClass>
+      <imageName>nasapds/registry-api-service</imageName>
+      <image>
+          <env>
+              <BP_JVM_VERSION>11</BP_JVM_VERSION>
+          </env>
+      </image>
 	</configuration>
-      </plugin>
-      <plugin>
+  </plugin>
+  <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-assembly-plugin</artifactId>
 	<version>3.1.1</version>
