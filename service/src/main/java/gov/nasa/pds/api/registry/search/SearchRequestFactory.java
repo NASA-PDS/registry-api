@@ -7,6 +7,8 @@ import org.opensearch.action.search.SearchRequest;
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
@@ -17,6 +19,7 @@ import gov.nasa.pds.api.registry.model.ProductQueryBuilderUtil;
 
 public class SearchRequestFactory
 {
+    private static final Logger log = LoggerFactory.getLogger(SearchRequestFactory.class);
     final private BoolQueryBuilder base = QueryBuilders.boolQuery();
     final private ConnectionContext regContext;
     
@@ -81,24 +84,23 @@ public class SearchRequestFactory
     
     public SearchRequest build (RequestBuildContext context, String index)
     {
-    	BoolQueryBuilder stopband = null;
-
     	if (this.regContext.getRegistryIndex().equals(index))
     	{
+    		log.debug("************          Just the latest lidvids: " + Boolean.toString(context.justLatest()));
+
     		if (context.justLatest())
     		{
-    			// when keyword makes it to registry index, change from a post filter to mustNot() of the query
-    			stopband = QueryBuilders.boolQuery();
-    			ProductQueryBuilderUtil.addHistoryStopband (stopband);
+    			ProductQueryBuilderUtil.addHistoryStopband (this.base);
+    			log.debug("************          created and filled the stopband:" + this.base.mustNot().toString());
     		}
 
     		ProductQueryBuilderUtil.addArchiveStatusFilter(this.base);
     		ProductQueryBuilderUtil.addPresetCriteria(this.base, context.getPresetCriteria());
     	}
 
-    	return new SearchRequest().indices(index)
+    	return new SearchRequest()
+    			.indices(index)
     			.source(new SearchSourceBuilder()
-    					.postFilter(stopband) // when keyword makes it to registry index, change from post to query
     					.query(this.base)
     					.fetchSource(context.getFields().toArray(new String[0]),
     							     SearchRequestFactory.excludes (context.getFields())));
