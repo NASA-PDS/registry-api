@@ -1,13 +1,5 @@
 # Changelog
 
-## [1.1.10](https://github.com/NASA-PDS/registry-api/tree/1.1.10) (2022-12-12)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...1.1.10)
-
-**Defects:**
-
-- Stable Roundup can no longer trigger Imaging workflow [\#188](https://github.com/NASA-PDS/registry-api/issues/188)
-
 ## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-12)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.2.0-SNAPSHOT)
@@ -15,6 +7,7 @@
 **Defects:**
 
 - /all suffix returns a message which I don't understand [\#190](https://github.com/NASA-PDS/registry-api/issues/190) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Stable Roundup can no longer trigger Imaging workflow [\#188](https://github.com/NASA-PDS/registry-api/issues/188)
 
 **Other closed issues:**
 
