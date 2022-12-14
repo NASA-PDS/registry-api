@@ -52,21 +52,53 @@ Builds the application:
 
     cd service
     mvn spring-boot:run
+    
+## Build a development docker image
+
+Your local docker image will be used in the integration deployment described below.
+
+    mvn spring-boot:build-image
+    
 
 ## View Swagger UI
 
 Go to http://localhost:8080
 
+
+## Integration deployment
+
+You can deploy the registry-api together with all other components of the registry (harvest, opensearch, ...) and reference datasets.
+
+Clone the `registry` repository, and launch the docker compose script as described in https://github.com/NASA-PDS/registry/tree/main/docker
+
+For example, launch:
+
+    docker compose --profile int-registry-batch-loader up
+
+The integration tests will be automatically applied. Check the results, update/complete them as necessary
+
+
 ## Tests
+
+**Important note:** As a developer you are asked to complete the postman test suite according to the new feature you are developing. Do a pull request in the `registry` project to submit the updates.
 
 Integration test are maintained in postman.
 
-In the `registry` project:
+### Edit/Run of the integration tests in postman GUI
+
+Install the postman desktop, from https://www.postman.com/downloads/
+
+Download and open the test suite found in https://github.com/NASA-PDS/registry/tree/main/docker/postman
+
+### Run the integration tests in command line
+
+In the `registry` project.
+
+Launch the test in command line:
 
     npm install newman
     newman run docker/postman/postman_collection.json --env-var baseUrl=http://localhost:8080
     
- Important note: As a developer you are asked to complete the postman test suite according to the new feature you are developing. Do a pull request in the `registry` project to submit the updates.
     
 
 

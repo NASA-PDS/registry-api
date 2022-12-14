@@ -37,11 +37,15 @@ public class EntityProduct {
 	@JsonProperty("product_class")
 	private String productClass;
 	
+	// for compliance with data loaded with version of harvest < 3.7.4
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	@JsonProperty("pds:Time_Coordinates/pds:start_date_time")
-	private List<String> start_date_time; //test
+	private List<String> start_date_time;
 	
+	// for compliance with data loaded with version of harvest < 3.7.4
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	@JsonProperty("pds:Time_Coordinates/pds:stop_date_time")
-	private List<String> stop_date_time; //test
+	private List<String> stop_date_time;
 
 	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY) 
 	@JsonProperty("pds:Modification_Detail/pds:modification_date")
@@ -70,8 +74,10 @@ public class EntityProduct {
 	@JsonProperty("vid")
 	private String version; 
 	
+	// for compliance with data loaded with version of harvest < 3.7.4
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	@JsonProperty("ops:Label_File_Info/ops:file_ref")
-	private List<String> pds4FileReference; //test
+	private List<String> pds4FileReference;
 	
 	
 	@JsonProperty("ops:Tracking_Meta/ops:archive_status")
