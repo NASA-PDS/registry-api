@@ -1,12 +1,16 @@
 # Changelog
 
-## [release/1.1.11](https://github.com/NASA-PDS/registry-api/tree/release/1.1.11) (2022-12-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-12-20)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...release/1.1.11)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...«unknown»)
 
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-14)
+**Requirements:**
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.2.0-SNAPSHOT)
+- As a registry-tool/registry-user I want to ensure leading multiple forward-slashes in request paths are stripped out [\#208](https://github.com/NASA-PDS/registry-api/issues/208)
+
+## [v1.1.11](https://github.com/NASA-PDS/registry-api/tree/v1.1.11) (2022-12-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.1.11)
 
 **Defects:**
 
