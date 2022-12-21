@@ -53,28 +53,26 @@
   <build>
     <plugins>
     <plugin>
-	<groupId>io.swagger.codegen.v3</groupId>
-	<artifactId>swagger-codegen-maven-plugin</artifactId>
-	<version>3.0.36</version>
+	<groupId>org.openapitools</groupId>
+	<artifactId>openapi-generator-maven-plugin</artifactId>
+	<version>6.2.1</version>
 
 	<executions>
 	  <execution>
-	    <id>generate-swagger-javacode</id>
-   	    <phase>generate-sources</phase>
 	    <goals>
 	      <goal>generate</goal>
 	    </goals>   
 	    	<configuration>
 	      <inputSpec>${project.basedir}/swagger.yml</inputSpec>
-	      <language>spring</language>
+	      <generatorName>spring</generatorName>
 	      <withXml>true</withXml> 
 	      <configOptions>
-		<sourceFolder>src/gen/java/main</sourceFolder>
-		<dateLibrary>joda</dateLibrary>
-		<modelPackage>gov.nasa.pds.model</modelPackage>
-		<apiPackage>gov.nasa.pds.api.base</apiPackage>
-		<generateSupportingFiles>false</generateSupportingFiles>
-		<interfaceOnly>false</interfaceOnly>  		                   
+			<sourceFolder>src/gen/java/main</sourceFolder>
+			<dateLibrary>joda</dateLibrary>
+			<modelPackage>gov.nasa.pds.model</modelPackage>
+			<apiPackage>gov.nasa.pds.api.base</apiPackage>
+			<generateSupportingFiles>false</generateSupportingFiles>
+			<interfaceOnly>false</interfaceOnly>  		                   
 	      </configOptions>
 	
 	</configuration>
@@ -102,13 +100,28 @@
   </build>
   
   <dependencies>
-    <!-- dependencies are needed for the client being generated -->
-    <!--SpringFox dependencies -->
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-boot-starter</artifactId>
-      <version>3.0.0</version>
-    </dependency>    
+    
+    <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
+	<dependency>
+	    <groupId>org.openapitools</groupId>
+	    <artifactId>jackson-databind-nullable</artifactId>
+	    <version>0.2.4</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+	<dependency>
+	    <groupId>io.swagger.core.v3</groupId>
+	    <artifactId>swagger-annotations</artifactId>
+	    <version>2.2.7</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
+	<dependency>
+	    <groupId>io.swagger.core.v3</groupId>
+	    <artifactId>swagger-models</artifactId>
+	    <version>2.2.7</version>
+	</dependency>
+
 
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
     <dependency>

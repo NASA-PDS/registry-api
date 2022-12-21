@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.model.Pds4Metadata;
-import gov.nasa.pds.model.Pds4MetadataOpsDataFiles;
+import gov.nasa.pds.model.Pds4MetadataOpsDataFilesInner;
 import gov.nasa.pds.model.Pds4MetadataOpsLabelFileInfo;
 import gov.nasa.pds.model.Pds4MetadataOpsTrackingMeta;
 import gov.nasa.pds.model.Pds4Product;
@@ -149,11 +149,11 @@ public class Pds4ProductFactory
     }
 
     @SuppressWarnings("rawtypes")
-	private static List<Pds4MetadataOpsDataFiles> createDataFiles(Map<String, Object> fieldMap)
+	private static List<Pds4MetadataOpsDataFilesInner> createDataFiles(Map<String, Object> fieldMap)
     {
-        List<Pds4MetadataOpsDataFiles> items = new ArrayList<Pds4MetadataOpsDataFiles>();
+        List<Pds4MetadataOpsDataFilesInner> items = new ArrayList<Pds4MetadataOpsDataFilesInner>();
         ArrayList<String> vals = (ArrayList<String>)fieldMap.get(FLD_DATA_FILE_NAME);
-        Pds4MetadataOpsDataFiles item = new Pds4MetadataOpsDataFiles();
+        Pds4MetadataOpsDataFilesInner item = new Pds4MetadataOpsDataFilesInner();
         
         
         for (int i=0 ; i < ((List)vals).size() ; i++)
@@ -165,7 +165,7 @@ public class Pds4ProductFactory
         	item.setOpsmd5Checksum((String)((List)fieldMap.get(FLD_DATA_FILE_MD5)).get(i));
         	item.setOpsmimeType((String)((List)fieldMap.get(FLD_DATA_FILE_MIME_TYPE)).get(i));
         	items.add(item);
-        	item = new Pds4MetadataOpsDataFiles();
+        	item = new Pds4MetadataOpsDataFilesInner();
     	}
         return items;
     }
