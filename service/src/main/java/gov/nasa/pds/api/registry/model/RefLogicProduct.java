@@ -66,7 +66,7 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
         log.info("Find the parents of a product -- both all and latest");
         for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
         		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", uid.getLidVid(), true), control.getConnection())
-        		.build (RequestBuildContextFactory.given("collection_lid"), control.getConnection().getRegistryRefIndex())))
+        		.build (RequestBuildContextFactory.given(true, "collection_lid"), control.getConnection().getRegistryRefIndex())))
 		{ lids.addAll(parents.convert(kvp.get("collection_lid"))); }
         sorted_lids = new ArrayList<String>(lids);
         Collections.sort(sorted_lids);

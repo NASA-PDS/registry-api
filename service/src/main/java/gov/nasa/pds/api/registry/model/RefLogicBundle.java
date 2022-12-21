@@ -66,7 +66,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields, ReferencingLogicTransmuter.Bundle.impl().constraints()), ctlContext.getConnection().getRegistryIndex());
+        		.build(RequestBuildContextFactory.given(false, fields, ReferencingLogicTransmuter.Bundle.impl().constraints()), ctlContext.getConnection().getRegistryIndex());
         
         // Call opensearch
         SearchHit hit;
@@ -85,7 +85,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
         ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
         ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
         ids = LidVidUtils.getAllLidVidsByLids(ctlContext, 
-        		RequestBuildContextFactory.given("lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()),
+        		RequestBuildContextFactory.given(false, "lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()),
         		ids);
         lidvids.addAll(ids);
         return lidvids;
@@ -110,7 +110,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     	
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
-        		.build(RequestBuildContextFactory.given(fields,
+        		.build(RequestBuildContextFactory.given(true, fields,
         				ReferencingLogicTransmuter.Bundle.impl().constraints()),
         				ctlContext.getConnection().getRegistryIndex());
         
@@ -156,7 +156,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 
         // Get the latest versions of LIDs
         lidvids.addAll(LidVidUtils.getLatestLidVidsByLids(ctlContext,
-        		RequestBuildContextFactory.given("lid",
+        		RequestBuildContextFactory.given(true, "lid",
         				ReferencingLogicTransmuter.Collection.impl().constraints()), lids));       
         return lidvids;
     }

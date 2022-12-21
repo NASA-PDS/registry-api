@@ -112,7 +112,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     			parameters.getIdentifier(),
     			outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED,
     			controlContext,
-    			RequestBuildContextFactory.given(fields, resPreset));
+    			RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
    		this.summaryOnly = parameters.isSummaryOnly();
    		this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
@@ -140,6 +140,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public boolean isSummaryOnly() { return summaryOnly; }
 	@Override
 	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
+	@Override
+	public boolean justLatest() { return getSelector() == ProductVersionSelector.LATEST; }
 
 	private List<String> add_output_needs (List<String> given) throws ApplicationTypeException
 	{

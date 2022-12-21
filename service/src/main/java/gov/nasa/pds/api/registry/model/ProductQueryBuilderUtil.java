@@ -13,10 +13,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.opensearch.index.query.BoolQueryBuilder;
-import org.opensearch.index.query.ExistsQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
-import org.opensearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,37 +56,6 @@ public class ProductQueryBuilderUtil
         }
     }
     
-    /**
-     * Create PDS query language query
-     * @param queryString PDS query language search query 
-     * @param fields List of must match fields
-     * @param presetCriteria preset criteria
-     * @return a query
-     */
-    public static QueryBuilder createPqlQuery(String queryString, List<String> fields, GroupConstraint presetCriteria)
-    {
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-
-        if (queryString != null)
-        {
-            boolQuery = parseQueryString(queryString);
-        }
-
-        // Archive status filter
-        addArchiveStatusFilter(boolQuery);
-    
-        // Preset criteria filter
-        addPresetCriteria(boolQuery, presetCriteria);
-
-        if (fields != null)
-        {
-            boolQuery.must(parseFields(fields));
-        }
-        
-        return boolQuery;
-    }
-
-    
     public static void addArchiveStatusFilter(BoolQueryBuilder boolQuery)
     {
         log.debug("addArchiveStatusFilter: " + archiveStatusFilter);
@@ -99,7 +65,11 @@ public class ProductQueryBuilderUtil
         boolQuery.must(QueryBuilders.termsQuery("ops:Tracking_Meta/ops:archive_status", archiveStatusFilter));
     }
 
-    
+    public static void addHistoryStopband (BoolQueryBuilder boolQuery)
+    {
+    	boolQuery.mustNot(QueryBuilders.existsQuery("ops:Provenance/ops:superseded_by"));
+    }
+
     public static void addPresetCriteria(BoolQueryBuilder boolQuery, GroupConstraint presetCriteria)
     {
         if(presetCriteria != null)
@@ -118,52 +88,6 @@ public class ProductQueryBuilderUtil
             });
         }
     }
-    
-    
-    /**
-     * Create full-text / keyword query (Uses Lucene query language for now)
-     * @param keyword search keyword
-     * @param presetCriteria preset criteria
-     * @return a query
-     */
-   public static QueryBuilder createKeywordQuery(String keyword, GroupConstraint presetCriteria)
-    {
-        // Lucene query
-        QueryStringQueryBuilder luceneQuery = QueryBuilders.queryStringQuery(keyword);
-        // Search in following fields only
-        luceneQuery.field("title");
-        luceneQuery.field("description");
-        
-        // Boolean (root) query
-        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        boolQuery.must(luceneQuery);
-
-        // Archive status filter
-        addArchiveStatusFilter(boolQuery);
-
-        // Preset criteria filter
-        addPresetCriteria(boolQuery, presetCriteria);
-        
-        return boolQuery;
-    }
-
-    
-    private static BoolQueryBuilder parseFields(List<String> fields)
-    {
-        BoolQueryBuilder fieldsBoolQuery = QueryBuilders.boolQuery();
-        String esField;
-        ExistsQueryBuilder existsQueryBuilder;
-        for (String field : fields)
-        {
-            esField = SearchUtil.jsonPropertyToOpenProperty(field);
-            existsQueryBuilder = QueryBuilders.existsQuery(esField);
-            fieldsBoolQuery.should(existsQueryBuilder);
-        }
-        fieldsBoolQuery.minimumShouldMatch(1);
-
-        return fieldsBoolQuery;
-    }
-
     
     public static BoolQueryBuilder parseQueryString(String queryString)
     {

@@ -69,7 +69,7 @@ public class LidVidUtils
     {
     	lid = LidVidUtils.extractLidFromLidVid(lid);
     	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid, true), ctlContext.getConnection())
-    			.build(RequestBuildContextFactory.given("lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
+    			.build(RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
     	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest, 
     			RequestOptions.DEFAULT);
 
@@ -144,7 +144,7 @@ public class LidVidUtils
 			
 		if (expected_rlt != ReferencingLogicTransmuter.Any)
 		{
-			String actual_group = QuickSearch.getValue(control.getConnection(), user.getLidVid(), "product_class");
+			String actual_group = QuickSearch.getValue(control.getConnection(), false, user.getLidVid(), "product_class");
 			ReferencingLogicTransmuter actual_rlt = ReferencingLogicTransmuter.getByProductClass(actual_group);
 			
 			if (actual_rlt != expected_rlt)

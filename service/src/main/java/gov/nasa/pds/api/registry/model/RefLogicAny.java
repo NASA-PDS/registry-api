@@ -30,7 +30,7 @@ class RefLogicAny implements ReferencingLogic
 			throws IOException, LidVidNotFoundException, UnknownGroupNameException
 	{
 		return ReferencingLogicTransmuter.getByProductClass(
-				QuickSearch.getValue(context.getConnection(),
+				QuickSearch.getValue(context.getConnection(), input.getSelector() == ProductVersionSelector.LATEST,
 			             LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.TYPED, context, RequestBuildContextFactory.empty()),
 			             "product_class"));
 	}
