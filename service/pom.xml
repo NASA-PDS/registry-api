@@ -48,7 +48,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson-version>2.13.2</jackson-version>
-    <springfox-version>3.0.0</springfox-version>
+    <springdoc-version>1.6.14</springdoc-version>
   </properties>
   <build>
     <resources>
@@ -110,12 +110,40 @@
 
   <dependencies>
 
-    <!--SpringFox dependencies -->
+    <!--SpringDoc dependencies -->
+      <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+      <version>${springdoc-version}</version>
+   </dependency>
+   
+   <dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-common</artifactId>
+    <version>${springdoc-version}</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-core -->
+	<dependency>
+	    <groupId>org.springdoc</groupId>
+	    <artifactId>springdoc-openapi-core</artifactId>
+	    <version>1.1.49</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
+	<dependency>
+	    <groupId>org.springdoc</groupId>
+	    <artifactId>springdoc-openapi-webmvc-core</artifactId>
+	    <version>1.6.14</version>
+	</dependency>
+   
+   <!-- 
     <dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-boot-starter</artifactId>
       <version>3.0.0</version>
     </dependency>
+     -->
 
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
     <dependency>

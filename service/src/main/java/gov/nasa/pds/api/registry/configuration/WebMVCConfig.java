@@ -31,6 +31,7 @@ import gov.nasa.pds.api.registry.view.PdsProductXMLSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductsTextHtmlSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductsXMLSerializer;
 import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
+import gov.nasa.pds.api.registry.view.JsonRawStringSerializer;
 
 @Configuration
 @EnableWebMvc
@@ -68,6 +69,7 @@ public class WebMVCConfig implements WebMvcConfigurer
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
 	{
 		WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+		converters.add(new JsonRawStringSerializer());
 		converters.add(new CsvErrorMessageSerializer());
 		converters.add(new CsvPluralSerializer());
 		converters.add(new CsvSingularSerializer());
@@ -85,5 +87,6 @@ public class WebMVCConfig implements WebMvcConfigurer
 		converters.add(new PdsProductsTextHtmlSerializer());
 		converters.add(new PdsProductsXMLSerializer());
 		converters.add(new XmlErrorMessageSerializer());
+
 	}
 }

@@ -5,12 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.Api;
+//import io.swagger.annotations.Tag;
 
 /**
  * Home redirection to swagger api documentation 
  */
-@Api(hidden=true, tags = {"this page",}, value="API Documentation")
+//@Tag(name="API_documentation", description="API Documentation")
 @Controller
 public class ApiDocumentation {
 	

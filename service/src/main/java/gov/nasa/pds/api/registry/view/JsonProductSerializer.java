@@ -25,3 +25,4 @@ public class JsonProductSerializer extends MappingJackson2HttpMessageConverter
 	    this.setObjectMapper(mapper);
 	}
 }
+
