@@ -15,7 +15,7 @@ class RefLogicObservational extends RefLogicAny implements ReferencingLogic
     public GroupConstraint constraints()
     {
     	Map<String,List<String>> preset = new HashMap<String,List<String>>();
-    	preset.put("product_class", Arrays.asList("Product_Collection"));
+    	preset.put("product_class", Arrays.asList("Product_Observational"));
     	return GroupConstraintImpl.buildAll(preset);
     }
 }
