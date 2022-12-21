@@ -14,8 +14,8 @@ public enum ReferencingLogicTransmuter
 	Any(new RefLogicAny(), "", "any"),
 	Bundle(new RefLogicBundle(), "Product_Bundle", "bundles"),
 	Collection(new RefLogicCollection(), "Product_Collection", "collections"),
-	Document(new RefLogicDocument(), "Product_Collection", "documents"),
-	Observational(new RefLogicObservational(), "Product_Collection", "observationals"),
+	Document(new RefLogicDocument(), "Product_Document", "documents"),
+	Observational(new RefLogicObservational(), "Product_Observational", "observationals"),
 	Product(new RefLogicProduct(), "", "products");
 	
 	final private ReferencingLogic refLogic;
