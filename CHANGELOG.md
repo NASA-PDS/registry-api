@@ -4,17 +4,25 @@
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...«unknown»)
 
-**Other closed issues:**
+**Requirements:**
 
-- Investigate NPE from SBNPSI registry [\#213](https://github.com/NASA-PDS/registry-api/issues/213) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+- As a user, I want the API to support redundant `/` in the url [\#212](https://github.com/NASA-PDS/registry-api/issues/212)
 
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-21)
+**Defects:**
+
+- observational end-point returns collections [\#202](https://github.com/NASA-PDS/registry-api/issues/202) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-22)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...v1.2.0-SNAPSHOT)
 
 **Requirements:**
 
 - As a registry-tool/registry-user I want to ensure leading multiple forward-slashes in request paths are stripped out [\#208](https://github.com/NASA-PDS/registry-api/issues/208)
+
+**Other closed issues:**
+
+- Investigate NPE from SBNPSI registry [\#213](https://github.com/NASA-PDS/registry-api/issues/213) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 
 ## [v1.1.11](https://github.com/NASA-PDS/registry-api/tree/v1.1.11) (2022-12-14)
 
