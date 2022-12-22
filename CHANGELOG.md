@@ -1,5 +1,13 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2022-12-22)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...«unknown»)
+
+**Other closed issues:**
+
+- Investigate NPE from SBNPSI registry [\#213](https://github.com/NASA-PDS/registry-api/issues/213) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+
 ## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-21)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...v1.2.0-SNAPSHOT)
