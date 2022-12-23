@@ -1,15 +1,15 @@
 springfox.documentation.swagger.v2.path=/api-docs
+server.contextPath=/
+server.port=80
+server.forward-headers-strategy=framework
+
 spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
+springfox.documentation.enabled=false
 
 debug=true
 logging.level.root = DEBUG
 logging.level.gov.nasa.pds.api.registry.opensearch = DEBUG
 
-server.contextPath=/
-server.port=80
-server.use-forward-headers=true
-
-## TODO: get key-store-password from the secrets manager
 server.ssl.enabled=false
 server.ssl.key-alias=registry
 server.ssl.key-store-password=
@@ -25,5 +25,8 @@ openSearch.username=
 openSearch.password=
 openSearch.ssl=true
 
-# source version from maven
+# Only show products with following archive statuses
+filter.archiveStatus=archived,certified
+
+# source version - this needs to be manually updated for AWS ECR docker images
 registry.service.version=${project.version}
