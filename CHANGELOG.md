@@ -1,12 +1,16 @@
 # Changelog
 
-## [release/1.1.12](https://github.com/NASA-PDS/registry-api/tree/release/1.1.12) (2022-12-22)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-01-05)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...release/1.1.12)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2022-12-22)
+**Other closed issues:**
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...v1.2.0-SNAPSHOT)
+- Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
+
+## [v1.1.12](https://github.com/NASA-PDS/registry-api/tree/v1.1.12) (2022-12-22)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...v1.1.12)
 
 **Requirements:**
 
@@ -19,7 +23,7 @@
 
 **Other closed issues:**
 
-- Investigate NPE from SBNPSI registry [\#213](https://github.com/NASA-PDS/registry-api/issues/213) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+- Error when label is missing `pds:Time_Coordinates/pds:start_date_time` attribute [\#213](https://github.com/NASA-PDS/registry-api/issues/213) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 
 ## [v1.1.11](https://github.com/NASA-PDS/registry-api/tree/v1.1.11) (2022-12-14)
 
@@ -66,7 +70,7 @@
 **Defects:**
 
 - limit=0 is not providing list of properties \(fka summary-only\) [\#179](https://github.com/NASA-PDS/registry-api/issues/179) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-- The /products, /bundles & /collections endpoints are missing from the API [\#178](https://github.com/NASA-PDS/registry-api/issues/178)
+- The /products, /bundles & /collections endpoints are missing from the API [\#178](https://github.com/NASA-PDS/registry-api/issues/178) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Swagger-UI does not display properly out-of-the-box  [\#174](https://github.com/NASA-PDS/registry-api/issues/174)
 - `fields` query parameter does not work consistently across all response formats [\#172](https://github.com/NASA-PDS/registry-api/issues/172) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - summary does not contain the property values [\#171](https://github.com/NASA-PDS/registry-api/issues/171) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
