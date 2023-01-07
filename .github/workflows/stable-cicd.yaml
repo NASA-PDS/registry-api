@@ -85,7 +85,7 @@ jobs:
                 name: 🫙 Jar and Tag Determination
                 id: jartag
                 run: |
-                    echo "jar_file==$(ls ./service/target/*.jar)" >> $GITHUB_OUTPUT
+                    echo "jar_file=$(ls ./service/target/*.jar)" >> $GITHUB_OUTPUT
                     echo "image_tag=$(echo ${{github.ref}} | awk -F/ '{print $NF}')" >> $GITHUB_OUTPUT
             -
                 name: 💳 Docker Hub Identification
