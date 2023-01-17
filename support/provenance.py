@@ -30,43 +30,7 @@ def _vid_as_tuple_of_int(lidvid: str):
     return (int(M), int(m))
 
 
-def cli():
-    ap = argparse.ArgumentParser(description='''Update the provenance of products with more than one VID
-
-The program sweeps through the registry index to find all the lidvids and existing provenance. It then builds up the updates necessary to mark the newly superseded products accordingly.
-''',
-                                 epilog='''EXAMPLES:
-
-- command for opensearch running in a container with the sockets published at 9200 for data ingested for full day March 11, 2020:
-
-  provenance.py -b https://localhost:9200 -p admin -u admin
-
-- getting more help on availables arguments and what is expected:
-
-  provenance.py --help
-
-- command for opensearch running in a cluster
-
-  provenance.py -b https://search-en-prod-di7dor7quy7qwv3husi2wt5tde.us-west-2.es.amazonaws.com -c naif-prod-ccs rms-prod sbnumd-prod-ccs geo-prod-ccs atm-prod-ccs sbnpsi-prod-ccs img-prod-ccs -u admin -p admin
-''',
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('-b', '--base-URL', required=True, type=str)
-    ap.add_argument('-c', '--cluster-nodes', default=[], nargs='*',
-                    help='names of opensearch cluster nodes that will be parsed by opensearch')
-    ap.add_argument('-l', '--log-file', default='/dev/stdout', required=False,
-                    help='file to write the log messages [%(default)s]')
-    ap.add_argument('-L', '--log-level', default='ERROR', required=False,
-                    type=_log_level,
-                    help='Python logging level as an int or string like INFO for logging.INFO [%(default)s]')
-    ap.add_argument('-p', '--password', default=None, required=False,
-                    help='password to login to opensearch leaving it blank if opensearch does not require login')
-    ap.add_argument('-r', '--reset', action='store_true', default=False,
-                    help='ignore existing provenance building it from scratch')
-    ap.add_argument('-u', '--username', default=None, required=False,
-                    help='username to login to opensearch leaving it blank if opensearch does not require login')
-    ap.add_argument('-v', '--verify', action='store_true', default=False,
-                    help='verify the host certificates')
-    args = ap.parse_args()
+def run(args: argparse.Namespace):
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s::%(levelname)s::%(message)s')
     log.info('starting CLI processing')
@@ -175,4 +139,42 @@ def update_docs(host: HOST, history: {str: str}):
     return
 
 
-if __name__ == '__main__': cli()
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser(description='''Update the provenance of products with more than one VID
+
+    The program sweeps through the registry index to find all the lidvids and existing provenance. It then builds up the updates necessary to mark the newly superseded products accordingly.
+    ''',
+                                 epilog='''EXAMPLES:
+
+    - command for opensearch running in a container with the sockets published at 9200 for data ingested for full day March 11, 2020:
+
+      provenance.py -b https://localhost:9200 -p admin -u admin
+
+    - getting more help on availables arguments and what is expected:
+
+      provenance.py --help
+
+    - command for opensearch running in a cluster
+
+      provenance.py -b https://search-en-prod-di7dor7quy7qwv3husi2wt5tde.us-west-2.es.amazonaws.com -c naif-prod-ccs rms-prod sbnumd-prod-ccs geo-prod-ccs atm-prod-ccs sbnpsi-prod-ccs img-prod-ccs -u admin -p admin
+    ''',
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('-b', '--base-URL', required=True, type=str)
+    ap.add_argument('-c', '--cluster-nodes', default=[], nargs='*',
+                    help='names of opensearch cluster nodes that will be parsed by opensearch')
+    ap.add_argument('-l', '--log-file', default='/dev/stdout', required=False,
+                    help='file to write the log messages [%(default)s]')
+    ap.add_argument('-L', '--log-level', default='ERROR', required=False,
+                    type=_log_level,
+                    help='Python logging level as an int or string like INFO for logging.INFO [%(default)s]')
+    ap.add_argument('-p', '--password', default=None, required=False,
+                    help='password to login to opensearch leaving it blank if opensearch does not require login')
+    ap.add_argument('-r', '--reset', action='store_true', default=False,
+                    help='ignore existing provenance building it from scratch')
+    ap.add_argument('-u', '--username', default=None, required=False,
+                    help='username to login to opensearch leaving it blank if opensearch does not require login')
+    ap.add_argument('-v', '--verify', action='store_true', default=False,
+                    help='verify the host certificates')
+    args = ap.parse_args()
+
+    run(args)
