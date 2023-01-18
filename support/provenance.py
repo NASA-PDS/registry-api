@@ -7,9 +7,7 @@ import logging
 from typing import Union, List
 
 log = logging.getLogger('provenance')
-import os
 import requests
-import sys
 import urllib.parse
 
 requests.packages.urllib3.disable_warnings()
@@ -57,7 +55,6 @@ def run(
         reset: bool = False,
         log_filepath: Union[str, None] = None,
         log_level: int = logging.INFO):
-
     configure_logging(filepath=log_filepath, log_level=log_level)
 
     log.info('starting CLI processing')
@@ -93,7 +90,8 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
             if reset or not provenance[lidvid]:
                 history[lidvid] = lidvids[index]
 
-    log.info(f'found {len(history)} products needing update of a {count} full history of {len(provenance)} total products')
+    log.info(
+        f'found {len(history)} products needing update of a {count} full history of {len(provenance)} total products')
 
     return history
 
