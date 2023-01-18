@@ -18,7 +18,8 @@ HOST = collections.namedtuple('HOST', ['nodes', 'password', 'url', 'username',
                                        'verify'])
 
 
-def _log_level(input: str) -> int:
+def parse_log_level(input: str) -> int:
+    """Given a numeric or uppercase descriptive log level, return the associated int"""
     try:
         result = int(input)
     except ValueError:
@@ -47,26 +48,33 @@ def configure_logging(filepath: Union[str, None], log_level: int):
     )
 
 
-def run(args: argparse.Namespace):
+def run(args: argparse.Namespace):  # TODO: break this out into individual function args
     configure_logging(filepath=args.log_file, log_level=args.log_level)
 
     log.info('starting CLI processing')
+
     host = HOST(args.cluster_nodes, args.password, args.base_URL, args.username,
                 args.verify)
+
     provenance = troll_registry(host)
     updates = get_historic(provenance, args.reset)
-    if updates: update_docs(host, updates)
+
+    if updates:
+        update_docs(host, updates)
+
     log.info('completed CLI processing')
-    return
 
 
-def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:
+def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: populate comment and rename for clarity
     log.info('starting search for history')
+
     log.info('   reduce lidvids to unique lids')
     lids = sorted({lidvid.split('::')[0] for lidvid in provenance})
+
     log.info('   aggregate lidvids into lid buckets')
     aggregates = {lid: [] for lid in lids}
     for lidvid in provenance: aggregates[lidvid.split('::')[0]].append(lidvid)
+
     log.info('   process those with history')
     count = 0
     history = {}
@@ -74,16 +82,19 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:
         count += len(lidvids)
         lidvids.sort(key=_vid_as_tuple_of_int, reverse=True)
         for index, lidvid in enumerate(lidvids[1:]):
-            if reset or not provenance[lidvid]: history[lidvid] = lidvids[index]
-            pass
-        pass
-    log.info('found %d products needing update of a %d full history of %d total products', len(history), count,
-             len(provenance))
+            if reset or not provenance[lidvid]:
+                history[lidvid] = lidvids[index]
+            pass  # TODO: Make sure this is extraneous and not intended to do something
+        pass  # TODO: Make sure this is extraneous and not intended to do something
+
+    log.info(f'found {len(history)} products needing update of a {count} full history of {len(provenance)} total products')
+
     return history
 
 
-def troll_registry(host: HOST) -> {str: str}:
+def troll_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rename for clarity
     log.info('start trolling')
+
     cluster = [node + ":registry" for node in host.nodes]
     key = 'ops:Provenance/ops:superseded_by'
     more_data = True
@@ -105,13 +116,15 @@ def troll_registry(host: HOST) -> {str: str}:
             provenance.update({hit['_source']['lidvid']: hit['_source'].get(key, None) for hit in data['hits']['hits']})
             more_data = len(provenance) < data['hits']['total']['value']
         else:
-            more_data = False
+            more_data = False  # TODO: This is unused.  Seems extraneous but need to check
             log.error('Bad response code (%d): %s',
                       resp.status_code, resp.reason)
-            sys.exit(-50)
-        log.info('   progress: %d of %d (%d%%)', len(provenance),
-                 data['hits']['total']['value'],
-                 int(round(len(provenance) / data['hits']['total']['value'] * 100)))
+            sys.exit(-50)  # TODO: Raise exception instead
+
+        hits = data['hits']['total']['value']
+        percent_hit = int(round(len(provenance) / hits * 100))
+        log.info(f'   progress: {len(provenance)} of {hits} ({percent_hit}%)')
+
         pass
 
     if 'scroll_id' in query:
@@ -120,20 +133,26 @@ def troll_registry(host: HOST) -> {str: str}:
                         auth=(host.username, host.password),
                         verify=host.verify)
         pass
+
     log.info('finished trolling')
+
     return provenance
 
 
 def update_docs(host: HOST, history: {str: str}):
+    """Write provenance history updates to documents in db"""
     log.info('Bulk update %d documents', len(history))
-    bulk = []
+
+    bulk = []  # TODO: name descriptively
     cluster = [node + ":registry" for node in host.nodes]
     headers = {'Content-Type': 'application/x-ndjson'}
     path = ','.join(['registry'] + cluster) + '/_bulk'
+
     for lidvid, supersede in history.items():
         bulk.append(json.dumps({'update': {'_id': lidvid}}))
         bulk.append(json.dumps({'doc': {'ops:Provenance/ops:superseded_by': supersede}}))
         pass
+
     bulk = '\n'.join(bulk) + '\n'
     response = requests.put(urllib.parse.urljoin(host.url, path),
                             auth=(host.username, host.password),
@@ -182,7 +201,7 @@ if __name__ == '__main__':
     ap.add_argument('-l', '--log-file', default=None, required=False,
                     help='file to write the log messages')
     ap.add_argument('-L', '--log-level', default='ERROR', required=False,
-                    type=_log_level,
+                    type=parse_log_level,
                     help='Python logging level as an int or string like INFO for logging.INFO [%(default)s]')
     ap.add_argument('-p', '--password', default=None, required=False,
                     help='password to login to opensearch leaving it blank if opensearch does not require login')
