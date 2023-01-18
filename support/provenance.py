@@ -107,18 +107,13 @@ def trawl_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
         resp = requests.get(urllib.parse.urljoin(host.url, path),
                             auth=(host.username, host.password),
                             verify=host.verify, json=query)
+        resp.raise_for_status()
 
-        if resp.status_code == 200:
-            data = resp.json()
-            path = '_search/scroll'
-            query = {'scroll': '10m', 'scroll_id': data['_scroll_id']}
-            provenance.update({hit['_source']['lidvid']: hit['_source'].get(key, None) for hit in data['hits']['hits']})
-            more_data_exists = len(provenance) < data['hits']['total']['value']
-        else:
-            more_data_exists = False  # TODO: This is unused.  Seems extraneous but need to check
-            log.error('Bad response code (%d): %s',
-                      resp.status_code, resp.reason)
-            sys.exit(-50)  # TODO: Raise exception instead
+        data = resp.json()
+        path = '_search/scroll'
+        query = {'scroll': '10m', 'scroll_id': data['_scroll_id']}
+        provenance.update({hit['_source']['lidvid']: hit['_source'].get(key, None) for hit in data['hits']['hits']})
+        more_data_exists = len(provenance) < data['hits']['total']['value']
 
         hits = data['hits']['total']['value']
         percent_hit = int(round(len(provenance) / hits * 100))
