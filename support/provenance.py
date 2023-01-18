@@ -84,8 +84,6 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
         for index, lidvid in enumerate(lidvids[1:]):
             if reset or not provenance[lidvid]:
                 history[lidvid] = lidvids[index]
-            pass  # TODO: Make sure this is extraneous and not intended to do something
-        pass  # TODO: Make sure this is extraneous and not intended to do something
 
     log.info(f'found {len(history)} products needing update of a {count} full history of {len(provenance)} total products')
 
@@ -126,14 +124,11 @@ def trawl_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
         percent_hit = int(round(len(provenance) / hits * 100))
         log.info(f'   progress: {len(provenance)} of {hits} ({percent_hit}%)')
 
-        pass
-
     if 'scroll_id' in query:
         path = '_search/scroll/' + query['scroll_id']
         requests.delete(urllib.parse.urljoin(host.url, path),
                         auth=(host.username, host.password),
                         verify=host.verify)
-        pass
 
     log.info('finished trawling')
 
@@ -152,7 +147,6 @@ def update_docs(host: HOST, history: {str: str}):
     for lidvid, supersede in history.items():
         bulk.append(json.dumps({'update': {'_id': lidvid}}))
         bulk.append(json.dumps({'doc': {'ops:Provenance/ops:superseded_by': supersede}}))
-        pass
 
     bulk = '\n'.join(bulk) + '\n'
     response = requests.put(urllib.parse.urljoin(host.url, path),
@@ -169,11 +163,8 @@ def update_docs(host: HOST, history: {str: str}):
                 if 'error' in item:
                     log.error('update error (%d): %s', item['status'],
                               str(item['error']))
-                    pass
-                pass
         else:
             log.info('bulk update were successful')
-    return
 
 
 if __name__ == '__main__':
