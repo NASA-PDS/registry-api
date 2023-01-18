@@ -4,7 +4,7 @@ import argparse
 import collections
 import json
 import logging
-from typing import Union
+from typing import Union, List
 
 log = logging.getLogger('provenance')
 import os
@@ -48,16 +48,24 @@ def configure_logging(filepath: Union[str, None], log_level: int):
     )
 
 
-def run(args: argparse.Namespace):  # TODO: break this out into individual function args
-    configure_logging(filepath=args.log_file, log_level=args.log_level)
+def run(
+        cluster_nodes: List[str],  # TODO: confirm type
+        base_url: str,
+        username: str,
+        password: str,
+        verify_host_certs: bool = False,
+        reset: bool = False,
+        log_filepath: Union[str, None] = None,
+        log_level: int = logging.INFO):
+
+    configure_logging(filepath=log_filepath, log_level=log_level)
 
     log.info('starting CLI processing')
 
-    host = HOST(args.cluster_nodes, args.password, args.base_URL, args.username,
-                args.verify)
+    host = HOST(cluster_nodes, password, base_url, username, verify_host_certs)
 
     provenance = trawl_registry(host)
-    updates = get_historic(provenance, args.reset)
+    updates = get_historic(provenance, reset)
 
     if updates:
         update_docs(host, updates)
@@ -199,4 +207,12 @@ if __name__ == '__main__':
                     help='verify the host certificates')
     args = ap.parse_args()
 
-    run(args)
+    run(
+        cluster_nodes=args.cluster_nodes,
+        base_url=args.base_URL,
+        username=args.username,
+        password=args.password,
+        verify_host_certs=args.verify,
+        reset=args.reset,
+        log_level=args.log_level,
+        log_filepath=args.log_file)
