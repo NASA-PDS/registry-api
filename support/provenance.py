@@ -3,7 +3,8 @@
 import argparse
 import collections
 import json
-import logging;
+import logging
+from typing import Union
 
 log = logging.getLogger('provenance')
 import os
@@ -30,9 +31,25 @@ def _vid_as_tuple_of_int(lidvid: str):
     return (int(M), int(m))
 
 
+def configure_logging(filepath: Union[str, None], log_level: int):
+    logging.root.handlers = []
+    handlers = [
+        logging.StreamHandler()
+    ]
+
+    if filepath:
+        handlers.append(logging.FileHandler(filepath))
+
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s::%(levelname)s::%(message)s',
+        handlers=handlers
+    )
+
+
 def run(args: argparse.Namespace):
-    logging.basicConfig(filename=args.log_file, level=args.log_level,
-                        format='%(asctime)s::%(levelname)s::%(message)s')
+    configure_logging(filepath=args.log_file, log_level=args.log_level)
+
     log.info('starting CLI processing')
     host = HOST(args.cluster_nodes, args.password, args.base_URL, args.username,
                 args.verify)
@@ -162,8 +179,8 @@ if __name__ == '__main__':
     ap.add_argument('-b', '--base-URL', required=True, type=str)
     ap.add_argument('-c', '--cluster-nodes', default=[], nargs='*',
                     help='names of opensearch cluster nodes that will be parsed by opensearch')
-    ap.add_argument('-l', '--log-file', default='/dev/stdout', required=False,
-                    help='file to write the log messages [%(default)s]')
+    ap.add_argument('-l', '--log-file', default=None, required=False,
+                    help='file to write the log messages')
     ap.add_argument('-L', '--log-level', default='ERROR', required=False,
                     type=_log_level,
                     help='Python logging level as an int or string like INFO for logging.INFO [%(default)s]')
