@@ -97,14 +97,15 @@ def troll_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
 
     cluster = [node + ":registry" for node in host.nodes]
     key = 'ops:Provenance/ops:superseded_by'
-    more_data = True
     path = ','.join(['registry'] + cluster) + '/_search?scroll=10m'
     provenance = {}
     query = {'query': {'bool': {'must_not': [
         {'term': {'ops:Tracking_Meta/ops:archive_status': 'staged'}}]}},
         '_source': {'includes': ['lidvid', key]},
         'size': 10000}
-    while more_data:
+
+    more_data_exists = True
+    while more_data_exists:
         resp = requests.get(urllib.parse.urljoin(host.url, path),
                             auth=(host.username, host.password),
                             verify=host.verify, json=query)
@@ -114,9 +115,9 @@ def troll_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
             path = '_search/scroll'
             query = {'scroll': '10m', 'scroll_id': data['_scroll_id']}
             provenance.update({hit['_source']['lidvid']: hit['_source'].get(key, None) for hit in data['hits']['hits']})
-            more_data = len(provenance) < data['hits']['total']['value']
+            more_data_exists = len(provenance) < data['hits']['total']['value']
         else:
-            more_data = False  # TODO: This is unused.  Seems extraneous but need to check
+            more_data_exists = False  # TODO: This is unused.  Seems extraneous but need to check
             log.error('Bad response code (%d): %s',
                       resp.status_code, resp.reason)
             sys.exit(-50)  # TODO: Raise exception instead
