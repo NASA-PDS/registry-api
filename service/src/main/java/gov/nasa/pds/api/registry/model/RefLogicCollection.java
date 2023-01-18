@@ -42,7 +42,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     	preset.put("product_class", Arrays.asList("Product_Collection"));
     	return GroupConstraintImpl.buildAll(preset);
     }
-	
+
     static Pagination<String> children (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
     		throws IOException, LidVidNotFoundException
     {
@@ -77,7 +77,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         { productLidvids.add(kvp.get("product_lidvid")); }
         return productLidvids;
     }
-    
+
     static Pagination<String> parents (ControlContext control, ProductVersionSelector selection,  LidvidsContext uid)
     		throws IOException, LidVidNotFoundException
     {
@@ -85,11 +85,11 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     		                              "ref_lidvid_collection", "ref_lidvid_collection_secondary");
     	List<String> sortedLids;
     	Set<String> lids = new HashSet<String>();
-    	String lid = LidVidUtils.extractLidFromLidVid(uid.getLidVid());
+    	String lid = LidVidUtils.parseLid(uid.getLidVid());
         PaginationLidvidBuilder bundleLidvids = new PaginationLidvidBuilder(uid);
 
         log.info("Find parents of a colletion -- both all and latest");
-        log.info("Find parents of collenction: " + uid.getLidVid() + "  --- " + LidVidUtils.extractLidFromLidVid(uid.getLidVid()));
+        log.info("Find parents of collenction: " + uid.getLidVid() + "  --- " + LidVidUtils.parseLid(uid.getLidVid()));
         for (String key : keys)
         {
         	for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
@@ -102,10 +102,10 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         }
         sortedLids = new ArrayList<String>(lids);
         Collections.sort(sortedLids);
-        
+
         if (selection == ProductVersionSelector.ALL)
         	bundleLidvids.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));
-        else 
+        else
         	bundleLidvids.addAll (LidVidUtils.getLatestLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));
 
         return bundleLidvids;
@@ -124,7 +124,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 	@Override
 	public RequestAndResponseContext memberOf(ControlContext context, UserContext input, boolean twoSteps)
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
-			UnknownGroupNameException 
+			UnknownGroupNameException
 	{
 		if (twoSteps) throw new MembershipException(input.getIdentifier(), "member-of/member-of", "collections");
 		return RequestAndResponseContext.buildRequestAndResponseContext

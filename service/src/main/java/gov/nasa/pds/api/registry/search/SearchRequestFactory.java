@@ -22,7 +22,7 @@ public class SearchRequestFactory
     private static final Logger log = LoggerFactory.getLogger(SearchRequestFactory.class);
     final private BoolQueryBuilder base = QueryBuilders.boolQuery();
     final private ConnectionContext regContext;
-    
+
     public SearchRequestFactory(RequestConstructionContext context, ConnectionContext registry)
     {
     	this.regContext = registry;
@@ -32,7 +32,7 @@ public class SearchRequestFactory
     		for (Map.Entry<String, List<String>> entry: context.getKeyValuePairs().entrySet())
     		{
     			if (context.isTerm())
-    			{ 
+    			{
     				if (entry.getValue().size() == 1)
     				{ this.base.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue().get(0))); }
     				else
@@ -62,7 +62,7 @@ public class SearchRequestFactory
 
     	if (!context.getLIDVID().isBlank())
     	{
-    		String key = LidVidUtils.extractLidFromLidVid(context.getLIDVID()).equals(context.getLIDVID()) ? "lid" : "lidvid";
+    		String key = LidVidUtils.parseLid(context.getLIDVID()).equals(context.getLIDVID()) ? "lid" : "lidvid";
 
     		this.base.must(QueryBuilders.termQuery(key, context.getLIDVID())); // term is exact match which lidvid look should be
     	}
@@ -81,7 +81,7 @@ public class SearchRequestFactory
 
     	return exclude;
     }
-    
+
     public SearchRequest build (RequestBuildContext context, String index)
     {
     	if (this.regContext.getRegistryIndex().equals(index))
