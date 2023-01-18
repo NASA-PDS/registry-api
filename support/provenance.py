@@ -134,19 +134,19 @@ def update_docs(host: HOST, history: {str: str}):
     """Write provenance history updates to documents in db"""
     log.info('Bulk update %d documents', len(history))
 
-    bulk = []  # TODO: name descriptively
+    bulk_updates = []
     cluster = [node + ":registry" for node in host.nodes]
     headers = {'Content-Type': 'application/x-ndjson'}
     path = ','.join(['registry'] + cluster) + '/_bulk'
 
     for lidvid, supersede in history.items():
-        bulk.append(json.dumps({'update': {'_id': lidvid}}))
-        bulk.append(json.dumps({'doc': {'ops:Provenance/ops:superseded_by': supersede}}))
+        bulk_updates.append(json.dumps({'update': {'_id': lidvid}}))
+        bulk_updates.append(json.dumps({'doc': {'ops:Provenance/ops:superseded_by': supersede}}))
 
-    bulk = '\n'.join(bulk) + '\n'
+    bulk_data = '\n'.join(bulk_updates) + '\n'
     response = requests.put(urllib.parse.urljoin(host.url, path),
                             auth=(host.username, host.password),
-                            data=bulk, headers=headers, verify=host.verify)
+                            data=bulk_data, headers=headers, verify=host.verify)
 
     if response.status_code != 200:
         log.error('Bulk bad response code (%d): %s',
