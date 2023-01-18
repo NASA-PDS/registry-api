@@ -56,7 +56,7 @@ def run(args: argparse.Namespace):  # TODO: break this out into individual funct
     host = HOST(args.cluster_nodes, args.password, args.base_URL, args.username,
                 args.verify)
 
-    provenance = troll_registry(host)
+    provenance = trawl_registry(host)
     updates = get_historic(provenance, args.reset)
 
     if updates:
@@ -92,8 +92,8 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
     return history
 
 
-def troll_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rename for clarity
-    log.info('start trolling')
+def trawl_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rename for clarity
+    log.info('start trawling')
 
     cluster = [node + ":registry" for node in host.nodes]
     key = 'ops:Provenance/ops:superseded_by'
@@ -135,7 +135,7 @@ def troll_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
                         verify=host.verify)
         pass
 
-    log.info('finished trolling')
+    log.info('finished trawling')
 
     return provenance
 
