@@ -74,27 +74,32 @@ public class LidVidUtils
     		RequestBuildContext reqContext,
             String lidOrLidVid) throws IOException,LidVidNotFoundException
     {
-    	String lid = LidVidUtils.parseLid(lidOrLidVid);
-    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid, true), ctlContext.getConnection())
+		PdsLid lid = new PdsLid(LidVidUtils.parseLid(lidOrLidVid));
+
+    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid.toString(), true), ctlContext.getConnection())
     			.build(RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
     	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest,
     			RequestOptions.DEFAULT);
 
     	if (searchResponse != null)
     	{
-    		ArrayList<String> lidvids = new ArrayList<String>();
-    		String lidvid;
+    		ArrayList<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
     		for (SearchHit searchHit : searchResponse.getHits())
     		{
-    			lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
-    			lidvids.add(lidvid);
+    			String lidvidStr = (String)searchHit.getSourceAsMap().get("lidvid");;
+				lidVids.add(PdsLidVid.fromString(lidvidStr));
     		}
-    		Collections.sort(lidvids);
 
-            if (lidvids.isEmpty()) throw new LidVidNotFoundException(lid);
-    		else return lidvids.get(lidvids.size() - 1);
+    		Collections.sort(lidVids);
+
+            if (lidVids.isEmpty()) {
+				throw new LidVidNotFoundException(lid.toString());
+			}
+
+			PdsLidVid latestLidVid = lidVids.get(lidVids.size() - 1);
+			return latestLidVid.toString();  // Required as remainder of codebase is not compatible with LIDVID classes yet
     	}
-    	throw new LidVidNotFoundException(lid);
+    	throw new LidVidNotFoundException(lid.toString());
     }
 
     public static List<String> getAllLidVidsByLids(
