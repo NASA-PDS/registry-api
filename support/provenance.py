@@ -144,22 +144,21 @@ def update_docs(host: HOST, history: {str: str}):
         bulk_updates.append(json.dumps({'doc': {'ops:Provenance/ops:superseded_by': supersede}}))
 
     bulk_data = '\n'.join(bulk_updates) + '\n'
+
+    log.info(f'writing bulk update for {len(bulk_updates)} products...')
     response = requests.put(urllib.parse.urljoin(host.url, path),
                             auth=(host.username, host.password),
                             data=bulk_data, headers=headers, verify=host.verify)
+    response.raise_for_status()
 
-    if response.status_code != 200:
-        log.error('Bulk bad response code (%d): %s',
-                  response.status_code, response.reason)
+    response = response.json()
+    if response['errors']:
+        for item in response['items']:
+            if 'error' in item:
+                log.error('update error (%d): %s', item['status'],
+                          str(item['error']))
     else:
-        response = response.json()
-        if response['errors']:
-            for item in response['items']:
-                if 'error' in item:
-                    log.error('update error (%d): %s', item['status'],
-                              str(item['error']))
-        else:
-            log.info('bulk update were successful')
+        log.info('bulk updates were successful')
 
 
 if __name__ == '__main__':
