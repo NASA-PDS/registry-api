@@ -1,6 +1,6 @@
 package gov.nasa.pds.api.registry.model.identifiers;
 
-public class PdsLidVid implements Comparable<PdsLidVid>{
+public class PdsLidVid extends PdsProductIdentifier implements Comparable<PdsLidVid>{
     private final PdsLid lid;
     private final PdsVid vid;
 
@@ -18,7 +18,7 @@ public class PdsLidVid implements Comparable<PdsLidVid>{
     }
 
     public static PdsLidVid fromString(String lidVidString) {
-        String[] chunks = lidVidString.split("::");
+        String[] chunks = lidVidString.split(LIDVID_SEPARATOR);
 
         if (chunks.length != 2) {
             String errMsg = String.format("Provided value '%s' is not a valid LIDVID", lidVidString);
