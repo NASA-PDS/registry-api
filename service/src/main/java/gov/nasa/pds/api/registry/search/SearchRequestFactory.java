@@ -3,6 +3,8 @@ package gov.nasa.pds.api.registry.search;
 import java.util.List;
 import java.util.Map;
 
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
@@ -62,7 +64,8 @@ public class SearchRequestFactory
 
     	if (!context.getLIDVID().isBlank())
     	{
-    		String key = LidVidUtils.parseLid(context.getLIDVID()).equals(context.getLIDVID()) ? "lid" : "lidvid";
+			PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(context.getLIDVID());
+			String key = productIdentifier instanceof PdsLidVid ? "lidvid" : "lid";
 
     		this.base.must(QueryBuilders.termQuery(key, context.getLIDVID())); // term is exact match which lidvid look should be
     	}

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,15 +87,15 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     		                              "ref_lidvid_collection", "ref_lidvid_collection_secondary");
     	List<String> sortedLids;
     	Set<String> lids = new HashSet<String>();
-    	String lid = LidVidUtils.parseLid(uid.getLidVid());
+    	PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(uid.getLidVid());
         PaginationLidvidBuilder bundleLidvids = new PaginationLidvidBuilder(uid);
 
-        log.info("Find parents of a colletion -- both all and latest");
-        log.info("Find parents of collenction: " + uid.getLidVid() + "  --- " + LidVidUtils.parseLid(uid.getLidVid()));
+        log.info("Find parents of a collection -- both all and latest");
+        log.info("Find parents of collection: " + uid.getLidVid() + "  --- " + productIdentifier.getLid().toString());
         for (String key : keys)
         {
         	for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
-        			new SearchRequestFactory(RequestConstructionContextFactory.given(key, lid, true), control.getConnection())
+        			new SearchRequestFactory(RequestConstructionContextFactory.given(key, productIdentifier.getLid().toString(), true), control.getConnection())
         			.build(RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
         					control.getConnection().getRegistryIndex())))
         	{
@@ -102,7 +103,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         	}
         }
         sortedLids = new ArrayList<String>(lids);
-        Collections.sort(sortedLids);
+        Collections.sort(sortedLids);  // TODO: Implement comparison for PdsLids (only with other PdsLids)
 
         if (selection == ProductVersionSelector.ALL)
         	bundleLidvids.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));

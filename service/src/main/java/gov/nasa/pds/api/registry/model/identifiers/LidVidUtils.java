@@ -35,18 +35,7 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
  */
 public class LidVidUtils
 {
-	private static final String LIDVID_SEPARATOR = "::";
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
-
-	public static String parseLid(String productIdentifier)
-    {
-        if (productIdentifier == null) {
-			return null;
-		}
-
-		return PdsProductIdentifier.fromString(productIdentifier).getLid().toString();
-    }
-
 
     /**
      * Get latest versions of LIDs
