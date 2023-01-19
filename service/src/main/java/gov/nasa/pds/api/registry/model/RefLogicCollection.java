@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
 	private static final Logger log = LoggerFactory.getLogger(RefLogicProduct.class);
 
     @Override
-	public GroupConstraint constraints() 
+	public GroupConstraint constraints()
 	{
     	Map<String,List<String>> preset = new HashMap<String,List<String>>();
     	preset.put("product_class", Arrays.asList("Product_Bundle","Product_Collection"));

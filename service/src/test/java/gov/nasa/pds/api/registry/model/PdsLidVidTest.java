@@ -1,10 +1,9 @@
 package gov.nasa.pds.api.registry.model;
 
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

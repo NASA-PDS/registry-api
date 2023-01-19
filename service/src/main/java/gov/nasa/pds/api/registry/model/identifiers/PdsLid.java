@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.model;
+package gov.nasa.pds.api.registry.model.identifiers;
 
 public class PdsLid {
     private String value;

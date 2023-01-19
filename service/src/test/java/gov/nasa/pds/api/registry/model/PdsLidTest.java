@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.registry.model;
 
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import org.junit.Assert;
 import org.junit.Test;
 

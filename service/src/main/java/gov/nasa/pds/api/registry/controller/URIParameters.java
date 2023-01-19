@@ -7,14 +7,14 @@ import java.util.List;
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.model.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 
 /*
  * Maybe not the most obvious properties class or bean or whatever name but
  * here are some things that are being done and must be maintained
- * 
+ *
  * 1. If the set value is null, then leave the default value in place.
  *    The reason for ignoring null, is that 100 different places do not have
  *    to test for null then do the default thing. The default thing when not
@@ -31,7 +31,7 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 class URIParameters implements UserContext
 {
 	private static final int SUMMARY_SAMPLE_SIZE = 100;
-	
+
 	private boolean verifyClassAndId = false;
 	private String accept = "application/json";
 	private List<String> fields = new ArrayList<String>();
@@ -102,7 +102,7 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setLimit(Integer limit)
 	{
-		/* 
+		/*
 		 * Note: Not too happy w/ having to put behavioral logic in a utility/container class, but
 		 * there are just way too many places where this information is necessary and rather than
 		 * duplicate it everywhere, this is the best place, for now, as it is the common object

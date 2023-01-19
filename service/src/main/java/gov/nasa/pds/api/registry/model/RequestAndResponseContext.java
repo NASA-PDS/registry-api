@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
@@ -83,14 +84,16 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     		GroupConstraint outPreset, GroupConstraint resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     { return new RequestAndResponseContext(connection, parameters, outPreset, resPreset); }
-    
+
     private RequestAndResponseContext(
     		ControlContext controlContext,// webby criteria
     		UserContext parameters,
     		GroupConstraint outPreset, GroupConstraint resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
-    	Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
+		ProductVersionSelector versionSelectionScope = outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED;
+
+		Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
     	formatters.put("*/*", new PdsProductBusinessObject());
     	formatters.put("application/csv", new WyriwygBusinessObject());
     	formatters.put("application/json", new PdsProductBusinessObject());
@@ -101,6 +104,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	formatters.put("text/csv", new WyriwygBusinessObject());
     	formatters.put("text/html", new PdsProductBusinessObject());
     	formatters.put("text/xml", new PdsProductBusinessObject());
+
     	this.controlContext = controlContext;
     	this.formatters = formatters;
     	this.format = this.find_match(parameters.getAccept());
@@ -108,9 +112,9 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
-    	this.lidvid = LidVidUtils.resolve(
+		this.lidvid = LidVidUtils.resolve(
     			parameters.getIdentifier(),
-    			outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED,
+				versionSelectionScope,
     			controlContext,
     			RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
    		this.summaryOnly = parameters.isSummaryOnly();
@@ -150,7 +154,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		given = SearchUtil.jsonPropertyToOpenProperty(given);
 
 		if (this.formatters.containsKey(this.format))
-		{ 
+		{
 			this.formatters.get(this.format).setBaseURL(this.controlContext.getBaseURL());
 			this.formatters.get(this.format).setObjectMapper(this.controlContext.getObjectMapper());
 			max_needs = SearchUtil.jsonPropertyToOpenProperty(this.formatters.get(this.format).getMaximallyRequiredFields());
@@ -171,7 +175,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			for (int index=0 ; index < min_needs.length ; index++)
 			{ if (!complete.contains(min_needs[index])) complete.add(min_needs[index]); }
 		}
-		
+
 		if (0 < max_needs.length)
 		{
 			List<String> allowed = Arrays.asList(max_needs);
@@ -186,18 +190,18 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 
 		return complete;
 	}
-	
+
 	private String find_match (String from_user)
 	{
 		String match=from_user;
 		StringTokenizer mimes = new StringTokenizer(from_user, ",");
-		
+
 		while (mimes.hasMoreTokens())
 		{
 			/* separate the mime_type/mime_subtype from ;* stuff */
 			String mime = mimes.nextToken();
 			if (mime.contains(";")) mime = mime.substring(0, mime.indexOf(";"));
-			
+
 			if (this.formatters.keySet().contains(mime))
 			{
 				match = mime;
@@ -211,7 +215,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public Object getResponse() throws NothingFoundException
 	{
 		Object response = this.formatters.get(this.format).getResponse();
-		
+
 		if (response == null)
 		{
 			log.warn("Could not find any data given these conditions");
@@ -231,9 +235,9 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		}
 		return response;
 	}
-	
+
 	public void setResponse(HitIterator hits, int real_total)
-	{ 
+	{
 		Summary summary = new Summary();
 		summary.setQ(this.getQueryString());
 		summary.setStart(this.getStart());
@@ -242,7 +246,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		summary.setSort(this.getSort());
 		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.isSummaryOnly()));
 		summary.setProperties(new ArrayList<String>());
-		
+
 		if (0 < real_total) summary.setHits(real_total);
 
 		summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
@@ -272,7 +276,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 		}
 	}
-	
+
 	public void setResponse(RestHighLevelClient client, SearchRequest request) throws IOException
 	{
 		if (this.isSingular())
