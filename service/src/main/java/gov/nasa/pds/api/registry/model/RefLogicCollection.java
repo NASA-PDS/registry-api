@@ -9,8 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +86,10 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     static Pagination<String> parents (ControlContext control, ProductVersionSelector selection,  LidvidsContext uid)
     		throws IOException, LidVidNotFoundException
     {
+//        TODO: Fully convert this function's internals (and eventually, interface) to use PdsProductIdentifier classes instead of strings
     	List<String> keys = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary",
     		                              "ref_lidvid_collection", "ref_lidvid_collection_secondary");
-    	List<String> sortedLids;
+    	List<String> sortedLidStrings;
     	Set<String> lids = new HashSet<String>();
     	PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(uid.getLidVid());
         PaginationLidvidBuilder bundleLidvids = new PaginationLidvidBuilder(uid);
@@ -102,13 +106,19 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         		lids.addAll(bundleLidvids.convert(kvp.get("lid")));
         	}
         }
-        sortedLids = new ArrayList<String>(lids);
-        Collections.sort(sortedLids);  // TODO: Implement comparison for PdsLids (only with other PdsLids)
+        sortedLidStrings = new ArrayList<String>(lids);
+        Collections.sort(sortedLidStrings);  // TODO: Implement comparison for PdsLids (only with other PdsLids)
+		List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
 
-        if (selection == ProductVersionSelector.ALL)
-        	bundleLidvids.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));
-        else
-        	bundleLidvids.addAll (LidVidUtils.getLatestLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLids));
+        if (selection == ProductVersionSelector.ALL){
+			bundleLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
+		}
+        else {
+			List<PdsLidVid> latestLidvids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
+			List<String> latestLidVidStrings = latestLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+			bundleLidvids.addAll(latestLidVidStrings);
+		}
+
 
         return bundleLidvids;
     }

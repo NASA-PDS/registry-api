@@ -40,23 +40,23 @@ public class LidVidUtils
     /**
      * Get latest versions of LIDs
      */
-    public static List<String> getLatestLidVidsByLids(
+    public static List<PdsLidVid> getLatestLidVidsForProductIdentifiers(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,
-            Collection<String> lids) throws IOException,LidVidNotFoundException
+            Collection<PdsProductIdentifier> productIdentifiers) throws IOException,LidVidNotFoundException
     {
-    	List<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
+    	List<PdsLidVid> lidVids = new ArrayList<>();
 
-    	for (String lid : lids) {
+    	for (PdsProductIdentifier id : productIdentifiers) {
 			try {
-				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
+				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
 				lidVids.add(latestLidVid);
 			} catch (LidVidNotFoundException e) {
-				log.error("Database is corrupted. Have reference to LID but cannot find it: " + lid);
+				log.error("Database is corrupted. Have reference to LID but cannot find it: " + id.getLid().toString());
 			}
 		}
 
-    	return lidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());  // Required as callers aren't yet compatible with LIDVID classes
+    	return lidVids;
     }
 
     public static PdsLidVid getLatestLidVidByLid(

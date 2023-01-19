@@ -9,8 +9,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +64,7 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
     static Pagination<String> parents (ControlContext control, ProductVersionSelector selection, LidvidsContext uid)
     		throws IOException, LidVidNotFoundException
     {
-    	List<String> sorted_lids;
+    	List<String> sortedLidStrings;
         PaginationLidvidBuilder parents = new PaginationLidvidBuilder(uid);
         Set<String> lids = new HashSet<String>();
 
@@ -69,13 +73,18 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
         		new SearchRequestFactory(RequestConstructionContextFactory.given("product_lidvid", uid.getLidVid(), true), control.getConnection())
         		.build (RequestBuildContextFactory.given(true, "collection_lid"), control.getConnection().getRegistryRefIndex())))
 		{ lids.addAll(parents.convert(kvp.get("collection_lid"))); }
-        sorted_lids = new ArrayList<String>(lids);
-        Collections.sort(sorted_lids);
+        sortedLidStrings = new ArrayList<>(lids);
+        Collections.sort(sortedLidStrings);
+		List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
 
-        if (selection == ProductVersionSelector.ALL)
-        	parents.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sorted_lids));
-        else
-        	parents.addAll(LidVidUtils.getLatestLidVidsByLids(control, RequestBuildContextFactory.empty(), sorted_lids));
+        if (selection == ProductVersionSelector.ALL){
+			parents.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
+		}
+        else{
+			List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
+			List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+			parents.addAll(latestLidVidStrings);
+		}
 
         return parents;
     }

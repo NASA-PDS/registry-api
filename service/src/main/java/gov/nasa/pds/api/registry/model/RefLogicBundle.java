@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.search.SearchHit;
@@ -105,6 +108,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     		ControlContext ctlContext)
             throws IOException, LidVidNotFoundException
     {
+//        TODO: Fully convert this function's internals (and eventually, interface) to use PdsProductIdentifier classes instead of strings
         // Fetch collection references only.
     	List<String> fields = Arrays.asList("ref_lidvid_collection","ref_lidvid_collection_secondary",
                                             "ref_lid_collection", "ref_lid_collection_secondary");
@@ -147,18 +151,22 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
         }
 
         // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by Harvest
-        List<String> lids = new ArrayList<String>();
-        lids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
-        lids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
+        List<String> lidStrings = new ArrayList<String>();
+        lidStrings.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
+        lidStrings.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
 
         // Get "real" LIDs
         if(!lidsToRemove.isEmpty())
-        { lids.removeAll(lidsToRemove); }
+        { lidStrings.removeAll(lidsToRemove); }
 
         // Get the latest versions of LIDs
-        lidvids.addAll(LidVidUtils.getLatestLidVidsByLids(ctlContext,
-        		RequestBuildContextFactory.given(true, "lid",
-        				ReferencingLogicTransmuter.Collection.impl().constraints()), lids));
+        List<PdsProductIdentifier> productIdentifiers = lidStrings.stream().map(PdsProductIdentifier::fromString).collect(Collectors.toList());
+        List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(
+                ctlContext,
+                RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Collection.impl().constraints()),
+                productIdentifiers);
+        List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+        lidvids.addAll(latestLidVidStrings);
         return lidvids;
     }
 
