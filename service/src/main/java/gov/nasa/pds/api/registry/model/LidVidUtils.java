@@ -34,14 +34,21 @@ public class LidVidUtils
 {
 	private static final String LIDVID_SEPARATOR = "::";
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
-	
-	public static String extractLidFromLidVid(String identifier)
+
+	public static String parseLid(String lidOrLidVid)
     {
-        if (identifier == null) return null;
-        else return identifier.contains(LIDVID_SEPARATOR)?identifier.substring(0, identifier.indexOf(LIDVID_SEPARATOR)):identifier;
+        if (lidOrLidVid == null) {
+			return null;
+		}
+
+		if (lidOrLidVid.contains(LIDVID_SEPARATOR)) {
+			return lidOrLidVid.substring(0, lidOrLidVid.indexOf(LIDVID_SEPARATOR));
+		}
+
+		return lidOrLidVid;
     }
-    
-    
+
+
     /**
      * Get latest versions of LIDs
      */
@@ -51,7 +58,7 @@ public class LidVidUtils
             Collection<String> lids) throws IOException,LidVidNotFoundException
     {
     	List<String> lidvids = new ArrayList<String>();
-    	
+
     	for (String lid : lids)
     	{
     		try { lidvids.add (LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid)); }
@@ -61,35 +68,40 @@ public class LidVidUtils
 
     	return lidvids;
     }
-    
+
     public static String getLatestLidVidByLid(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,
-            String lid) throws IOException,LidVidNotFoundException
+            String lidOrLidVid) throws IOException,LidVidNotFoundException
     {
-    	lid = LidVidUtils.extractLidFromLidVid(lid);
-    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid, true), ctlContext.getConnection())
+		PdsLid lid = new PdsLid(LidVidUtils.parseLid(lidOrLidVid));
+
+    	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid.toString(), true), ctlContext.getConnection())
     			.build(RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
-    	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest, 
+    	SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient().search(searchRequest,
     			RequestOptions.DEFAULT);
 
     	if (searchResponse != null)
     	{
-    		ArrayList<String> lidvids = new ArrayList<String>();
-    		String lidvid;
+    		ArrayList<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
     		for (SearchHit searchHit : searchResponse.getHits())
     		{
-    			lidvid = (String)searchHit.getSourceAsMap().get("lidvid");;
-    			lidvids.add(lidvid);                
+    			String lidvidStr = (String)searchHit.getSourceAsMap().get("lidvid");;
+				lidVids.add(PdsLidVid.fromString(lidvidStr));
     		}
-    		Collections.sort(lidvids);
 
-            if (lidvids.isEmpty()) throw new LidVidNotFoundException(lid);
-    		else return lidvids.get(lidvids.size() - 1);
+    		Collections.sort(lidVids);
+
+            if (lidVids.isEmpty()) {
+				throw new LidVidNotFoundException(lid.toString());
+			}
+
+			PdsLidVid latestLidVid = lidVids.get(lidVids.size() - 1);
+			return latestLidVid.toString();  // Required as remainder of codebase is not compatible with LIDVID classes yet
     	}
-    	throw new LidVidNotFoundException(lid);
+    	throw new LidVidNotFoundException(lid.toString());
     }
-    
+
     public static List<String> getAllLidVidsByLids(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,
@@ -114,10 +126,10 @@ public class LidVidUtils
     		RequestBuildContext reqContext) throws IOException, LidVidNotFoundException
     {
     	String result = identifier;
-    	
+
     	if (0 < identifier.length())
     	{
-    		String lid = LidVidUtils.extractLidFromLidVid(identifier);
+    		String lid = LidVidUtils.parseLid(identifier);
     		/* YUCK! This should use polymorphism in ProductVersionSelector not a switch statement */
     		switch (scope)
     		{
@@ -128,7 +140,7 @@ public class LidVidUtils
     			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
     			break;
     		case TYPED:
-    			result = lid.equals(identifier) ? LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid) : identifier; 
+    			result = lid.equals(identifier) ? LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid) : identifier;
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
@@ -141,12 +153,12 @@ public class LidVidUtils
 			throws IOException, LidVidMismatchException, LidVidNotFoundException, UnknownGroupNameException
 	{
 		ReferencingLogicTransmuter expected_rlt = ReferencingLogicTransmuter.getBySwaggerGroup(user.getGroup());
-			
+
 		if (expected_rlt != ReferencingLogicTransmuter.Any)
 		{
 			String actual_group = QuickSearch.getValue(control.getConnection(), false, user.getLidVid(), "product_class");
 			ReferencingLogicTransmuter actual_rlt = ReferencingLogicTransmuter.getByProductClass(actual_group);
-			
+
 			if (actual_rlt != expected_rlt)
 				throw new LidVidMismatchException(user.getLidVid(), user.getGroup(), actual_group);
 		}
