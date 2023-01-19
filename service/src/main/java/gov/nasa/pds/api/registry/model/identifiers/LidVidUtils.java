@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
@@ -37,17 +38,13 @@ public class LidVidUtils
 	private static final String LIDVID_SEPARATOR = "::";
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
 
-	public static String parseLid(String lidOrLidVid)
+	public static String parseLid(String productIdentifier)
     {
-        if (lidOrLidVid == null) {
+        if (productIdentifier == null) {
 			return null;
 		}
 
-		if (lidOrLidVid.contains(LIDVID_SEPARATOR)) {
-			return lidOrLidVid.substring(0, lidOrLidVid.indexOf(LIDVID_SEPARATOR));
-		}
-
-		return lidOrLidVid;
+		return PdsProductIdentifier.fromString(productIdentifier).getLid().toString();
     }
 
 
@@ -59,24 +56,26 @@ public class LidVidUtils
     		RequestBuildContext reqContext,
             Collection<String> lids) throws IOException,LidVidNotFoundException
     {
-    	List<String> lidvids = new ArrayList<String>();
+    	List<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
 
-    	for (String lid : lids)
-    	{
-    		try { lidvids.add (LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid)); }
-    		catch (LidVidNotFoundException e)
-    		{ log.error("Database is corrupted. Have reference to this lid but cannot find it: " + lid); }
-    	}
+    	for (String lid : lids) {
+			try {
+				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
+				lidVids.add(latestLidVid);
+			} catch (LidVidNotFoundException e) {
+				log.error("Database is corrupted. Have reference to LID but cannot find it: " + lid);
+			}
+		}
 
-    	return lidvids;
+    	return lidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());  // Required as callers aren't yet compatible with LIDVID classes
     }
 
-    public static String getLatestLidVidByLid(
+    public static PdsLidVid getLatestLidVidByLid(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,
-            String lidOrLidVid) throws IOException,LidVidNotFoundException
+            String productIdentifier) throws IOException,LidVidNotFoundException
     {
-		PdsLid lid = new PdsLid(LidVidUtils.parseLid(lidOrLidVid));
+		PdsLid lid = PdsProductIdentifier.fromString(productIdentifier).getLid();
 
     	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid.toString(), true), ctlContext.getConnection())
     			.build(RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
@@ -98,8 +97,7 @@ public class LidVidUtils
 				throw new LidVidNotFoundException(lid.toString());
 			}
 
-			PdsLidVid latestLidVid = lidVids.get(lidVids.size() - 1);
-			return latestLidVid.toString();  // Required as remainder of codebase is not compatible with LIDVID classes yet
+			return lidVids.get(lidVids.size() - 1);
     	}
     	throw new LidVidNotFoundException(lid.toString());
     }
@@ -122,33 +120,36 @@ public class LidVidUtils
     }
 
     public static String resolve (
-    		String identifier,
+    		String _identifier,
     		ProductVersionSelector scope,
     		ControlContext ctlContext,
     		RequestBuildContext reqContext) throws IOException, LidVidNotFoundException
     {
-    	String result = identifier;
+		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(_identifier);
+    	PdsProductIdentifier result = null;
 
-    	if (0 < identifier.length())
+    	if (_identifier.length() > 0)
     	{
-    		String lid = LidVidUtils.parseLid(identifier);
     		/* YUCK! This should use polymorphism in ProductVersionSelector not a switch statement */
     		switch (scope)
     		{
     		case ALL:
-    			result = lid;
+    			result = productIdentifier.getLid();
     			break;
     		case LATEST:
-    			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
+    			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case TYPED:
-    			result = lid.equals(identifier) ? LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid) : identifier;
+				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
     		}
     	}
-    	return result;
+		// When this function's interface is converted to use PdsProductIdentifiers, excise the non-const variable
+		// "result" and return within the switch statement if possible (need to check).
+		assert result != null;
+		return result.toString();
     }
 
 	public static void verify (ControlContext control, UserContext user)
