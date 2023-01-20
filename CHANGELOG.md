@@ -1,16 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-01-19)
+## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2023-01-19)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0-SNAPSHOT)
 
 **Defects:**
 
 - registry-api does not return latest version of product metadata when multiple versions are harvested [\#224](https://github.com/NASA-PDS/registry-api/issues/224) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2023-01-07)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0-SNAPSHOT)
 
 **Other closed issues:**
 
