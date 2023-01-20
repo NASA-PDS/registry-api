@@ -73,7 +73,7 @@ public class LidVidUtils
 
     	if (searchResponse != null)
     	{
-    		ArrayList<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
+    		List<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
     		for (SearchHit searchHit : searchResponse.getHits())
     		{
     			String lidvidStr = (String)searchHit.getSourceAsMap().get("lidvid");;
