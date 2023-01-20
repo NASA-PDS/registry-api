@@ -108,7 +108,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         }
         sortedLidStrings = new ArrayList<String>(lids);
         Collections.sort(sortedLidStrings);  // TODO: Implement comparison for PdsLids (only with other PdsLids)
-		List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
+        List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
 
         if (selection == ProductVersionSelector.ALL){
 			bundleLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
