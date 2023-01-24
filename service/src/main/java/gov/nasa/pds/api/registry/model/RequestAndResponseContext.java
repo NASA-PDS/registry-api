@@ -289,12 +289,22 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	        request.source().from(0);
             hits = client.search(request, RequestOptions.DEFAULT).getHits();
 
-            if (hits != null && hits.getTotalHits() != null && hits.getTotalHits().value == 1L)
-        	{ this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields); }
-        	else
+
+            if (hits != null && hits.getTotalHits() != null)
         	{
-        		log.error("Too many or too few lidvids which is just wrong.");
-        		throw new IOException("Too many or too few lidvids matched the request when it should have just been 1.");
+				long hitCount = hits.getTotalHits().value;
+				if (hitCount == 1L) {
+					this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
+				} else {
+					String basicErrMsg = "Got " + hitCount + " hits for a query which should have returned a singular result. " +
+									"Is provenance metadata present and up-to-date?";
+					log.error(basicErrMsg +  " Query was " + request.source().query().toString());
+					throw new IOException(basicErrMsg);
+				}
+			} else
+        	{
+        		log.error("Registry returned unexpected response (could not parse hits count from response)");
+        		throw new IOException("Registry returned unexpected response (could not parse hits count from response)");
         	}
         }
         else
