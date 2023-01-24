@@ -108,7 +108,7 @@ public class LidVidUtils
     	return lidvids;
     }
 
-    public static String resolve (
+    public static PdsProductIdentifier resolve (
     		String _identifier,
     		ProductVersionSelector scope,
     		ControlContext ctlContext,
@@ -136,7 +136,7 @@ public class LidVidUtils
     		}
     	}
 
-		return productIdentifier != null ? productIdentifier.toString() : "";
+		return productIdentifier;
     }
 
 	public static void verify (ControlContext control, UserContext user)

@@ -97,7 +97,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 		long begin = System.currentTimeMillis();
         try
         {
-        	parameters.setAccept(this.request.getHeader("Accept")).setLidVid(this);
+        	parameters.setAccept(this.request.getHeader("Accept")).setProductIdentifier(this);
         	if (parameters.getVerifyClassAndId()) LidVidUtils.verify (this, parameters);
         	return handler.transmute(this, parameters);
         }

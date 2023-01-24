@@ -9,6 +9,7 @@ import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 
 /*
@@ -38,7 +39,7 @@ class URIParameters implements UserContext
 	private String group = "";
 	private String identifier = "";
 	private List<String> keywords = new ArrayList<String>();
-	private String lidvid = "";
+	private PdsProductIdentifier productIdentifier = null;
 	private Integer limit = Integer.valueOf(0);
 	private boolean summaryOnly = true;
 	private String query = "";
@@ -60,7 +61,7 @@ class URIParameters implements UserContext
 	@Override
 	public Integer getLimit() { return limit; }
 	@Override
-	public String getLidVid() { return lidvid; }
+	public String getLidVid() { return productIdentifier != null ? productIdentifier.toString() : ""; }
 	@Override
 	public String getQuery() { return query; }
 	@Override
@@ -119,9 +120,9 @@ class URIParameters implements UserContext
 		}
 		return this;
 	}
-	public URIParameters setLidVid(ControlContext control) throws IOException, LidVidNotFoundException
+	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
 	{
-		this.lidvid = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.SPECIFIC,
+		this.productIdentifier = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.SPECIFIC,
 				control, RequestBuildContextFactory.empty());
 		return this;
 	}

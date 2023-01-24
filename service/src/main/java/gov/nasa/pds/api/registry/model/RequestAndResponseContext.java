@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
@@ -112,11 +113,12 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
-		this.lidvid = LidVidUtils.resolve(
-    			parameters.getIdentifier(),
+		PdsProductIdentifier productIdentifier = LidVidUtils.resolve(
+				parameters.getIdentifier(),
 				versionSelectionScope,
-    			controlContext,
-    			RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
+				controlContext,
+				RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
+		this.lidvid = productIdentifier != null ? productIdentifier.toString() : "";
    		this.summaryOnly = parameters.isSummaryOnly();
    		this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
