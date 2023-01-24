@@ -8,6 +8,8 @@ public abstract class PdsProductIdentifier {
     public abstract String toString();
 
     public static PdsProductIdentifier fromString(String identifier) {
+        if (identifier.length() == 0) return null;
+
         try {
             return identifier.contains(LIDVID_SEPARATOR) ? PdsLidVid.fromString(identifier) : PdsLid.fromString(identifier);
         } catch (IllegalArgumentException err) {

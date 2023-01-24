@@ -117,7 +117,7 @@ public class LidVidUtils
 		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(_identifier);
     	PdsProductIdentifier result = null;
 
-    	if (_identifier.length() > 0)
+    	if (productIdentifier != null)
     	{
     		/* YUCK! This should use polymorphism in ProductVersionSelector not a switch statement */
     		switch (scope)
@@ -135,10 +135,8 @@ public class LidVidUtils
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
     		}
     	}
-		// When this function's interface is converted to use PdsProductIdentifiers, excise the non-const variable
-		// "result" and return within the switch statement if possible (need to check).
-		assert result != null;
-		return result.toString();
+
+		return productIdentifier != null ? productIdentifier.toString() : "";
     }
 
 	public static void verify (ControlContext control, UserContext user)
