@@ -121,7 +121,7 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setLidVid(ControlContext control) throws IOException, LidVidNotFoundException
 	{
-		this.lidvid = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.TYPED,
+		this.lidvid = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.SPECIFIC,
 				control, RequestBuildContextFactory.empty());
 		return this;
 	}

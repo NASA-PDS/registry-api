@@ -32,7 +32,7 @@ class RefLogicAny implements ReferencingLogic
 	{
 		return ReferencingLogicTransmuter.getByProductClass(
 				QuickSearch.getValue(context.getConnection(), input.getSelector() == ProductVersionSelector.LATEST,
-			             LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.TYPED, context, RequestBuildContextFactory.empty()),
+			             LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.SPECIFIC, context, RequestBuildContextFactory.empty()),
 			             "product_class"));
 	}
 

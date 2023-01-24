@@ -128,7 +128,7 @@ public class LidVidUtils
     		case LATEST:
     			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
-    		case TYPED:
+    		case SPECIFIC:
 				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
