@@ -33,27 +33,46 @@ Follow instructions in README.txt in the decompressed folder
 
 ## Developers
 
-### Prerequisites
+### Running the API
+
+#### Prerequisites
 
 To build and run the application you need:
 
 - jdk 11
 - maven
 
-### Build
+Additionally, harvested data will only be picked up correctly by the API if all of the following are true:
+ - the data has been given a status of "archived" using registry-mgr
+ - [provenance.py](./support/provenance.py) has been run since the data was ingested, unless only one version of each product has been harvested.
+   
+   This requires use of a python3 venv with `requests` installed, and is performed with `python provenance.py -b https://localhost:9200 -p admin -u admin`, but this may be streamlined in the future.
 
-Builds the application:
+There are two approaches to running a local development instance of the API
 
-    mvn clean install
+#### [Option 1] Non-Containerized (useful for breakpoint debugging)
+
+1. [Deploy an instance of the registry docker-compose](https://github.com/NASA-PDS/registry/tree/main/docker#readme)
+2. Kill the existing API container
+      
+       docker kill docker-registry-api-1
+
+3. Temporarily disable certificate verification by making the following modification to [application.properties](./service/src/main/resources/application.properties)
+
+       openSearch.sslCertificateCNVerification=false
+
+4. Build the application
+
+       mvn clean install
+
+5. Start the application 
+
+       cd service
+       mvn spring-boot:run
+
+The API will now be accessible on (by default) https://localhost:8080
     
-    
-## Start the application
-
-
-    cd service
-    mvn spring-boot:run
-    
-## Build a development docker image
+#### [Option 2] Build a development docker image
 
 Your local docker image will be used in the integration deployment described below.
 
