@@ -1,6 +1,25 @@
 # Changelog
 
-## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2023-01-19)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-01-25)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0-SNAPSHOT...«unknown»)
+
+**Requirements:**
+
+- As a user, I want to know the members of a bundle product [\#223](https://github.com/NASA-PDS/registry-api/issues/223) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Defects:**
+
+- Keyword search does not work on registry-api deployed on pds.nasa.gov [\#227](https://github.com/NASA-PDS/registry-api/issues/227) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- lidvid not found raises 500 error [\#207](https://github.com/NASA-PDS/registry-api/issues/207) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- api not returning information on yesterday's upload \(and status changed to archived\) to the registry [\#230](https://github.com/NASA-PDS/registry-api/issues/230) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
+
+## [v1.2.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.2.0-SNAPSHOT) (2023-01-20)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0-SNAPSHOT)
 
