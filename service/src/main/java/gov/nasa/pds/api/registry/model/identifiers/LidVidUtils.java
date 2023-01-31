@@ -126,7 +126,11 @@ public class LidVidUtils
     			result = productIdentifier.getLid();
     			break;
     		case LATEST:
-    			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
+//				Per discussion with Al Niessner, the intended functionality of attempting to resolve a LIDVID with
+//				selector LATEST is that it should return the exact product specified by the LIDVID, *not* the latest
+//				equivalent product.  This is somewhat unintuitive, but ProductVersionSelector's purpose is not actually
+//				to force that kind of resolution.
+				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case SPECIFIC:
 				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
@@ -136,7 +140,7 @@ public class LidVidUtils
     		}
     	}
 
-		return productIdentifier;
+		return result;
     }
 
 	public static void verify (ControlContext control, UserContext user)
