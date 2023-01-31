@@ -148,7 +148,10 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	@Override
 	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
 	@Override
-	public boolean justLatest() { return getSelector() == ProductVersionSelector.LATEST; }
+	public boolean justLatest() {
+		boolean specificVersionRequested = this.productIdentifier instanceof PdsLidVid;
+		return getSelector() == ProductVersionSelector.LATEST && !specificVersionRequested;
+	}
 
 	private List<String> add_output_needs (List<String> given) throws ApplicationTypeException
 	{
