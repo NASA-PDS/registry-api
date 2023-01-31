@@ -1,11 +1,14 @@
-package gov.nasa.pds.api.registry.model;
+package gov.nasa.pds.api.registry.model.identifiers;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import gov.nasa.pds.api.registry.model.ProductVersionSelector;
+import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
@@ -32,49 +35,36 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
  */
 public class LidVidUtils
 {
-	private static final String LIDVID_SEPARATOR = "::";
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
-
-	public static String parseLid(String lidOrLidVid)
-    {
-        if (lidOrLidVid == null) {
-			return null;
-		}
-
-		if (lidOrLidVid.contains(LIDVID_SEPARATOR)) {
-			return lidOrLidVid.substring(0, lidOrLidVid.indexOf(LIDVID_SEPARATOR));
-		}
-
-		return lidOrLidVid;
-    }
-
 
     /**
      * Get latest versions of LIDs
      */
-    public static List<String> getLatestLidVidsByLids(
+    public static List<PdsLidVid> getLatestLidVidsForProductIdentifiers(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,
-            Collection<String> lids) throws IOException,LidVidNotFoundException
+            Collection<PdsProductIdentifier> productIdentifiers) throws IOException,LidVidNotFoundException
     {
-    	List<String> lidvids = new ArrayList<String>();
+    	List<PdsLidVid> lidVids = new ArrayList<>();
 
-    	for (String lid : lids)
-    	{
-    		try { lidvids.add (LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid)); }
-    		catch (LidVidNotFoundException e)
-    		{ log.error("Database is corrupted. Have reference to this lid but cannot find it: " + lid); }
-    	}
+    	for (PdsProductIdentifier id : productIdentifiers) {
+			try {
+				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
+				lidVids.add(latestLidVid);
+			} catch (LidVidNotFoundException e) {
+				log.error("Database is corrupted. Have reference to LID but cannot find it: " + id.getLid().toString());
+			}
+		}
 
-    	return lidvids;
+    	return lidVids;
     }
 
-    public static String getLatestLidVidByLid(
+    public static PdsLidVid getLatestLidVidByLid(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,
-            String lidOrLidVid) throws IOException,LidVidNotFoundException
+            String productIdentifier) throws IOException,LidVidNotFoundException
     {
-		PdsLid lid = new PdsLid(LidVidUtils.parseLid(lidOrLidVid));
+		PdsLid lid = PdsProductIdentifier.fromString(productIdentifier).getLid();
 
     	SearchRequest searchRequest = new SearchRequestFactory(RequestConstructionContextFactory.given("lid", lid.toString(), true), ctlContext.getConnection())
     			.build(RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()), ctlContext.getConnection().getRegistryIndex());
@@ -83,7 +73,7 @@ public class LidVidUtils
 
     	if (searchResponse != null)
     	{
-    		ArrayList<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
+    		List<PdsLidVid> lidVids = new ArrayList<PdsLidVid>();
     		for (SearchHit searchHit : searchResponse.getHits())
     		{
     			String lidvidStr = (String)searchHit.getSourceAsMap().get("lidvid");;
@@ -96,8 +86,7 @@ public class LidVidUtils
 				throw new LidVidNotFoundException(lid.toString());
 			}
 
-			PdsLidVid latestLidVid = lidVids.get(lidVids.size() - 1);
-			return latestLidVid.toString();  // Required as remainder of codebase is not compatible with LIDVID classes yet
+			return lidVids.get(lidVids.size() - 1);
     	}
     	throw new LidVidNotFoundException(lid.toString());
     }
@@ -119,34 +108,39 @@ public class LidVidUtils
     	return lidvids;
     }
 
-    public static String resolve (
-    		String identifier,
+    public static PdsProductIdentifier resolve (
+    		String _identifier,
     		ProductVersionSelector scope,
     		ControlContext ctlContext,
     		RequestBuildContext reqContext) throws IOException, LidVidNotFoundException
     {
-    	String result = identifier;
+		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(_identifier);
+    	PdsProductIdentifier result = null;
 
-    	if (0 < identifier.length())
+    	if (productIdentifier != null)
     	{
-    		String lid = LidVidUtils.parseLid(identifier);
     		/* YUCK! This should use polymorphism in ProductVersionSelector not a switch statement */
     		switch (scope)
     		{
     		case ALL:
-    			result = lid;
+    			result = productIdentifier.getLid();
     			break;
     		case LATEST:
-    			result = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid);
+//				Per discussion with Al Niessner, the intended functionality of attempting to resolve a LIDVID with
+//				selector LATEST is that it should return the exact product specified by the LIDVID, *not* the latest
+//				equivalent product.  This is somewhat unintuitive, but ProductVersionSelector's purpose is not actually
+//				to force that kind of resolution.
+				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
-    		case TYPED:
-    			result = lid.equals(identifier) ? LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, lid) : identifier;
+    		case SPECIFIC:
+				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
     		default: throw new LidVidNotFoundException("Unknown and unhandles ProductVersionSelector value.");
     		}
     	}
-    	return result;
+
+		return result;
     }
 
 	public static void verify (ControlContext control, UserContext user)

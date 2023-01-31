@@ -12,6 +12,8 @@ import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
@@ -29,10 +31,10 @@ class RefLogicAny implements ReferencingLogic
 	private ReferencingLogicTransmuter resolveID (ControlContext context, UserContext input)
 			throws IOException, LidVidNotFoundException, UnknownGroupNameException
 	{
+		PdsProductIdentifier productIdentifier = LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.SPECIFIC, context, RequestBuildContextFactory.empty());
 		return ReferencingLogicTransmuter.getByProductClass(
 				QuickSearch.getValue(context.getConnection(), input.getSelector() == ProductVersionSelector.LATEST,
-			             LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.TYPED, context, RequestBuildContextFactory.empty()),
-			             "product_class"));
+			             productIdentifier != null ? productIdentifier.toString() : "", "product_class"));
 	}
 
 	private RequestAndResponseContext search(ControlContext context, UserContext input, boolean isIdToGroup)
@@ -41,7 +43,7 @@ class RefLogicAny implements ReferencingLogic
 		// find all of the given group that reference the specified ID
 		ReferencingLogicTransmuter groupType = ReferencingLogicTransmuter.getBySwaggerGroup(input.getGroup());
 		ReferencingLogicTransmuter idType = this.resolveID(context, input);
-		
+
 		if (idType == ReferencingLogicTransmuter.Bundle && groupType == ReferencingLogicTransmuter.Collection)
 			return RequestAndResponseContext.buildRequestAndResponseContext
 					(context, input, RefLogicBundle.children(context, input.getSelector(), input));

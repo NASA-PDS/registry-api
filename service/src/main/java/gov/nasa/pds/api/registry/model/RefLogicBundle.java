@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.search.SearchHit;
@@ -33,9 +37,9 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 /**
- * Bundle Data Access Object (DAO). 
+ * Bundle Data Access Object (DAO).
  * Provides methods to get bundle information from opensearch.
- * 
+ *
  * @author karpenko
  */
 @Immutable
@@ -48,7 +52,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     {
     	log.info("Find children of a bundle");
     	return selection == ProductVersionSelector.ALL ?
-    			getAllBundleCollectionLidVids(uid, control) : 
+    			getAllBundleCollectionLidVids(uid, control) :
     			getBundleCollectionLidVids(uid, control);
     }
 
@@ -67,7 +71,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
         		.build(RequestBuildContextFactory.given(false, fields, ReferencingLogicTransmuter.Bundle.impl().constraints()), ctlContext.getConnection().getRegistryIndex());
-        
+
         // Call opensearch
         SearchHit hit;
         SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
@@ -84,7 +88,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 
         ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
         ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
-        ids = LidVidUtils.getAllLidVidsByLids(ctlContext, 
+        ids = LidVidUtils.getAllLidVidsByLids(ctlContext,
         		RequestBuildContextFactory.given(false, "lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()),
         		ids);
         lidvids.addAll(ids);
@@ -92,8 +96,8 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
     }
 
     /**
-     * Get collections of a bundle by bundle LIDVID. 
-     * If a bundle has LIDVID collection references, then those collections are returned. 
+     * Get collections of a bundle by bundle LIDVID.
+     * If a bundle has LIDVID collection references, then those collections are returned.
      * If a bundle has LID collection references, then the latest versions of collections are returned.
      * @return a list of collection LIDVIDs
      * @throws IOException IO exception
@@ -101,19 +105,20 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
      */
     static private Pagination<String> getBundleCollectionLidVids(
     		LidvidsContext idContext,
-    		ControlContext ctlContext) 
+    		ControlContext ctlContext)
             throws IOException, LidVidNotFoundException
     {
+//        TODO: Fully convert this function's internals (and eventually, interface) to use PdsProductIdentifier classes instead of strings
         // Fetch collection references only.
     	List<String> fields = Arrays.asList("ref_lidvid_collection","ref_lidvid_collection_secondary",
                                             "ref_lid_collection", "ref_lid_collection_secondary");
-    	
+
         // Get bundle by lidvid.
         SearchRequest request = new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()), ctlContext.getConnection())
         		.build(RequestBuildContextFactory.given(true, fields,
         				ReferencingLogicTransmuter.Bundle.impl().constraints()),
         				ctlContext.getConnection().getRegistryIndex());
-        
+
         // Call opensearch
         SearchHit hit;
         SearchHits hits = ctlContext.getConnection().getRestHighLevelClient().search(request, RequestOptions.DEFAULT).getHits();
@@ -126,11 +131,11 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
         List<String> ids = new ArrayList<String>();
         Map<String, Object> fieldMap = hit.getSourceAsMap();
         PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
-        
+
         ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection")));
         ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection_secondary")));
-        
-        // !!! NOTE !!! 
+
+        // !!! NOTE !!!
         // Harvest converts LIDVID references to LID references and stores them in
         // "ref_lid_collection" and "ref_lid_collection_secondary" fields.
         // To get "real" LID references, we have to exclude LIDVID references from these fields.
@@ -144,20 +149,24 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
                 lidsToRemove.add(lid);
             }
         }
-        
+
         // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by Harvest
-        List<String> lids = new ArrayList<String>();
-        lids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
-        lids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
-        
+        List<String> lidStrings = new ArrayList<String>();
+        lidStrings.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
+        lidStrings.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
+
         // Get "real" LIDs
         if(!lidsToRemove.isEmpty())
-        { lids.removeAll(lidsToRemove); }
+        { lidStrings.removeAll(lidsToRemove); }
 
         // Get the latest versions of LIDs
-        lidvids.addAll(LidVidUtils.getLatestLidVidsByLids(ctlContext,
-        		RequestBuildContextFactory.given(true, "lid",
-        				ReferencingLogicTransmuter.Collection.impl().constraints()), lids));       
+        List<PdsProductIdentifier> productIdentifiers = lidStrings.stream().map(PdsProductIdentifier::fromString).collect(Collectors.toList());
+        List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(
+                ctlContext,
+                RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Collection.impl().constraints()),
+                productIdentifiers);
+        List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+        lidvids.addAll(latestLidVidStrings);
         return lidvids;
     }
 
@@ -191,7 +200,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 				(context, input, RefLogicBundle.children(context, input.getSelector(), input));
 	}
 
-    
+
     @Override
 	public RequestAndResponseContext memberOf(ControlContext context, UserContext input, boolean twoSteps)
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,

@@ -32,18 +32,18 @@ import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ErrorFactory;
-import gov.nasa.pds.api.registry.model.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 
 @Controller
 public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi
 {
-    private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);  
+    private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);
     private final ObjectMapper objectMapper;
-    private final HttpServletRequest request;   
-    
+    private final HttpServletRequest request;
+
     @Value("${server.contextPath}")
     protected String contextPath;
-    
+
     @Autowired
     protected HttpServletRequest context;
 
@@ -68,15 +68,15 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
             if (this.proxyRunsOnDefaultPort())
             {
                 baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.contextPath);
-            } 
+            }
             else
             {
                 baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.context.getServerPort(), this.contextPath);
             }
-            
+
             log.debug("baseUrl is " + baseURL.toString());
             return baseURL;
-            
+
         }
 		catch (MalformedURLException e)
 		{
@@ -97,7 +97,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 		long begin = System.currentTimeMillis();
         try
         {
-        	parameters.setAccept(this.request.getHeader("Accept")).setLidVid(this);
+        	parameters.setAccept(this.request.getHeader("Accept")).setProductIdentifier(this);
         	if (parameters.getVerifyClassAndId()) LidVidUtils.verify (this, parameters);
         	return handler.transmute(this, parameters);
         }
@@ -106,7 +106,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
         	log.error("Application type not implemented", e);
         	return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_ACCEPTABLE);
         }
-        catch (IOException e) 
+        catch (IOException e)
         {
             log.error("Couldn't get or serialize response for content type " + this.request.getHeader("Accept"), e);
             return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -142,12 +142,12 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 
 	private boolean proxyRunsOnDefaultPort()
 	{
-        return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443)) 
+        return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443))
                 || ("http".equals(this.context.getScheme())  && (this.context.getServerPort() == 80)));
     }
 
 	@Override
-	public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords, 
+	public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords,
 			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
 			@Min(0) @Valid Integer start) {
 		// TODO Auto-generated method stub
@@ -202,7 +202,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 	}
 
 	@Override
-	public ResponseEntity<Object> collectionList(@Valid List<String> fields, @Valid List<String> keywords, 
+	public ResponseEntity<Object> collectionList(@Valid List<String> fields, @Valid List<String> keywords,
 			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
 			@Min(0) @Valid Integer start) {
 		// TODO Auto-generated method stub
@@ -257,7 +257,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter imple
 	}
 
 	@Override
-	public ResponseEntity<Object> productList(@Valid List<String> fields, @Valid List<String> keywords, 
+	public ResponseEntity<Object> productList(@Valid List<String> fields, @Valid List<String> keywords,
 			@Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
 			@Min(0) @Valid Integer start) {
 		// TODO Auto-generated method stub
