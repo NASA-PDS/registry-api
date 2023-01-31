@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
@@ -41,7 +42,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private ControlContext controlContext;
 	final private String queryString;
 	final private List<String> keywords;
-	final private String lidvid;
+	final private PdsProductIdentifier productIdentifier;
     final private List<String> fields;
     final private List<String> sort;
     final private int start;
@@ -113,12 +114,11 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     	this.keywords = parameters.getKeywords();
     	this.fields = new ArrayList<String>();
     	this.fields.addAll(this.add_output_needs (parameters.getFields()));
-		PdsProductIdentifier productIdentifier = LidVidUtils.resolve(
+		this.productIdentifier = LidVidUtils.resolve(
 				parameters.getIdentifier(),
 				versionSelectionScope,
 				controlContext,
 				RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-		this.lidvid = productIdentifier != null ? productIdentifier.toString() : "";
    		this.summaryOnly = parameters.isSummaryOnly();
    		this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
@@ -132,7 +132,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     @Override
     public Map<String, List<String>> getKeyValuePairs() { return new HashMap<String,List<String>>(); }
     @Override
-    public String getLIDVID() { return this.lidvid; }
+	public PdsProductIdentifier getProductIdentifier() { return this.productIdentifier; }
+	public String getProductIdentifierString() { return this.productIdentifier.toString(); }
 	public final List<String> getFields() { return this.fields; }
 	public final List<String> getSort() { return this.sort; }
 	public int getStart() { return this.start; }
@@ -225,7 +226,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			for (String field : this.getFields()) log.warn("      " + field);
 			log.warn("   keyword: " + String.valueOf(this.getKeywords().size()));
 			for (String keyword : this.getKeywords()) log.warn("    " + keyword);
-			log.warn("   lidvid: " + this.getLIDVID());
+			log.warn("   lidvid: " + this.getProductIdentifierString());
 			log.warn("   limit: " + String.valueOf(this.getLimit()));
 			log.warn("   query string: " + String.valueOf(this.getQueryString()));
 			log.warn("   selector: " + String.valueOf(this.getSelector()));

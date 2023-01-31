@@ -16,7 +16,6 @@ import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.model.BlobUtil;
-import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.ProductQueryBuilderUtil;
 
 public class SearchRequestFactory
@@ -62,12 +61,12 @@ public class SearchRequestFactory
     		{ this.base.must (QueryBuilders.queryStringQuery(keyword).field("title").field("description")); });
     	}
 
-    	if (!context.getLIDVID().isBlank())
+    	if (context.getProductIdentifier() != null)
     	{
-			PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(context.getLIDVID());
+			PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(context.getProductIdentifierString());
 			String key = productIdentifier instanceof PdsLidVid ? "lidvid" : "lid";
 
-    		this.base.must(QueryBuilders.termQuery(key, context.getLIDVID())); // term is exact match which lidvid look should be
+    		this.base.must(QueryBuilders.termQuery(key, context.getProductIdentifierString())); // term is exact match which lidvid look should be
     	}
     }
 
