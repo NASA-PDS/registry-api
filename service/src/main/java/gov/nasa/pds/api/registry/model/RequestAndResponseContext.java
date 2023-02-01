@@ -93,7 +93,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     		GroupConstraint outPreset, GroupConstraint resPreset // criteria for defining last node (outPreset) and first node (resOutput) for any endpoint
     		) throws ApplicationTypeException,LidVidNotFoundException,IOException
     {
-		ProductVersionSelector versionSelectionScope = outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.SPECIFIC;
+		ProductVersionSelector versionSelectionScope = outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED;
 
 		Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
     	formatters.put("*/*", new PdsProductBusinessObject());

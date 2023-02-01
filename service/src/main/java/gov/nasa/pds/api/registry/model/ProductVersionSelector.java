@@ -1,11 +1,11 @@
 package gov.nasa.pds.api.registry.model;
 
 /**
- * Used by API calls, such as "/bundles/{lidvid}/collections", 
- * "/bundles/{lidvid}/collections/latest", 
- * "/bundles/{lidvid}/collections/all", etc., 
+ * Used by API calls, such as "/bundles/{lidvid}/collections",
+ * "/bundles/{lidvid}/collections/latest",
+ * "/bundles/{lidvid}/collections/all", etc.,
  * to select product versions.
- * 
+ *
  * @author karpenko
  */
 public enum ProductVersionSelector
@@ -17,7 +17,7 @@ public enum ProductVersionSelector
     /**
      * All versions of a product
      */
-    ALL, 
+    ALL,
     /**
      * Latest version of a product
      */
@@ -25,5 +25,5 @@ public enum ProductVersionSelector
     /**
      * A specified version of a product
      */
-    SPECIFIC
+    TYPED
 }

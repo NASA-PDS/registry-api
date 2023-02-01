@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
@@ -132,7 +131,7 @@ public class LidVidUtils
 //				to force that kind of resolution.
 				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
-    		case SPECIFIC:
+    		case TYPED:
 				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
