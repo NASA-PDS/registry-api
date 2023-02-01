@@ -109,12 +109,12 @@ public class LidVidUtils
     }
 
     public static PdsProductIdentifier resolve (
-    		String _identifier,
+    		String productIdentifierString,
     		ProductVersionSelector scope,
     		ControlContext ctlContext,
     		RequestBuildContext reqContext) throws IOException, LidVidNotFoundException
     {
-		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(_identifier);
+		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(productIdentifierString);
     	PdsProductIdentifier result = null;
 
     	if (productIdentifier != null)
