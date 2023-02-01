@@ -161,12 +161,17 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 
         // Get the latest versions of LIDs
         List<PdsProductIdentifier> productIdentifiers = lidStrings.stream().map(PdsProductIdentifier::fromString).collect(Collectors.toList());
-        List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(
-                ctlContext,
-                RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Collection.impl().constraints()),
-                productIdentifiers);
-        List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
-        lidvids.addAll(latestLidVidStrings);
+        try {
+            List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(
+                    ctlContext,
+                    RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Collection.impl().constraints()),
+                    productIdentifiers);
+            List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+            lidvids.addAll(latestLidVidStrings);
+        } catch (LidVidNotFoundException e) {
+            log.error("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+        }
+
         return lidvids;
     }
 

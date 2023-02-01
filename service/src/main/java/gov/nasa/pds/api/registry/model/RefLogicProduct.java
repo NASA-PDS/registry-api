@@ -81,9 +81,13 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
 			parents.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
 		}
         else{
-			List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
-			List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
-			parents.addAll(latestLidVidStrings);
+			try{
+				List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
+				List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+				parents.addAll(latestLidVidStrings);
+			} catch (LidVidNotFoundException e) {
+				log.error("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+			}
 		}
 
         return parents;

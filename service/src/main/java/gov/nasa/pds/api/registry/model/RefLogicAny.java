@@ -31,7 +31,7 @@ class RefLogicAny implements ReferencingLogic
 	private ReferencingLogicTransmuter resolveID (ControlContext context, UserContext input)
 			throws IOException, LidVidNotFoundException, UnknownGroupNameException
 	{
-		PdsProductIdentifier productIdentifier = LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.SPECIFIC, context, RequestBuildContextFactory.empty());
+		PdsProductIdentifier productIdentifier = LidVidUtils.resolve(input.getIdentifier(), ProductVersionSelector.TYPED, context, RequestBuildContextFactory.empty());
 		return ReferencingLogicTransmuter.getByProductClass(
 				QuickSearch.getValue(context.getConnection(), input.getSelector() == ProductVersionSelector.LATEST,
 			             productIdentifier != null ? productIdentifier.toString() : "", "product_class"));

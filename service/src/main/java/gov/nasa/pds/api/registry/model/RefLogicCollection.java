@@ -114,9 +114,13 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 			bundleLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
 		}
         else {
-			List<PdsLidVid> latestLidvids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
-			List<String> latestLidVidStrings = latestLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
-			bundleLidvids.addAll(latestLidVidStrings);
+			try {
+				List<PdsLidVid> latestLidvids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
+				List<String> latestLidVidStrings = latestLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+				bundleLidvids.addAll(latestLidVidStrings);
+			} catch (LidVidNotFoundException e) {
+				log.error("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+			}
 		}
 
 

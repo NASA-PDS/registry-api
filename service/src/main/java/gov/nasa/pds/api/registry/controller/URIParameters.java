@@ -122,7 +122,7 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
 	{
-		this.productIdentifier = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.SPECIFIC,
+		this.productIdentifier = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.TYPED,
 				control, RequestBuildContextFactory.empty());
 		return this;
 	}

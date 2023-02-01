@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
@@ -52,7 +51,7 @@ public class LidVidUtils
 				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
 				lidVids.add(latestLidVid);
 			} catch (LidVidNotFoundException e) {
-				log.error("Database is corrupted. Have reference to LID but cannot find it: " + id.getLid().toString());
+				throw new LidVidNotFoundException("Could not find any LIDVIDs for LID " + id.getLid().toString());
 			}
 		}
 
@@ -109,12 +108,12 @@ public class LidVidUtils
     }
 
     public static PdsProductIdentifier resolve (
-    		String _identifier,
+    		String productIdentifierString,
     		ProductVersionSelector scope,
     		ControlContext ctlContext,
     		RequestBuildContext reqContext) throws IOException, LidVidNotFoundException
     {
-		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(_identifier);
+		PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(productIdentifierString);
     	PdsProductIdentifier result = null;
 
     	if (productIdentifier != null)
@@ -132,7 +131,7 @@ public class LidVidUtils
 //				to force that kind of resolution.
 				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
-    		case SPECIFIC:
+    		case TYPED:
 				result = productIdentifier instanceof PdsLidVid ? productIdentifier : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, productIdentifier.getLid().toString());
     			break;
     		case ORIGINAL: throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
