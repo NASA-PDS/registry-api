@@ -51,7 +51,7 @@ public class LidVidUtils
 				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
 				lidVids.add(latestLidVid);
 			} catch (LidVidNotFoundException e) {
-				log.error("Database is corrupted. Have reference to LID but cannot find it: " + id.getLid().toString());
+				throw new LidVidNotFoundException("Could not find any LIDVIDs for LID " + id.getLid().toString());
 			}
 		}
 
