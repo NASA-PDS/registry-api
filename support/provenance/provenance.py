@@ -228,7 +228,7 @@ if __name__ == '__main__':
 
     - command for opensearch running in a cluster
 
-      provenance.py -b https://search-en-prod-di7dor7quy7qwv3husi2wt5tde.us-west-2.es.amazonaws.com -c naif-prod-ccs rms-prod sbnumd-prod-ccs geo-prod-ccs atm-prod-ccs sbnpsi-prod-ccs img-prod-ccs -u admin -p admin
+      provenance.py -b https://search.us-west-2.es.amazonaws.com -c remote1 remote2 remote3 remote4 -u admin -p admin
     ''',
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('-b', '--base-URL', required=True, type=str)
