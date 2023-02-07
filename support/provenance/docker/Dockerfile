@@ -47,6 +47,7 @@ ARG GIT_BRANCH=main
 RUN apt-get update \
  && apt-get install -y git \
  && cd /tmp \
+ && pip install requests \
  && git clone --single-branch --branch $GIT_BRANCH --depth 1 https://github.com/NASA-PDS/registry-api \
  && cp registry-api/support/provenance/provenance.py /usr/local/bin \
  && cp registry-api/support/provenance/provenance_driver.py /usr/local/bin \
