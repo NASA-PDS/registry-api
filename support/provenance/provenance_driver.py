@@ -39,7 +39,7 @@
 # This script makes the following assumptions for its run-time:
 #
 # - The EN (i.e. primary) OpenSearch endpoint is provided in the environment
-#   variable OPENSEARCH_ENDPOINT
+#   variable PROV_ENDPOINT
 # - The username/password is provided as a JSON key/value in the environment
 #   variable PROV_CREDENTIALS
 # - The remotes available through cross cluster search to be processed are 
@@ -48,7 +48,7 @@
 #   Each set of remotes is used in an execution of provenance. The value of
 #   this is specified in the environment variable PROV_REMOTES. If this 
 #   variable is empty or not defined, provenance is run without specifying 
-#   remotes and only the OPENSEARCH_ENDPOINT is processed.
+#   remotes and only the PROV_ENDPOINT is processed.
 # - The directory containing the provenance.py file is in PATH and is 
 #   executable.
 #
@@ -57,7 +57,7 @@
 import os
 import json
 
-opensearch_endpoint = os.environ.get("OPENSEARCH_ENDPOINT")
+opensearch_endpoint = os.environ.get("PROV_ENDPOINT")
 
 username = None
 passwd = None
