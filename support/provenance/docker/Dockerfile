@@ -53,4 +53,4 @@ RUN apt-get update \
  && chmod -R u+x registry-api \
  && rm -r registry-api
 
-CMD ["/usr/local/bin/provenance_driver/py"]
+CMD ["/usr/local/bin/provenance_driver.py"]
