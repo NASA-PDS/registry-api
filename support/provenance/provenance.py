@@ -92,6 +92,9 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
 
     log.info(
         f'found {len(history)} products needing update of a {count} full history of {len(provenance)} total products')
+    if log.isEnabledFor(logging.DEBUG):
+        for lidvid in history.keys():
+            log.debug(f'{lidvid}')
 
     return history
 
