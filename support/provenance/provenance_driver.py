@@ -43,48 +43,48 @@
 # - The username/password is provided as a JSON key/value in the environment
 #   variable PROV_CREDENTIALS
 # - The remotes available through cross cluster search to be processed are 
-#   provided as a list of JSON lists - each list used in a single
-#   execution of provenance - in the environment variable PROV_REMOTES.
-#   If this variable is empty or not defined, provenance is run without
-#   speciyfing remotes and only the OPENSEARCH_ENDPOINT is processed.
+#   provided as a JSON list of strings - each string containing the space
+#   separated list of remotes (as they appear on the provenance command line)
+#   Each set of remotes is used in an execution of provenance. The value of
+#   this is specified in the environment variable PROV_REMOTES. If this 
+#   variable is empty or not defined, provenance is run without specifying 
+#   remotes and only the OPENSEARCH_ENDPOINT is processed.
 # - The directory containing the provenance.py file is in PATH and is 
-#   directly executable.
+#   executable.
 #
 #
 
 import os
 import json
 
-opensearch_endpoint = json.loads(os.environ.get("OPENSEARCH_ENDPOINT"))
+opensearch_endpoint = os.environ.get("OPENSEARCH_ENDPOINT")
 
 username = None
-pass = None
-provCredentials = json.loads(os.environ.get("PROV_CREDENTIALS"))
-if provCredentials is not None:
-    username = provCredentials.keys(()[0]
-    pass = provCredentials[username]
+passwd = None
+provCredentialsStr = os.environ.get("PROV_CREDENTIALS")
+if provCredentialsStr is not None and provCredentialsStr.strip() != '':
+    provCredentials = json.loads(provCredentialsStr)
+    username = list(provCredentials.keys())[0]
+    passwd = provCredentials[username]
 
 remotesLists = None
-remotesStr = os.environ.get("PROV_ENDPOINTS")
-if remotesStr is not None:
+remotesStr = os.environ.get("PROV_REMOTES")
+if remotesStr is not None and remotesStr.strip() != '':
     remotesLists = json.loads(remotesStr)
 
-command = f'provenance.py -b {opensearch_endpoint} -l provenance.log -L DEBUG '
+command = f'provenance.py -b {opensearch_endpoint} -l provenance.log -L DEBUG'
 if username is not None:
-    command += f'-u {username} -p {pass} '
+    command += f' -u {username} -p {passwd}'
 
 result = 0
-lastCommand = ""
-if remotesList is None:
-    lastCommand = command
+if remotesLists is None:
     result = os.system(command)
 else:
-    for remoteList in remotesList:
-        lastCommand = command + f'-c {remoteList.join(",")}'
-        result = os.sytem(lastCommanA)d
+    for remoteList in remotesLists:
+        result = os.system(command + f' -c {remoteList}')
         if result != 0: break
 
 if result != 0:
-     print(f'Execution failure on command {lastCommand}')
+     print(f'Execution failure')
 else:
      print('Execution completed successfully.')
