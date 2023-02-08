@@ -110,12 +110,40 @@
 
   <dependencies>
 
-    <!--SpringFox dependencies -->
+  <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-boot-starter</artifactId>
-      <version>3.0.0</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+    
+    <dependency>
+		<groupId>org.springframework.data</groupId>
+		<artifactId>spring-data-commons</artifactId>
+	</dependency>
+
+	<dependency>
+	  <groupId>org.springdoc</groupId>
+	  <artifactId>springdoc-openapi-ui</artifactId>
+	  <version>1.6.14</version>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springdoc</groupId>
+	  <artifactId>springdoc-openapi-common</artifactId>
+	  <version>1.6.14</version>
+	</dependency>
+	
+	 <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core -->
+	<dependency>
+	    <groupId>io.swagger.core.v3</groupId>
+	    <artifactId>swagger-core</artifactId>
+	    <version>2.2.8</version>
+	</dependency>
 
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
     <dependency>
@@ -129,16 +157,9 @@
       <artifactId>spring-context</artifactId>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+  
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
+   
 
     <dependency>
       <groupId>org.springframework</groupId>

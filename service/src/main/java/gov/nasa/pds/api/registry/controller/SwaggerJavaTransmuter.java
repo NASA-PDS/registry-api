@@ -32,9 +32,11 @@ import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ErrorFactory;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 
+
 @Controller
 public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
     implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi {
+
   private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);
   private final ObjectMapper objectMapper;
   private final HttpServletRequest request;
@@ -57,14 +59,17 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
   @Override
   public URL getBaseURL() {
     try {
-      SwaggerJavaTransmuter.log.debug("contextPath is: " + this.contextPath);
+
       URL baseURL;
 
+      String proxyContextPath = this.context.getContextPath();
+      SwaggerJavaTransmuter.log.debug("contextPath is: '" + proxyContextPath + "'");
+
       if (this.proxyRunsOnDefaultPort()) {
-        baseURL = new URL(this.context.getScheme(), this.context.getServerName(), this.contextPath);
+        baseURL = new URL(this.context.getScheme(), this.context.getServerName(), proxyContextPath);
       } else {
         baseURL = new URL(this.context.getScheme(), this.context.getServerName(),
-            this.context.getServerPort(), this.contextPath);
+            this.context.getServerPort(), proxyContextPath);
       }
 
       log.debug("baseUrl is " + baseURL.toString());

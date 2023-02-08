@@ -29,15 +29,6 @@ async function collapseOpblocks() {
     }
 }
 
-function setLogo() {
-    const linkElement = document.querySelector('#swagger-ui .topbar-wrapper > a.link');
-    linkElement.setAttribute('href', 'https://nasa.gov');
-    const imageElement = linkElement.querySelector('img');
-    imageElement.setAttribute('height', '75');
-    imageElement.setAttribute('src', 'nasa_logo(280x280).png');
-    imageElement.setAttribute('alt', 'NASA home');
-}
-
 function insertFooter() {
     const footer = document.createElement('div');
     footer.setAttribute('id', 'footer');
@@ -107,7 +98,7 @@ function createFooterSiteInfo() {
     siteInfo.classList.add('footer-section', 'right');
 
     const logo = document.createElement('img');
-    logo.setAttribute('src', 'nasa_logo(280x280).png');
+    logo.setAttribute('src', '../static/logo.png');
     logo.setAttribute('alt', 'NASA logo');
     logo.setAttribute('width', '75');
 
@@ -124,7 +115,5 @@ function createFooterSiteInfo() {
 
 window.addEventListener('load', (event) => {
     collapseOpblocks();
-
-    setLogo();
     insertFooter();
 });

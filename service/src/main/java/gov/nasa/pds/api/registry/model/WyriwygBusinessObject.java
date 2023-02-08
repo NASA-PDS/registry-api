@@ -16,7 +16,7 @@ import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
-import gov.nasa.pds.model.WyriwygProductKeyValuePairs;
+import gov.nasa.pds.model.WyriwygProductKeyValuePair;
 import gov.nasa.pds.model.WyriwygProducts;
 
 public class WyriwygBusinessObject implements ProductBusinessLogic {
@@ -58,7 +58,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
   public void setResponse(SearchHit hit, List<String> fields) {
     WyriwygProduct product = new WyriwygProduct();
     for (Entry<String, Object> pair : hit.getSourceAsMap().entrySet()) {
-      WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
+      WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       try {
         kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
         kvp.setValue(String.valueOf(pair.getValue()));
@@ -78,9 +78,10 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
     for (Map<String, Object> kvps : hits) {
       uniqueProperties
           .addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
+
       WyriwygProduct product = new WyriwygProduct();
       for (Entry<String, Object> pair : kvps.entrySet()) {
-        WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
+        WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
         try {
           kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
           kvp.setValue(String.valueOf(pair.getValue()));
@@ -91,6 +92,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
       }
       products.addDataItem(product);
 
+
     }
     summary.setProperties(new ArrayList<String>(uniqueProperties));
     products.setSummary(summary);
@@ -100,6 +102,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
 
   @Override
   public int setResponse(SearchHits hits, Summary summary, List<String> fields) {
+
     Set<String> uniqueProperties = new TreeSet<String>();
     WyriwygProducts products = new WyriwygProducts();
 
@@ -110,7 +113,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
 
       WyriwygProduct product = new WyriwygProduct();
       for (Entry<String, Object> pair : kvps.entrySet()) {
-        WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
+        WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
         try {
           kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
           kvp.setValue(String.valueOf(pair.getValue()));

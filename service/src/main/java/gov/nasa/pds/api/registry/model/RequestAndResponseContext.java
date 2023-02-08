@@ -109,6 +109,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
         outPreset.equals(resPreset) ? parameters.getSelector() : ProductVersionSelector.TYPED;
 
     Map<String, ProductBusinessLogic> formatters = new HashMap<String, ProductBusinessLogic>();
+    formatters.put("*", new PdsProductBusinessObject());
     formatters.put("*/*", new PdsProductBusinessObject());
     formatters.put("application/csv", new WyriwygBusinessObject());
     formatters.put("application/json", new PdsProductBusinessObject());
@@ -149,6 +150,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   }
 
   @Override
+
   public PdsProductIdentifier getProductIdentifier() {
     return this.productIdentifier;
   }

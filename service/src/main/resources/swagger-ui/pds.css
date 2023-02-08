@@ -38,3 +38,10 @@
 #footer .middle a:last-child {
     border-right: none;
 }
+
+
+div.topbar-wrapper > a > img {
+     content: url(../static/logo.png);
+     width: 40px; /* width of your logo */
+     height: 40px; /* height of your logo */
+}
