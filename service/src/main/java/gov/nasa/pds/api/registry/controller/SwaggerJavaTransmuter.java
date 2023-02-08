@@ -37,7 +37,7 @@ import gov.nasa.pds.api.registry.model.LidVidUtils;
 @Controller
 public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi
 {
-    private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);  
+      
     private final ObjectMapper objectMapper;
     private final HttpServletRequest request;   
     

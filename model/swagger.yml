@@ -1457,6 +1457,7 @@ components:
         key_value_pairs:
           type: array
           items:
+            title: wyriwyg_product_key_value_pair
             type: object
             properties:
               key:
@@ -1475,6 +1476,7 @@ components:
           items:
             $ref: '#/components/schemas/wyriwygProduct'
     propertyArrayValues:
+      title: property_array_values
       type: array 
       items:
         type: string
@@ -1607,38 +1609,39 @@ components:
       properties:
         node_name:
           type: string
-        ops:Label_File_Info:
+        ops_Label_File_Info:
           type: object
           properties:
-            ops:file_name:
+            ops_file_name:
               type: string
-            ops:file_ref:
+            ops_file_ref:
               type: string
-            ops:creation_date:
+            ops_creation_date:
               type: string
-            ops:file_size:
+            ops_file_size:
               type: string
-            ops:md5_checksum:
+            ops_md5_checksum:
               type: string
-        ops:Data_Files:
+        ops_Data_Files:
           type: array
           items:
+            title: pds4_metadata_ops_data_file
             type: object
             properties:
-              ops:file_name:
+              ops_file_name:
                 type: string
-              ops:file_ref:
+              ops_file_ref:
                 type: string
-              ops:creation_date:
+              ops_creation_date:
                 type: string
-              ops:file_size:
+              ops_file_size:
                 type: string
-              ops:md5_checksum:
+              ops_md5_checksum:
                 type: string
-              ops:mime_type:
+              ops_mime_type:
                 type: string
-        ops:Tracking_Meta:
+        ops_Tracking_Meta:
           type: object
           properties:
-            ops:archive_status:
+            ops_archive_status:
               type: string

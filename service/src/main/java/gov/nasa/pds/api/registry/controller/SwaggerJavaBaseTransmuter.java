@@ -5,10 +5,13 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
 abstract class SwaggerJavaBaseTransmuter
 {
+	protected static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);
 	abstract protected ResponseEntity<Object> processs (EndpointHandler handler, URIParameters parameters);
 
 	public ResponseEntity<Object> groupReferencingId(
