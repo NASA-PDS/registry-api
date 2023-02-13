@@ -1,19 +1,30 @@
 package gov.nasa.pds.api.registry.controller;
 
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.request.NativeWebRequest;
+import gov.nasa.pds.api.base.ClassesApi;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmuter
-    implements ProductsApi {
+    implements ProductsApi, ClassesApi {
+
+  @Override
+  // to solve the deadly diamond of death ambiguity on method inheritance
+  public Optional<NativeWebRequest> getRequest() {
+    return Optional.empty();
+  }
+
+
   @Override
   public ResponseEntity<Object> productList(@Valid List<String> fields,
       @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
       @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    SwaggerJavaProductsTransmuter.log.info("request request merde" + keywords.get(0));
+    SwaggerJavaProductsTransmuter.log.info("request request merde");
     return super.classList("any", fields, keywords, limit, q, sort, start);
   }
 

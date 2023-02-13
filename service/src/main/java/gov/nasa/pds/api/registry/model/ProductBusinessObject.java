@@ -45,8 +45,7 @@ public class ProductBusinessObject {
       List<String> included_fields, // in API syntax
       List<String> excluded_fields) { // in API syntax
 
-    Map<String, List<String>> filteredMapJsonProperties =
-        new HashMap<String, XMLMashallableProperyValue>();
+    Map<String, List<String>> filteredMapJsonProperties = new HashMap<String, List<String>>();
 
     if ((included_fields == null) || (included_fields.size() == 0)) {
       String apiProperty;
