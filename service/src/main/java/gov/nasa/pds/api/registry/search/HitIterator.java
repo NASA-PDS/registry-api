@@ -12,12 +12,12 @@ import org.opensearch.search.SearchHits;
 
 public class HitIterator implements Iterable<Map<String,Object>>,Iterator<Map<String,Object>>
 {
-	private int size=10; // define size to use here to prevent page skipping if opensearch default size ever changes
+	private int size=500; // define size to use here to prevent page skipping if opensearch default size ever changes
 	private int at=0, page=0;
 	private SearchHits currentBatch;
 	private RestHighLevelClient client;
 	private SearchRequest request;
-	
+
 	public HitIterator (RestHighLevelClient client, SearchRequest request) throws IOException
 	{
 		super();
@@ -68,7 +68,7 @@ public class HitIterator implements Iterable<Map<String,Object>>,Iterator<Map<St
 		if (this.hasNext())
 		{
 			try
-			{ 
+			{
 				SearchHit hit = this.getAt();
 				at++;
 				return hit.getSourceAsMap();
