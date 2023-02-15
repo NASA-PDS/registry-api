@@ -11,20 +11,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
-import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
-import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
-import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
+import gov.nasa.pds.api.registry.RequestConstructionContext;
+import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
+import org.opensearch.action.search.SearchRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.errorprone.annotations.Immutable;
+
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.MembershipException;
@@ -75,11 +79,20 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
     		throws IOException, LidVidNotFoundException
     {
         PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(uid);
+		RequestConstructionContext requestConstructionContext = RequestConstructionContextFactory.given ("collection_lidvid", uid.getLidVid(), true);
+		RequestBuildContext requestBuildContext = RequestBuildContextFactory.given (true, "product_lidvid");
+		String registryRefIndex = control.getConnection().getRegistryRefIndex();
+		SearchRequest searchRequest = new SearchRequestFactory(requestConstructionContext, control.getConnection())
+				.build(requestBuildContext, registryRefIndex);
 
-        for (final Map<String,Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(),
-        		new SearchRequestFactory(RequestConstructionContextFactory.given ("collection_lidvid", uid.getLidVid(), true), control.getConnection())
-        				.build (RequestBuildContextFactory.given (true, "product_lidvid"), control.getConnection().getRegistryRefIndex())))
-        { productLidvids.add(kvp.get("product_lidvid")); }
+		HitIterator pagesOfResults = new HitIterator(control.getConnection().getRestHighLevelClient(),searchRequest);
+
+        for (final Map<String,Object> page : pagesOfResults){
+//			Every "hit" is a page containing n lidvids, where n is presumably determined by OpenSearch configuration
+			Object collectionOfLidvids = page.get("product_lidvid");
+			productLidvids.add(collectionOfLidvids);
+		}
+
         return productLidvids;
     }
 
