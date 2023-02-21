@@ -19,6 +19,6 @@ public interface ProductBusinessLogic
 	public void setBaseURL (URL baseURL);
 	public void setObjectMapper (ObjectMapper om);
 	public void setResponse (SearchHit hit, List<String> fields);
-	public int setResponse (HitIterator hits, Summary summary, List<String> fields, boolean onlySummary);
-	public int setResponse (SearchHits hits, Summary summary, List<String> fields, boolean onlySummary);
+	public int setResponse (HitIterator hits, Summary summary, List<String> fields);
+	public int setResponse (SearchHits hits, Summary summary, List<String> fields);
 }
