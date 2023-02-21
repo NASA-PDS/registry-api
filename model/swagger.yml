@@ -1153,7 +1153,7 @@ components:
       schema:
         type: integer
         minimum: 0
-        default: 100
+        default: 10
     Query:
       name: q
       in: query

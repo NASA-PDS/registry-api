@@ -40,7 +40,7 @@ class URIParameters implements UserContext
 	private List<String> keywords = new ArrayList<String>();
 	private PdsProductIdentifier productIdentifier = null;
 	private Integer start = 0;
-	private Integer limit = 0;  // Actual default value is passed in from the upstream frames of the call stack, but it's unclear where it comes from. Not swagger.yml, at least.
+	private Integer limit = 0;  // Actual default value is passed in from swagger.yml.
 	private Boolean returnSingularDatum = true;
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
