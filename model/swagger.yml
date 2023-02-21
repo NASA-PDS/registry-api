@@ -346,7 +346,7 @@ paths:
         - products
       summary: |
         returns all product versions with the identifier (lid) selected from all PDS Products. See identifier for details on how it determines what is returned.
-        
+
         note: if given a lidvid, it will be translated to a lid
       operationId: select-by-lidvid-all
       responses:
@@ -1107,7 +1107,7 @@ components:
       in: path
       description: |
         syntax: one of the allowable enum values
-        
+
         This is a shortcut for doing a query with ...
       required: true
       schema:
@@ -1149,8 +1149,6 @@ components:
         syntax: limit=10
 
         behavior: maximum number of matching results returned, for pagination
-        
-        note: limit=0 returns just the summary
       required: false
       schema:
         type: integer
@@ -1197,7 +1195,7 @@ components:
       in: path
       description: |
         syntax: one of the allowable enum values
-        
+
         This is a shortcut for doing a query with ...
       required: true
       schema:
@@ -1408,7 +1406,7 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
-        observing_system_components: 
+        observing_system_components:
           type: array
           description: list of instruments or platforms generating the data
           items:
@@ -1416,7 +1414,7 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
-        targets: 
+        targets:
           type: array
           description: list of targets or feature of interest the observation.
           items:
@@ -1475,7 +1473,7 @@ components:
           items:
             $ref: '#/components/schemas/wyriwygProduct'
     propertyArrayValues:
-      type: array 
+      type: array
       items:
         type: string
       xml:

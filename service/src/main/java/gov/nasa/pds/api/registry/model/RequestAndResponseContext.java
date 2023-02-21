@@ -47,6 +47,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private List<String> sort;
     final private int start;
     final private int limit;
+	final private boolean returnSingularDatum;
     final private GroupConstraint presetCriteria;
     final private ProductVersionSelector selector;
     final private String format;
@@ -118,9 +119,10 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 				versionSelectionScope,
 				controlContext,
 				RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-   		this.limit = parameters.getLimit();
-    	this.sort = parameters.getSort();
-    	this.start = parameters.getStart();
+		this.start = parameters.getStart();
+		this.limit = parameters.getLimit();
+		this.returnSingularDatum = parameters.getReturnSingularDatum();
+		this.sort = parameters.getSort();
     	this.presetCriteria = outPreset;
     	this.selector = parameters.getSelector();
     }
@@ -142,7 +144,7 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public ProductVersionSelector getSelector() { return this.selector; }
 
 
-	public boolean isSingular() { return this.getStart() == -1 && this.isSummaryOnly(); } // isSummaryOnly implies original limit value == 0
+	public boolean isSingular() { return this.returnSingularDatum; }
 
 	@Override
 	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
