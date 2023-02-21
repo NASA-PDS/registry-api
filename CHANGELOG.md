@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-02-16)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-02-21)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -10,6 +10,7 @@
 
 **Defects:**
 
+- Pagination not working as expected with /collections/{identifier}/products [\#240](https://github.com/NASA-PDS/registry-api/issues/240) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - registry-api does not respect VID when a LIDVID is used as an id, instead returns latest version [\#234](https://github.com/NASA-PDS/registry-api/issues/234) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - /classes/collections/\<lidvid\>/members \(and deprecated equivalent\) hangs [\#231](https://github.com/NASA-PDS/registry-api/issues/231) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Keyword search does not work on registry-api deployed on pds.nasa.gov [\#227](https://github.com/NASA-PDS/registry-api/issues/227) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
