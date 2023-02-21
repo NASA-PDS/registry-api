@@ -15,8 +15,7 @@ class Unlimited implements LidvidsContext
 
 	@Override
 	public Integer getStart() { return 0; }
-	
-	@Override
-	public boolean isSummaryOnly() { return false; }
 
+	@Override
+	public boolean getReturnSingularDatum() { return false; }
 }

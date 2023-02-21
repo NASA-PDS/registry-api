@@ -32,7 +32,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	private URL baseURL;
 	private WyriwygProduct product = null;
 	private WyriwygProducts products = null;
-	
+
 	@Override
 	public String[] getMaximallyRequiredFields() { return new String[0]; }
 	@Override
@@ -66,7 +66,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	}
 
 	@Override
-	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields)
 	{
 		Set<String> uniqueProperties = new TreeSet<String>();
 		WyriwygProducts products = new WyriwygProducts();
@@ -74,24 +74,21 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 		for (Map<String,Object> kvps : hits)
         {
             uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
+			WyriwygProduct product = new WyriwygProduct();
+			for (Entry<String, Object> pair : kvps.entrySet())
+			{
+				WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
+				try
+				{
+					kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
+					kvp.setValue(String.valueOf(pair.getValue()));
+					product.addKeyValuePairsItem(kvp);
+				}
+				catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
+			}
+			products.addDataItem(product);
 
-            if (!onlySummary)
-            {
-            	WyriwygProduct product = new WyriwygProduct();
-            	for (Entry<String, Object> pair : kvps.entrySet())
-            	{
-            		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
-            		try
-            		{
-            			kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
-            			kvp.setValue(String.valueOf(pair.getValue()));
-            			product.addKeyValuePairsItem(kvp);
-            		}
-            		catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
-            	}
-            	products.addDataItem(product);
-            }
-        }
+		}
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
 		this.products = products;
@@ -99,7 +96,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 	}
 
 	@Override
-	public int setResponse(SearchHits hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(SearchHits hits, Summary summary, List<String> fields)
 	{
 		Set<String> uniqueProperties = new TreeSet<String>();
 		WyriwygProducts products = new WyriwygProducts();
@@ -109,24 +106,21 @@ public class WyriwygBusinessObject implements ProductBusinessLogic
 			Map<String, Object> kvps = hit.getSourceAsMap();
             uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
 
-            if (!onlySummary)
-            {
-            	WyriwygProduct product = new WyriwygProduct();
-            	for (Entry<String, Object> pair : kvps.entrySet())
-            	{
-            		WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
-            		try
-            		{
-            			kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
-            			kvp.setValue(String.valueOf(pair.getValue()));
-            			product.addKeyValuePairsItem(kvp);
-            		}
-            		catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
-            	}
-            	products.addDataItem(product);
-            }
+			WyriwygProduct product = new WyriwygProduct();
+			for (Entry<String, Object> pair : kvps.entrySet())
+			{
+				WyriwygProductKeyValuePairs kvp = new WyriwygProductKeyValuePairs();
+				try
+				{
+					kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
+					kvp.setValue(String.valueOf(pair.getValue()));
+					product.addKeyValuePairsItem(kvp);
+				}
+				catch (UnsupportedSearchProperty e) { log.warn("openSearch property " + pair.getKey() + " is not supported, ignored"); }
+			}
+			products.addDataItem(product);
         }
-		
+
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
 		this.products = products;
