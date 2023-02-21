@@ -83,7 +83,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	{ this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON); }
 
 	@Override
-	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields)
 	{
         List<Pds4Product> list = new ArrayList<Pds4Product>();
         Pds4Products products = new Pds4Products();
@@ -93,11 +93,8 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
         {
             uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
-            if (!onlySummary)
-            {
-            	Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
-            	list.add(prod);
-            }
+			Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
+			list.add(prod);
         }
 
 		products.setData(list);
@@ -108,25 +105,22 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	}
 
 	@Override
-	public int setResponse(SearchHits hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(SearchHits hits, Summary summary, List<String> fields)
 	{
         List<Pds4Product> list = new ArrayList<Pds4Product>();
         Pds4Products products = new Pds4Products();
 		Set<String> uniqueProperties = new TreeSet<String>();
 
         // Products
-        for(SearchHit hit : hits) 
+        for(SearchHit hit : hits)
         {
             String id = hit.getId();
             Map<String, Object> fieldMap = hit.getSourceAsMap();
-            
+
             uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(fieldMap, fields, null).keySet());
 
-            if (!onlySummary)
-            {
-            	Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
-            	list.add(prod);
-            }
+			Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
+			list.add(prod);
         }
         products.setData(list);
         products.setSummary(summary);

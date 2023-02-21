@@ -47,7 +47,6 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
     final private List<String> sort;
     final private int start;
     final private int limit;
-    final private boolean summaryOnly;
     final private GroupConstraint presetCriteria;
     final private ProductVersionSelector selector;
     final private String format;
@@ -119,7 +118,6 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 				versionSelectionScope,
 				controlContext,
 				RequestBuildContextFactory.given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-   		this.summaryOnly = parameters.isSummaryOnly();
    		this.limit = parameters.getLimit();
     	this.sort = parameters.getSort();
     	this.start = parameters.getStart();
@@ -143,8 +141,9 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 	public final GroupConstraint getPresetCriteria() { return this.presetCriteria; };
 	public ProductVersionSelector getSelector() { return this.selector; }
 
+
 	public boolean isSingular() { return this.getStart() == -1 && this.isSummaryOnly(); } // isSummaryOnly implies original limit value == 0
-	public boolean isSummaryOnly() { return summaryOnly; }
+
 	@Override
 	public boolean isTerm() { return true; } // no way to make this decision here so always term for lidvid
 	@Override
@@ -236,7 +235,6 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			log.warn("   sorting: " + String.valueOf(this.getSort().size()));
 			for (String sort : this.getSort()) log.warn("      " + sort);
 			log.warn("   start: " + String.valueOf(this.getStart()));
-			log.warn("   summary: " + String.valueOf(this.isSummaryOnly()));
 			throw new NothingFoundException();
 		}
 		return response;
@@ -248,9 +246,8 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 		summary.setQ(this.getQueryString());
 		summary.setStart(this.getStart());
 		summary.setLimit(this.getLimit());
-		if (this.isSummaryOnly()) summary.setLimit(0);
 		summary.setSort(this.getSort());
-		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.isSummaryOnly()));
+		summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields));
 		summary.setProperties(new ArrayList<String>());
 
 		if (0 < real_total) summary.setHits(real_total);
@@ -272,12 +269,11 @@ public class RequestAndResponseContext implements RequestBuildContext,RequestCon
 			summary.setQ(this.getQueryString());
 			summary.setStart(this.getStart());
 			summary.setLimit(this.getLimit());
-			if (this.isSummaryOnly()) summary.setLimit(0);
 			summary.setSort(this.getSort());
 			summary.setHits(total_hits);
 
 			if (uniqueProperties != null) summary.setProperties(uniqueProperties);
-			this.formatters.get(this.format).setResponse(hits, summary, this.fields, this.isSummaryOnly());
+			this.formatters.get(this.format).setResponse(hits, summary, this.fields);
 
 			summary.setTook((int)(System.currentTimeMillis() - this.begin_processing));
 		}

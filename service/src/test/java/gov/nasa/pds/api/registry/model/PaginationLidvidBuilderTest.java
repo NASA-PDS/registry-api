@@ -265,9 +265,4 @@ class LidvidsContextStub implements LidvidsContext {
     public Integer getStart() {
         return start;
     }
-
-    @Override
-    public boolean isSummaryOnly() {
-        return getLimit() == 0;
-    }
 }

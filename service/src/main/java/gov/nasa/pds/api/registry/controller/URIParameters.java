@@ -40,12 +40,11 @@ class URIParameters implements UserContext
 	private String identifier = "";
 	private List<String> keywords = new ArrayList<String>();
 	private PdsProductIdentifier productIdentifier = null;
-	private Integer limit = Integer.valueOf(0);
-	private boolean summaryOnly = true;
+	private Integer limit = 0;
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
 	private List<String> sort = new ArrayList<String>();
-	private Integer start = Integer.valueOf(-1);
+	private Integer start = -1; // This value appears to be used as a flag for Singular/Plural endpoint return type
 	private String version = "latest";
 
 	@Override
@@ -73,8 +72,6 @@ class URIParameters implements UserContext
 	public boolean getVerifyClassAndId() { return verifyClassAndId; }
 	@Override
 	public String getVersion() { return version; }
-	@Override
-	public boolean isSummaryOnly() { return summaryOnly; }
 
 	public URIParameters setAccept(String accept)
 	{
@@ -103,6 +100,7 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setLimit(Integer limit)
 	{
+//		TODO: set to SUMMARY_SAMPLE_SIZE in this case
 		if (limit == null) {return this;}
 
 		if (limit < 0) {
@@ -110,20 +108,7 @@ class URIParameters implements UserContext
 			throw new IllegalArgumentException(errMsg);
 		}
 
-		/*
-		 * Note: Not too happy w/ having to put behavioral logic in a utility/container class, but
-		 * there are just way too many places where this information is necessary and rather than
-		 * duplicate it everywhere, this is the best place, for now, as it is the common object
-		 * shared across them all.
-		 */
-		if(limit == 0) {
-			summaryOnly = true;
-			this.limit = Integer.valueOf(SUMMARY_SAMPLE_SIZE);
-		} else {
-			this.limit = limit;
-			summaryOnly = false;
-		}
-
+		this.limit = limit;
 		return this;
 	}
 	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
