@@ -265,4 +265,9 @@ class LidvidsContextStub implements LidvidsContext {
     public Integer getStart() {
         return start;
     }
+
+    @Override
+    public boolean getReturnSingularDatum() {
+        return false;
+    }
 }

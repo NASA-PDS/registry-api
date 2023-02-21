@@ -25,14 +25,13 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
  *    a bunch of set calls. Instead of a single line for each set, then can be
  *    concatenated via the . to make the code more readable by keeping the all
  *    of the set calls collocated.
- * 3. The default values for limit and start work in conjunction later in the
- *    business logic to indicate a Singular or Plural return type. See swagger.yml
- *    to understand Singular and Plural return types.
+ * 3. By default, the context assumes a Singular (single-element-valued) return type for the API route.
+ *    If the route is a Plural (collection-valued) return type, the transmuter will call either/both of setStart() and
+ *    setLimit(), which will mutate returnSingularDatum to its correct false value.
+ *    See swagger.yml for further detail of the Singular and Plural return types.
  */
 class URIParameters implements UserContext
 {
-	private static final int SUMMARY_SAMPLE_SIZE = 100;
-
 	private boolean verifyClassAndId = false;
 	private String accept = "application/json";
 	private List<String> fields = new ArrayList<String>();
@@ -40,11 +39,12 @@ class URIParameters implements UserContext
 	private String identifier = "";
 	private List<String> keywords = new ArrayList<String>();
 	private PdsProductIdentifier productIdentifier = null;
-	private Integer limit = 0;
+	private Integer start = 0;
+	private Integer limit = 0;  // Actual default value is passed in from the upstream frames of the call stack, but it's unclear where it comes from. Not swagger.yml, at least.
+	private Boolean returnSingularDatum = true;
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
 	private List<String> sort = new ArrayList<String>();
-	private Integer start = -1; // This value appears to be used as a flag for Singular/Plural endpoint return type
 	private String version = "latest";
 
 	@Override
@@ -59,6 +59,8 @@ class URIParameters implements UserContext
 	public List<String> getKeywords() { return keywords; }
 	@Override
 	public Integer getLimit() { return limit; }
+	@Override
+	public boolean getReturnSingularDatum() { return returnSingularDatum; }
 	@Override
 	public String getLidVid() { return productIdentifier != null ? productIdentifier.toString() : ""; }
 	@Override
@@ -100,7 +102,6 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setLimit(Integer limit)
 	{
-//		TODO: set to SUMMARY_SAMPLE_SIZE in this case
 		if (limit == null) {return this;}
 
 		if (limit < 0) {
@@ -109,6 +110,7 @@ class URIParameters implements UserContext
 		}
 
 		this.limit = limit;
+		this.returnSingularDatum = false;
 		return this;
 	}
 	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
@@ -137,6 +139,7 @@ class URIParameters implements UserContext
 		}
 
 		this.start = start;
+		this.returnSingularDatum = false;
 		return this;
 	}
 	public URIParameters setVerifyClassAndId (boolean verify)
