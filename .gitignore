@@ -63,6 +63,9 @@
 *~
 src/test/temp/
 
+# terraform
+.terraform/
+
 # other stuff
 *.xpr
 *.swp
