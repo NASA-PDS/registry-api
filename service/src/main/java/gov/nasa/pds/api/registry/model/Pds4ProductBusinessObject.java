@@ -83,19 +83,17 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic
 	{ this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON); }
 
 	@Override
-	public int setResponse(HitIterator hits, Summary summary, List<String> fields)
-	{
-        List<Pds4Product> list = new ArrayList<Pds4Product>();
-        Pds4Products products = new Pds4Products();
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields) {
+		List<Pds4Product> list = new ArrayList<Pds4Product>();
+		Pds4Products products = new Pds4Products();
 		Set<String> uniqueProperties = new TreeSet<String>();
 
-		for (Map<String,Object> kvp : hits)
-        {
-            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
+		for (Map<String, Object> kvp : hits) {
+			uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
 			Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
 			list.add(prod);
-        }
+		}
 
 		products.setData(list);
 		products.setSummary(summary);
