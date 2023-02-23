@@ -1,4 +1,4 @@
-# Copyright © 2021, California Institute of Technology ("Caltech").
+# Copyright © 2023, California Institute of Technology ("Caltech").
 # U.S. Government sponsorship acknowledged.
 #
 # All rights reserved.
@@ -28,61 +28,30 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# Items for Git to ignore
+# Dockerfile for PDS Registry Provenance
+# ======================================
+#
+# Docker command is to run the provenance_driver.py script which drives the
+# provenance process for scheduled execution via AWS Event Bridge and AWS
+# ECS/Fargate. Refer to the script for its run-time assumptions under
+# which is it executed in the AWS environment.
+#
+# Basis
+# -----
+#
+# We use a slim python-enabled base image.
+FROM python:3.10-slim-bullseye
 
-# Object files
-*.o
-*.pkl
-*.pyc
+ARG GIT_BRANCH=main
 
-# Libraries
-*.lib
-*.a
+RUN apt-get update \
+ && apt-get install -y git \
+ && cd /tmp \
+ && pip install requests \
+ && git clone --single-branch --branch $GIT_BRANCH --depth 1 https://github.com/NASA-PDS/registry-api \
+ && cp registry-api/support/provenance/provenance.py /usr/local/bin \
+ && cp registry-api/support/provenance/provenance_driver.py /usr/local/bin \
+ && chmod -R u+x registry-api \
+ && rm -r registry-api
 
-# Eclipse files
-.settings/
-*.project
-*.classpath
-
-# IntelliJ files
-.idea/
-*.iml
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Temporary files
-*~
-src/test/temp/
-
-# terraform
-.terraform/
-
-# other stuff
-*.xpr
-*.swp
-/bin/
-.*.swp
-*.sublime-*
-*.DS_Store
-pom.xml.versionsBackup
-*\#
-
-# Java stuff
-*.javac
-.gwt/
-target/
-lexer/target
-service/target
-model/target
-
-# macOS specific stuff
-.DS_Store
+CMD ["/usr/local/bin/provenance_driver.py"]
