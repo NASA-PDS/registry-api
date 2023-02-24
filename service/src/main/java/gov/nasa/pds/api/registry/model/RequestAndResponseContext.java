@@ -357,7 +357,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
         long hitCount = hits.getTotalHits().value;
         if (hitCount == 1L) {
           this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
-        } else {
+        } else if (hitCount > 1L) {
           String basicErrMsg =
               "Got " + hitCount + " hits for a query which should have returned a singular result. "
                   + "Is provenance metadata present and up-to-date?";
