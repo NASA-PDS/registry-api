@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-02-23)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-02-24)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -21,6 +21,7 @@
 
 **Other closed issues:**
 
+- Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
 - Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
 - Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
 
