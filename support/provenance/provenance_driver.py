@@ -72,7 +72,7 @@ remotesStr = os.environ.get("PROV_REMOTES")
 if remotesStr is not None and remotesStr.strip() != '':
     remotesLists = json.loads(remotesStr)
 
-command = f'provenance.py -b {opensearch_endpoint} -l provenance.log -L DEBUG'
+command = f'provenance.py -b {opensearch_endpoint} -l provenance.log -L DEBUG --reset '
 if username is not None:
     command += f' -u {username} -p {passwd}'
 
