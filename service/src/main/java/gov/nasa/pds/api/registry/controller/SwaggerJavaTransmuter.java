@@ -7,6 +7,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.NoViableAltException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +116,10 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
     } catch (NothingFoundException e) {
       log.warn("Could not find any matching reference(s) in database.");
       return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+    } catch (NoViableAltException | ParseCancellationException e) {
+      log.warn("The given search string '" + parameters.getQuery() + "' cannot be parsed.");
+      return new ResponseEntity<Object>(ErrorFactory.build(new ParseCancellationException("The given search string '"
+          + parameters.getQuery() + "' cannot be parsed."), this.request), HttpStatus.BAD_REQUEST);
     } catch (UnknownGroupNameException e) {
       log.error("Group name not implemented", e);
       return new ResponseEntity<Object>(ErrorFactory.build(e, this.request),
