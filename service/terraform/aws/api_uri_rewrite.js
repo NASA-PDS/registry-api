@@ -24,6 +24,7 @@ function handler(event) {
     while (incomingUri.indexOf("//") >= 0) {
         incomingUri = incomingUri.replace("//","/");
     }
+    
     // Put the URI back into the request now in case the rewrite doesn't happen
     request.uri = incomingUri
             
@@ -48,11 +49,16 @@ function handler(event) {
                 newUri += "/" + uriParts[i];
             }
 
-            // write the updated URI and the new HTTP header to the request only
-            // if things check out to this point
+            // set updated URI into request and set request node header
             request.uri = newUri;
             request.headers['x-request-node'] = { "value" : resultHeader };
+            console.log("incoming URI [" + incomingUri + "] rewritten to [" + newUri 
+                + "] & x-request-node [" + resultHeader + "]")
+        } else {
+            console.log("incoming URI [" + incomingUri + "] : no rewrite (no command)")
         }
+    } else {
+        console.log("incoming URI [" + incomingUri + "] : no rewrite (no prefix match)")
     }
 
     return request;
