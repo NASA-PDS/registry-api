@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-02-28)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-01)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -10,17 +10,21 @@
 
 **Defects:**
 
+- api does not return 400 error when q parameter value cannot be parsed [\#260](https://github.com/NASA-PDS/registry-api/issues/260) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- Invalid LidvidsContext bounds fails internally and returns http500, vs expected handle and http400 [\#252](https://github.com/NASA-PDS/registry-api/issues/252) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Pagination not working as expected with /collections/{identifier}/products [\#240](https://github.com/NASA-PDS/registry-api/issues/240) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - registry-api does not respect VID when a LIDVID is used as an id, instead returns latest version [\#234](https://github.com/NASA-PDS/registry-api/issues/234) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - /classes/collections/\<lidvid\>/members \(and deprecated equivalent\) hangs [\#231](https://github.com/NASA-PDS/registry-api/issues/231) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Keyword search does not work on registry-api deployed on pds.nasa.gov [\#227](https://github.com/NASA-PDS/registry-api/issues/227) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - registry-api does not return latest version of product metadata when multiple versions are harvested [\#224](https://github.com/NASA-PDS/registry-api/issues/224) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - lidvid not found raises 500 error [\#207](https://github.com/NASA-PDS/registry-api/issues/207) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- When q="" the returned status is 500 instead of 400 [\#206](https://github.com/NASA-PDS/registry-api/issues/206) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
 
+- Incorporate misc changes loosely-related to \#252 [\#255](https://github.com/NASA-PDS/registry-api/issues/255)
 - Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
 - Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
 - Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
