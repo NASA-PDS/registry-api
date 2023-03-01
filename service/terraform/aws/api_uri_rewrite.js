@@ -14,6 +14,7 @@ var VER_IDX = 3
 var CMD_IDX = 4
 
 var TARGET_URI_PREFIX = "/api/search"
+var DEBUG_PARAM       = "cf_debug" 
 
 // The function is in response to the 'viewer request' event
 function handler(event) {
@@ -22,9 +23,9 @@ function handler(event) {
 
     // See if detailed logging is enabled
     var debug = false
-    if ("cf_debug" in request.querystring) {
+    if (DEBUG_PARAM in request.querystring) {
          debug = true
-         delete request.querystring["cf_debug"]
+         delete request.querystring[DEBUG_PARAM]
     }
 
     // Strip out any leading multiple slashies - registry-api#208
