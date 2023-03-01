@@ -42,10 +42,13 @@ function handler(event) {
 
         if (debug) console.log("incoming URI matches prefix [" + TARGET_URI_PREFIX + "]")
 
-        // split the uri
+        // split the uri - note that w/ a initial '/' the first element in the resulting
+        // array will be empty, so be sure to consider this when computing indexes of
+        // each token
         var uriParts = incomingUri.split("/");
 
-        // at a minimum service, version and command are required, otherwise fall through w/o changes
+        // at a minimum service, version and command are required (i.e. there are non-empty components in the URI after
+        // "/api/search/<version>") in order consider a rewrite of the URI, otherwise fall through w/o changes
         if (uriParts.length > CMD_IDX && uriParts[CMD_IDX].trim() != "") {
             if (debug) console.log("incoming URI includes a command")
 
