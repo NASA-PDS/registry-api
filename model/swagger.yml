@@ -2,25 +2,38 @@ openapi: 3.0.0
 info:
   description: |
     Registry API enabling advanced search on PDS data and metadata. The API provides end-points to search for bundles, collections and any PDS products with advanced search queries. It also enables to browse the archive hierarchically downward (e.g. collection/s products) or upward (e.g. bundles containing a product).
-    The detailed syntax for querying the end-point is given in the reference documentation.
   version: 1.1.0
-  title: Registry API
+  title: PDS Registry Search API
   termsOfService: 'http://pds.nasa.gov'
   contact:
     email: pds-operator@jpl.nasa.gov
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  
+tags:
+  - name: 1. all products
+    description: search any classe of product and resolve product's identifiers
+  - name: 2. product references
+    description: explore the product hierarchy
+  - name: 3. by product classes 
+    description: search by class of product, bundles, collections, ...
+  - name: 4. deprecated
+    description: end-points which should not be used anymore
 
+externalDocs:
+    description: User's Guide
+    url: https://nasa-pds.github.io/pds-api/guides/search.html
+    
 servers:
-  - url: https://pds.nasa.gov/api/registry/1.0
+  - url: https://pds.nasa.gov/api/registry/1
     description: production server
 
 paths:
   /classes:
     get:
       tags:
-        - classes
+        - 3. by product classes
       summary: |
         returns a list of the available PDS product class at this API. This is not all of the PDS product class available in the database, but simply the names that can be used in the /classes/{class} endpoints.
       operationId: classes
@@ -44,7 +57,7 @@ paths:
   /classes/{class}:
     get:
       tags:
-        - classes
+        -  3. by product classes
       summary: |
         returns all PDS products of the given PDS product class that meet all given constraints.
       operationId: class-list
@@ -70,7 +83,7 @@ paths:
   /classes/{class}/{identifier}/members:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that are members of the given PDS product class and lid/lidvid.
       operationId: class-members
@@ -95,7 +108,7 @@ paths:
   /classes/{class}/{identifier}/members/{versions}:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that are members of the given PDS product class and lid/lidvid.
       operationId: class-members-vers
@@ -121,7 +134,7 @@ paths:
   /classes/{class}/{identifier}/members/members:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that are the members of the members of the given PDS product class and lid/lidvid.
       operationId: class-members-members
@@ -146,7 +159,7 @@ paths:
   /classes/{class}/{identifier}/members/members/{versions}:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that are the members of the members of the given PDS product class and lid/lidvid.
       operationId: class-members-members-vers
@@ -172,7 +185,7 @@ paths:
   /classes/{class}/{identifier}/member-of:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member.
       operationId: class-member-of
@@ -197,7 +210,7 @@ paths:
   /classes/{class}/{identifier}/member-of/{versions}:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member.
       operationId: class-member-of-vers
@@ -223,7 +236,7 @@ paths:
   /classes/{class}/{identifier}/member-of/member-of:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member of its members.
       operationId: class-member-of-of
@@ -248,7 +261,7 @@ paths:
   /classes/{class}/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
-        - references
+        - 4. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member of its members.
       operationId: class-member-of-of-vers
@@ -275,9 +288,9 @@ paths:
   /products:
     get:
       tags:
-        - products
+        - 1. all products
       summary: |
-        returns all PDS data products, including bundles, collections, documentation, context and observational products taht meet all given constraints.
+        search on all PDS data products, including bundles, collections, documentation, context and observational products.
       operationId: product-list
       responses:
         '200':
@@ -301,7 +314,7 @@ paths:
   /products/{identifier}:
     get:
       tags:
-        - products
+        - 1. all products
       summary: |
         returns one PDS Product with the identifier selected from all PDS Products, including bundles, collections, data, documentation, context and observational products. See identifier for details on how it determines what is returned.
       operationId: select-by-lidvid
@@ -322,7 +335,7 @@ paths:
   /products/{identifier}/latest:
     get:
       tags:
-        - products
+        - 1. all products
       summary: |
         returns one PDS Product with the identifier selected from all PDS Products. See identifier for details on how it determines what is returned.
       operationId: select-by-lidvid-latest
@@ -343,7 +356,7 @@ paths:
   /products/{identifier}/all:
     get:
       tags:
-        - products
+        - 1. all products
       summary: |
         returns all product versions with the identifier (lid) selected from all PDS Products. See identifier for details on how it determines what is returned.
 
@@ -369,7 +382,7 @@ paths:
   /products/{identifier}/members:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns all of the members of the given lid/lidvid
       operationId: product-members
@@ -393,7 +406,7 @@ paths:
   /products/{identifier}/members/{versions}:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns all of the members of the given lid/lidvid
       operationId: product-members-vers
@@ -418,7 +431,7 @@ paths:
   /products/{identifier}/members/members:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns all of the members of the members of the given lid/lidvid
       operationId: product-members-members
@@ -442,7 +455,7 @@ paths:
   /products/{identifier}/members/members/{versions}:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns all of the members of the members of the given lid/lidvid
       operationId: product-members-members-vers
@@ -467,7 +480,7 @@ paths:
   /products/{identifier}/member-of:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns one or more PDS Products that have the given PDS lid/lidvid as a member.
       operationId: product-member-of
@@ -491,7 +504,7 @@ paths:
   /products/{identifier}/member-of/{versions}:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns one or more PDS Products that have the given PDS lid/lidvid as a member.
       operationId: product-member-of-vers
@@ -516,7 +529,7 @@ paths:
   /products/{identifier}/member-of/member-of:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns one or more PDS Products that have the given PDS lid/lidvid as a member of its members.
       operationId: product-member-of-of
@@ -540,7 +553,7 @@ paths:
   /products/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
-        - references
+        - 2. product references
       summary: |
         returns one or more PDS Products that have the given PDS lid/lidvid as a member of its members.
       operationId: product-member-of-of-vers
@@ -567,7 +580,7 @@ paths:
   /bundles:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundle-list
       responses:
@@ -592,7 +605,7 @@ paths:
   /bundles/{identifier}:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid
       responses:
@@ -613,7 +626,7 @@ paths:
   /bundles/{identifier}/all:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid-all
       responses:
@@ -637,7 +650,7 @@ paths:
   /bundles/{identifier}/latest:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid-latest
       responses:
@@ -658,7 +671,7 @@ paths:
   /bundles/{identifier}/collections:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid-collections
       responses:
@@ -682,7 +695,7 @@ paths:
   /bundles/{identifier}/collections/all:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid-collections-all
       responses:
@@ -706,7 +719,7 @@ paths:
   /bundles/{identifier}/collections/latest:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid-collections-latest
       responses:
@@ -730,7 +743,7 @@ paths:
   /bundles/{identifier}/products:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: bundles-lidvid-products
       responses:
@@ -754,7 +767,7 @@ paths:
   /collections:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collection-list
       responses:
@@ -779,7 +792,7 @@ paths:
   /collections/{identifier}:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid
       responses:
@@ -800,7 +813,7 @@ paths:
   /collections/{identifier}/all:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid-all
       responses:
@@ -824,7 +837,7 @@ paths:
   /collections/{identifier}/latest:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid-latest
       responses:
@@ -845,7 +858,7 @@ paths:
   /collections/{identifier}/bundles:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid-bundles
       responses:
@@ -869,7 +882,7 @@ paths:
   /collections/{identifier}/products:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid-products
       responses:
@@ -893,7 +906,7 @@ paths:
   /collections/{identifier}/products/all:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid-products-all
       responses:
@@ -917,7 +930,7 @@ paths:
   /collections/{identifier}/products/latest:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: collections-lidvid-products-latest
       responses:
@@ -941,7 +954,7 @@ paths:
   /products/{identifier}/bundles:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: products-lidvid-bundles
       responses:
@@ -965,7 +978,7 @@ paths:
   /products/{identifier}/bundles/all:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: products-lidivid-bundles-all
       responses:
@@ -989,7 +1002,7 @@ paths:
   /products/{identifier}/bundles/latest:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: products-lidvid-bundles-latest
       responses:
@@ -1013,7 +1026,7 @@ paths:
   /products/{identifier}/collections:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: products-lidvid-collections
       responses:
@@ -1037,7 +1050,7 @@ paths:
   /products/{identifier}/collections/all:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: products-lidvid-collections-all
       responses:
@@ -1061,7 +1074,7 @@ paths:
   /products/{identifier}/collections/latest:
     get:
       tags:
-        - deprecated
+        - 4. deprecated
       summary: deprecated
       operationId: products-lidvid-collections-latest
       responses:
@@ -1083,9 +1096,6 @@ paths:
       - $ref: "#/components/parameters/Start"
 # end deprecated: for easy clutter removal
 
-externalDocs:
-  description: Find out more information on the PDS API Specification
-  url: 'https://github.com/NASA-PDS/pds-api-core'
 components:
   parameters:
     Fields:
@@ -1455,6 +1465,7 @@ components:
         key_value_pairs:
           type: array
           items:
+            title: wyriwyg_product_key_value_pair
             type: object
             properties:
               key:
@@ -1621,6 +1632,7 @@ components:
         ops:Data_Files:
           type: array
           items:
+            title: pds4_metadata_ops_data_file
             type: object
             properties:
               ops:file_name:
