@@ -44,7 +44,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private int start;
   final private int limit;
 
-  final private boolean returnSingularDatum;
+  final private boolean singletonResultExpected;
   final private GroupConstraint presetCriteria;
   final private ProductVersionSelector selector;
   final private String format;
@@ -132,7 +132,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
             .given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
     this.start = parameters.getStart();
     this.limit = parameters.getLimit();
-    this.returnSingularDatum = parameters.getReturnSingularDatum();
+    this.singletonResultExpected = parameters.getSingletonResultExpected();
     this.sort = parameters.getSort();
     this.presetCriteria = outPreset;
     this.selector = parameters.getSelector();
@@ -189,7 +189,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
 
 
   public boolean isSingular() {
-    return this.returnSingularDatum;
+    return this.singletonResultExpected;
   }
 
   @Override

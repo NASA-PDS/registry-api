@@ -267,7 +267,7 @@ class LidvidsContextStub implements LidvidsContext {
     }
 
     @Override
-    public boolean getReturnSingularDatum() {
+    public boolean getSingletonResultExpected() {
         return false;
     }
 }

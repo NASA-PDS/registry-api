@@ -27,7 +27,7 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
  *    of the set calls collocated.
  * 3. By default, the context assumes a Singular (single-element-valued) return type for the API route.
  *    If the route is a Plural (collection-valued) return type, the transmuter will call either/both of setStart() and
- *    setLimit(), which will mutate returnSingularDatum to its correct false value.
+ *    setLimit(), which will mutate singletonResultExpected to its correct false value.
  *    See swagger.yml for further detail of the Singular and Plural return types.
  */
 class URIParameters implements UserContext
@@ -41,7 +41,7 @@ class URIParameters implements UserContext
 	private PdsProductIdentifier productIdentifier = null;
 	private Integer start = 0;
 	private Integer limit = 0;  // Actual default value is passed in from the upstream frames of the call stack, but it's unclear where it comes from. Not swagger.yml, at least.
-	private Boolean returnSingularDatum = true;
+	private Boolean singletonResultExpected = true;
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
 	private List<String> sort = new ArrayList<String>();
@@ -60,7 +60,7 @@ class URIParameters implements UserContext
 	@Override
 	public Integer getLimit() { return limit; }
 	@Override
-	public boolean getReturnSingularDatum() { return returnSingularDatum; }
+	public boolean getSingletonResultExpected() { return singletonResultExpected; }
 	@Override
 	public String getLidVid() { return productIdentifier != null ? productIdentifier.toString() : ""; }
 	@Override
@@ -110,7 +110,7 @@ class URIParameters implements UserContext
 		}
 
 		this.limit = limit;
-		this.returnSingularDatum = false;
+		this.singletonResultExpected = false;
 		return this;
 	}
 	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
@@ -139,7 +139,7 @@ class URIParameters implements UserContext
 		}
 
 		this.start = start;
-		this.returnSingularDatum = false;
+		this.singletonResultExpected = false;
 		return this;
 	}
 	public URIParameters setVerifyClassAndId (boolean verify)
