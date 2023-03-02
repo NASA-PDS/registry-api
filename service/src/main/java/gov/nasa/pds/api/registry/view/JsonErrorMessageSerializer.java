@@ -35,7 +35,7 @@ public class JsonErrorMessageSerializer extends AbstractHttpMessageConverter<Err
     OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
 
     // force content type to JSON
-    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+    // outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
     try {
       osw.write("{\"request\":\"");
       osw.write(t.getRequest());
