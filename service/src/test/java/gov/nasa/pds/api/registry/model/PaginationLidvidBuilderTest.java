@@ -267,7 +267,7 @@ class LidvidsContextStub implements LidvidsContext {
     }
 
     @Override
-    public boolean isSummaryOnly() {
-        return getLimit() == 0;
+    public boolean getSingletonResultExpected() {
+        return false;
     }
 }

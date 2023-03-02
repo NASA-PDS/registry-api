@@ -24,7 +24,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
     private PdsProduct product = null;
     private PdsProducts products = null;
     private URL baseURL;
-    
+
 	@Override
 	public String[] getMaximallyRequiredFields()
 	{ return new String[0]; }
@@ -57,7 +57,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public int setResponse(HitIterator hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(HitIterator hits, Summary summary, List<String> fields)
 	{
 		int count;
 		PdsProducts products = new PdsProducts();
@@ -67,15 +67,10 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
         {
             uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
-            if (!onlySummary)
-            {
-            	products.addDataItem(SearchUtil.entityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-                products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
-            }
+			products.addDataItem(SearchUtil.entityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+			products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
         }
 		count = products.getData().size();
-
-		if (onlySummary) products.setData(null);
 
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);
@@ -85,7 +80,7 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public int setResponse(SearchHits hits, Summary summary, List<String> fields, boolean onlySummary)
+	public int setResponse(SearchHits hits, Summary summary, List<String> fields)
 	{
 		Map<String,Object> kvp;
 		PdsProducts products = new PdsProducts();
@@ -96,14 +91,9 @@ public class PdsProductBusinessObject implements ProductBusinessLogic
 			kvp = hit.getSourceAsMap();
             uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
-            if (!onlySummary)
-            {
-            	products.addDataItem(SearchUtil.entityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-                products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
-            }
-        }
-		
-		if (onlySummary) products.setData(null);
+			products.addDataItem(SearchUtil.entityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+			products.getData().get(products.getData().size()-1).setProperties((Map<String, PropertyArrayValues>)(Map<String, ?>)ProductBusinessObject.getFilteredProperties(kvp, null, null));
+		}
 
 		summary.setProperties(new ArrayList<String>(uniqueProperties));
 		products.setSummary(summary);

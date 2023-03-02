@@ -25,14 +25,13 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
  *    a bunch of set calls. Instead of a single line for each set, then can be
  *    concatenated via the . to make the code more readable by keeping the all
  *    of the set calls collocated.
- * 3. The default values for limit and start work in conjunction later in the
- *    business logic to indicate a Singular or Plural return type. See swagger.yml
- *    to understand Singular and Plural return types.
+ * 3. By default, the context assumes a Singular (single-element-valued) return type for the API route.
+ *    If the route is a Plural (collection-valued) return type, the transmuter will call either/both of setStart() and
+ *    setLimit(), which will mutate singletonResultExpected to its correct false value.
+ *    See swagger.yml for further detail of the Singular and Plural return types.
  */
 class URIParameters implements UserContext
 {
-	private static final int SUMMARY_SAMPLE_SIZE = 100;
-
 	private boolean verifyClassAndId = false;
 	private String accept = "application/json";
 	private List<String> fields = new ArrayList<String>();
@@ -40,12 +39,12 @@ class URIParameters implements UserContext
 	private String identifier = "";
 	private List<String> keywords = new ArrayList<String>();
 	private PdsProductIdentifier productIdentifier = null;
-	private Integer limit = Integer.valueOf(0);
-	private boolean summaryOnly = true;
+	private Integer start = 0;
+	private Integer limit = 0;  // Actual default value is passed in from the upstream frames of the call stack, but it's unclear where it comes from. Not swagger.yml, at least.
+	private Boolean singletonResultExpected = true;
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
 	private List<String> sort = new ArrayList<String>();
-	private Integer start = Integer.valueOf(-1);
 	private String version = "latest";
 
 	@Override
@@ -61,6 +60,8 @@ class URIParameters implements UserContext
 	@Override
 	public Integer getLimit() { return limit; }
 	@Override
+	public boolean getSingletonResultExpected() { return singletonResultExpected; }
+	@Override
 	public String getLidVid() { return productIdentifier != null ? productIdentifier.toString() : ""; }
 	@Override
 	public String getQuery() { return query; }
@@ -73,8 +74,6 @@ class URIParameters implements UserContext
 	public boolean getVerifyClassAndId() { return verifyClassAndId; }
 	@Override
 	public String getVersion() { return version; }
-	@Override
-	public boolean isSummaryOnly() { return summaryOnly; }
 
 	public URIParameters setAccept(String accept)
 	{
@@ -103,21 +102,15 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setLimit(Integer limit)
 	{
-		/*
-		 * Note: Not too happy w/ having to put behavioral logic in a utility/container class, but
-		 * there are just way too many places where this information is necessary and rather than
-		 * duplicate it everywhere, this is the best place, for now, as it is the common object
-		 * shared across them all.
-		 */
-		if (limit != null) {
-			if(limit == 0) {
-				summaryOnly = true;
-				this.limit = Integer.valueOf(SUMMARY_SAMPLE_SIZE);
-			} else {
-				this.limit = limit;
-				summaryOnly = false;
-			}
+		if (limit == null) {return this;}
+
+		if (limit < 0) {
+			String errMsg = String.format("start index must be 0 or higher (got '%d'))", start);
+			throw new IllegalArgumentException(errMsg);
 		}
+
+		this.limit = limit;
+		this.singletonResultExpected = false;
 		return this;
 	}
 	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
@@ -138,7 +131,15 @@ class URIParameters implements UserContext
 	}
 	public URIParameters setStart(Integer start)
 	{
-		if (start != null) this.start = start;
+		if (start == null) {return this;}
+
+		if (start < 0) {
+			String errMsg = String.format("start index must be 0 or higher (got '%d'))", start);
+			throw new IllegalArgumentException(errMsg);
+		}
+
+		this.start = start;
+		this.singletonResultExpected = false;
 		return this;
 	}
 	public URIParameters setVerifyClassAndId (boolean verify)

@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 <!--
-👉 This is the TEMPLATE project object model or `pom.xml` file.
+This is the TEMPLATE project object model or `pom.xml` file.
 
 Go through this file line-by-line and replace the template values with your own.
 -->
@@ -225,7 +225,7 @@ Go through this file line-by-line and replace the template values with your own.
                                 <goals>
                                     <goal>jar</goal>
                                     <goal>test-jar</goal>
-                                </goals> 
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

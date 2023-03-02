@@ -43,7 +43,8 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private List<String> sort;
   final private int start;
   final private int limit;
-  final private boolean summaryOnly;
+
+  final private boolean singletonResultExpected;
   final private GroupConstraint presetCriteria;
   final private ProductVersionSelector selector;
   final private String format;
@@ -129,10 +130,10 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     this.productIdentifier = LidVidUtils.resolve(parameters.getIdentifier(), versionSelectionScope,
         controlContext, RequestBuildContextFactory
             .given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-    this.summaryOnly = parameters.isSummaryOnly();
-    this.limit = parameters.getLimit();
-    this.sort = parameters.getSort();
     this.start = parameters.getStart();
+    this.limit = parameters.getLimit();
+    this.singletonResultExpected = parameters.getSingletonResultExpected();
+    this.sort = parameters.getSort();
     this.presetCriteria = outPreset;
     this.selector = parameters.getSelector();
   }
@@ -185,12 +186,10 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     return this.selector;
   }
 
-  public boolean isSingular() {
-    return this.getStart() == -1 && this.isSummaryOnly();
-  } // isSummaryOnly implies original limit value == 0
 
-  public boolean isSummaryOnly() {
-    return summaryOnly;
+
+  public boolean isSingular() {
+    return this.singletonResultExpected;
   }
 
   @Override
@@ -291,10 +290,10 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
       for (String sort : this.getSort())
         log.warn("      " + sort);
       log.warn("   start: " + String.valueOf(this.getStart()));
-      log.warn("   summary: " + String.valueOf(this.isSummaryOnly()));
       throw new NothingFoundException();
     }
     return response;
+
   }
 
   public void setResponse(HitIterator hits, int real_total) {
@@ -302,11 +301,8 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     summary.setQ(this.getQueryString());
     summary.setStart(this.getStart());
     summary.setLimit(this.getLimit());
-    if (this.isSummaryOnly())
-      summary.setLimit(0);
     summary.setSort(this.getSort());
-    summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields,
-        this.isSummaryOnly()));
+    summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields));
     summary.setProperties(new ArrayList<String>());
 
     if (0 < real_total)
@@ -330,19 +326,17 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
       summary.setQ(this.getQueryString());
       summary.setStart(this.getStart());
       summary.setLimit(this.getLimit());
-      if (this.isSummaryOnly())
-        summary.setLimit(0);
       summary.setSort(this.getSort());
       summary.setHits(total_hits);
 
       if (uniqueProperties != null)
         summary.setProperties(uniqueProperties);
-      this.formatters.get(this.format).setResponse(hits, summary, this.fields,
-          this.isSummaryOnly());
+      this.formatters.get(this.format).setResponse(hits, summary, this.fields);
 
       summary.setTook((int) (System.currentTimeMillis() - this.begin_processing));
     }
   }
+
 
   public void setResponse(RestHighLevelClient client, SearchRequest request) throws IOException {
     if (this.isSingular()) {
