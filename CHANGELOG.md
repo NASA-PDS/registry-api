@@ -16,6 +16,7 @@
 - /classes/collections/\<lidvid\>/members \(and deprecated equivalent\) hangs [\#231](https://github.com/NASA-PDS/registry-api/issues/231) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Keyword search does not work on registry-api deployed on pds.nasa.gov [\#227](https://github.com/NASA-PDS/registry-api/issues/227) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - registry-api does not return latest version of product metadata when multiple versions are harvested [\#224](https://github.com/NASA-PDS/registry-api/issues/224) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- swaggger ui error in production [\#211](https://github.com/NASA-PDS/registry-api/issues/211) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - lidvid not found raises 500 error [\#207](https://github.com/NASA-PDS/registry-api/issues/207) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - When q="" the returned status is 500 instead of 400 [\#206](https://github.com/NASA-PDS/registry-api/issues/206) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -24,6 +25,7 @@
 **Other closed issues:**
 
 - Incorporate misc changes loosely-related to \#252 [\#255](https://github.com/NASA-PDS/registry-api/issues/255)
+- organize the swagger-ui section in a better way [\#245](https://github.com/NASA-PDS/registry-api/issues/245)
 - Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
 - Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
 - Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
