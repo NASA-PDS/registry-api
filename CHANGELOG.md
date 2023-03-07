@@ -1,16 +1,19 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-03)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-07)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
 **Requirements:**
 
+- As a user, I want to see available query params in the swagger documentation [\#249](https://github.com/NASA-PDS/registry-api/issues/249)
+- Suggest: Return Content-Type application/json by default [\#248](https://github.com/NASA-PDS/registry-api/issues/248)
 - As a user, I want to know the members of a bundle product [\#223](https://github.com/NASA-PDS/registry-api/issues/223) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Defects:**
 
 - api does not return 400 error when q parameter value cannot be parsed [\#260](https://github.com/NASA-PDS/registry-api/issues/260) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- not found lidvid does not return 404 error [\#258](https://github.com/NASA-PDS/registry-api/issues/258) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - requests with bad `q=` syntax should return 400 error [\#241](https://github.com/NASA-PDS/registry-api/issues/241) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Pagination not working as expected with /collections/{identifier}/products [\#240](https://github.com/NASA-PDS/registry-api/issues/240) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - registry-api does not respect VID when a LIDVID is used as an id, instead returns latest version [\#234](https://github.com/NASA-PDS/registry-api/issues/234) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -21,6 +24,7 @@
 - lidvid not found raises 500 error [\#207](https://github.com/NASA-PDS/registry-api/issues/207) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - When q="" the returned status is 500 instead of 400 [\#206](https://github.com/NASA-PDS/registry-api/issues/206) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- JSON response is using HTTP in href references [\#145](https://github.com/NASA-PDS/registry-api/issues/145) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
