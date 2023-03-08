@@ -120,19 +120,20 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
         	}
         }
         sortedLidStrings = new ArrayList<String>(lids);
-        Collections.sort(sortedLidStrings);  // TODO: Implement comparison for PdsLids (only with other PdsLids)
-        List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
+		Collections.sort(sortedLidStrings);  // TODO: Implement comparison for PdsLids (only with other PdsLids)
+		List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
 
-        if (selection == ProductVersionSelector.ALL){
+		if (selection == ProductVersionSelector.ALL) {
 			bundleLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
-		}
-        else {
-			try {
-				List<PdsLidVid> latestLidvids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
-				List<String> latestLidVidStrings = latestLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
-				bundleLidvids.addAll(latestLidVidStrings);
-			} catch (LidVidNotFoundException e) {
-				log.error("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+		} else {
+			RequestBuildContext reqContext = RequestBuildContextFactory.empty();
+			for (PdsProductIdentifier lid : sortedLids) {
+				try {
+					PdsLidVid latestLidvid = LidVidUtils.getLatestLidVidByLid(control, reqContext, lid.getLid().toString());
+					bundleLidvids.add(latestLidvid.toString());
+				} catch (LidVidNotFoundException e) {
+					log.warn("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+				}
 			}
 		}
 
