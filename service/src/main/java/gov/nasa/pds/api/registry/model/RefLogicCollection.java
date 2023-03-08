@@ -132,7 +132,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic
 					PdsLidVid latestLidvid = LidVidUtils.getLatestLidVidByLid(control, reqContext, lid.getLid().toString());
 					bundleLidvids.add(latestLidvid.toString());
 				} catch (LidVidNotFoundException e) {
-					log.warn("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+					log.warn("LID is referenced but is in non-findable archive-status or does not exist in db: " + e.toString());
 				}
 			}
 		}
