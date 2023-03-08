@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-07)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-08)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -9,9 +9,12 @@
 - As a user, I want to see available query params in the swagger documentation [\#249](https://github.com/NASA-PDS/registry-api/issues/249)
 - Suggest: Return Content-Type application/json by default [\#248](https://github.com/NASA-PDS/registry-api/issues/248)
 - As a user, I want to know the members of a bundle product [\#223](https://github.com/NASA-PDS/registry-api/issues/223) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- the default proposed mime type in swagger-ui.html should be 'application/json' [\#88](https://github.com/NASA-PDS/registry-api/issues/88) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 
 **Defects:**
 
+- product's members does not work on a collection [\#268](https://github.com/NASA-PDS/registry-api/issues/268) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- The members of a bundle can not be requested [\#261](https://github.com/NASA-PDS/registry-api/issues/261) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - api does not return 400 error when q parameter value cannot be parsed [\#260](https://github.com/NASA-PDS/registry-api/issues/260) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - not found lidvid does not return 404 error [\#258](https://github.com/NASA-PDS/registry-api/issues/258) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - requests with bad `q=` syntax should return 400 error [\#241](https://github.com/NASA-PDS/registry-api/issues/241) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
