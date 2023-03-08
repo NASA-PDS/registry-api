@@ -36,28 +36,6 @@ public class LidVidUtils
 {
 	private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
 
-    /**
-     * Get latest versions of LIDs
-     */
-    public static List<PdsLidVid> getLatestLidVidsForProductIdentifiers(
-    		ControlContext ctlContext,
-    		RequestBuildContext reqContext,
-            Collection<PdsProductIdentifier> productIdentifiers) throws IOException,LidVidNotFoundException
-    {
-    	List<PdsLidVid> lidVids = new ArrayList<>();
-
-    	for (PdsProductIdentifier id : productIdentifiers) {
-			try {
-				PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
-				lidVids.add(latestLidVid);
-			} catch (LidVidNotFoundException e) {
-				throw new LidVidNotFoundException("Could not find any LIDVIDs for LID " + id.getLid().toString());
-			}
-		}
-
-    	return lidVids;
-    }
-
     public static PdsLidVid getLatestLidVidByLid(
     		ControlContext ctlContext,
     		RequestBuildContext reqContext,

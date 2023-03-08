@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
@@ -77,20 +78,20 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic
         Collections.sort(sortedLidStrings);
 		List<PdsProductIdentifier> sortedLids = sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
 
-        if (selection == ProductVersionSelector.ALL){
-			parents.addAll (LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
-		}
-        else{
-			try{
-				List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(control, RequestBuildContextFactory.empty(), sortedLids);
-				List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
-				parents.addAll(latestLidVidStrings);
-			} catch (LidVidNotFoundException e) {
-				log.error("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+		if (selection == ProductVersionSelector.ALL) {
+			parents.addAll(LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(), sortedLidStrings));
+		} else {
+			RequestBuildContext reqContext = RequestBuildContextFactory.empty();
+			for (PdsProductIdentifier id : sortedLids) {
+				try {
+					PdsLidVid latestLidvid = LidVidUtils.getLatestLidVidByLid(control, reqContext, id.getLid().toString());
+					parents.add(latestLidvid.toString());
+				} catch (LidVidNotFoundException e) {
+					log.warn("LID is referenced but is in non-findable archive-status or does not exist in db: " + e.toString());
+				}
 			}
 		}
 
-        return parents;
-    }
-
+		return parents;
+	}
 }

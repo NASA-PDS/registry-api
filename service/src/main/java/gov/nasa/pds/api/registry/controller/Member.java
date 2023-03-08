@@ -15,6 +15,7 @@ import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
 import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
+import gov.nasa.pds.api.registry.search.QuickSearch;
 
 class Member implements EndpointHandler
 {
@@ -30,7 +31,11 @@ class Member implements EndpointHandler
 			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
 			NothingFoundException, UnknownGroupNameException
 	{
-		ReferencingLogic transmuter = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl();
+		ReferencingLogic transmuter;
+		
+		if (0 < content.getGroup().length()) transmuter = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl();
+		else transmuter = ReferencingLogicTransmuter.getByProductClass(QuickSearch.getValue(control.getConnection(), false, content.getLidVid(), "product_class")).impl();
+
 		RequestAndResponseContext context = this.offspring ? transmuter.member(control, content, this.twoSteps) :
 			                                                 transmuter.memberOf(control, content, this.twoSteps);
 		return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);

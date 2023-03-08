@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
@@ -161,15 +162,14 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic
 
         // Get the latest versions of LIDs
         List<PdsProductIdentifier> productIdentifiers = lidStrings.stream().map(PdsProductIdentifier::fromString).collect(Collectors.toList());
-        try {
-            List<PdsLidVid> latestLidVids = LidVidUtils.getLatestLidVidsForProductIdentifiers(
-                    ctlContext,
-                    RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Collection.impl().constraints()),
-                    productIdentifiers);
-            List<String> latestLidVidStrings = latestLidVids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
-            lidvids.addAll(latestLidVidStrings);
-        } catch (LidVidNotFoundException e) {
-            log.error("Database referential integrity error -  LID is referenced but does not exist in db: " + e.toString());
+        RequestBuildContext reqContext = RequestBuildContextFactory.given(true, "lid", ReferencingLogicTransmuter.Collection.impl().constraints());
+        for (PdsProductIdentifier id : productIdentifiers) {
+            try {
+                PdsLidVid latestLidVid = LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
+                lidvids.add(latestLidVid.toString());
+            } catch (LidVidNotFoundException e) {
+                log.warn("LID is referenced but is in non-findable archive-status or does not exist in db: " + e.toString());
+            }
         }
 
         return lidvids;
