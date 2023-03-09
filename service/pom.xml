@@ -48,7 +48,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson-version>2.13.2</jackson-version>
-    <springfox-version>3.0.0</springfox-version>
+    <spring-boot-version>3.0.4</spring-boot-version>
   </properties>
   <build>
     <resources>
@@ -61,7 +61,7 @@
       <plugin>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-maven-plugin</artifactId>
-	<version>2.7.5</version>
+	<version>${spring-boot-version}</version>
 	<executions>
 	  <execution>
 	    <goals>
@@ -109,6 +109,10 @@
   </build>
 
   <dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
 
   <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
@@ -144,27 +148,14 @@
 	    <artifactId>swagger-core</artifactId>
 	    <version>2.2.8</version>
 	</dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-
-  
-
    
-
+	<!--
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
     </dependency>
+    -->
+
 
 
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
@@ -174,20 +165,20 @@
     </dependency>
 
 
-    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
 
-
-    <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
+	<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+	<dependency>
+	    <groupId>jakarta.validation</groupId>
+	    <artifactId>jakarta.validation-api</artifactId>
+	    <version>3.0.2</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+	<dependency>
+	    <groupId>jakarta.annotation</groupId>
+	    <artifactId>jakarta.annotation-api</artifactId>
+	    <version>2.1.1</version>
+	</dependency>
 
 
     <dependency>
@@ -239,11 +230,6 @@
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-core</artifactId>
       <version>2.3.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
@@ -345,6 +331,14 @@
       <version>31.1-jre</version>
     </dependency>
     
+    <!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+	<dependency>
+	    <groupId>jakarta.servlet</groupId>
+	    <artifactId>jakarta.servlet-api</artifactId>
+	    <version>6.0.0</version>
+	    <scope>provided</scope>
+	</dependency>
+    
   </dependencies>
 
   <dependencyManagement>
@@ -352,7 +346,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.7.0</version>
+        <version>${spring-boot-version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

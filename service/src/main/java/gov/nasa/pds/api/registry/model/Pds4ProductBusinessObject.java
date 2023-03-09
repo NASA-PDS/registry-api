@@ -6,124 +6,119 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
 
-public class Pds4ProductBusinessObject implements ProductBusinessLogic
-{
-    @SuppressWarnings("unused")
-	private ObjectMapper objectMapper;
-	private Pds4Product product = null;
-	private Pds4Products products = null;
-    @SuppressWarnings("unused")
-	private URL baseURL;
 
-    public final boolean isJSON;
-    public final String[] PDS4_PRODUCT_FIELDS;
+public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
+  @SuppressWarnings("unused")
+  private ObjectMapper objectMapper;
+  private Pds4Product product = null;
+  private Pds4Products products = null;
+  @SuppressWarnings("unused")
+  private URL baseURL;
 
-    Pds4ProductBusinessObject (boolean isJSON)
-    {
-    	String temp[] = {
-    		// BLOB
-    		(isJSON ? Pds4ProductFactory.FLD_JSON_BLOB : Pds4ProductFactory.FLD_XML_BLOB),
+  public final boolean isJSON;
+  public final String[] PDS4_PRODUCT_FIELDS;
 
-    		// Data File Info
-    		Pds4ProductFactory.FLD_DATA_FILE_NAME,
-    		Pds4ProductFactory.FLD_DATA_FILE_CREATION,
-    		Pds4ProductFactory.FLD_DATA_FILE_REF,
-    		Pds4ProductFactory.FLD_DATA_FILE_SIZE,
-    		Pds4ProductFactory.FLD_DATA_FILE_MD5,
-    		Pds4ProductFactory.FLD_DATA_FILE_MIME_TYPE,
+  Pds4ProductBusinessObject(boolean isJSON) {
+    super();
+    String temp[] = {
+        // BLOB
+        (isJSON ? Pds4ProductFactory.FLD_JSON_BLOB : Pds4ProductFactory.FLD_XML_BLOB),
 
-    	    // Label Info
-    	    Pds4ProductFactory.FLD_LABEL_FILE_NAME,
-    	    Pds4ProductFactory.FLD_LABEL_FILE_CREATION,
-    	    Pds4ProductFactory.FLD_LABEL_FILE_REF,
-    	    Pds4ProductFactory.FLD_LABEL_FILE_SIZE,
-    	    Pds4ProductFactory.FLD_LABEL_FILE_MD5,
+        // Data File Info
+        Pds4ProductFactory.FLD_DATA_FILE_NAME, Pds4ProductFactory.FLD_DATA_FILE_CREATION,
+        Pds4ProductFactory.FLD_DATA_FILE_REF, Pds4ProductFactory.FLD_DATA_FILE_SIZE,
+        Pds4ProductFactory.FLD_DATA_FILE_MD5, Pds4ProductFactory.FLD_DATA_FILE_MIME_TYPE,
 
-    	    // Tracking Meta
-    	    Pds4ProductFactory.FLD_TRACK_META_ARCHIVE_STATUS,
+        // Label Info
+        Pds4ProductFactory.FLD_LABEL_FILE_NAME, Pds4ProductFactory.FLD_LABEL_FILE_CREATION,
+        Pds4ProductFactory.FLD_LABEL_FILE_REF, Pds4ProductFactory.FLD_LABEL_FILE_SIZE,
+        Pds4ProductFactory.FLD_LABEL_FILE_MD5,
 
-    		// Node Name
-    	    Pds4ProductFactory.FLD_NODE_NAME};
+        // Tracking Meta
+        Pds4ProductFactory.FLD_TRACK_META_ARCHIVE_STATUS,
 
-    	this.PDS4_PRODUCT_FIELDS = temp;
-    	this.isJSON = isJSON;
+        // Node Name
+        Pds4ProductFactory.FLD_NODE_NAME};
+
+    this.PDS4_PRODUCT_FIELDS = temp;
+    this.isJSON = isJSON;
+  }
+
+  @Override
+  public String[] getMaximallyRequiredFields() {
+    return this.PDS4_PRODUCT_FIELDS;
+  }
+
+  @Override
+  public String[] getMinimallyRequiredFields() {
+    return this.PDS4_PRODUCT_FIELDS;
+  }
+
+  @Override
+  public Object getResponse() {
+    return this.product == null ? this.products : this.product;
+  }
+
+  @Override
+  public void setObjectMapper(ObjectMapper om) {
+    this.objectMapper = om;
+  }
+
+  @Override
+  public void setResponse(SearchHit hit, List<String> fields) {
+    this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON);
+  }
+
+  @Override
+  public int setResponse(HitIterator hits, Summary summary, List<String> fields) {
+    List<Pds4Product> list = new ArrayList<Pds4Product>();
+    Pds4Products products = new Pds4Products();
+    Set<String> uniqueProperties = new TreeSet<String>();
+
+    for (Map<String, Object> kvp : hits) {
+      uniqueProperties
+          .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
+
+      Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
+      list.add(prod);
     }
 
-	@Override
-	public String[] getMaximallyRequiredFields()
-	{ return this.PDS4_PRODUCT_FIELDS; }
+    products.setData(list);
+    products.setSummary(summary);
+    summary.setProperties(new ArrayList<String>(uniqueProperties));
+    this.products = products;
+    return list.size();
+  }
 
-	@Override
-	public String[] getMinimallyRequiredFields()
-	{ return this.PDS4_PRODUCT_FIELDS; }
+  @Override
+  public int setResponse(SearchHits hits, Summary summary, List<String> fields) {
+    List<Pds4Product> list = new ArrayList<Pds4Product>();
+    Pds4Products products = new Pds4Products();
+    Set<String> uniqueProperties = new TreeSet<String>();
 
-	@Override
-	public Object getResponse()
-	{ return this.product == null ? this.products : this.product; }
+    // Products
+    for (SearchHit hit : hits) {
+      String id = hit.getId();
+      Map<String, Object> fieldMap = hit.getSourceAsMap();
 
-	@Override
-	public void setBaseURL (URL baseURL) { this.baseURL = baseURL; }
+      uniqueProperties
+          .addAll(ProductBusinessObject.getFilteredProperties(fieldMap, fields, null).keySet());
 
-	@Override
-	public void setObjectMapper (ObjectMapper om) { this.objectMapper = om; }
-
-	@Override
-	public void setResponse (SearchHit hit, List<String> fields)
-	{ this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON); }
-
-	@Override
-	public int setResponse(HitIterator hits, Summary summary, List<String> fields) {
-		List<Pds4Product> list = new ArrayList<Pds4Product>();
-		Pds4Products products = new Pds4Products();
-		Set<String> uniqueProperties = new TreeSet<String>();
-
-		for (Map<String, Object> kvp : hits) {
-			uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
-
-			Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
-			list.add(prod);
-		}
-
-		products.setData(list);
-		products.setSummary(summary);
-		summary.setProperties(new ArrayList<String>(uniqueProperties));
-		this.products = products;
-		return list.size();
-	}
-
-	@Override
-	public int setResponse(SearchHits hits, Summary summary, List<String> fields)
-	{
-        List<Pds4Product> list = new ArrayList<Pds4Product>();
-        Pds4Products products = new Pds4Products();
-		Set<String> uniqueProperties = new TreeSet<String>();
-
-        // Products
-        for(SearchHit hit : hits)
-        {
-            String id = hit.getId();
-            Map<String, Object> fieldMap = hit.getSourceAsMap();
-
-            uniqueProperties.addAll(ProductBusinessObject.getFilteredProperties(fieldMap, fields, null).keySet());
-
-			Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
-			list.add(prod);
-        }
-        products.setData(list);
-        products.setSummary(summary);
-        summary.setProperties(new ArrayList<String>(uniqueProperties));
-        this.products = products;
-        return (int)hits.getTotalHits().value;
-	}
+      Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
+      list.add(prod);
+    }
+    products.setData(list);
+    products.setSummary(summary);
+    summary.setProperties(new ArrayList<String>(uniqueProperties));
+    this.products = products;
+    return (int) hits.getTotalHits().value;
+  }
 }

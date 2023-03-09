@@ -29,81 +29,88 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
   @Override
   public ResponseEntity<Object> productMemberOf(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    return this.processs(new Member(false, false), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+    return this.processs(new Member(false, false),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).build());
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfOf(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    return this.processs(new Member(false, true), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+    return this.processs(new Member(false, true),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).build());
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfOfVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Min(0) @Valid Integer start) {
-    return this.processs(new Member(false, true), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start).setVersion(versions));
+    return this.processs(new Member(false, true),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Min(0) @Valid Integer start) {
-    return this.processs(new Member(false, false), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start).setVersion(versions));
+    return this.processs(new Member(false, false),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembers(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    return this.processs(new Member(true, false), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+    return this.processs(new Member(true, false),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembersMembers(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    return this.processs(new Member(true, true), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+    return this.processs(new Member(true, true), this.uriParametersBuilder.setIdentifier(identifier)
+        .setFields(fields).setLimit(limit).setSort(sort).setStart(start).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembersMembersVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Min(0) @Valid Integer start) {
-    return this.processs(new Member(true, true), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start).setVersion(versions));
+    return this.processs(new Member(true, true),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembersVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Min(0) @Valid Integer start) {
-    return this.processs(new Member(true, false), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start).setVersion(versions));
+    return this.processs(new Member(true, false),
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(),
-        new URIParameters().setIdentifier(identifier).setFields(fields));
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).build());
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
     return this.processs(new Standard(),
-        new URIParameters().setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).setVersion(ProductVersionSelector.ALL));
+        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
+            .setSort(sort).setStart(start).setVersion(ProductVersionSelector.ALL).build());
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvidLatest(String identifier,
       @Valid List<String> fields) {
-    return this.processs(new Standard(), new URIParameters().setIdentifier(identifier)
-        .setFields(fields).setVersion(ProductVersionSelector.LATEST));
+    return this.processs(new Standard(), this.uriParametersBuilder.setIdentifier(identifier)
+        .setFields(fields).setVersion(ProductVersionSelector.LATEST).build());
   }
 }

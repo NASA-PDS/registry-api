@@ -21,16 +21,16 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 
   @Override
   public ResponseEntity<Object> bundlesLidvid(String identifier, @Valid List<String> fields) {
-    return this.processs(new Standard(), new URIParameters().setGroup("bundles")
-        .setIdentifier(identifier).setFields(fields).setVerifyClassAndId(true));
+    return this.processs(new Standard(), this.uriParametersBuilder.setGroup("bundles")
+        .setIdentifier(identifier).setFields(fields).setVerifyClassAndId(true).build());
   }
 
   @Override
   public ResponseEntity<Object> bundlesLidvidAll(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
     return this.processs(new Standard(),
-        new URIParameters().setGroup("bundles").setIdentifier(identifier).setFields(fields)
-            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL));
+        this.uriParametersBuilder.setGroup("bundles").setIdentifier(identifier).setFields(fields)
+            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL).build());
   }
 
   @Override
@@ -57,8 +57,8 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   @Override
   public ResponseEntity<Object> bundlesLidvidLatest(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(),
-        new URIParameters().setGroup("bundles").setIdentifier(identifier).setFields(fields)
-            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST));
+        this.uriParametersBuilder.setGroup("bundles").setIdentifier(identifier).setFields(fields)
+            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST).build());
   }
 
   @Override
@@ -76,16 +76,17 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 
   @Override
   public ResponseEntity<Object> collectionsLidvid(String identifier, @Valid List<String> fields) {
-    return this.processs(new Standard(), new URIParameters().setGroup("collections")
-        .setIdentifier(identifier).setFields(fields).setVerifyClassAndId(true));
+    return this.processs(new Standard(), this.uriParametersBuilder.setGroup("collections")
+        .setIdentifier(identifier).setFields(fields).setVerifyClassAndId(true).build());
   }
 
   @Override
   public ResponseEntity<Object> collectionsLidvidAll(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
     return this.processs(new Standard(),
-        new URIParameters().setGroup("collections").setIdentifier(identifier).setFields(fields)
-            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL));
+        this.uriParametersBuilder.setGroup("collections").setIdentifier(identifier)
+            .setFields(fields).setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL)
+            .build());
   }
 
   @Override
@@ -99,8 +100,9 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   public ResponseEntity<Object> collectionsLidvidLatest(String identifier,
       @Valid List<String> fields) {
     return this.processs(new Standard(),
-        new URIParameters().setGroup("collections").setIdentifier(identifier).setFields(fields)
-            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST));
+        this.uriParametersBuilder.setGroup("collections").setIdentifier(identifier)
+            .setFields(fields).setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST)
+            .build());
   }
 
   @Override
