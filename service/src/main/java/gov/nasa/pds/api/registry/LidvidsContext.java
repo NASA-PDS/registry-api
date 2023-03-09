@@ -1,11 +1,11 @@
 package gov.nasa.pds.api.registry;
 
 public interface LidvidsContext {
-	public String getLidVid();
+  public String getLidVid();
 
-	public Integer getLimit();
+  public Integer getLimit();
 
-	public Integer getStart();
+  public Integer getStart();
 
-	public boolean getSingletonResultExpected();
+  public boolean getSingletonResultExpected();
 }

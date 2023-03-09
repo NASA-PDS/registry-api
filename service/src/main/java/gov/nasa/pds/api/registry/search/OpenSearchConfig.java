@@ -9,137 +9,138 @@ import org.springframework.context.annotation.Configuration;
 
 import gov.nasa.pds.api.registry.ConnectionContext;
 
-/* Keep this eventhough not directly referenced
+/*
+ * Keep this eventhough not directly referenced
  * 
- * Seems to found and used via reflection rather than direct reference. When removed
- * it causes spring to fail with an opensearch failure requiring EleasticSearchRegistryConnection.
- * Not sure why the error indicates an interface that is already there when this class is missing
- * but that is what happened.
+ * Seems to found and used via reflection rather than direct reference. When removed it causes
+ * spring to fail with an opensearch failure requiring EleasticSearchRegistryConnection. Not sure
+ * why the error indicates an interface that is already there when this class is missing but that is
+ * what happened.
  */
 
 @Configuration
 public class OpenSearchConfig {
-	private static final Logger log = LoggerFactory.getLogger(OpenSearchConfig.class);
+  private static final Logger log = LoggerFactory.getLogger(OpenSearchConfig.class);
 
-	// This default for ES hosts is set in the constructor since we first want to
-	// check
-	// the environment if not set in the application properties. This preserves the
-	// original behavior when the default was specified in the Value annotation.
+  // This default for ES hosts is set in the constructor since we first want to
+  // check
+  // the environment if not set in the application properties. This preserves the
+  // original behavior when the default was specified in the Value annotation.
 
-	@Value("#{'${openSearch.host:}'.split(',')}")
-	private List<String> hosts;
+  @Value("#{'${openSearch.host:}'.split(',')}")
+  private List<String> hosts;
 
-	@Value("${openSearch.registryIndex:registry}")
-	private String registryIndex;
+  @Value("${openSearch.registryIndex:registry}")
+  private String registryIndex;
 
-	@Value("${openSearch.registryRefIndex:registry-refs}")
-	private String registryRefIndex;
+  @Value("${openSearch.registryRefIndex:registry-refs}")
+  private String registryRefIndex;
 
-	@Value("${openSearch.timeOutSeconds:60}")
-	private int timeOutSeconds;
+  @Value("${openSearch.timeOutSeconds:60}")
+  private int timeOutSeconds;
 
-	public int getTimeOutSeconds() {
-		return timeOutSeconds;
-	}
+  public int getTimeOutSeconds() {
+    return timeOutSeconds;
+  }
 
-	public void setTimeOutSeconds(int timeOutSeconds) {
-		this.timeOutSeconds = timeOutSeconds;
-	}
+  public void setTimeOutSeconds(int timeOutSeconds) {
+    this.timeOutSeconds = timeOutSeconds;
+  }
 
-	@Value("${openSearch.username:}")
-	private String username;
+  @Value("${openSearch.username:}")
+  private String username;
 
-	public String getPassword() {
-		return password;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	public String getUsername() {
-		return username;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	@Value("${openSearch.password:}")
-	private String password;
+  @Value("${openSearch.password:}")
+  private String password;
 
-	@Value("${openSearch.ssl:false}")
-	private boolean ssl;
+  @Value("${openSearch.ssl:false}")
+  private boolean ssl;
 
-	@Value("${openSearch.sslCertificateCNVerification:false}")
-	private boolean sslCertificateCNVerification;
+  @Value("${openSearch.sslCertificateCNVerification:false}")
+  private boolean sslCertificateCNVerification;
 
-	public List<String> getHosts() {
-		return hosts;
-	}
+  public List<String> getHosts() {
+    return hosts;
+  }
 
-	public void setHost(List<String> hosts) {
-		this.hosts = hosts;
-	}
+  public void setHost(List<String> hosts) {
+    this.hosts = hosts;
+  }
 
-	public String getRegistryIndex() {
-		return registryIndex;
-	}
+  public String getRegistryIndex() {
+    return registryIndex;
+  }
 
-	public void setRegistryIndex(String registryIndex) {
-		this.registryIndex = registryIndex;
-	}
+  public void setRegistryIndex(String registryIndex) {
+    this.registryIndex = registryIndex;
+  }
 
-	public String getRegistryRefIndex() {
-		return registryRefIndex;
-	}
+  public String getRegistryRefIndex() {
+    return registryRefIndex;
+  }
 
-	public void setRegistryRefIndex(String registryRefIndex) {
-		this.registryRefIndex = registryRefIndex;
-	}
+  public void setRegistryRefIndex(String registryRefIndex) {
+    this.registryRefIndex = registryRefIndex;
+  }
 
-	public boolean isSsl() {
-		return ssl;
-	}
+  public boolean isSsl() {
+    return ssl;
+  }
 
-	public boolean doesSslCertificateVCNerification() {
-		return sslCertificateCNVerification;
-	}
+  public boolean doesSslCertificateVCNerification() {
+    return sslCertificateCNVerification;
+  }
 
-	public void setSslCertificateCNVerification(boolean sslCertificateCNVerification) {
-		this.sslCertificateCNVerification = sslCertificateCNVerification;
-	}
+  public void setSslCertificateCNVerification(boolean sslCertificateCNVerification) {
+    this.sslCertificateCNVerification = sslCertificateCNVerification;
+  }
 
-	public void setSsl(boolean ssl) {
-		this.ssl = ssl;
-	}
+  public void setSsl(boolean ssl) {
+    this.ssl = ssl;
+  }
 
-	private ConnectionContext connection = null;
+  private ConnectionContext connection = null;
 
-	@Bean("connection")
-	public ConnectionContext connectionContext() {
+  @Bean("connection")
+  public ConnectionContext connectionContext() {
 
-		if (connection == null) {
+    if (connection == null) {
 
-			OpenSearchRegistryConnectionImplBuilder connectionBuilder = new OpenSearchRegistryConnectionImplBuilder(
-					this);
+      OpenSearchRegistryConnectionImplBuilder connectionBuilder =
+          new OpenSearchRegistryConnectionImplBuilder(this);
 
-			// see if ES user name is not set - if not, try to get from environment
-			if (this.username == null || "".equals(this.username)) {
-				connectionBuilder.trySetESCredsFromEnv();
-			}
+      // see if ES user name is not set - if not, try to get from environment
+      if (this.username == null || "".equals(this.username)) {
+        connectionBuilder.trySetESCredsFromEnv();
+      }
 
-			// do the same for ES hosts - the defaulting mechanism causes a rather elaborate
-			// check
-			log.debug(String.format("this.hosts : %s (%d)", this.hosts, this.hosts.size()));
-			if (this.hosts == null || this.hosts.size() == 0 || this.hosts.get(0) == null
-					|| "".equals(this.hosts.get(0))) {
-				connectionBuilder.setESHostsFromEnvOrDefault();
-			}
+      // do the same for ES hosts - the defaulting mechanism causes a rather elaborate
+      // check
+      log.debug(String.format("this.hosts : %s (%d)", this.hosts, this.hosts.size()));
+      if (this.hosts == null || this.hosts.size() == 0 || this.hosts.get(0) == null
+          || "".equals(this.hosts.get(0))) {
+        connectionBuilder.setESHostsFromEnvOrDefault();
+      }
 
-			this.connection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
+      this.connection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
 
-		}
-		return this.connection;
-	}
+    }
+    return this.connection;
+  }
 }

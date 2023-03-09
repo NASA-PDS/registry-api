@@ -18,30 +18,29 @@ import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 
 class Member implements EndpointHandler {
-	final private boolean offspring, twoSteps;
+  final private boolean offspring, twoSteps;
 
-	public Member(boolean offspring, boolean twoSteps) {
-		this.offspring = offspring;
-		this.twoSteps = twoSteps;
-	}
+  public Member(boolean offspring, boolean twoSteps) {
+    this.offspring = offspring;
+    this.twoSteps = twoSteps;
+  }
 
-	@Override
-	public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
-			throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
-			NothingFoundException, UnknownGroupNameException {
-		ReferencingLogic transmuter;
+  @Override
+  public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
+      throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
+      NothingFoundException, UnknownGroupNameException {
+    ReferencingLogic transmuter;
 
-		if (0 < content.getGroup().length())
-			transmuter = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl();
-		else
-			transmuter = ReferencingLogicTransmuter
-					.getByProductClass(
-							QuickSearch.getValue(control.getConnection(), false, content.getLidVid(), "product_class"))
-					.impl();
+    if (0 < content.getGroup().length())
+      transmuter = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl();
+    else
+      transmuter = ReferencingLogicTransmuter.getByProductClass(QuickSearch
+          .getValue(control.getConnection(), false, content.getLidVid(), "product_class")).impl();
 
-		RequestAndResponseContext context = this.offspring ? transmuter.member(control, content, this.twoSteps)
-				: transmuter.memberOf(control, content, this.twoSteps);
-		return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
-	}
+    RequestAndResponseContext context =
+        this.offspring ? transmuter.member(control, content, this.twoSteps)
+            : transmuter.memberOf(control, content, this.twoSteps);
+    return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
+  }
 
 }

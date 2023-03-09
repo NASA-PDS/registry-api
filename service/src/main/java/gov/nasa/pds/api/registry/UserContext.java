@@ -5,21 +5,21 @@ import java.util.List;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 public interface UserContext extends LidvidsContext {
-	public String getAccept();
+  public String getAccept();
 
-	public List<String> getFields();
+  public List<String> getFields();
 
-	public String getGroup();
+  public String getGroup();
 
-	public String getIdentifier();
+  public String getIdentifier();
 
-	public List<String> getKeywords();
+  public List<String> getKeywords();
 
-	public String getQuery();
+  public String getQuery();
 
-	public ProductVersionSelector getSelector();
+  public ProductVersionSelector getSelector();
 
-	public List<String> getSort();
+  public List<String> getSort();
 
-	public String getVersion();
+  public String getVersion();
 }
