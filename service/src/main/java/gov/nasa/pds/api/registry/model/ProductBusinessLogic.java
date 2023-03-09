@@ -12,19 +12,19 @@ import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Summary;
 
 public interface ProductBusinessLogic {
-	public String[] getMinimallyRequiredFields();
+  public String[] getMinimallyRequiredFields();
 
-	public String[] getMaximallyRequiredFields();
+  public String[] getMaximallyRequiredFields();
 
-	public Object getResponse();
+  public Object getResponse();
 
-	public void setBaseURL(URL baseURL);
+  public void setBaseURL(URL baseURL);
 
-	public void setObjectMapper(ObjectMapper om);
+  public void setObjectMapper(ObjectMapper om);
 
-	public void setResponse(SearchHit hit, List<String> fields);
+  public void setResponse(SearchHit hit, List<String> fields);
 
-	public int setResponse(HitIterator hits, Summary summary, List<String> fields);
+  public int setResponse(HitIterator hits, Summary summary, List<String> fields);
 
-	public int setResponse(SearchHits hits, Summary summary, List<String> fields);
+  public int setResponse(SearchHits hits, Summary summary, List<String> fields);
 }

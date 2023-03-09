@@ -16,16 +16,17 @@ import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 class Standard implements EndpointHandler {
-	@Override
-	public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
-			throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException,
-			UnknownGroupNameException {
-		RequestAndResponseContext context = RequestAndResponseContext.buildRequestAndResponseContext(control, content,
-				ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl().constraints());
-		context.setResponse(control.getConnection().getRestHighLevelClient(),
-				new SearchRequestFactory(context, control.getConnection()).build(context,
-						control.getConnection().getRegistryIndex()));
-		return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
-	}
+  @Override
+  public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
+      throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException,
+      UnknownGroupNameException {
+    RequestAndResponseContext context =
+        RequestAndResponseContext.buildRequestAndResponseContext(control, content,
+            ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl().constraints());
+    context.setResponse(control.getConnection().getRestHighLevelClient(),
+        new SearchRequestFactory(context, control.getConnection()).build(context,
+            control.getConnection().getRegistryIndex()));
+    return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
+  }
 
 }

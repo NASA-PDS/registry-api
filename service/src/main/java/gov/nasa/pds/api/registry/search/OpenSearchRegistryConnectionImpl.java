@@ -34,159 +34,163 @@ import gov.nasa.pds.api.registry.ConnectionContext;
 
 public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 
-	// key for getting the remotes from cross cluster config
-	public static String CLUSTER_REMOTE_KEY = "cluster.remote";
+  // key for getting the remotes from cross cluster config
+  public static String CLUSTER_REMOTE_KEY = "cluster.remote";
 
-	private static final Logger log = LoggerFactory.getLogger(OpenSearchRegistryConnectionImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(OpenSearchRegistryConnectionImpl.class);
 
-	private RestHighLevelClient restHighLevelClient;
-	private String registryIndex;
-	private String registryRefIndex;
-	private int timeOutSeconds;
-	private ArrayList<String> crossClusterNodes;
+  private RestHighLevelClient restHighLevelClient;
+  private String registryIndex;
+  private String registryRefIndex;
+  private int timeOutSeconds;
+  private ArrayList<String> crossClusterNodes;
 
-	public OpenSearchRegistryConnectionImpl() {
-		this(new OpenSearchRegistryConnectionImplBuilder());
-	}
+  public OpenSearchRegistryConnectionImpl() {
+    this(new OpenSearchRegistryConnectionImplBuilder());
+  }
 
-	public OpenSearchRegistryConnectionImpl(OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
+  public OpenSearchRegistryConnectionImpl(
+      OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
 
-		List<HttpHost> httpHosts = new ArrayList<HttpHost>();
+    List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 
-		OpenSearchRegistryConnectionImpl.log.info("Connection to open search");
-		for (String host : connectionBuilder.getHosts()) {
+    OpenSearchRegistryConnectionImpl.log.info("Connection to open search");
+    for (String host : connectionBuilder.getHosts()) {
 
-			List<String> hostPort = Splitter.on(':').splitToList(host);
-			OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort.get(0) + ":" + hostPort.get(1));
-			httpHosts.add(new HttpHost(hostPort.get(0), Integer.parseInt(hostPort.get(1)),
-					connectionBuilder.isSsl() ? "https" : "http"));
+      List<String> hostPort = Splitter.on(':').splitToList(host);
+      OpenSearchRegistryConnectionImpl.log.info("Host " + hostPort.get(0) + ":" + hostPort.get(1));
+      httpHosts.add(new HttpHost(hostPort.get(0), Integer.parseInt(hostPort.get(1)),
+          connectionBuilder.isSsl() ? "https" : "http"));
 
-		}
+    }
 
-		RestClientBuilder clientBuilder;
-		String username = connectionBuilder.getUsername();
-		if ((username != null) && !username.equals("")) {
+    RestClientBuilder clientBuilder;
+    String username = connectionBuilder.getUsername();
+    if ((username != null) && !username.equals("")) {
 
-			OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection with username/password");
-			final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-			credentialsProvider.setCredentials(AuthScope.ANY,
-					new UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
+      OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection with username/password");
+      final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(AuthScope.ANY,
+          new UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
 
-			clientBuilder = RestClient.builder(httpHosts.toArray(new HttpHost[httpHosts.size()]))
-					.setHttpClientConfigCallback(new HttpClientConfigCallback() {
-						@Override
-						public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+      clientBuilder = RestClient.builder(httpHosts.toArray(new HttpHost[httpHosts.size()]))
+          .setHttpClientConfigCallback(new HttpClientConfigCallback() {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(
+                HttpAsyncClientBuilder httpClientBuilder) {
 
-							try {
+              try {
 
-								if (connectionBuilder.isSsl()) {
-									OpenSearchRegistryConnectionImpl.log.info("Connection over SSL");
-									SSLContextBuilder sslBld = SSLContexts.custom();
-									sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
-									SSLContext sslContext = sslBld.build();
+                if (connectionBuilder.isSsl()) {
+                  OpenSearchRegistryConnectionImpl.log.info("Connection over SSL");
+                  SSLContextBuilder sslBld = SSLContexts.custom();
+                  sslBld.loadTrustMaterial(new TrustSelfSignedStrategy());
+                  SSLContext sslContext = sslBld.build();
 
-									httpClientBuilder.setSSLContext(sslContext);
-									if (!connectionBuilder.isSslCertificateCNVerification()) {
-										httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-									}
-								}
+                  httpClientBuilder.setSSLContext(sslContext);
+                  if (!connectionBuilder.isSslCertificateCNVerification()) {
+                    httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+                  }
+                }
 
-								return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-							} catch (Exception ex) {
-								throw new RuntimeException(ex);
-							}
-						}
-					});
-		} else {
-			OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection");
-			clientBuilder = RestClient.builder(httpHosts.toArray(new HttpHost[httpHosts.size()]));
-		}
+                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+              } catch (Exception ex) {
+                throw new RuntimeException(ex);
+              }
+            }
+          });
+    } else {
+      OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection");
+      clientBuilder = RestClient.builder(httpHosts.toArray(new HttpHost[httpHosts.size()]));
+    }
 
-		this.restHighLevelClient = new RestHighLevelClient(clientBuilder);
+    this.restHighLevelClient = new RestHighLevelClient(clientBuilder);
 
-		this.crossClusterNodes = checkCCSConfig();
-		this.registryIndex = createCCSIndexString(connectionBuilder.getRegistryIndex());
-		this.registryRefIndex = createCCSIndexString(connectionBuilder.getRegistryRefIndex());
-		this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
+    this.crossClusterNodes = checkCCSConfig();
+    this.registryIndex = createCCSIndexString(connectionBuilder.getRegistryIndex());
+    this.registryRefIndex = createCCSIndexString(connectionBuilder.getRegistryRefIndex());
+    this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 
-	}
+  }
 
-	public RestHighLevelClient getRestHighLevelClient() {
-		return restHighLevelClient;
-	}
+  public RestHighLevelClient getRestHighLevelClient() {
+    return restHighLevelClient;
+  }
 
-	public void setRestHighLevelClient(RestHighLevelClient restHighLevelClient) {
-		this.restHighLevelClient = restHighLevelClient;
-	}
+  public void setRestHighLevelClient(RestHighLevelClient restHighLevelClient) {
+    this.restHighLevelClient = restHighLevelClient;
+  }
 
-	public String getRegistryIndex() {
-		return registryIndex;
-	}
+  public String getRegistryIndex() {
+    return registryIndex;
+  }
 
-	public void setRegistryIndex(String registryRefIndex) {
-		this.registryRefIndex = registryRefIndex;
-	}
+  public void setRegistryIndex(String registryRefIndex) {
+    this.registryRefIndex = registryRefIndex;
+  }
 
-	public String getRegistryRefIndex() {
-		return registryRefIndex;
-	}
+  public String getRegistryRefIndex() {
+    return registryRefIndex;
+  }
 
-	public void setRegistryRefIndex(String registryRefIndex) {
-		this.registryRefIndex = registryRefIndex;
-	}
+  public void setRegistryRefIndex(String registryRefIndex) {
+    this.registryRefIndex = registryRefIndex;
+  }
 
-	public int getTimeOutSeconds() {
-		return timeOutSeconds;
-	}
+  public int getTimeOutSeconds() {
+    return timeOutSeconds;
+  }
 
-	public void setTimeOutSeconds(int timeOutSeconds) {
-		this.timeOutSeconds = timeOutSeconds;
-	}
+  public void setTimeOutSeconds(int timeOutSeconds) {
+    this.timeOutSeconds = timeOutSeconds;
+  }
 
-	private ArrayList<String> checkCCSConfig() {
-		ArrayList<String> result = null;
+  private ArrayList<String> checkCCSConfig() {
+    ArrayList<String> result = null;
 
-		try {
-			ClusterGetSettingsRequest request = new ClusterGetSettingsRequest();
-			ClusterGetSettingsResponse response = restHighLevelClient.cluster().getSettings(request,
-					RequestOptions.DEFAULT);
+    try {
+      ClusterGetSettingsRequest request = new ClusterGetSettingsRequest();
+      ClusterGetSettingsResponse response =
+          restHighLevelClient.cluster().getSettings(request, RequestOptions.DEFAULT);
 
-			Set<String> clusters = response.getPersistentSettings().getGroups(CLUSTER_REMOTE_KEY).keySet();
-			if (clusters.size() > 0) {
-				result = new ArrayList<String>(clusters);
-				OpenSearchRegistryConnectionImpl.log
-						.info("Cross cluster search is active: (" + result.toString() + ")");
-			} else {
-				OpenSearchRegistryConnectionImpl.log.info("Cross cluster search is inactive");
-			}
-		} catch (Exception ex) {
-			log.warn("Could not get cluster information. Cross cluster search is inactive. " + ex.getMessage());
-		}
-		return result;
-	}
+      Set<String> clusters =
+          response.getPersistentSettings().getGroups(CLUSTER_REMOTE_KEY).keySet();
+      if (clusters.size() > 0) {
+        result = new ArrayList<String>(clusters);
+        OpenSearchRegistryConnectionImpl.log
+            .info("Cross cluster search is active: (" + result.toString() + ")");
+      } else {
+        OpenSearchRegistryConnectionImpl.log.info("Cross cluster search is inactive");
+      }
+    } catch (Exception ex) {
+      log.warn("Could not get cluster information. Cross cluster search is inactive. "
+          + ex.getMessage());
+    }
+    return result;
+  }
 
-	// if CCS configuration has been detected, use nodes in consolidated index
-	// names, otherwise just return the index
-	private String createCCSIndexString(String indexName) {
-		String result = indexName;
-		if (this.crossClusterNodes != null) {
-			// start with the local index
-			StringBuilder indexBuilder = new StringBuilder(indexName);
-			for (String cluster : this.crossClusterNodes) {
-				indexBuilder.append(",");
-				indexBuilder.append(cluster + ":" + indexName);
-			}
-			result = indexBuilder.toString();
-		}
+  // if CCS configuration has been detected, use nodes in consolidated index
+  // names, otherwise just return the index
+  private String createCCSIndexString(String indexName) {
+    String result = indexName;
+    if (this.crossClusterNodes != null) {
+      // start with the local index
+      StringBuilder indexBuilder = new StringBuilder(indexName);
+      for (String cluster : this.crossClusterNodes) {
+        indexBuilder.append(",");
+        indexBuilder.append(cluster + ":" + indexName);
+      }
+      result = indexBuilder.toString();
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	public void close() {
-		try {
-			restHighLevelClient.close();
-		} catch (Exception ex) {
-			// Ignore
-		}
-	}
+  public void close() {
+    try {
+      restHighLevelClient.close();
+    } catch (Exception ex) {
+      // Ignore
+    }
+  }
 }

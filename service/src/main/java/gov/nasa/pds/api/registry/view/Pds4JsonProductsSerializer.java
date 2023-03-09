@@ -25,64 +25,65 @@ import gov.nasa.pds.model.Pds4Products;
  * @author karpenko
  */
 public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Pds4Products> {
-	/**
-	 * Constructor
-	 */
-	public Pds4JsonProductsSerializer() {
-		super(new MediaType("application", "vnd.nasa.pds.pds4+json"));
-	}
+  /**
+   * Constructor
+   */
+  public Pds4JsonProductsSerializer() {
+    super(new MediaType("application", "vnd.nasa.pds.pds4+json"));
+  }
 
-	@Override
-	protected boolean supports(Class<?> clazz) {
-		return Pds4Products.class.isAssignableFrom(clazz);
-	}
+  @Override
+  protected boolean supports(Class<?> clazz) {
+    return Pds4Products.class.isAssignableFrom(clazz);
+  }
 
-	@Override
-	protected Pds4Products readInternal(Class<? extends Pds4Products> clazz, HttpInputMessage msg)
-			throws IOException, HttpMessageNotReadableException {
-		return new Pds4Products();
-	}
+  @Override
+  protected Pds4Products readInternal(Class<? extends Pds4Products> clazz, HttpInputMessage msg)
+      throws IOException, HttpMessageNotReadableException {
+    return new Pds4Products();
+  }
 
-	@Override
-	public void writeInternal(Pds4Products products, HttpOutputMessage msg)
-			throws IOException, HttpMessageNotWritableException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_NULL);
+  @Override
+  public void writeInternal(Pds4Products products, HttpOutputMessage msg)
+      throws IOException, HttpMessageNotWritableException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
 
-		OutputStream os = msg.getBody();
-		OutputStreamWriter wr = new OutputStreamWriter(os);
+    OutputStream os = msg.getBody();
+    OutputStreamWriter wr = new OutputStreamWriter(os);
 
-		Utilities.fix(products.getSummary());
-		wr.write("{\n");
+    Utilities.fix(products.getSummary());
+    wr.write("{\n");
 
-		// Summary
-		wr.write("\"summary\":");
-		String value = mapper.writeValueAsString(products.getSummary());
-		wr.write(value);
-		wr.write(",\n");
+    // Summary
+    wr.write("\"summary\":");
+    String value = mapper.writeValueAsString(products.getSummary());
+    wr.write(value);
+    wr.write(",\n");
 
-		// Data
-		wr.write("\"data\":[");
-		writeProducts(products.getData(), wr, mapper);
-		wr.write("]\n");
+    // Data
+    wr.write("\"data\":[");
+    writeProducts(products.getData(), wr, mapper);
+    wr.write("]\n");
 
-		wr.write("}\n");
-		wr.close();
-	}
+    wr.write("}\n");
+    wr.close();
+  }
 
-	private void writeProducts(List<Pds4Product> list, Writer wr, ObjectMapper mapper) throws IOException {
-		if (list == null)
-			return;
+  private void writeProducts(List<Pds4Product> list, Writer wr, ObjectMapper mapper)
+      throws IOException {
+    if (list == null)
+      return;
 
-		int size = list.size();
-		for (int i = 0; i < size; i++) {
-			Pds4Product prod = list.get(i);
-			Pds4JsonProductSerializer.writeProduct(prod, wr, mapper);
+    int size = list.size();
+    for (int i = 0; i < size; i++) {
+      Pds4Product prod = list.get(i);
+      Pds4JsonProductSerializer.writeProduct(prod, wr, mapper);
 
-			if (i < size - 1) {
-				wr.write(",\n");
-			}
-		}
-	}
+      if (i < size - 1) {
+        wr.write(",\n");
+      }
+    }
+  }
 
 }

@@ -8,40 +8,40 @@ import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 class SimpleRequestBuildContext implements RequestBuildContext {
-	final private boolean justLatest;
-	final private List<String> fields;
-	final private GroupConstraint preset;
+  final private boolean justLatest;
+  final private List<String> fields;
+  final private GroupConstraint preset;
 
-	SimpleRequestBuildContext(boolean justLatest) {
-		this.fields = new ArrayList<String>();
-		this.justLatest = justLatest;
-		this.preset = GroupConstraintImpl.empty();
-	}
+  SimpleRequestBuildContext(boolean justLatest) {
+    this.fields = new ArrayList<String>();
+    this.justLatest = justLatest;
+    this.preset = GroupConstraintImpl.empty();
+  }
 
-	SimpleRequestBuildContext(boolean justLatest, List<String> fields) {
-		this.fields = fields;
-		this.justLatest = justLatest;
-		this.preset = GroupConstraintImpl.empty();
-	}
+  SimpleRequestBuildContext(boolean justLatest, List<String> fields) {
+    this.fields = fields;
+    this.justLatest = justLatest;
+    this.preset = GroupConstraintImpl.empty();
+  }
 
-	SimpleRequestBuildContext(boolean justLatest, List<String> fields, GroupConstraint preset) {
-		this.fields = fields;
-		this.justLatest = justLatest;
-		this.preset = preset;
-	}
+  SimpleRequestBuildContext(boolean justLatest, List<String> fields, GroupConstraint preset) {
+    this.fields = fields;
+    this.justLatest = justLatest;
+    this.preset = preset;
+  }
 
-	@Override
-	public boolean justLatest() {
-		return this.justLatest;
-	}
+  @Override
+  public boolean justLatest() {
+    return this.justLatest;
+  }
 
-	@Override
-	public List<String> getFields() {
-		return this.fields;
-	}
+  @Override
+  public List<String> getFields() {
+    return this.fields;
+  }
 
-	@Override
-	public GroupConstraint getPresetCriteria() {
-		return this.preset;
-	}
+  @Override
+  public GroupConstraint getPresetCriteria() {
+    return this.preset;
+  }
 }

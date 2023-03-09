@@ -13,54 +13,54 @@ import java.util.zip.InflaterInputStream;
  * @author karpenko
  */
 public class BlobUtil {
-	public static final String JSON_BLOB_PROPERTY = "ops:Label_File_Info/ops:json_blob";
-	public static final String XML_BLOB_PROPERTY = "ops:Label_File_Info/ops:blob";
+  public static final String JSON_BLOB_PROPERTY = "ops:Label_File_Info/ops:json_blob";
+  public static final String XML_BLOB_PROPERTY = "ops:Label_File_Info/ops:blob";
 
-	/**
-	 * Decompress base64 encoded BLOB.
-	 * 
-	 * @param blob Base64 encoded compressed BLOB
-	 * @return Original BLOB value as a string
-	 * @throws Exception an exception
-	 */
-	public static String blobToString(String blob) throws Exception {
-		byte[] data = Base64.getDecoder().decode(blob);
-		return blobToString(data);
-	}
+  /**
+   * Decompress base64 encoded BLOB.
+   * 
+   * @param blob Base64 encoded compressed BLOB
+   * @return Original BLOB value as a string
+   * @throws Exception an exception
+   */
+  public static String blobToString(String blob) throws Exception {
+    byte[] data = Base64.getDecoder().decode(blob);
+    return blobToString(data);
+  }
 
-	/**
-	 * Decompress binary BLOB.
-	 * 
-	 * @param blob compressed BLOB
-	 * @return Original BLOB value as a string
-	 * @throws Exception an exception
-	 */
-	public static String blobToString(byte[] blob) throws Exception {
-		ByteArrayInputStream is = new ByteArrayInputStream(blob);
-		// Decompress ("inflate") the BLOB
-		InflaterInputStream source = new InflaterInputStream(is);
+  /**
+   * Decompress binary BLOB.
+   * 
+   * @param blob compressed BLOB
+   * @return Original BLOB value as a string
+   * @throws Exception an exception
+   */
+  public static String blobToString(byte[] blob) throws Exception {
+    ByteArrayInputStream is = new ByteArrayInputStream(blob);
+    // Decompress ("inflate") the BLOB
+    InflaterInputStream source = new InflaterInputStream(is);
 
-		ByteArrayOutputStream dest = new ByteArrayOutputStream();
-		copy(source, dest);
-		dest.close();
+    ByteArrayOutputStream dest = new ByteArrayOutputStream();
+    copy(source, dest);
+    dest.close();
 
-		return dest.toString("utf-8");
-	}
+    return dest.toString("utf-8");
+  }
 
-	/**
-	 * Copy data from input to output stream
-	 * 
-	 * @param source source stream
-	 * @param dest   destination stream
-	 * @throws Exception an exception
-	 */
-	private static void copy(InputStream source, OutputStream dest) throws Exception {
-		byte[] buf = new byte[1024];
+  /**
+   * Copy data from input to output stream
+   * 
+   * @param source source stream
+   * @param dest destination stream
+   * @throws Exception an exception
+   */
+  private static void copy(InputStream source, OutputStream dest) throws Exception {
+    byte[] buf = new byte[1024];
 
-		int count = 0;
-		while ((count = source.read(buf)) >= 0) {
-			dest.write(buf, 0, count);
-		}
-	}
+    int count = 0;
+    while ((count = source.read(buf)) >= 0) {
+      dest.write(buf, 0, count);
+    }
+  }
 
 }
