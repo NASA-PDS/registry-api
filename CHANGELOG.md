@@ -32,6 +32,7 @@
 
 **Other closed issues:**
 
+- Format the source code in google style [\#272](https://github.com/NASA-PDS/registry-api/issues/272)
 - Incorporate misc changes loosely-related to \#252 [\#255](https://github.com/NASA-PDS/registry-api/issues/255)
 - organize the swagger-ui section in a better way [\#245](https://github.com/NASA-PDS/registry-api/issues/245)
 - Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
