@@ -16,30 +16,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.model.WyriwygProduct;
 
-public class JsonSingularSerializer extends AbstractHttpMessageConverter<WyriwygProduct>
-{
-	public JsonSingularSerializer()
-	{
-        super(new MediaType("application","kvp+json"));
-	}
+public class JsonSingularSerializer extends AbstractHttpMessageConverter<WyriwygProduct> {
+  public JsonSingularSerializer() {
+    super(new MediaType("application", "kvp+json"));
+  }
 
-	@Override
-	protected boolean supports(Class<?> clazz) { return WyriwygProduct.class.isAssignableFrom(clazz); }
+  @Override
+  protected boolean supports(Class<?> clazz) {
+    return WyriwygProduct.class.isAssignableFrom(clazz);
+  }
 
-	@Override
-	protected WyriwygProduct readInternal(Class<? extends WyriwygProduct> clazz, HttpInputMessage inputMessage)
-			throws IOException, HttpMessageNotReadableException { return new WyriwygProduct(); }
+  @Override
+  protected WyriwygProduct readInternal(Class<? extends WyriwygProduct> clazz,
+      HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    return new WyriwygProduct();
+  }
 
-	@Override
-	protected void writeInternal(WyriwygProduct t, HttpOutputMessage outputMessage)
-			throws IOException, HttpMessageNotWritableException
-	{		
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        
-        OutputStream os = outputMessage.getBody();
-        OutputStreamWriter wr = new OutputStreamWriter(os);
-        WyriwygSerializer.writeJSON(t, wr, mapper);
-        wr.close();
-	}
+  @Override
+  protected void writeInternal(WyriwygProduct t, HttpOutputMessage outputMessage)
+      throws IOException, HttpMessageNotWritableException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
+
+    OutputStream os = outputMessage.getBody();
+    OutputStreamWriter wr = new OutputStreamWriter(os);
+    WyriwygSerializer.writeJSON(t, wr, mapper);
+    wr.close();
+  }
 }

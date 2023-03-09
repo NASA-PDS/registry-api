@@ -12,8 +12,8 @@ import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 
-interface EndpointHandler
-{
-	public ResponseEntity<Object> transmute (ControlContext control, UserContext content)
-			throws ApplicationTypeException,IOException,LidVidNotFoundException,MembershipException,NothingFoundException,UnknownGroupNameException;
+interface EndpointHandler {
+  public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
+      throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException,
+      NothingFoundException, UnknownGroupNameException;
 }

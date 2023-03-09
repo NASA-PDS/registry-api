@@ -22,77 +22,68 @@ import gov.nasa.pds.model.Pds4Product;
 
 /**
  * Custom serializer to write a Pds4Product in "pds4+json" format.
+ * 
  * @author karpenko
  */
-public class Pds4JsonProductSerializer extends AbstractHttpMessageConverter<Pds4Product>
-{
-    private static final Logger log = LoggerFactory.getLogger(Pds4JsonProductSerializer.class);
-            
-    /**
-     * Constructor
-     */
-    public Pds4JsonProductSerializer()
-    {
-        super(new MediaType("application", "vnd.nasa.pds.pds4+json"));
+public class Pds4JsonProductSerializer extends AbstractHttpMessageConverter<Pds4Product> {
+  private static final Logger log = LoggerFactory.getLogger(Pds4JsonProductSerializer.class);
+
+  /**
+   * Constructor
+   */
+  public Pds4JsonProductSerializer() {
+    super(new MediaType("application", "vnd.nasa.pds.pds4+json"));
+  }
+
+
+  @Override
+  protected boolean supports(Class<?> clazz) {
+    return Pds4Product.class.isAssignableFrom(clazz);
+  }
+
+
+  @Override
+  protected Pds4Product readInternal(Class<? extends Pds4Product> clazz, HttpInputMessage msg)
+      throws IOException, HttpMessageNotReadableException {
+    return new Pds4Product();
+  }
+
+
+  @Override
+  public void writeInternal(Pds4Product product, HttpOutputMessage msg)
+      throws IOException, HttpMessageNotWritableException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
+
+    OutputStream os = msg.getBody();
+    OutputStreamWriter wr = new OutputStreamWriter(os);
+    writeProduct(product, wr, mapper);
+    wr.close();
+  }
+
+
+  public static void writeProduct(Pds4Product product, Writer wr, ObjectMapper mapper)
+      throws IOException {
+    wr.write("{\n");
+
+    String value = mapper.writeValueAsString(product.getId());
+    wr.write("\"id\": " + value);
+
+    Pds4Metadata meta = product.getMetadata();
+    if (meta != null) {
+      value = mapper.writeValueAsString(meta);
+      wr.write(",\n\"meta\": " + value);
     }
 
-    
-    @Override
-    protected boolean supports(Class<?> clazz)
-    {
-        return Pds4Product.class.isAssignableFrom(clazz);
+    if (product.getPds4() != null) {
+      try {
+        wr.write(",\n\"pds4\": ");
+        wr.write((String) product.getPds4());
+      } catch (Exception ex) {
+        log.warn("Could not extract BLOB from product " + product.getId(), ex);
+      }
     }
 
-    
-    @Override
-    protected Pds4Product readInternal(Class<? extends Pds4Product> clazz, HttpInputMessage msg)
-            throws IOException, HttpMessageNotReadableException
-    {
-        return new Pds4Product();
-    }
-
-    
-    @Override
-    public void writeInternal(Pds4Product product, HttpOutputMessage msg)
-            throws IOException, HttpMessageNotWritableException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        
-        OutputStream os = msg.getBody();
-        OutputStreamWriter wr = new OutputStreamWriter(os);
-        writeProduct(product, wr, mapper);
-        wr.close();
-    }
-
-    
-    public static void writeProduct(Pds4Product product, Writer wr, ObjectMapper mapper) throws IOException
-    {
-        wr.write("{\n");
-
-        String value = mapper.writeValueAsString(product.getId());
-        wr.write("\"id\": " + value);
-        
-        Pds4Metadata meta = product.getMetadata();
-        if(meta != null)
-        {
-            value = mapper.writeValueAsString(meta);
-            wr.write(",\n\"meta\": " + value);
-        }
-        
-        if(product.getPds4() != null)
-        {
-            try
-            {
-                wr.write(",\n\"pds4\": ");
-                wr.write((String)product.getPds4());
-            }
-            catch(Exception ex)
-            {
-                log.warn("Could not extract BLOB from product " + product.getId(), ex);
-            }
-        }
-        
-        wr.write("}\n");
-    }
+    wr.write("}\n");
+  }
 }

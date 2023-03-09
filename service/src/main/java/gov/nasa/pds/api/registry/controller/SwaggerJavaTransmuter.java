@@ -123,8 +123,10 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
       return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
     } catch (NoViableAltException | ParseCancellationException e) {
       log.warn("The given search string '" + parameters.getQuery() + "' cannot be parsed.");
-      return new ResponseEntity<Object>(ErrorFactory.build(new ParseCancellationException("The given search string '"
-          + parameters.getQuery() + "' cannot be parsed."), this.request), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<Object>(ErrorFactory.build(
+          new ParseCancellationException(
+              "The given search string '" + parameters.getQuery() + "' cannot be parsed."),
+          this.request), HttpStatus.BAD_REQUEST);
     } catch (UnknownGroupNameException e) {
       log.error("Group name not implemented", e);
       return new ResponseEntity<Object>(ErrorFactory.build(e, this.request),

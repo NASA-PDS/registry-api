@@ -14,15 +14,13 @@ import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
 import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 
-class IdReferencingGroup implements EndpointHandler
-{
-	@Override
-	public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
-			throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException,
-			UnknownGroupNameException
-	{
-		RequestAndResponseContext context = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl()
-				.given(control, content);
-		return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
-	}
+class IdReferencingGroup implements EndpointHandler {
+  @Override
+  public ResponseEntity<Object> transmute(ControlContext control, UserContext content)
+      throws ApplicationTypeException, IOException, LidVidNotFoundException, NothingFoundException,
+      UnknownGroupNameException {
+    RequestAndResponseContext context = ReferencingLogicTransmuter
+        .getBySwaggerGroup(content.getGroup()).impl().given(control, content);
+    return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);
+  }
 }
