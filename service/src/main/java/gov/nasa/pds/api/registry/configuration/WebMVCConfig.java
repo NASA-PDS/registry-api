@@ -68,10 +68,8 @@ public class WebMVCConfig implements WebMvcConfigurer {
     converters.add(new CsvPluralSerializer());
     converters.add(new CsvSingularSerializer());
     // converters.add(new HtmlErrorMessageSerializer());
-    converters.add(new JsonErrorMessageSerializer());
     converters.add(new JsonPluralSerializer());
     converters.add(new JsonSingularSerializer());
-    converters.add(new JsonProductSerializer());
     converters.add(new Pds4JsonProductSerializer());
     converters.add(new Pds4JsonProductsSerializer());
     converters.add(new Pds4XmlProductSerializer());
@@ -81,5 +79,8 @@ public class WebMVCConfig implements WebMvcConfigurer {
     converters.add(new PdsProductXMLSerializer());
     converters.add(new PdsProductsXMLSerializer());
     converters.add(new XmlErrorMessageSerializer());
+    converters.add(new JsonProductSerializer());
+    converters.add(new JsonErrorMessageSerializer());
+
   }
 }
