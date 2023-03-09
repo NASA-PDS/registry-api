@@ -63,3 +63,7 @@ variable "aws_ecr_pull_policy_arn" {
   description = "ARN for the ECR pull policy"
   default = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
 }
+
+variable "aws_eventbridge_role_arn" {
+  description = "Role for eventbridge execution"
+}
