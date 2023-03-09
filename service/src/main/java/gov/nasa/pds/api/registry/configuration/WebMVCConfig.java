@@ -63,24 +63,34 @@ public class WebMVCConfig implements WebMvcConfigurer {
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
     WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+    // useful for swagger-ui I think
     converters.add(new StringHttpMessageConverter());
-    converters.add(new CsvErrorMessageSerializer());
+
+    // CSV formats
     converters.add(new CsvPluralSerializer());
     converters.add(new CsvSingularSerializer());
-    // converters.add(new HtmlErrorMessageSerializer());
+
+    converters.add(new CsvErrorMessageSerializer());
+
+    // json+kvp formats
     converters.add(new JsonPluralSerializer());
     converters.add(new JsonSingularSerializer());
+
+    // json+pds4
     converters.add(new Pds4JsonProductSerializer());
     converters.add(new Pds4JsonProductsSerializer());
+
+    // xml+pds4
     converters.add(new Pds4XmlProductSerializer());
     converters.add(new Pds4XmlProductsSerializer());
-    // converters.add(new PdsProductTextHtmlSerializer());
-    // converters.add(new PdsProductsTextHtmlSerializer());
+
+    // default xml
     converters.add(new PdsProductXMLSerializer());
     converters.add(new PdsProductsXMLSerializer());
     converters.add(new XmlErrorMessageSerializer());
+
+    // json and default format
     converters.add(new JsonProductSerializer());
     converters.add(new JsonErrorMessageSerializer());
-
   }
 }
