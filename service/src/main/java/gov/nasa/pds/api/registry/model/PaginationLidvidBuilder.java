@@ -6,22 +6,19 @@ import java.util.List;
 
 import gov.nasa.pds.api.registry.LidvidsContext;
 
-class PaginationLidvidBuilder implements Pagination<String>
-{
+class PaginationLidvidBuilder implements Pagination<String> {
 	final private int limit;
 	final private int start;
 	final private List<String> page = new ArrayList<String>();
 
 	private int total = 0;
 
-	PaginationLidvidBuilder (LidvidsContext bounds)
-	{
+	PaginationLidvidBuilder(LidvidsContext bounds) {
 		this.limit = bounds.getLimit();
 		this.start = bounds.getStart();
 	}
 
-	void addAll (List<String> data)
-	{
+	void addAll(List<String> data) {
 		int remainingDataCount = this.limit - this.page.size();
 
 		boolean trimDataHead = this.total < this.start;
@@ -35,29 +32,40 @@ class PaginationLidvidBuilder implements Pagination<String>
 		this.total += data.size();
 	}
 
-	void add (Object sourceMapValue) { this.addAll(this.convert(sourceMapValue)); }
+	void add(Object sourceMapValue) {
+		this.addAll(this.convert(sourceMapValue));
+	}
 
-	List<String> convert (Object sourceMapValue)
-	{
+	List<String> convert(Object sourceMapValue) {
 		@SuppressWarnings("unchecked")
-		List<String> values = sourceMapValue instanceof List ? (List<String>)sourceMapValue :
-			(sourceMapValue == null ? new ArrayList<String>(): Arrays.asList((String)sourceMapValue));
+		List<String> values = sourceMapValue instanceof List ? (List<String>) sourceMapValue
+				: (sourceMapValue == null ? new ArrayList<String>() : Arrays.asList((String) sourceMapValue));
 		return values;
 	}
 
 	@Override
-	public int limit() { return this.limit; }
+	public int limit() {
+		return this.limit;
+	}
 
 	@Override
-	public List<String> page() { return this.page; }
+	public List<String> page() {
+		return this.page;
+	}
 
 	@Override
-	public int size() { return this.page.size(); }
+	public int size() {
+		return this.page.size();
+	}
 
 	@Override
-	public int start() { return this.start; }
+	public int start() {
+		return this.start;
+	}
 
 	@Override
-	public int total() { return this.total; }
+	public int total() {
+		return this.total;
+	}
 
 }

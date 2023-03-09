@@ -30,8 +30,7 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
  *    setLimit(), which will mutate singletonResultExpected to its correct false value.
  *    See swagger.yml for further detail of the Singular and Plural return types.
  */
-class URIParameters implements UserContext
-{
+class URIParameters implements UserContext {
 	private boolean verifyClassAndId = false;
 	private String accept = "application/json";
 	private List<String> fields = new ArrayList<String>();
@@ -40,7 +39,8 @@ class URIParameters implements UserContext
 	private List<String> keywords = new ArrayList<String>();
 	private PdsProductIdentifier productIdentifier = null;
 	private Integer start = 0;
-	private Integer limit = 0;  // Actual default value is passed in from the upstream frames of the call stack, but it's unclear where it comes from. Not swagger.yml, at least.
+	private Integer limit = 0; // Actual default value is passed in from the upstream frames of the call stack,
+								// but it's unclear where it comes from. Not swagger.yml, at least.
 	private Boolean singletonResultExpected = true;
 	private String query = "";
 	private ProductVersionSelector selector = ProductVersionSelector.LATEST;
@@ -48,61 +48,108 @@ class URIParameters implements UserContext
 	private String version = "latest";
 
 	@Override
-	public String getAccept() { return accept; }
-	@Override
-	public List<String> getFields() { return fields; }
-	@Override
-	public String getGroup() { return group; }
-	@Override
-	public String getIdentifier() { return identifier; }
-	@Override
-	public List<String> getKeywords() { return keywords; }
-	@Override
-	public Integer getLimit() { return limit; }
-	@Override
-	public boolean getSingletonResultExpected() { return singletonResultExpected; }
-	@Override
-	public String getLidVid() { return productIdentifier != null ? productIdentifier.toString() : ""; }
-	@Override
-	public String getQuery() { return query; }
-	@Override
-	public ProductVersionSelector getSelector() { return selector; }
-	@Override
-	public List<String> getSort() { return sort; }
-	@Override
-	public Integer getStart() { return start; }
-	public boolean getVerifyClassAndId() { return verifyClassAndId; }
-	@Override
-	public String getVersion() { return version; }
+	public String getAccept() {
+		return accept;
+	}
 
-	public URIParameters setAccept(String accept)
-	{
-		if (accept != null) this.accept = accept;
+	@Override
+	public List<String> getFields() {
+		return fields;
+	}
+
+	@Override
+	public String getGroup() {
+		return group;
+	}
+
+	@Override
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	@Override
+	public List<String> getKeywords() {
+		return keywords;
+	}
+
+	@Override
+	public Integer getLimit() {
+		return limit;
+	}
+
+	@Override
+	public boolean getSingletonResultExpected() {
+		return singletonResultExpected;
+	}
+
+	@Override
+	public String getLidVid() {
+		return productIdentifier != null ? productIdentifier.toString() : "";
+	}
+
+	@Override
+	public String getQuery() {
+		return query;
+	}
+
+	@Override
+	public ProductVersionSelector getSelector() {
+		return selector;
+	}
+
+	@Override
+	public List<String> getSort() {
+		return sort;
+	}
+
+	@Override
+	public Integer getStart() {
+		return start;
+	}
+
+	public boolean getVerifyClassAndId() {
+		return verifyClassAndId;
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
+	}
+
+	public URIParameters setAccept(String accept) {
+		if (accept != null)
+			this.accept = accept;
 		return this;
 	}
-	public URIParameters setFields(List<String> fields)
-	{
-		if (fields != null) this.fields = fields;
+
+	public URIParameters setFields(List<String> fields) {
+		if (fields != null)
+			this.fields = fields;
 		return this;
 	}
-	public URIParameters setGroup(String group)
-	{
-		if (group != null) this.group = group;
+
+	public URIParameters setGroup(String group) {
+		if (group != null)
+			this.group = group;
 		return this;
 	}
-	public URIParameters setIdentifier(String identifier)
-	{
-		if (identifier != null) this.identifier = identifier;
+
+	public URIParameters setIdentifier(String identifier) {
+		if (identifier != null)
+			this.identifier = identifier;
 		return this;
 	}
-	public URIParameters setKeywords(List<String> keywords)
-	{
-		if (keywords != null) this.keywords = keywords;
+
+	public URIParameters setKeywords(List<String> keywords) {
+		if (keywords != null)
+			this.keywords = keywords;
 		return this;
 	}
-	public URIParameters setLimit(Integer limit)
-	{
-		if (limit == null) {return this;}
+
+	public URIParameters setLimit(Integer limit) {
+		if (limit == null) {
+			return this;
+		}
 
 		if (limit < 0) {
 			String errMsg = String.format("start index must be 0 or higher (got '%d'))", start);
@@ -113,25 +160,29 @@ class URIParameters implements UserContext
 		this.singletonResultExpected = false;
 		return this;
 	}
-	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException
-	{
-		this.productIdentifier = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.TYPED,
-				control, RequestBuildContextFactory.empty());
+
+	public URIParameters setProductIdentifier(ControlContext control) throws IOException, LidVidNotFoundException {
+		this.productIdentifier = LidVidUtils.resolve(this.getIdentifier(), ProductVersionSelector.TYPED, control,
+				RequestBuildContextFactory.empty());
 		return this;
 	}
-	public URIParameters setQuery(String query)
-	{
-		if (query != null) this.query = query;
+
+	public URIParameters setQuery(String query) {
+		if (query != null)
+			this.query = query;
 		return this;
 	}
-	public URIParameters setSort(List<String> sort)
-	{
-		if (sort != null) this.sort = sort;
+
+	public URIParameters setSort(List<String> sort) {
+		if (sort != null)
+			this.sort = sort;
 		return this;
 	}
-	public URIParameters setStart(Integer start)
-	{
-		if (start == null) {return this;}
+
+	public URIParameters setStart(Integer start) {
+		if (start == null) {
+			return this;
+		}
 
 		if (start < 0) {
 			String errMsg = String.format("start index must be 0 or higher (got '%d'))", start);
@@ -142,25 +193,25 @@ class URIParameters implements UserContext
 		this.singletonResultExpected = false;
 		return this;
 	}
-	public URIParameters setVerifyClassAndId (boolean verify)
-	{
+
+	public URIParameters setVerifyClassAndId(boolean verify) {
 		this.verifyClassAndId = verify;
 		return this;
 	}
-	public URIParameters setVersion(String version)
-	{
-		if (version != null)
-		{
+
+	public URIParameters setVersion(String version) {
+		if (version != null) {
 			this.version = version;
-			if ("all".equalsIgnoreCase(version)) this.selector = ProductVersionSelector.ALL;
-			else this.selector = ProductVersionSelector.LATEST;
+			if ("all".equalsIgnoreCase(version))
+				this.selector = ProductVersionSelector.ALL;
+			else
+				this.selector = ProductVersionSelector.LATEST;
 		}
 		return this;
 	}
-	public URIParameters setVersion(ProductVersionSelector version)
-	{
-		if (version != null)
-		{
+
+	public URIParameters setVersion(ProductVersionSelector version) {
+		if (version != null) {
 			this.version = version.toString().toLowerCase();
 			this.selector = version;
 		}

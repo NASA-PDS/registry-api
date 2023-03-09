@@ -13,59 +13,50 @@ import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
 class OpenSearchRegistryConnectionImplBuilder {
 
 	private static final String DEFAULT_ES_HOST = "localhost:9200";
-	
+
 	private static final Logger log = LoggerFactory.getLogger(OpenSearchRegistryConnectionImplBuilder.class);
 
 	private List<String> hosts;
+
 	public List<String> getHosts() {
 		return hosts;
 	}
-
 
 	public void setHosts(List<String> hosts) {
 		this.hosts = hosts;
 	}
 
-
 	public String getUsername() {
 		return username;
 	}
-
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
-
 	public String getPassword() {
 		return password;
 	}
-
 
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
-
 	public String getRegistryIndex() {
 		return registryIndex;
 	}
-
 
 	public String getRegistryRefIndex() {
 		return registryRefIndex;
 	}
 
-
 	public int getTimeOutSeconds() {
 		return timeOutSeconds;
 	}
 
-
 	public boolean isSsl() {
 		return ssl;
 	}
-
 
 	public boolean isSslCertificateCNVerification() {
 		return sslCertificateCNVerification;
@@ -79,8 +70,7 @@ class OpenSearchRegistryConnectionImplBuilder {
 
 	private String username;
 	private String password;
-	
-	
+
 	public OpenSearchRegistryConnectionImplBuilder() {
 		// Default builder
 		this.hosts = Arrays.asList("localhost:9200");
@@ -95,9 +85,7 @@ class OpenSearchRegistryConnectionImplBuilder {
 	}
 
 	public OpenSearchRegistryConnectionImplBuilder(OpenSearchConfig openSearchConfig) {
-		
 
-		
 		this.hosts = openSearchConfig.getHosts();
 		this.registryIndex = openSearchConfig.getRegistryIndex();
 		this.registryRefIndex = openSearchConfig.getRegistryRefIndex();
@@ -106,11 +94,9 @@ class OpenSearchRegistryConnectionImplBuilder {
 		this.sslCertificateCNVerification = openSearchConfig.doesSslCertificateVCNerification();
 		this.username = openSearchConfig.getUsername();
 		this.password = openSearchConfig.getPassword();
-		
-		
+
 	}
-	
-	
+
 	public void trySetESCredsFromEnv() {
 
 		String esCredsFromEnv = System.getenv(SystemConstants.ES_CREDENTIALS_ENV_VAR);
@@ -120,7 +106,7 @@ class OpenSearchRegistryConnectionImplBuilder {
 			DefaultKeyValue<String, String> esCreds = AWSSecretsAccess.parseSecret(esCredsFromEnv);
 			if (esCreds == null) {
 				String message = String.format("Value of %s environment variable is not in appropriate JSON format",
-				                               SystemConstants.ES_CREDENTIALS_ENV_VAR);
+						SystemConstants.ES_CREDENTIALS_ENV_VAR);
 				log.error(message);
 				throw new RuntimeException(message);
 			}
@@ -130,7 +116,7 @@ class OpenSearchRegistryConnectionImplBuilder {
 			log.debug(String.format("ES Username from environment : [%s]", this.username));
 		}
 	}
-	
+
 	public void setESHostsFromEnvOrDefault() {
 
 		String esHosts = System.getenv(SystemConstants.ES_HOSTS_ENV_VAR);
@@ -141,9 +127,9 @@ class OpenSearchRegistryConnectionImplBuilder {
 			log.info(String.format("ES hosts not set in config or environment, defaulting to %s", DEFAULT_ES_HOST));
 			esHosts = DEFAULT_ES_HOST;
 		}
-		
+
 		log.debug(String.format("esHosts : %s", esHosts));
-			
+
 		this.hosts = List.of(esHosts.split(","));
 	}
 

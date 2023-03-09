@@ -13,11 +13,12 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-public class ClassesSerializer extends AbstractHttpMessageConverter<List<String>>
-{
+public class ClassesSerializer extends AbstractHttpMessageConverter<List<String>> {
 
 	@Override
-	protected boolean supports(Class<?> clazz) { return List.class.isAssignableFrom (clazz); }
+	protected boolean supports(Class<?> clazz) {
+		return List.class.isAssignableFrom(clazz);
+	}
 
 	@Override
 	protected List<String> readInternal(Class<? extends List<String>> clazz, HttpInputMessage inputMessage)
@@ -29,13 +30,14 @@ public class ClassesSerializer extends AbstractHttpMessageConverter<List<String>
 	protected void writeInternal(List<String> t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 		List<String> quoted = new ArrayList<String>(t.size());
-        OutputStream os = outputMessage.getBody();
-        OutputStreamWriter wr = new OutputStreamWriter(os,Charset.defaultCharset());
-        
-        for (String name : t) quoted.add("\"" + name + "\"");
-        wr.write("[");
-        wr.write(String.join(",", quoted));
-        wr.write("]");
-        wr.close();
+		OutputStream os = outputMessage.getBody();
+		OutputStreamWriter wr = new OutputStreamWriter(os, Charset.defaultCharset());
+
+		for (String name : t)
+			quoted.add("\"" + name + "\"");
+		wr.write("[");
+		wr.write(String.join(",", quoted));
+		wr.write("]");
+		wr.close();
 	}
 }

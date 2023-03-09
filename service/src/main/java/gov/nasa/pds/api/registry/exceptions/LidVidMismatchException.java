@@ -1,6 +1,5 @@
 package gov.nasa.pds.api.registry.exceptions;
 
-
 public class LidVidMismatchException extends Exception {
 	/**
 	 * 

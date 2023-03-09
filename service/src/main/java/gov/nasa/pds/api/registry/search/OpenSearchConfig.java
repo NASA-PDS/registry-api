@@ -17,28 +17,27 @@ import gov.nasa.pds.api.registry.ConnectionContext;
  * but that is what happened.
  */
 
-@Configuration 
-public class OpenSearchConfig
-{ 	
+@Configuration
+public class OpenSearchConfig {
 	private static final Logger log = LoggerFactory.getLogger(OpenSearchConfig.class);
 
-	// This default for ES hosts is set in the constructor since we first want to check
+	// This default for ES hosts is set in the constructor since we first want to
+	// check
 	// the environment if not set in the application properties. This preserves the
 	// original behavior when the default was specified in the Value annotation.
-	
-	
-	@Value("#{'${openSearch.host:}'.split(',')}") 
+
+	@Value("#{'${openSearch.host:}'.split(',')}")
 	private List<String> hosts;
-	
+
 	@Value("${openSearch.registryIndex:registry}")
 	private String registryIndex;
-	
+
 	@Value("${openSearch.registryRefIndex:registry-refs}")
 	private String registryRefIndex;
-	
+
 	@Value("${openSearch.timeOutSeconds:60}")
 	private int timeOutSeconds;
-	
+
 	public int getTimeOutSeconds() {
 		return timeOutSeconds;
 	}
@@ -49,7 +48,7 @@ public class OpenSearchConfig
 
 	@Value("${openSearch.username:}")
 	private String username;
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -68,13 +67,13 @@ public class OpenSearchConfig
 
 	@Value("${openSearch.password:}")
 	private String password;
-	
+
 	@Value("${openSearch.ssl:false}")
 	private boolean ssl;
-    
+
 	@Value("${openSearch.sslCertificateCNVerification:false}")
 	private boolean sslCertificateCNVerification;
-	
+
 	public List<String> getHosts() {
 		return hosts;
 	}
@@ -82,24 +81,23 @@ public class OpenSearchConfig
 	public void setHost(List<String> hosts) {
 		this.hosts = hosts;
 	}
-		
+
 	public String getRegistryIndex() {
 		return registryIndex;
 	}
-	
+
 	public void setRegistryIndex(String registryIndex) {
 		this.registryIndex = registryIndex;
 	}
-	
+
 	public String getRegistryRefIndex() {
 		return registryRefIndex;
 	}
-	
+
 	public void setRegistryRefIndex(String registryRefIndex) {
 		this.registryRefIndex = registryRefIndex;
 	}
-	
-		
+
 	public boolean isSsl() {
 		return ssl;
 	}
@@ -115,29 +113,30 @@ public class OpenSearchConfig
 	public void setSsl(boolean ssl) {
 		this.ssl = ssl;
 	}
-	
+
 	private ConnectionContext connection = null;
 
 	@Bean("connection")
 	public ConnectionContext connectionContext() {
-		
+
 		if (connection == null) {
-			
-			OpenSearchRegistryConnectionImplBuilder connectionBuilder = new OpenSearchRegistryConnectionImplBuilder(this);
+
+			OpenSearchRegistryConnectionImplBuilder connectionBuilder = new OpenSearchRegistryConnectionImplBuilder(
+					this);
 
 			// see if ES user name is not set - if not, try to get from environment
 			if (this.username == null || "".equals(this.username)) {
 				connectionBuilder.trySetESCredsFromEnv();
 			}
-			
+
 			// do the same for ES hosts - the defaulting mechanism causes a rather elaborate
 			// check
 			log.debug(String.format("this.hosts : %s (%d)", this.hosts, this.hosts.size()));
-            if (this.hosts == null || this.hosts.size() == 0 
-             || this.hosts.get(0) == null || "".equals(this.hosts.get(0))) {
-            	connectionBuilder.setESHostsFromEnvOrDefault();
-            }
-			
+			if (this.hosts == null || this.hosts.size() == 0 || this.hosts.get(0) == null
+					|| "".equals(this.hosts.get(0))) {
+				connectionBuilder.setESHostsFromEnvOrDefault();
+			}
+
 			this.connection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
 
 		}
