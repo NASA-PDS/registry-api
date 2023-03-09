@@ -51,6 +51,7 @@ Go through this file line-by-line and replace the template values with your own.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <spring-framework-version>6.0.6</spring-framework-version>
     </properties>
 
     <groupId>gov.nasa.pds</groupId>
@@ -96,6 +97,36 @@ Go through this file line-by-line and replace the template values with your own.
             <scope>compile</scope>
             <optional>false</optional>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+	    <dependency>
+	      <groupId>org.springframework</groupId>
+	      <artifactId>spring-web</artifactId>
+	      <version>${spring-framework-version}</version>
+	      <scope>provided</scope>
+	    </dependency>
+	
+	    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+	    <dependency>
+	      <groupId>org.springframework</groupId>
+	      <artifactId>spring-context</artifactId>
+	      <version>${spring-framework-version}</version>
+	    </dependency>
+
+        <dependency>
+	      <groupId>org.springframework</groupId>
+	      <artifactId>spring-webmvc</artifactId>
+	      <version>${spring-framework-version}</version>
+	      <scope>provided</scope>
+	    </dependency>
+    
+    <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-beans</artifactId>
+	    <version>${spring-framework-version}</version>
+	     <scope>provided</scope>
+	</dependency>
+        
     </dependencies>
 
     <licenses>

@@ -5,10 +5,20 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
+<<<<<<< HEAD
+=======
+
+@Component
+>>>>>>> upgrade to jdk 17 and springframework 6.0.6
 abstract class SwaggerJavaBaseTransmuter {
   protected static final Logger log = LoggerFactory.getLogger(SwaggerJavaBaseTransmuter.class);
+
+  @Autowired
+  URIParametersBuilder uriParametersBuilder;
 
   abstract protected ResponseEntity<Object> processs(EndpointHandler handler,
       URIParameters parameters);
@@ -16,30 +26,32 @@ abstract class SwaggerJavaBaseTransmuter {
   public ResponseEntity<Object> groupReferencingId(String group, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Min(0) @Valid Integer start) {
-    return this.processs(new GroupReferencingId(), new URIParameters().setGroup(group)
-        .setIdentifier(identifier).setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+    return this.processs(new GroupReferencingId(),
+        this.uriParametersBuilder.setGroup(group).setIdentifier(identifier).setFields(fields)
+            .setLimit(limit).setSort(sort).setStart(start).build());
   }
 
   public ResponseEntity<Object> groupReferencingIdVers(String group, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
       @Valid List<String> sort, @Min(0) @Valid Integer start) {
     return this.processs(new GroupReferencingId(),
-        new URIParameters().setGroup(group).setIdentifier(identifier).setVersion(versions)
-            .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+        this.uriParametersBuilder.setGroup(group).setIdentifier(identifier).setVersion(versions)
+            .setFields(fields).setLimit(limit).setSort(sort).setStart(start).build());
   }
 
   public ResponseEntity<Object> idReferencingGroup(String group, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Min(0) @Valid Integer start) {
-    return this.processs(new IdReferencingGroup(), new URIParameters().setGroup(group)
-        .setIdentifier(identifier).setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+    return this.processs(new IdReferencingGroup(),
+        this.uriParametersBuilder.setGroup(group).setIdentifier(identifier).setFields(fields)
+            .setLimit(limit).setSort(sort).setStart(start).build());
   }
 
   public ResponseEntity<Object> idReferencingGroupVers(String group, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
       @Valid List<String> sort, @Min(0) @Valid Integer start) {
     return this.processs(new IdReferencingGroup(),
-        new URIParameters().setGroup(group).setIdentifier(identifier).setVersion(versions)
-            .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+        this.uriParametersBuilder.setGroup(group).setIdentifier(identifier).setVersion(versions)
+            .setFields(fields).setLimit(limit).setSort(sort).setStart(start).build());
   }
 }

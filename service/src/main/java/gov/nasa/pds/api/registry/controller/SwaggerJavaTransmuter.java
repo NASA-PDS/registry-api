@@ -1,10 +1,7 @@
 package gov.nasa.pds.api.registry.controller;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
@@ -12,7 +9,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,7 +25,8 @@ import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
-import gov.nasa.pds.api.registry.model.ErrorFactory;
+import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
+import gov.nasa.pds.model.ErrorMessage;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 
 @Controller
@@ -39,47 +36,18 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
 
   private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);
   private final ObjectMapper objectMapper;
-  private final HttpServletRequest request;
-
-  @Value("${server.contextPath}")
-  protected String contextPath;
 
   @Autowired
-  protected HttpServletRequest context;
+  private ErrorMessageFactory errorMessageFactory;
 
   @Autowired
   ConnectionContext connection;
 
   @org.springframework.beans.factory.annotation.Autowired
-  public SwaggerJavaTransmuter(ObjectMapper objectMapper, HttpServletRequest context) {
+  public SwaggerJavaTransmuter(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
-    this.request = context;
   }
 
-  @Override
-  public URL getBaseURL() {
-    try {
-
-      URL baseURL;
-
-      String proxyContextPath = this.context.getContextPath();
-      SwaggerJavaTransmuter.log.debug("contextPath is: '" + proxyContextPath + "'");
-
-      if (this.proxyRunsOnDefaultPort()) {
-        baseURL = new URL(this.context.getScheme(), this.context.getServerName(), proxyContextPath);
-      } else {
-        baseURL = new URL(this.context.getScheme(), this.context.getServerName(),
-            this.context.getServerPort(), proxyContextPath);
-      }
-
-      log.debug("baseUrl is " + baseURL.toString());
-      return baseURL;
-
-    } catch (MalformedURLException e) {
-      log.error("Server URL was not retrieved");
-      return null;
-    }
-  }
 
   @Override
   public ConnectionContext getConnection() {
@@ -94,53 +62,46 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
   protected ResponseEntity<Object> processs(EndpointHandler handler, URIParameters parameters) {
     long begin = System.currentTimeMillis();
     try {
-      parameters.setAccept(this.request.getHeader("Accept")).setProductIdentifier(this);
+      parameters.setProductIdentifier(this);
       if (parameters.getVerifyClassAndId())
         LidVidUtils.verify(this, parameters);
       return handler.transmute(this, parameters);
     } catch (ApplicationTypeException e) {
       log.error("Application type not implemented", e);
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request),
-          HttpStatus.NOT_ACCEPTABLE);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_ACCEPTABLE);
+
     } catch (IOException e) {
-      log.error(
-          "Couldn't get or serialize response for content type " + this.request.getHeader("Accept"),
-          e);
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request),
+      log.error("Couldn't get or serialize response for content type " + parameters.getAccept(), e);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e),
           HttpStatus.INTERNAL_SERVER_ERROR);
     } catch (LidVidMismatchException e) {
       log.warn("The lid(vid) '" + parameters.getIdentifier()
           + "' in the data base type does not match given type '" + parameters.getGroup() + "'");
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (LidVidNotFoundException e) {
       log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (MembershipException e) {
       log.warn("The given lid(vid) does not support the requested membership.");
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (NothingFoundException e) {
       log.warn("Could not find any matching reference(s) in database.");
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (NoViableAltException | ParseCancellationException e) {
       log.warn("The given search string '" + parameters.getQuery() + "' cannot be parsed.");
-      return new ResponseEntity<Object>(ErrorFactory.build(
-          new ParseCancellationException(
-              "The given search string '" + parameters.getQuery() + "' cannot be parsed."),
-          this.request), HttpStatus.BAD_REQUEST);
+      ParseCancellationException forwarded_exception = new ParseCancellationException(
+          "The given search string '" + parameters.getQuery() + "' cannot be parsed.");
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(forwarded_exception),
+          HttpStatus.BAD_REQUEST);
     } catch (UnknownGroupNameException e) {
       log.error("Group name not implemented", e);
-      return new ResponseEntity<Object>(ErrorFactory.build(e, this.request),
-          HttpStatus.NOT_ACCEPTABLE);
+      return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_ACCEPTABLE);
     } finally {
       log.info(
           "Transmuter processing of request took: " + (System.currentTimeMillis() - begin) + " ms");
     }
   }
 
-  private boolean proxyRunsOnDefaultPort() {
-    return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443))
-        || ("http".equals(this.context.getScheme()) && (this.context.getServerPort() == 80)));
-  }
 
   @Override
   public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords,
