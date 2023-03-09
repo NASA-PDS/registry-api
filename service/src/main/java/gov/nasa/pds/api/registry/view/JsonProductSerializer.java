@@ -10,31 +10,29 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class JsonProductSerializer extends MappingJackson2HttpMessageConverter {
-  public JsonProductSerializer() {
-    super();
+	public JsonProductSerializer() {
+		super();
 
-    List<MediaType> supportMediaTypes = new ArrayList<MediaType>();
-    supportMediaTypes.add(MediaType.APPLICATION_JSON);
-    supportMediaTypes.add(MediaType.TEXT_HTML);
-    supportMediaTypes.add(MediaType.ALL);
-    supportMediaTypes.add(new MediaType("*"));
+		List<MediaType> supportMediaTypes = new ArrayList<MediaType>();
+		supportMediaTypes.add(MediaType.APPLICATION_JSON);
+		supportMediaTypes.add(MediaType.TEXT_HTML);
+		supportMediaTypes.add(MediaType.ALL);
+		supportMediaTypes.add(new MediaType("*"));
 
-    this.setSupportedMediaTypes(supportMediaTypes);
+		this.setSupportedMediaTypes(supportMediaTypes);
 
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(Include.NON_NULL);
-    this.setObjectMapper(mapper);
-  }
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		this.setObjectMapper(mapper);
+	}
 
+	@Override
+	protected void writeInternal(Object object, HttpOutputMessage outputMessage)
+			throws IOException, HttpMessageNotWritableException {
+		outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-  @Override
-  protected void writeInternal(Object object, HttpOutputMessage outputMessage)
-      throws IOException, HttpMessageNotWritableException {
-    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-
-    super.writeInternal(object, outputMessage);
-  }
+		super.writeInternal(object, outputMessage);
+	}
 
 }

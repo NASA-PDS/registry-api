@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.registry.exceptions;
 
-public class NothingFoundException extends Exception
-{
+public class NothingFoundException extends Exception {
 	/**
 	 * 
 	 */

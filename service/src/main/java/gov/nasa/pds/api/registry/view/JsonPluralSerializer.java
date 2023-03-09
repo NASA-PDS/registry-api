@@ -14,32 +14,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.model.WyriwygProducts;
 
 public class JsonPluralSerializer extends AbstractHttpMessageConverter<WyriwygProducts> {
-  public JsonPluralSerializer() {
-    super(new MediaType("application", "kvp+json"));
-  }
+	public JsonPluralSerializer() {
+		super(new MediaType("application", "kvp+json"));
+	}
 
-  @Override
-  protected boolean supports(Class<?> clazz) {
-    return WyriwygProducts.class.isAssignableFrom(clazz);
-  }
+	@Override
+	protected boolean supports(Class<?> clazz) {
+		return WyriwygProducts.class.isAssignableFrom(clazz);
+	}
 
-  @Override
-  protected WyriwygProducts readInternal(Class<? extends WyriwygProducts> clazz,
-      HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-    return new WyriwygProducts();
-  }
+	@Override
+	protected WyriwygProducts readInternal(Class<? extends WyriwygProducts> clazz, HttpInputMessage inputMessage)
+			throws IOException, HttpMessageNotReadableException {
+		return new WyriwygProducts();
+	}
 
-  @Override
-  protected void writeInternal(WyriwygProducts t, HttpOutputMessage outputMessage)
-      throws IOException, HttpMessageNotWritableException {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(Include.NON_NULL);
+	@Override
+	protected void writeInternal(WyriwygProducts t, HttpOutputMessage outputMessage)
+			throws IOException, HttpMessageNotWritableException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
 
-    OutputStream os = outputMessage.getBody();
+		OutputStream os = outputMessage.getBody();
 
-    OutputStreamWriter wr = new OutputStreamWriter(os);
-    Utilities.fix(t.getSummary());
-    WyriwygSerializer.writeJSON(t, wr, mapper);
-    wr.close();
-  }
+		OutputStreamWriter wr = new OutputStreamWriter(os);
+		Utilities.fix(t.getSummary());
+		WyriwygSerializer.writeJSON(t, wr, mapper);
+		wr.close();
+	}
 }

@@ -30,56 +30,55 @@ import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration ",
-    "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.search"})
+@ComponentScan(basePackages = { "gov.nasa.pds.api.registry.configuration ", "gov.nasa.pds.api.registry.controller",
+		"gov.nasa.pds.api.registry.search" })
 public class WebMVCConfig implements WebMvcConfigurer {
-  private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
+	private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
 
-  @Override
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/webjars/**")
-        .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+		registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
 
-    registry.addResourceHandler("/swagger-ui/pds.*").addResourceLocations("classpath:/swagger-ui/");
-    registry.addResourceHandler("/swagger-ui/index.htm*")
-        .addResourceLocations("classpath:/swagger-ui/");
-  }
+		registry.addResourceHandler("/swagger-ui/pds.*").addResourceLocations("classpath:/swagger-ui/");
+		registry.addResourceHandler("/swagger-ui/index.htm*").addResourceLocations("classpath:/swagger-ui/");
+	}
 
-  @Override
-  @SuppressWarnings("deprecation")
-  public void configurePathMatch(PathMatchConfigurer configurer) {
-    // this is important to avoid that parameters (e.g lidvid) are truncated after .
-    configurer.setUseSuffixPatternMatch(false);
-  }
+	@Override
+	@SuppressWarnings("deprecation")
+	public void configurePathMatch(PathMatchConfigurer configurer) {
+		// this is important to avoid that parameters (e.g lidvid) are truncated after .
+		configurer.setUseSuffixPatternMatch(false);
+	}
 
-  /**
-   * Setup a simple strategy: use all the defaults and return JSON by default when not sure.
-   */
-  public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-    configurer.defaultContentType(MediaType.APPLICATION_JSON);
-  }
+	/**
+	 * Setup a simple strategy: use all the defaults and return JSON by default when
+	 * not sure.
+	 */
+	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+		configurer.defaultContentType(MediaType.APPLICATION_JSON);
+	}
 
-  @Override
-  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
-    converters.add(new StringHttpMessageConverter());
-    converters.add(new CsvErrorMessageSerializer());
-    converters.add(new CsvPluralSerializer());
-    converters.add(new CsvSingularSerializer());
-    // converters.add(new HtmlErrorMessageSerializer());
-    converters.add(new JsonErrorMessageSerializer());
-    converters.add(new JsonPluralSerializer());
-    converters.add(new JsonSingularSerializer());
-    converters.add(new JsonProductSerializer());
-    converters.add(new Pds4JsonProductSerializer());
-    converters.add(new Pds4JsonProductsSerializer());
-    converters.add(new Pds4XmlProductSerializer());
-    converters.add(new Pds4XmlProductsSerializer());
-    // converters.add(new PdsProductTextHtmlSerializer());
-    // converters.add(new PdsProductsTextHtmlSerializer());
-    converters.add(new PdsProductXMLSerializer());
-    converters.add(new PdsProductsXMLSerializer());
-    converters.add(new XmlErrorMessageSerializer());
-  }
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+		converters.add(new StringHttpMessageConverter());
+		converters.add(new CsvErrorMessageSerializer());
+		converters.add(new CsvPluralSerializer());
+		converters.add(new CsvSingularSerializer());
+		// converters.add(new HtmlErrorMessageSerializer());
+		converters.add(new JsonErrorMessageSerializer());
+		converters.add(new JsonPluralSerializer());
+		converters.add(new JsonSingularSerializer());
+		converters.add(new JsonProductSerializer());
+		converters.add(new Pds4JsonProductSerializer());
+		converters.add(new Pds4JsonProductsSerializer());
+		converters.add(new Pds4XmlProductSerializer());
+		converters.add(new Pds4XmlProductsSerializer());
+		// converters.add(new PdsProductTextHtmlSerializer());
+		// converters.add(new PdsProductsTextHtmlSerializer());
+		converters.add(new PdsProductXMLSerializer());
+		converters.add(new PdsProductsXMLSerializer());
+		converters.add(new XmlErrorMessageSerializer());
+	}
 }

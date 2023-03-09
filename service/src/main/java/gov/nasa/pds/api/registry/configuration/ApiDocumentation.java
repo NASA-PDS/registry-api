@@ -13,15 +13,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Controller
 public class ApiDocumentation {
 
-  @Value("${server.contextPath}")
-  private String contextPath;
+	@Value("${server.contextPath}")
+	private String contextPath;
 
-  @RequestMapping(method = RequestMethod.GET, produces = {"text/html"}, value = "/")
-  public String index() {
+	@RequestMapping(method = RequestMethod.GET, produces = { "text/html" }, value = "/")
+	public String index() {
 
-    String contextPath = this.contextPath.endsWith("/") ? this.contextPath : this.contextPath + "/";
+		String contextPath = this.contextPath.endsWith("/") ? this.contextPath : this.contextPath + "/";
 
-    System.out.println(contextPath + "swagger-ui/index.html");
-    return "redirect:" + contextPath + "swagger-ui/index.html";
-  }
+		System.out.println(contextPath + "swagger-ui/index.html");
+		return "redirect:" + contextPath + "swagger-ui/index.html";
+	}
 }
