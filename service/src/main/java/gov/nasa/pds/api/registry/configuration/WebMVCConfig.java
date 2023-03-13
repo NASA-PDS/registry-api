@@ -1,7 +1,7 @@
 package gov.nasa.pds.api.registry.configuration;
 
 import java.util.List;
-import org.slf4j.Logger;
+import gov.nasa.pds.api.registry.view.ClassesTextHtmlSerializer;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +66,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
     // basic converter for swagger-ui resources
     converters.add(new StringHttpMessageConverter());
+
+    // specific converter for /classes endpoint to support browsers
+    converters.add(new ClassesTextHtmlSerializer());
 
     // csv converters
     converters.add(new CsvErrorMessageSerializer());
