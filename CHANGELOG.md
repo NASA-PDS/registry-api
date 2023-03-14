@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-09)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-14)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -13,6 +13,7 @@
 
 **Defects:**
 
+- Project does not successfully build/run without global existence of some dependencies [\#279](https://github.com/NASA-PDS/registry-api/issues/279)
 - product's members does not work on a collection [\#268](https://github.com/NASA-PDS/registry-api/issues/268) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - The members of a bundle can not be requested [\#261](https://github.com/NASA-PDS/registry-api/issues/261) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - api does not return 400 error when q parameter value cannot be parsed [\#260](https://github.com/NASA-PDS/registry-api/issues/260) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
