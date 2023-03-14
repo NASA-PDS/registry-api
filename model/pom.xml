@@ -50,8 +50,8 @@
     <springfox-version>3.0.0</springfox-version>
     <spring-framework-version>5.3.24</spring-framework-version>
   </properties>
-  
-  
+
+
   <build>
     <plugins>
     <plugin>
@@ -63,11 +63,11 @@
 	  <execution>
 	    <goals>
 	      <goal>generate</goal>
-	    </goals>   
+	    </goals>
 	    	<configuration>
 	      <inputSpec>${project.basedir}/swagger.yml</inputSpec>
 	      <generatorName>spring</generatorName>
-	      <withXml>true</withXml> 
+	      <withXml>true</withXml>
 	      <configOptions>
 			<sourceFolder>src/main/java</sourceFolder>
 			<dateLibrary>joda</dateLibrary>
@@ -76,9 +76,9 @@
 			<modelPackage>gov.nasa.pds.model</modelPackage>
 			<apiPackage>gov.nasa.pds.api.base</apiPackage>
 			<generateSupportingFiles>false</generateSupportingFiles>
-			<interfaceOnly>false</interfaceOnly>  		                   
+			<interfaceOnly>false</interfaceOnly>
 	      </configOptions>
-	
+
 	</configuration>
 	  </execution>
 	</executions>
@@ -100,10 +100,10 @@
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
-         </plugins>    
+         </plugins>
   </build>
-  
-  <dependencies>  
+
+  <dependencies>
 
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
     <dependency>
@@ -119,30 +119,30 @@
       <version>${spring-framework-version}</version>
     </dependency>
 
-    
+
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
     </dependency>
-    
+
     <!-- https://mvnrepository.com/artifact/junit/junit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-    
-    
+
+
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -157,8 +157,8 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
-    
-    
+
+
     <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
     <dependency>
       <groupId>javax.validation</groupId>
@@ -191,20 +191,20 @@
       <artifactId>jackson-dataformat-xml</artifactId>
       <version>2.13.2</version>
     </dependency>
-    
+
     <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
     <dependency>
       <groupId>com.github.joschi.jackson</groupId>
       <artifactId>jackson-datatype-threetenbp</artifactId>
       <version>2.12.5</version>
     </dependency>
-    
+
     <dependency>
     <groupId>org.openapitools</groupId>
     <artifactId>jackson-databind-nullable</artifactId>
     <version>0.2.4</version>
 </dependency>
-    
+
     <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
     <dependency>
       <groupId>joda-time</groupId>
@@ -213,30 +213,34 @@
     </dependency>
 
 
-    
+
     <!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
     <dependency>
       <groupId>org.threeten</groupId>
       <artifactId>threetenbp</artifactId>
       <version>1.4.4</version>
     </dependency>
-    
+
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
 	<dependency>
 	    <groupId>io.swagger.core.v3</groupId>
 	    <artifactId>swagger-annotations</artifactId>
 	    <version>2.2.8</version>
 	</dependency>
-	
+
 	<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
 <dependency>
     <groupId>io.swagger.core.v3</groupId>
     <artifactId>swagger-models</artifactId>
     <version>2.2.8</version>
 </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
 
   </dependencies>
-  
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -248,5 +252,5 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
+
 </project>
