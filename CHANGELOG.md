@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-16)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -8,6 +8,7 @@
 
 - As a user, I want to see available query params in the swagger documentation [\#249](https://github.com/NASA-PDS/registry-api/issues/249)
 - Suggest: Return Content-Type application/json by default [\#248](https://github.com/NASA-PDS/registry-api/issues/248)
+- As a user, I want to search by any metadata attribute [\#282](https://github.com/NASA-PDS/registry-api/issues/282)
 - As a user, I want to know the members of a bundle product [\#223](https://github.com/NASA-PDS/registry-api/issues/223) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - the default proposed mime type in swagger-ui.html should be 'application/json' [\#88](https://github.com/NASA-PDS/registry-api/issues/88) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 
@@ -27,16 +28,20 @@
 - swaggger ui error in production [\#211](https://github.com/NASA-PDS/registry-api/issues/211) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - lidvid not found raises 500 error [\#207](https://github.com/NASA-PDS/registry-api/issues/207) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - When q="" the returned status is 500 instead of 400 [\#206](https://github.com/NASA-PDS/registry-api/issues/206) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
+- /classes endpoint does not work in a browser [\#200](https://github.com/NASA-PDS/registry-api/issues/200) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - JSON response is using HTTP in href references [\#145](https://github.com/NASA-PDS/registry-api/issues/145) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
 
+- Search criteria not producing expected matches [\#287](https://github.com/NASA-PDS/registry-api/issues/287)
 - Format the source code in google style [\#272](https://github.com/NASA-PDS/registry-api/issues/272)
+- Add --reset flag to scheduled provenance invocation [\#265](https://github.com/NASA-PDS/registry-api/issues/265)
 - Incorporate misc changes loosely-related to \#252 [\#255](https://github.com/NASA-PDS/registry-api/issues/255)
 - organize the swagger-ui section in a better way [\#245](https://github.com/NASA-PDS/registry-api/issues/245)
 - Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
+- Investigate if all fields are searchable [\#281](https://github.com/NASA-PDS/registry-api/issues/281)
 - Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
 - Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
 
