@@ -15,7 +15,7 @@ resource "aws_ssm_parameter" "prov_endpoint_parameter" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "provenance"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -36,6 +36,6 @@ resource "aws_ssm_parameter" "prov_remotes_parameter" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "provenance"
+    Charlie = "registry-provenance"
   }
 }

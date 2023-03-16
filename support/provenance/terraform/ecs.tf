@@ -5,7 +5,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "provenance"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -21,7 +21,7 @@ resource "aws_cloudwatch_log_group" "pds-prov-log-group" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "provenance"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -43,7 +43,7 @@ resource "aws_ecs_service" "pds-provenance-service" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "provenance"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -99,7 +99,7 @@ EOF
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "provenance"
+    Charlie = "registry-provenance"
   }
 }
 
