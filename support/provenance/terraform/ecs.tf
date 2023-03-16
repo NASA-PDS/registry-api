@@ -5,7 +5,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "registry"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -21,7 +21,7 @@ resource "aws_cloudwatch_log_group" "pds-prov-log-group" {
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "registry"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -36,14 +36,14 @@ resource "aws_ecs_service" "pds-provenance-service" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups = var.aws_fg_security_groups
-    subnets = var.aws_fg_subnets
+    security_groups  = var.aws_fg_security_groups
+    subnets          = var.aws_fg_subnets
   }
 
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "registry"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -99,7 +99,7 @@ EOF
   tags = {
     Alfa = var.node_name_abbr
     Bravo = var.venue
-    Charlie = "registry"
+    Charlie = "registry-provenance"
   }
 }
 
@@ -108,3 +108,31 @@ data "aws_iam_role" "pds-task-execution-role" {
   name    = "am-ecs-task-execution"
 }
 
+resource "aws_scheduler_schedule" "provenance_schedule" {
+  name        = "pds-provenance-schedule"
+  description = "PDS scheduled provenance execution"
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  schedule_expression = "rate(1 hour)"
+
+  target {
+    arn      = aws_ecs_cluster.ecs_cluster.arn
+    role_arn = "arn:aws:iam::445837347542:role/am-eventbridge-ecs"
+
+    ecs_parameters {
+      task_definition_arn     = aws_ecs_task_definition.pds-prov-ecs-task.arn
+      task_count              = 1
+      launch_type             = "FARGATE"
+      enable_execute_command  = false
+      enable_ecs_managed_tags = true
+
+      network_configuration {
+        subnets          = var.aws_fg_subnets
+        security_groups  = var.aws_fg_security_groups
+      }
+    }
+  }
+}
