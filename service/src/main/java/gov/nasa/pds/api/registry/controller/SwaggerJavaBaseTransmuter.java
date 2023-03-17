@@ -9,11 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-<<<<<<< HEAD
-=======
 
 @Component
->>>>>>> upgrade to jdk 17 and springframework 6.0.6
 abstract class SwaggerJavaBaseTransmuter {
   protected static final Logger log = LoggerFactory.getLogger(SwaggerJavaBaseTransmuter.class);
 
