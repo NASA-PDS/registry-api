@@ -133,17 +133,19 @@
 		<artifactId>spring-data-commons</artifactId>
 	</dependency>
 
+   <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.0.4</version>
+   </dependency>
+
+	<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-common -->
 	<dependency>
-	  <groupId>org.springdoc</groupId>
-	  <artifactId>springdoc-openapi-ui</artifactId>
-	  <version>1.6.14</version>
+	    <groupId>org.springdoc</groupId>
+	    <artifactId>springdoc-openapi-starter-common</artifactId>
+	    <version>2.0.4</version>
 	</dependency>
 
-	<dependency>
-	  <groupId>org.springdoc</groupId>
-	  <artifactId>springdoc-openapi-common</artifactId>
-	  <version>1.6.14</version>
-	</dependency>
 
 	 <dependency>
       <groupId>org.springframework.boot</groupId>

@@ -2,8 +2,8 @@ package gov.nasa.pds.api.registry.controller;
 
 import java.io.IOException;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;

@@ -75,6 +75,7 @@
 			<apiPackage>gov.nasa.pds.api.base</apiPackage>
 			<generateSupportingFiles>false</generateSupportingFiles>
 			<interfaceOnly>false</interfaceOnly>
+			<useSpringBoot3>true</useSpringBoot3>
 	      </configOptions>
 
 	</configuration>
@@ -127,20 +128,27 @@
       <artifactId>junit</artifactId>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
+	<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+	<dependency>
+	    <groupId>jakarta.servlet</groupId>
+	    <artifactId>jakarta.servlet-api</artifactId>
+	    <version>6.0.0</version>
+	    <scope>provided</scope>
+	</dependency>
 
+	<!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+	<dependency>
+	    <groupId>jakarta.annotation</groupId>
+	    <artifactId>jakarta.annotation-api</artifactId>
+	    <version>2.1.1</version>
+	</dependency>
 
-    <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
+	<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+	<dependency>
+	    <groupId>jakarta.validation</groupId>
+	    <artifactId>jakarta.validation-api</artifactId>
+	    <version>3.0.2</version>
+	</dependency>
 
 
     <dependency>

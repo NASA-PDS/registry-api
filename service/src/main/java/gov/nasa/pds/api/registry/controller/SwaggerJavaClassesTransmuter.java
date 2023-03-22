@@ -1,8 +1,8 @@
 package gov.nasa.pds.api.registry.controller;
 
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import gov.nasa.pds.api.base.ClassesApi;

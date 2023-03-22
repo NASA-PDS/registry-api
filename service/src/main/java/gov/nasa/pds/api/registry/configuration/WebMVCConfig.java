@@ -39,13 +39,16 @@ public class WebMVCConfig implements WebMvcConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/webjars/**")
         .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    // registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+
+
 
     /*
      * registry.addResourceHandler("/swagger-ui/pds.*").addResourceLocations(
      * "classpath:/swagger-ui/"); registry.addResourceHandler("/swagger-ui/index.htm*")
      * .addResourceLocations("classpath:/swagger-ui/");
      */
+
   }
 
   @Override
