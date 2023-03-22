@@ -9,7 +9,7 @@ For more information, please visit https://nasa-pds.github.io/registry-api-servi
 
 ## Prerequisites
 
-This software requires open jdk 11.
+This software requires open jdk 17.
 
 ## Administrator
 
