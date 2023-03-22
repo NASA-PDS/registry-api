@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration ",
     "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.model",
-    "gov.nasa.pds.api.registry.search"})
+    "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
 public class SpringBootMain implements CommandLineRunner {
 
   @Override
