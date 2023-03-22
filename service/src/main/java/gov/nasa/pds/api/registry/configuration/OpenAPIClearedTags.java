@@ -13,7 +13,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.tags.Tag;
 
-// @Component
+@Component
 // this component is needed until https://github.com/OpenAPITools/openapi-generator/pull/13434 is
 // fixed/merged
 public class OpenAPIClearedTags implements OpenApiCustomizer {

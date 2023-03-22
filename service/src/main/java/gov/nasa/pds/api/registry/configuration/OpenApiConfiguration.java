@@ -12,7 +12,7 @@ import io.swagger.v3.oas.models.info.License;
 
 
 
-// @Configuration
+@Configuration
 public class OpenApiConfiguration {
 
   @Value("${registry.service.version:undefined}")

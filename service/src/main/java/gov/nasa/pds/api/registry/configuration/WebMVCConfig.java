@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -39,15 +40,14 @@ public class WebMVCConfig implements WebMvcConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/webjars/**")
         .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    // registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
 
 
 
-    /*
-     * registry.addResourceHandler("/swagger-ui/pds.*").addResourceLocations(
-     * "classpath:/swagger-ui/"); registry.addResourceHandler("/swagger-ui/index.htm*")
-     * .addResourceLocations("classpath:/swagger-ui/");
-     */
+    registry.addResourceHandler("/swagger-ui/pds.*").addResourceLocations("classpath:/swagger-ui/");
+    registry.addResourceHandler("/swagger-ui/index.htm*")
+        .addResourceLocations("classpath:/swagger-ui/");
+
 
   }
 
@@ -68,6 +68,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
     WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
+
+    // basic converter for /api-docs end-point, new with springdoc 2
+    converters.add(new ByteArrayHttpMessageConverter());
 
     // basic converter for swagger-ui resources
     converters.add(new StringHttpMessageConverter());

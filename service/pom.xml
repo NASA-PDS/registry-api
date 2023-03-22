@@ -72,9 +72,12 @@
 	<configuration>
 	  <mainClass>gov.nasa.pds.api.registry.SpringBootMain</mainClass>
       <imageName>nasapds/registry-api-service</imageName>
+
       <image>
           <env>
-              <BP_JVM_VERSION>11</BP_JVM_VERSION>
+              <BP_JVM_VERSION>17</BP_JVM_VERSION>
+              <BPE_APPEND_JAVA_TOOL_OPTIONS>-XX:MaxDirectMemorySize=1G</BPE_APPEND_JAVA_TOOL_OPTIONS>
+              <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
           </env>
       </image>
 	</configuration>

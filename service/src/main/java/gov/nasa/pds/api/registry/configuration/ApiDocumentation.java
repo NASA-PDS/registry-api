@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * Home redirection to swagger api documentation
  */
 @Tag(name = "Registry Search API Documentation")
-// @Controller
+@Controller
 public class ApiDocumentation {
 
   @Value("${server.contextPath}")
