@@ -43,6 +43,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private List<String> sort;
   final private int start;
   final private int limit;
+  final private String node;
 
   final private boolean singletonResultExpected;
   final private GroupConstraint presetCriteria;
@@ -133,6 +134,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
             .given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
     this.start = parameters.getStart();
     this.limit = parameters.getLimit();
+    this.node = parameters.getNode();
     this.singletonResultExpected = parameters.getSingletonResultExpected();
     this.sort = parameters.getSort();
     this.presetCriteria = outPreset;
@@ -173,6 +175,10 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
 
   public int getLimit() {
     return this.limit;
+  }
+
+  public String getNode() {
+    return this.node;
   }
 
   @Override
@@ -284,6 +290,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
         log.warn("    " + keyword);
       log.warn("   lidvid: " + this.getProductIdentifierString());
       log.warn("   limit: " + String.valueOf(this.getLimit()));
+      log.warn("   node: " + this.getNode());
       log.warn("   query string: " + String.valueOf(this.getQueryString()));
       log.warn("   selector: " + String.valueOf(this.getSelector()));
       log.warn("   sorting: " + String.valueOf(this.getSort().size()));
@@ -301,6 +308,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     summary.setQ(this.getQueryString());
     summary.setStart(this.getStart());
     summary.setLimit(this.getLimit());
+    summary.setNode(this.getNode());
     summary.setSort(this.getSort());
     summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields));
     summary.setProperties(new ArrayList<String>());
@@ -328,6 +336,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
       summary.setLimit(this.getLimit());
       summary.setSort(this.getSort());
       summary.setHits(total_hits);
+      summary.setNode(this.getNode());
 
       if (uniqueProperties != null)
         summary.setProperties(uniqueProperties);

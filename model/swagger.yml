@@ -80,6 +80,7 @@ paths:
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/Start"
+        - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/members:
     get:
       tags:
@@ -105,6 +106,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/members/{versions}:
     get:
       tags:
@@ -131,6 +133,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/members/members:
     get:
       tags:
@@ -156,6 +159,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/members/members/{versions}:
     get:
       tags:
@@ -182,6 +186,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/member-of:
     get:
       tags:
@@ -207,6 +212,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/member-of/{versions}:
     get:
       tags:
@@ -233,6 +239,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/member-of/member-of:
     get:
       tags:
@@ -258,6 +265,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /classes/{class}/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
@@ -284,6 +292,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
 
   /products:
     get:
@@ -310,6 +319,7 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}:
     get:
@@ -332,6 +342,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/latest:
     get:
       tags:
@@ -353,6 +364,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/all:
     get:
       tags:
@@ -379,6 +391,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/members:
     get:
       tags:
@@ -403,6 +416,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/members/{versions}:
     get:
       tags:
@@ -428,6 +442,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/members/members:
     get:
       tags:
@@ -452,6 +467,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/members/members/{versions}:
     get:
       tags:
@@ -477,6 +493,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/member-of:
     get:
       tags:
@@ -501,6 +518,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/member-of/{versions}:
     get:
       tags:
@@ -526,6 +544,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/member-of/member-of:
     get:
       tags:
@@ -550,6 +569,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
   /products/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
@@ -575,6 +595,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
       - $ref: "#/components/parameters/Versions"
+      - $ref: "#/components/parameters/Node"
 
 # begin deprecated: this is the older API that is clutter
   /bundles:
@@ -601,6 +622,7 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}:
     get:
@@ -622,6 +644,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}/all:
     get:
@@ -646,6 +669,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}/latest:
     get:
@@ -667,6 +691,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}/collections:
     get:
@@ -691,6 +716,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}/collections/all:
     get:
@@ -715,6 +741,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}/collections/latest:
     get:
@@ -739,6 +766,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /bundles/{identifier}/products:
     get:
@@ -763,6 +791,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /collections:
     get:
@@ -788,6 +817,7 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}:
     get:
@@ -809,6 +839,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}/all:
     get:
@@ -833,6 +864,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}/latest:
     get:
@@ -854,6 +886,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}/bundles:
     get:
@@ -878,6 +911,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}/products:
     get:
@@ -902,6 +936,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}/products/all:
     get:
@@ -926,6 +961,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /collections/{identifier}/products/latest:
     get:
@@ -950,6 +986,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}/bundles:
     get:
@@ -974,6 +1011,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}/bundles/all:
     get:
@@ -998,6 +1036,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}/bundles/latest:
     get:
@@ -1022,6 +1061,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}/collections:
     get:
@@ -1046,6 +1086,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}/collections/all:
     get:
@@ -1070,6 +1111,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 
   /products/{identifier}/collections/latest:
     get:
@@ -1094,6 +1136,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/Node"
 # end deprecated: for easy clutter removal
 
 components:
@@ -1211,6 +1254,18 @@ components:
       schema:
         type: string
         enum: [all,latest]
+    Node:
+      name: node
+      in: query
+      description: |
+        syntax: node=sbn
+
+        behavior: Specific node id with which to filter returned results
+
+        note: If omitted, no node filtering is applied
+      required: false
+      schema:
+        type: string
   responses:
     Error:
       description: Unsuccessful request
@@ -1362,6 +1417,11 @@ components:
           type: array
           items:
             type: string
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
+        node:
+          type: string
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'

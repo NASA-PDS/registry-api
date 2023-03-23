@@ -15,31 +15,34 @@ abstract class SwaggerJavaBaseTransmuter {
 
   public ResponseEntity<Object> groupReferencingId(String group, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer start, @Valid String node) {
     return this.processs(new GroupReferencingId(), new URIParameters().setGroup(group)
-        .setIdentifier(identifier).setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+        .setIdentifier(identifier).setFields(fields).setLimit(limit).setSort(sort).setStart(start)
+	.setNode(node));
   }
 
   public ResponseEntity<Object> groupReferencingIdVers(String group, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Min(0) @Valid Integer start, @Valid String node) {
     return this.processs(new GroupReferencingId(),
         new URIParameters().setGroup(group).setIdentifier(identifier).setVersion(versions)
-            .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+            .setFields(fields).setLimit(limit).setSort(sort).setStart(start)
+	    .setNode(node));
   }
 
   public ResponseEntity<Object> idReferencingGroup(String group, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer start, @Valid String node) {
     return this.processs(new IdReferencingGroup(), new URIParameters().setGroup(group)
-        .setIdentifier(identifier).setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+        .setIdentifier(identifier).setFields(fields).setLimit(limit).setSort(sort).setStart(start)
+	.setNode(node));
   }
 
   public ResponseEntity<Object> idReferencingGroupVers(String group, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Min(0) @Valid Integer start, @Valid String node) {
     return this.processs(new IdReferencingGroup(),
         new URIParameters().setGroup(group).setIdentifier(identifier).setVersion(versions)
-            .setFields(fields).setLimit(limit).setSort(sort).setStart(start));
+            .setFields(fields).setLimit(limit).setSort(sort).setStart(start).setNode(node));
   }
 }

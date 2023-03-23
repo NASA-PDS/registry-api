@@ -22,4 +22,6 @@ public interface UserContext extends LidvidsContext {
   public List<String> getSort();
 
   public String getVersion();
+
+  public String getNode();
 }

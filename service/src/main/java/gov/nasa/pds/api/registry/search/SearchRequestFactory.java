@@ -101,6 +101,7 @@ public class SearchRequestFactory {
 
       ProductQueryBuilderUtil.addArchiveStatusFilter(this.base);
       ProductQueryBuilderUtil.addPresetCriteria(this.base, context.getPresetCriteria());
+      ProductQueryBuilderUtil.addNodeFilter(this.base, context.getNode());
     }
 
     return new SearchRequest().indices(index)
