@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-16)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-23)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
@@ -14,6 +14,7 @@
 
 **Defects:**
 
+- Requests with Accept:application/vnd.nasa.gds.pds4+json fail for products with no ops:Label\_File\_Info/ops:file\_name [\#293](https://github.com/NASA-PDS/registry-api/issues/293) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Project does not successfully build/run without global existence of some dependencies [\#279](https://github.com/NASA-PDS/registry-api/issues/279)
 - product's members does not work on a collection [\#268](https://github.com/NASA-PDS/registry-api/issues/268) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - The members of a bundle can not be requested [\#261](https://github.com/NASA-PDS/registry-api/issues/261) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -30,6 +31,7 @@
 - When q="" the returned status is 500 instead of 400 [\#206](https://github.com/NASA-PDS/registry-api/issues/206) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - /classes endpoint does not work in a browser [\#200](https://github.com/NASA-PDS/registry-api/issues/200) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- version number are treated as floats [\#191](https://github.com/NASA-PDS/registry-api/issues/191) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - JSON response is using HTTP in href references [\#145](https://github.com/NASA-PDS/registry-api/issues/145) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
