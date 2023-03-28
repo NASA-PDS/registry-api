@@ -98,9 +98,8 @@ EOF
   execution_role_arn = data.aws_iam_role.pds-task-execution-role.arn
   task_role_arn      = data.aws_iam_role.pds-task-execution-role.arn
 
-  # These are the minimum values for Fargate containers.
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 1024
+  memory                   = 8192
   requires_compatibilities = ["FARGATE"]
 
   # This is required for Fargate containers
