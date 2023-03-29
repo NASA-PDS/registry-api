@@ -1,9 +1,9 @@
 /*
 Cloudfront Function which performs URL rewrite to direct requests of the form:
-    /api/<service>{-node}/<version>/<request>
+    /api/<service>/<version>/<request>
 to:
     /<request>
-    + the http header json : { "x-request-node" : { "value" : "<service>{-node}/<version>" }
+    + the http header json : { "x-request-version" : { "value" : "<version>" }
     
 This version also fufills the transition from major.minor to major (only) 
 version specs in the API request.
@@ -13,7 +13,8 @@ var SVC_IDX = 2
 var VER_IDX = 3
 var CMD_IDX = 4
 
-var TARGET_URI_PREFIX = "/api/search"
+// add trailing '/' so any node-specific search request result in 404
+var TARGET_URI_PREFIX = "/api/search/"
 var DEBUG_PARAM       = "cf_debug" 
 
 // The function is in response to the 'viewer request' event
@@ -38,7 +39,7 @@ function handler(event) {
             
     if (debug) console.log("incoming URI [" + incomingUri + "]")
 
-    // continue with the rewrite only if "/api/search*" is first in the URI
+    // continue with the rewrite only if "/api/search/" is first in the URI
     if (incomingUri.startsWith(TARGET_URI_PREFIX)) {
 
         if (debug) console.log("incoming URI matches prefix [" + TARGET_URI_PREFIX + "]")
@@ -58,10 +59,6 @@ function handler(event) {
             var majorVer = reqVer.split(".")[0];
             if (debug) console.log("revised request version [" + reqVer + "] to [" + majorVer + "]")
             
-            // extract service and version which are placed in the HTTP header
-            var resultHeader = uriParts[SVC_IDX] + "/" + majorVer;
-            if (debug) console.log("x-request-node header value [" + resultHeader + "]")
-            
             // copy the rest of the request path to the new URI
             var newUri = "";
             for(var i = CMD_IDX; i < uriParts.length; i++) {
@@ -71,10 +68,10 @@ function handler(event) {
 
             // set updated URI into request and set request node header
             request.uri = newUri;
-            request.headers['x-request-node'] = { "value" : resultHeader };
+            request.headers['x-request-version'] = { "value" : majorVer };
             if (debug) {
                 console.log("incoming URI [" + incomingUri + "] rewritten to [" + newUri 
-                    + "] & x-request-node [" + resultHeader + "]")
+                    + "] & x-request-version [" + majorVer + "]")
             }
         } else {
             if (debug) console.log("incoming URI [" + incomingUri + "] : no rewrite (no command)")
