@@ -31,6 +31,7 @@ import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.model.Summary;
 
+
 public class RequestAndResponseContext implements RequestBuildContext, RequestConstructionContext {
   private static final Logger log = LoggerFactory.getLogger(RequestAndResponseContext.class);
 
@@ -49,6 +50,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private ProductVersionSelector selector;
   final private String format;
   final private Map<String, ProductBusinessLogic> formatters;
+
 
   static public RequestAndResponseContext buildRequestAndResponseContext(ControlContext connection, // webby
                                                                                                     // criteria
@@ -139,6 +141,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     this.selector = parameters.getSelector();
   }
 
+
   @Override
   public List<String> getKeywords() {
     return this.keywords;
@@ -209,7 +212,6 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     given = SearchUtil.jsonPropertyToOpenProperty(given);
 
     if (this.formatters.containsKey(this.format)) {
-      this.formatters.get(this.format).setBaseURL(this.controlContext.getBaseURL());
       this.formatters.get(this.format).setObjectMapper(this.controlContext.getObjectMapper());
       max_needs = SearchUtil.jsonPropertyToOpenProperty(
           this.formatters.get(this.format).getMaximallyRequiredFields());

@@ -1,6 +1,5 @@
 package gov.nasa.pds.api.registry.model;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +13,12 @@ import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.Summary;
 
-public class PdsProductBusinessObject implements ProductBusinessLogic {
+
+public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
   private ObjectMapper objectMapper;
   private PdsProduct product = null;
   private PdsProducts products = null;
-  private URL baseURL;
+
 
   @Override
   public String[] getMaximallyRequiredFields() {
@@ -33,11 +33,6 @@ public class PdsProductBusinessObject implements ProductBusinessLogic {
   @Override
   public Object getResponse() {
     return this.product == null ? this.products : this.product;
-  }
-
-  @Override
-  public void setBaseURL(URL baseURL) {
-    this.baseURL = baseURL;
   }
 
   @Override

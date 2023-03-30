@@ -6,18 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
 
-public class Pds4ProductBusinessObject implements ProductBusinessLogic {
+
+public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
   @SuppressWarnings("unused")
   private ObjectMapper objectMapper;
   private Pds4Product product = null;
@@ -29,6 +27,7 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic {
   public final String[] PDS4_PRODUCT_FIELDS;
 
   Pds4ProductBusinessObject(boolean isJSON) {
+    super();
     String temp[] = {
         // BLOB
         (isJSON ? Pds4ProductFactory.FLD_JSON_BLOB : Pds4ProductFactory.FLD_XML_BLOB),
@@ -66,11 +65,6 @@ public class Pds4ProductBusinessObject implements ProductBusinessLogic {
   @Override
   public Object getResponse() {
     return this.product == null ? this.products : this.product;
-  }
-
-  @Override
-  public void setBaseURL(URL baseURL) {
-    this.baseURL = baseURL;
   }
 
   @Override

@@ -19,7 +19,7 @@ import gov.nasa.pds.model.WyriwygProduct;
 import gov.nasa.pds.model.WyriwygProductKeyValuePair;
 import gov.nasa.pds.model.WyriwygProducts;
 
-public class WyriwygBusinessObject implements ProductBusinessLogic {
+public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
   private static final Logger log = LoggerFactory.getLogger(WyriwygBusinessObject.class);
 
   @SuppressWarnings("unused")
@@ -28,6 +28,7 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
   private URL baseURL;
   private WyriwygProduct product = null;
   private WyriwygProducts products = null;
+
 
   @Override
   public String[] getMaximallyRequiredFields() {
@@ -42,11 +43,6 @@ public class WyriwygBusinessObject implements ProductBusinessLogic {
   @Override
   public Object getResponse() {
     return this.product == null ? this.products : this.product;
-  }
-
-  @Override
-  public void setBaseURL(URL baseURL) {
-    this.baseURL = baseURL;
   }
 
   @Override

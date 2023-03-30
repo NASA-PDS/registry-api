@@ -18,6 +18,8 @@ on:
             -   '**'
             -   '!main'
 
+    workflow_dispatch:
+
 
 # What to Do
 # ----------
@@ -32,7 +34,7 @@ jobs:
 
         strategy:
             matrix:
-                java-version: [11]
+                java-version: [17]
 
         steps:
             -

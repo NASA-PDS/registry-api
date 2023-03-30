@@ -4,12 +4,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration ",
     "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.model",
-    "gov.nasa.pds.api.registry.search"})
+    "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
 public class SpringBootMain implements CommandLineRunner {
 
   @Override
@@ -20,6 +21,10 @@ public class SpringBootMain implements CommandLineRunner {
   }
 
   public static void main(String[] args) throws Exception {
+
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    ctx.refresh();
+
     new SpringApplication(SpringBootMain.class).run(args);
   }
 
