@@ -13,7 +13,7 @@ import gov.nasa.pds.model.Pds4Product;
 
 /**
  * Creates Pds4Product object from opensearch key-value field map.
- * 
+ *
  * @author karpenko
  */
 public class Pds4ProductFactory {
@@ -46,7 +46,7 @@ public class Pds4ProductFactory {
 
   /**
    * Create Pds4Product object from opensearch key-value field map.
-   * 
+   *
    * @param lidvid product LIDVID
    * @param fieldMap key-value field map
    * @return new Pds4Product object
@@ -137,11 +137,15 @@ public class Pds4ProductFactory {
 
   @SuppressWarnings("rawtypes")
   private static List<Pds4MetadataOpsDataFile> createDataFiles(Map<String, Object> fieldMap) {
-    List<Pds4MetadataOpsDataFile> items = new ArrayList<Pds4MetadataOpsDataFile>();
     ArrayList<String> vals = (ArrayList<String>) fieldMap.get(FLD_DATA_FILE_NAME);
-    Pds4MetadataOpsDataFile item = new Pds4MetadataOpsDataFile();
+    if (vals == null) {
+      return new ArrayList<Pds4MetadataOpsDataFile>();
+    }
+
+    List<Pds4MetadataOpsDataFile> items = new ArrayList<Pds4MetadataOpsDataFile>();
 
     for (int i = 0; i < ((List) vals).size(); i++) {
+      Pds4MetadataOpsDataFile item = new Pds4MetadataOpsDataFile();
       item.setOpsColonFileName((String) ((List) fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
       item.setOpsColonCreationDate((String) ((List) fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
       item.opsColonFileRef((String) ((List) fieldMap.get(FLD_DATA_FILE_REF)).get(i));
@@ -149,8 +153,8 @@ public class Pds4ProductFactory {
       item.setOpsColonMd5Checksum((String) ((List) fieldMap.get(FLD_DATA_FILE_MD5)).get(i));
       item.setOpsColonMimeType((String) ((List) fieldMap.get(FLD_DATA_FILE_MIME_TYPE)).get(i));
       items.add(item);
-      item = new Pds4MetadataOpsDataFile();
     }
+
     return items;
   }
 

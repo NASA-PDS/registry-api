@@ -69,8 +69,15 @@ There are two approaches to running a local development instance of the API
 
        cd service
        mvn spring-boot:run
+       
 
 The API will now be accessible on (by default) https://localhost:8080
+       
+6. Specific configuration profile: if you run the application in a specific environment you can define a dedicated `application.properties`, for example `application-dev.properties` that does not need to be commited on git. Launch it as follow:
+
+     mvn -Dspring-boot.run.profiles=dev spring-boot:run
+     
+
     
 #### [Option 2] Build a development docker image
 

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.stereotype.Component;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -16,7 +16,7 @@ import io.swagger.v3.oas.models.tags.Tag;
 @Component
 // this component is needed until https://github.com/OpenAPITools/openapi-generator/pull/13434 is
 // fixed/merged
-public class OpenAPIClearedTags implements OpenApiCustomiser {
+public class OpenAPIClearedTags implements OpenApiCustomizer {
   protected static final Logger log = LoggerFactory.getLogger(OpenAPIClearedTags.class);
 
   private static final String FILTERED_TAGS = "collections|bundles|products|classes";

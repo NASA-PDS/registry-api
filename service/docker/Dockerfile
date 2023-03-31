@@ -41,7 +41,7 @@
 # Normally we'd prefer Alpine Linux, but JDK 11 isn't available with it, so
 # we go with a slim Debian. Debian's good too.
 
-FROM openjdk:11-slim
+FROM openjdk:17-slim
 
 
 # API JAR file
@@ -80,6 +80,7 @@ WORKDIR /usr/local/registry-api-service
 EXPOSE  80
 CMD     [ \
     "java",  "-Xmx6144m", \
+    "-Xms", "512Mb", \
     "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
     "gov.nasa.pds.api.registry.SpringBootMain" \
 ]
