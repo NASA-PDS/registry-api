@@ -71,7 +71,7 @@ jobs:
                 uses: NASA-PDS/roundup-action@stable
                 with:
                     assembly: unstable
-                    packages: openjdk17
+                    packages: openjdk17-jdk
                 env:
                     ossrh_username: ${{secrets.OSSRH_USERNAME}}
                     ossrh_password: ${{secrets.OSSRH_PASSWORD}}
