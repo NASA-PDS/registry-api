@@ -128,7 +128,7 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
     history = {}
     lidvid_aggregates_with_multiple_versions = filter(lambda l: 1 < len(l), lidvids_by_lid.values())
     for lidvids in lidvid_aggregates_with_multiple_versions:
-        updated_products_count += len(lidvids)  # todo: technically this isn't true - should be len(lidvids) - 1 as earliest version requires no update
+        updated_products_count += len(lidvids) - 1
         lidvids.sort(key=_vid_as_tuple_of_int, reverse=True)
 
         for index, lidvid in enumerate(lidvids[1:]):
