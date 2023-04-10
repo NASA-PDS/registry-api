@@ -45,7 +45,7 @@ import argparse
 import collections
 import json
 import logging
-from typing import Union, List
+from typing import Union, List, Mapping
 
 log = logging.getLogger('provenance')
 import requests
@@ -101,8 +101,8 @@ def run(
 
     host = HOST(cluster_nodes, password, base_url, username, verify_host_certs)
 
-    provenance = trawl_registry(host)
-    updates = get_historic(provenance)
+    provenance = get_lidvids_and_direct_successors(host)
+    updates = get_successors_by_lidvid(provenance)
 
     if updates:
         update_docs(host, updates)
@@ -110,48 +110,54 @@ def run(
     log.info('completed CLI processing')
 
 
-def get_historic(provenance: {str: str}) -> {str: str}:  # TODO: populate comment and rename for clarity
-    log.info('starting search for history')
+def get_successors_by_lidvid(provenance: Mapping[str, str]) -> Mapping[str, str]:
+    """
+    Given a collection of LIDVIDs mapped onto their current direct successors (current successors no longer used by this
+    function), return a new mapping to their updated direct successors.
+    """
 
-    log.info('   reduce lidvids to unique lids')
-    lids = {lidvid.split('::')[0] for lidvid in provenance}
+    log.info('Generating updated history...')
 
-    log.info('   aggregate lidvids into lid buckets')
-    lidvids_by_lid = {lid: [] for lid in lids}
+    unique_lids = {lidvid.split('::')[0] for lidvid in provenance}
+
+    log.info('   ...binning LIDVIDs by LID...')
+    lidvid_aggregates_by_lid = {lid: [] for lid in unique_lids}
     for lidvid in provenance:
         lid = lidvid.split('::')[0]
-        lidvids_by_lid[lid].append(lidvid)
+        lidvid_aggregates_by_lid[lid].append(lidvid)
 
-    log.info('   process those with history')
-    updated_products_count = 0
-    history = {}
-    lidvid_aggregates_with_multiple_versions = filter(lambda l: 1 < len(l), lidvids_by_lid.values())
+    log.info('   ...determining updated successors for LIDVIDs...')
+    successors_by_lidvid = {}
+    lidvid_aggregates_with_multiple_versions = filter(lambda l: 1 < len(l), lidvid_aggregates_by_lid.values())
     for lidvids in lidvid_aggregates_with_multiple_versions:
-        updated_products_count += len(lidvids) - 1
         lidvids.sort(key=_vid_as_tuple_of_int, reverse=True)
 
-        for index, lidvid in enumerate(lidvids[1:]):
-            history[lidvid] = lidvids[index]
+        for successor_idx, lidvid in enumerate(lidvids[1:]):
+            successors_by_lidvid[lidvid] = lidvids[successor_idx]
 
-    log.info(
-        f'found {len(history)} products needing update of a {updated_products_count} full history of {len(provenance)} total products')
+    log.info(f'Successors will be updated for {len(successors_by_lidvid)} LIDVIDs!')
+
     if log.isEnabledFor(logging.DEBUG):
-        for lidvid in history.keys():
+        for lidvid in successors_by_lidvid.keys():
             log.debug(f'{lidvid}')
 
-    return history
+    return successors_by_lidvid
 
 
-def trawl_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rename for clarity
-    log.info('start trawling')
+def get_lidvids_and_direct_successors(host: HOST) -> Mapping[str, str]:
+    """
+    Given an OpenSearch host, return a collection of all extant LIDVIDs, mapped onto their immediate successors (or None)
+    """
 
-    cluster = [node + ":registry" for node in host.nodes]
-    key = 'ops:Provenance/ops:superseded_by'
-    path = ','.join(['registry'] + cluster) + '/_search?scroll=10m'
+    log.info('Retrieving LIDVIDs with current direct successors')
+
+    clusters = [node + ":registry" for node in host.nodes]
+    successor_key = 'ops:Provenance/ops:superseded_by'
+    path = ','.join(['registry'] + clusters) + '/_search?scroll=10m'
     provenance = {}
     query = {'query': {'bool': {'must_not': [
         {'term': {'ops:Tracking_Meta/ops:archive_status': 'staged'}}]}},
-        '_source': {'includes': ['lidvid', key]},
+        '_source': {'includes': ['lidvid', successor_key]},
         'size': 10000}
 
     more_data_exists = True
@@ -164,12 +170,12 @@ def trawl_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
         data = resp.json()
         path = '_search/scroll'
         query = {'scroll': '10m', 'scroll_id': data['_scroll_id']}
-        provenance.update({hit['_source']['lidvid']: hit['_source'].get(key, None) for hit in data['hits']['hits']})
+        provenance.update({hit['_source']['lidvid']: hit['_source'].get(successor_key, None) for hit in data['hits']['hits']})
         more_data_exists = len(provenance) < data['hits']['total']['value']
 
         hits = data['hits']['total']['value']
         percent_hit = int(round(len(provenance) / hits * 100))
-        log.info(f'   progress: {len(provenance)} of {hits} ({percent_hit}%)')
+        log.info(f'   ...{len(provenance)} of {hits} retrieved ({percent_hit}%)...')
 
     if 'scroll_id' in query:
         path = '_search/scroll/' + query['scroll_id']
@@ -177,7 +183,7 @@ def trawl_registry(host: HOST) -> {str: str}:  # TODO: populate comment and rena
                         auth=(host.username, host.password),
                         verify=host.verify)
 
-    log.info('finished trawling')
+    log.info('Finished retrieving LIDVIDs with current direct successors!')
 
     return provenance
 
@@ -214,9 +220,10 @@ def update_docs(host: HOST, history: {str: str}):
 
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(description='''Update the provenance of products with more than one VID
-
-    The program sweeps through the registry index to find all the lidvids and existing provenance. It then builds up the updates necessary to mark the newly superseded products accordingly.
+    ap = argparse.ArgumentParser(description='''
+    Update registry records for non-latest LIDVIDs with up-to-date direct successor metadata (ops:Provenance/ops:superseded_by).
+    
+    Retrieves existing published LIDVIDs from the registry, determines history for each LID, and writes updated docs back to OpenSearch
     ''',
                                  epilog='''EXAMPLES:
 
