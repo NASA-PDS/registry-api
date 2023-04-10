@@ -115,10 +115,10 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
     log.info('starting search for history')
 
     log.info('   reduce lidvids to unique lids')
-    sorted_lids = sorted({lidvid.split('::')[0] for lidvid in provenance})  # todo: what does sorting accomplish here?  Seems to be nothing.
+    lids = {lidvid.split('::')[0] for lidvid in provenance}
 
     log.info('   aggregate lidvids into lid buckets')
-    lidvids_by_lid = {lid: [] for lid in sorted_lids}
+    lidvids_by_lid = {lid: [] for lid in lids}
     for lidvid in provenance:
         lid = lidvid.split('::')[0]
         lidvids_by_lid[lid].append(lidvid)
