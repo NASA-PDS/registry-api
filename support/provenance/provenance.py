@@ -56,6 +56,8 @@ requests.packages.urllib3.disable_warnings()
 HOST = collections.namedtuple('HOST', ['nodes', 'password', 'url', 'username',
                                        'verify'])
 
+METADATA_SUCCESSOR_KEY = 'ops:Provenance/ops:superseded_by'
+
 
 def parse_log_level(input: str) -> int:
     """Given a numeric or uppercase descriptive log level, return the associated int"""
@@ -152,7 +154,7 @@ def get_lidvids_and_direct_successors(host: HOST) -> Mapping[str, str]:
     log.info('Retrieving LIDVIDs with current direct successors')
 
     clusters = [node + ":registry" for node in host.nodes]
-    successor_key = 'ops:Provenance/ops:superseded_by'
+    successor_key = METADATA_SUCCESSOR_KEY
     path = ','.join(['registry'] + clusters) + '/_search?scroll=10m'
     provenance = {}
     query = {'query': {'bool': {'must_not': [
@@ -199,7 +201,7 @@ def update_docs(host: HOST, history: {str: str}):
 
     for lidvid, supersede in history.items():
         bulk_updates.append(json.dumps({'update': {'_id': lidvid}}))
-        bulk_updates.append(json.dumps({'doc': {'ops:Provenance/ops:superseded_by': supersede}}))
+        bulk_updates.append(json.dumps({'doc': {METADATA_SUCCESSOR_KEY: supersede}}))
 
     bulk_data = '\n'.join(bulk_updates) + '\n'
 
@@ -220,8 +222,8 @@ def update_docs(host: HOST, history: {str: str}):
 
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(description='''
-    Update registry records for non-latest LIDVIDs with up-to-date direct successor metadata (ops:Provenance/ops:superseded_by).
+    ap = argparse.ArgumentParser(description=f'''
+    Update registry records for non-latest LIDVIDs with up-to-date direct successor metadata ({METADATA_SUCCESSOR_KEY}).
     
     Retrieves existing published LIDVIDs from the registry, determines history for each LID, and writes updated docs back to OpenSearch
     ''',
