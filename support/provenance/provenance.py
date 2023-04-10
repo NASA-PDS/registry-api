@@ -115,24 +115,28 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
     log.info('starting search for history')
 
     log.info('   reduce lidvids to unique lids')
-    lids = sorted({lidvid.split('::')[0] for lidvid in provenance})
+    sorted_lids = sorted({lidvid.split('::')[0] for lidvid in provenance})  # todo: what does sorting accomplish here?  Seems to be nothing.
 
     log.info('   aggregate lidvids into lid buckets')
-    aggregates = {lid: [] for lid in lids}
-    for lidvid in provenance: aggregates[lidvid.split('::')[0]].append(lidvid)
+    lidvids_by_lid = {lid: [] for lid in sorted_lids}
+    for lidvid in provenance:
+        lid = lidvid.split('::')[0]
+        lidvids_by_lid[lid].append(lidvid)
 
     log.info('   process those with history')
-    count = 0
+    updated_products_count = 0
     history = {}
-    for lidvids in filter(lambda l: 1 < len(l), aggregates.values()):
-        count += len(lidvids)
+    lidvid_aggregates_with_multiple_versions = filter(lambda l: 1 < len(l), lidvids_by_lid.values())
+    for lidvids in lidvid_aggregates_with_multiple_versions:
+        updated_products_count += len(lidvids)  # todo: technically this isn't true - should be len(lidvids) - 1 as earliest version requires no update
         lidvids.sort(key=_vid_as_tuple_of_int, reverse=True)
+
         for index, lidvid in enumerate(lidvids[1:]):
-            if reset or not provenance[lidvid]:
+            if reset or not provenance[lidvid]:  # todo: this seems to result in an error if (for example) v1, v3 exist, and v2 is added later
                 history[lidvid] = lidvids[index]
 
     log.info(
-        f'found {len(history)} products needing update of a {count} full history of {len(provenance)} total products')
+        f'found {len(history)} products needing update of a {updated_products_count} full history of {len(provenance)} total products')
     if log.isEnabledFor(logging.DEBUG):
         for lidvid in history.keys():
             log.debug(f'{lidvid}')
