@@ -93,7 +93,6 @@ def run(
         username: str,
         password: str,
         verify_host_certs: bool = False,
-        reset: bool = False,
         log_filepath: Union[str, None] = None,
         log_level: int = logging.INFO):
     configure_logging(filepath=log_filepath, log_level=log_level)
@@ -103,7 +102,7 @@ def run(
     host = HOST(cluster_nodes, password, base_url, username, verify_host_certs)
 
     provenance = trawl_registry(host)
-    updates = get_historic(provenance, reset)
+    updates = get_historic(provenance)
 
     if updates:
         update_docs(host, updates)
@@ -111,7 +110,7 @@ def run(
     log.info('completed CLI processing')
 
 
-def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: populate comment and rename for clarity
+def get_historic(provenance: {str: str}) -> {str: str}:  # TODO: populate comment and rename for clarity
     log.info('starting search for history')
 
     log.info('   reduce lidvids to unique lids')
@@ -132,8 +131,7 @@ def get_historic(provenance: {str: str}, reset: bool) -> {str: str}:  # TODO: po
         lidvids.sort(key=_vid_as_tuple_of_int, reverse=True)
 
         for index, lidvid in enumerate(lidvids[1:]):
-            if reset or not provenance[lidvid]:  # todo: this seems to result in an error if (for example) v1, v3 exist, and v2 is added later
-                history[lidvid] = lidvids[index]
+            history[lidvid] = lidvids[index]
 
     log.info(
         f'found {len(history)} products needing update of a {updated_products_count} full history of {len(provenance)} total products')
@@ -245,8 +243,6 @@ if __name__ == '__main__':
                     help='Python logging level as an int or string like INFO for logging.INFO [%(default)s]')
     ap.add_argument('-p', '--password', default=None, required=False,
                     help='password to login to opensearch leaving it blank if opensearch does not require login')
-    ap.add_argument('-r', '--reset', action='store_true', default=False,
-                    help='ignore existing provenance building it from scratch')
     ap.add_argument('-u', '--username', default=None, required=False,
                     help='username to login to opensearch leaving it blank if opensearch does not require login')
     ap.add_argument('-v', '--verify', action='store_true', default=False,
@@ -259,6 +255,5 @@ if __name__ == '__main__':
         username=args.username,
         password=args.password,
         verify_host_certs=args.verify,
-        reset=args.reset,
         log_level=args.log_level,
         log_filepath=args.log_file)
