@@ -107,7 +107,7 @@ def run(
     updates = get_successors_by_lidvid(provenance)
 
     if updates:
-        update_docs(host, updates)
+        write_updated_docs(host, updates)
 
     log.info('completed CLI processing')
 
@@ -190,18 +190,21 @@ def get_lidvids_and_direct_successors(host: HOST) -> Mapping[str, str]:
     return provenance
 
 
-def update_docs(host: HOST, history: {str: str}):
-    """Write provenance history updates to documents in db"""
-    log.info('Bulk update %d documents', len(history))
+def write_updated_docs(host: HOST, lidvids_and_successors: Mapping[str, str]):
+    """
+    Given an OpenSearch host and a mapping of LIDVIDs onto their direct successors, write provenance history updates
+    to documents in db.
+    """
+    log.info('Bulk update %d documents', len(lidvids_and_successors))
 
     bulk_updates = []
     cluster = [node + ":registry" for node in host.nodes]
     headers = {'Content-Type': 'application/x-ndjson'}
     path = ','.join(['registry'] + cluster) + '/_bulk'
 
-    for lidvid, supersede in history.items():
+    for lidvid, direct_successor in lidvids_and_successors.items():
         bulk_updates.append(json.dumps({'update': {'_id': lidvid}}))
-        bulk_updates.append(json.dumps({'doc': {METADATA_SUCCESSOR_KEY: supersede}}))
+        bulk_updates.append(json.dumps({'doc': {METADATA_SUCCESSOR_KEY: direct_successor}}))
 
     bulk_data = '\n'.join(bulk_updates) + '\n'
 
