@@ -45,7 +45,8 @@ import argparse
 import collections
 import json
 import logging
-from typing import Union, List, Mapping, Iterable
+from itertools import chain
+from typing import Union, List, Mapping, Iterable, Dict
 
 log = logging.getLogger('provenance')
 import requests
@@ -103,13 +104,19 @@ def run(
 
     host = HOST(cluster_nodes, password, base_url, username, verify_host_certs)
 
-    extant_lidvids = get_extant_lidvids(host)
-    updates = get_successors_by_lidvid(extant_lidvids)
+    published_products = get_published_products(host)
+    log.info(f'Processing supporting metadata for all published products...')
 
-    if updates:
-        write_updated_docs(host, updates)
+    successors_by_lidvid = get_successors_by_lidvid([p['lidvid'] for p in published_products])
+    provenance_updates = get_provenance_bulk_updates(successors_by_lidvid)
 
-    log.info('completed CLI processing')
+    lidvids_needing_membership_update = [p['lidvid']for p in published_products if 'membership' not in p]
+    membership_updates = get_membership_bulk_updates(lidvids_needing_membership_update)
+
+    bulk_updates = chain(provenance_updates, membership_updates)
+    write_doc_updates(host, bulk_updates)
+
+    log.info(f'Finished processing supporting metadata for all published products!')
 
 
 def get_successors_by_lidvid(extant_lidvids: Iterable[str]) -> Mapping[str, str]:
@@ -145,19 +152,19 @@ def get_successors_by_lidvid(extant_lidvids: Iterable[str]) -> Mapping[str, str]
     return successors_by_lidvid
 
 
-def get_extant_lidvids(host: HOST) -> Iterable[str]:
+def get_published_products(host: HOST) -> Iterable[Dict]:
     """
-    Given an OpenSearch host, return all extant LIDVIDs
+    Given an OpenSearch host, return objects containing the necessary fields to allow support metadata generation
     """
 
-    log.info('Retrieving extant LIDVIDs')
+    log.info('Retrieving published product records from db...')
 
     clusters = [node + ":registry" for node in host.nodes]
     path = ','.join(['registry'] + clusters) + '/_search?scroll=10m'
-    extant_lidvids = []
+    published_products = []
     query = {'query': {'bool': {'must': [
         {'terms': {'ops:Tracking_Meta/ops:archive_status': ['archived', 'certified']}}]}},
-        '_source': {'includes': ['lidvid']},
+        '_source': {'includes': ['lidvid', 'membership']},
         'size': 10000}
 
     more_data_exists = True
@@ -170,12 +177,12 @@ def get_extant_lidvids(host: HOST) -> Iterable[str]:
         data = resp.json()
         path = '_search/scroll'
         query = {'scroll': '10m', 'scroll_id': data['_scroll_id']}
-        extant_lidvids.extend([hit['_source']['lidvid'] for hit in data['hits']['hits']])
-        more_data_exists = len(extant_lidvids) < data['hits']['total']['value']
+        published_products.extend([hit['_source'] for hit in data['hits']['hits']])
+        more_data_exists = len(published_products) < data['hits']['total']['value']
 
         hits = data['hits']['total']['value']
-        percent_hit = int(round(len(extant_lidvids) / hits * 100))
-        log.info(f'   ...{len(extant_lidvids)} of {hits} retrieved ({percent_hit}%)...')
+        percent_hit = int(round(len(published_products) / hits * 100))
+        log.info(f'   ...{len(published_products)} of {hits} retrieved ({percent_hit}%)...')
 
     if 'scroll_id' in query:
         path = '_search/scroll/' + query['scroll_id']
@@ -183,30 +190,80 @@ def get_extant_lidvids(host: HOST) -> Iterable[str]:
                         auth=(host.username, host.password),
                         verify=host.verify)
 
-    log.info('Finished retrieving LIDVIDs with current direct successors!')
+    log.info('Finished retrieving extant product records!')
 
-    return extant_lidvids
+    return published_products
 
 
-def write_updated_docs(host: HOST, lidvids_and_successors: Mapping[str, str]):
+def get_provenance_bulk_updates(lidvids_and_successors: Mapping[str, str]) -> Iterable[Dict]:
+    """
+        Given a mapping of LIDVIDs onto their direct successors, return OpenSearch update action objects to write
+        provenance metadata
+    """
+    log.info('Generating bulk updates for provenance metadata...')
+
+    bulk_updates = []
+    product_count = 0
+    for lidvid, direct_successor in lidvids_and_successors.items():
+        bulk_updates.append({'update': {'_id': lidvid}})
+        bulk_updates.append({'doc': {METADATA_SUCCESSOR_KEY: direct_successor}})
+        product_count += 1
+
+    log.info(f'Generated provenance metadata updates for {product_count} products!')
+
+    return bulk_updates
+
+
+def get_membership_bulk_updates(lidvids: Iterable[str]) -> Iterable[Dict]:
+    """
+        Given a collection of LIDVIDs, return OpenSearch update action objects to write collection/bundle
+        membership metadata
+    """
+    log.info('Generating bulk updates for membership metadata...')
+    lid_vid_separator = '::'
+    lid_chunk_separator = ':'
+
+    bulk_updates = []
+    product_count = 0
+    for lidvid in lidvids:
+        lid, vid = lidvid.split(lid_vid_separator)
+        lid_chunks = lid.split(lid_chunk_separator)
+
+        is_member_of_bundle = len(lid_chunks) > 4
+        is_member_of_collection = len(lid_chunks) > 5
+
+        metadata = {
+            'membership': {
+                'bundle': {'lid': lid_chunk_separator.join(lid_chunks[:4])} if is_member_of_bundle else None,
+                'collection': {'lid': lid_chunk_separator.join(lid_chunks[:5])} if is_member_of_collection else None
+            }
+        }
+
+        bulk_updates.append({'update': {'_id': lidvid}})
+        bulk_updates.append({'doc': metadata})
+        product_count += 1
+
+    log.info(f'Generated membership metadata updates for {product_count} products!')
+
+    return bulk_updates
+
+
+def write_doc_updates(host: HOST, bulk_updates: Iterable[Dict]):
     """
     Given an OpenSearch host and a mapping of LIDVIDs onto their direct successors, write provenance history updates
     to documents in db.
     """
-    log.info('Bulk update %d documents', len(lidvids_and_successors))
+    log.info('Performing OpenSearch bulk document updates...')
 
-    bulk_updates = []
     cluster = [node + ":registry" for node in host.nodes]
     headers = {'Content-Type': 'application/x-ndjson'}
     path = ','.join(['registry'] + cluster) + '/_bulk'
 
-    for lidvid, direct_successor in lidvids_and_successors.items():
-        bulk_updates.append(json.dumps({'update': {'_id': lidvid}}))
-        bulk_updates.append(json.dumps({'doc': {METADATA_SUCCESSOR_KEY: direct_successor}}))
+    bulk_data = '\n'.join(map(json.dumps, bulk_updates)) + '\n'
+    if bulk_data.strip() == '':
+        log.info('No updates necessary - aborting!')
+        return
 
-    bulk_data = '\n'.join(bulk_updates) + '\n'
-
-    log.info(f'writing bulk update for {len(bulk_updates)} products...')
     response = requests.put(urllib.parse.urljoin(host.url, path),
                             auth=(host.username, host.password),
                             data=bulk_data, headers=headers, verify=host.verify)
@@ -219,7 +276,7 @@ def write_updated_docs(host: HOST, lidvids_and_successors: Mapping[str, str]):
                 log.error('update error (%d): %s', item['status'],
                           str(item['error']))
     else:
-        log.info('bulk updates were successful')
+        log.info('Bulk updates were successful!')
 
 
 if __name__ == '__main__':
