@@ -1,8 +1,8 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-04-11)
+## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-04-11)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
 
 **Requirements:**
 
@@ -15,6 +15,7 @@
 
 **Defects:**
 
+- Registry API won't deploy with Java 17 [\#314](https://github.com/NASA-PDS/registry-api/issues/314)
 - API not returning value for NAIF bundles [\#305](https://github.com/NASA-PDS/registry-api/issues/305) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - API crashes with JVM memory error on data sets with very large labels \(\>1MB\) [\#296](https://github.com/NASA-PDS/registry-api/issues/296) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Requests with Accept:application/vnd.nasa.gds.pds4+json fail for products with no ops:Label\_File\_Info/ops:file\_name [\#293](https://github.com/NASA-PDS/registry-api/issues/293) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -42,6 +43,7 @@
 **Other closed issues:**
 
 - Establish consistency between how Provenance and the API select \(filter\) documents by archive\_status [\#308](https://github.com/NASA-PDS/registry-api/issues/308)
+- If \>1 products with the same LIDVID are registered by different nodes, we should respond with one of them [\#306](https://github.com/NASA-PDS/registry-api/issues/306)
 - Update Java params and Docker image to expand JVM memory beyond 50% [\#300](https://github.com/NASA-PDS/registry-api/issues/300)
 - Search criteria not producing expected matches [\#287](https://github.com/NASA-PDS/registry-api/issues/287)
 - Format the source code in google style [\#272](https://github.com/NASA-PDS/registry-api/issues/272)
