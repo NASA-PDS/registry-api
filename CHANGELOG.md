@@ -1,8 +1,24 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-23)
+## [1.2.0](https://github.com/NASA-PDS/registry-api/tree/1.2.0) (2023-04-11)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.2.0...1.2.0)
+
+**Requirements:**
+
+- Remove provenance --reset option [\#310](https://github.com/NASA-PDS/registry-api/issues/310)
+
+**Defects:**
+
+- API crashes with JVM memory error on data sets with very large labels \(\>1MB\) [\#296](https://github.com/NASA-PDS/registry-api/issues/296) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
+**Other closed issues:**
+
+- Update Java params and Docker image to expand JVM memory beyond 50% [\#300](https://github.com/NASA-PDS/registry-api/issues/300)
+
+## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-03-31)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
 
 **Requirements:**
 
@@ -32,6 +48,7 @@
 - /classes endpoint does not work in a browser [\#200](https://github.com/NASA-PDS/registry-api/issues/200) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - version number are treated as floats [\#191](https://github.com/NASA-PDS/registry-api/issues/191) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- \*Critical OSS Vulnerability:\* spring-web@5.3.20 [\#148](https://github.com/NASA-PDS/registry-api/issues/148) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - JSON response is using HTTP in href references [\#145](https://github.com/NASA-PDS/registry-api/issues/145) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
@@ -45,6 +62,7 @@
 - Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
 - Investigate if all fields are searchable [\#281](https://github.com/NASA-PDS/registry-api/issues/281)
 - Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
+- migrate  to jdk 17 [\#218](https://github.com/NASA-PDS/registry-api/issues/218)
 - Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
 
 ## [v1.1.12](https://github.com/NASA-PDS/registry-api/tree/v1.1.12) (2022-12-22)
