@@ -9,6 +9,7 @@ import java.util.Map;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -349,11 +350,19 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
 
       if (hits != null && hits.getTotalHits() != null) {
         long hitCount = hits.getTotalHits().value;
-        if (hitCount == 1L) {
-          this.formatters.get(this.format).setResponse(hits.getAt(0), this.fields);
-        } else if (hitCount > 1L) {
+        long distinctHitCount = Arrays.stream(hits.getHits()).map(SearchHit::getId).distinct().count();
+        if (distinctHitCount == 1L) {
+          SearchHit hit = hits.getAt(0);
+          if (hitCount > 1L) {
+            log.info("Multiple ("+ hitCount +") hits for id '" + hit.getId() + "'. "
+                + "This may be due to duplication across multiple clusters. De-duplicating to single result.");
+          }
+
+          this.formatters.get(this.format).setResponse(hit, this.fields);
+        } else if (distinctHitCount > 1L) {
           String basicErrMsg =
-              "Got " + hitCount + " hits for a query which should have returned a singular result. "
+              "Got " + distinctHitCount + " distinct hits (" + hitCount + " total) "
+                  + "for a query which should have returned a singular result. "
                   + "Is provenance metadata present and up-to-date?";
           log.error(basicErrMsg + " Query was " + request.source().query().toString());
           throw new IOException(basicErrMsg);
