@@ -1,11 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-03-23)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-04-11)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
 **Requirements:**
 
+- Remove provenance --reset option [\#310](https://github.com/NASA-PDS/registry-api/issues/310)
 - As a user, I want to see available query params in the swagger documentation [\#249](https://github.com/NASA-PDS/registry-api/issues/249)
 - Suggest: Return Content-Type application/json by default [\#248](https://github.com/NASA-PDS/registry-api/issues/248)
 - As a user, I want to search by any metadata attribute [\#282](https://github.com/NASA-PDS/registry-api/issues/282)
@@ -14,6 +15,8 @@
 
 **Defects:**
 
+- API not returning value for NAIF bundles [\#305](https://github.com/NASA-PDS/registry-api/issues/305) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- API crashes with JVM memory error on data sets with very large labels \(\>1MB\) [\#296](https://github.com/NASA-PDS/registry-api/issues/296) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Requests with Accept:application/vnd.nasa.gds.pds4+json fail for products with no ops:Label\_File\_Info/ops:file\_name [\#293](https://github.com/NASA-PDS/registry-api/issues/293) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Project does not successfully build/run without global existence of some dependencies [\#279](https://github.com/NASA-PDS/registry-api/issues/279)
 - product's members does not work on a collection [\#268](https://github.com/NASA-PDS/registry-api/issues/268) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -32,11 +35,14 @@
 - /classes endpoint does not work in a browser [\#200](https://github.com/NASA-PDS/registry-api/issues/200) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - documents / members returns an error [\#196](https://github.com/NASA-PDS/registry-api/issues/196) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - version number are treated as floats [\#191](https://github.com/NASA-PDS/registry-api/issues/191) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- \*Critical OSS Vulnerability:\* spring-web@5.3.20 [\#148](https://github.com/NASA-PDS/registry-api/issues/148) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - JSON response is using HTTP in href references [\#145](https://github.com/NASA-PDS/registry-api/issues/145) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 - Fix vulnerabilities raised by sonalift [\#121](https://github.com/NASA-PDS/registry-api/issues/121) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
 
+- Establish consistency between how Provenance and the API select \(filter\) documents by archive\_status [\#308](https://github.com/NASA-PDS/registry-api/issues/308)
+- Update Java params and Docker image to expand JVM memory beyond 50% [\#300](https://github.com/NASA-PDS/registry-api/issues/300)
 - Search criteria not producing expected matches [\#287](https://github.com/NASA-PDS/registry-api/issues/287)
 - Format the source code in google style [\#272](https://github.com/NASA-PDS/registry-api/issues/272)
 - Add --reset flag to scheduled provenance invocation [\#265](https://github.com/NASA-PDS/registry-api/issues/265)
@@ -45,6 +51,7 @@
 - Move scheduled execution of provenance.py to an AWS-based solution [\#232](https://github.com/NASA-PDS/registry-api/issues/232)
 - Investigate if all fields are searchable [\#281](https://github.com/NASA-PDS/registry-api/issues/281)
 - Establish parity between application.properties and application.properties.aws files [\#220](https://github.com/NASA-PDS/registry-api/issues/220)
+- migrate  to jdk 17 [\#218](https://github.com/NASA-PDS/registry-api/issues/218)
 - Make sure the documentation is clear on limit=0 instead of summary-only [\#198](https://github.com/NASA-PDS/registry-api/issues/198)
 
 ## [v1.1.12](https://github.com/NASA-PDS/registry-api/tree/v1.1.12) (2022-12-22)
