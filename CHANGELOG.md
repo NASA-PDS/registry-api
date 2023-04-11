@@ -1,27 +1,12 @@
 # Changelog
 
-## [1.2.0](https://github.com/NASA-PDS/registry-api/tree/1.2.0) (2023-04-11)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-04-11)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.2.0...1.2.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...«unknown»)
 
 **Requirements:**
 
 - Remove provenance --reset option [\#310](https://github.com/NASA-PDS/registry-api/issues/310)
-
-**Defects:**
-
-- API crashes with JVM memory error on data sets with very large labels \(\>1MB\) [\#296](https://github.com/NASA-PDS/registry-api/issues/296) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
-
-**Other closed issues:**
-
-- Update Java params and Docker image to expand JVM memory beyond 50% [\#300](https://github.com/NASA-PDS/registry-api/issues/300)
-
-## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-03-31)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
-
-**Requirements:**
-
 - As a user, I want to see available query params in the swagger documentation [\#249](https://github.com/NASA-PDS/registry-api/issues/249)
 - Suggest: Return Content-Type application/json by default [\#248](https://github.com/NASA-PDS/registry-api/issues/248)
 - As a user, I want to search by any metadata attribute [\#282](https://github.com/NASA-PDS/registry-api/issues/282)
@@ -30,6 +15,8 @@
 
 **Defects:**
 
+- API not returning value for NAIF bundles [\#305](https://github.com/NASA-PDS/registry-api/issues/305) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- API crashes with JVM memory error on data sets with very large labels \(\>1MB\) [\#296](https://github.com/NASA-PDS/registry-api/issues/296) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Requests with Accept:application/vnd.nasa.gds.pds4+json fail for products with no ops:Label\_File\_Info/ops:file\_name [\#293](https://github.com/NASA-PDS/registry-api/issues/293) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Project does not successfully build/run without global existence of some dependencies [\#279](https://github.com/NASA-PDS/registry-api/issues/279)
 - product's members does not work on a collection [\#268](https://github.com/NASA-PDS/registry-api/issues/268) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -54,6 +41,8 @@
 
 **Other closed issues:**
 
+- Establish consistency between how Provenance and the API select \(filter\) documents by archive\_status [\#308](https://github.com/NASA-PDS/registry-api/issues/308)
+- Update Java params and Docker image to expand JVM memory beyond 50% [\#300](https://github.com/NASA-PDS/registry-api/issues/300)
 - Search criteria not producing expected matches [\#287](https://github.com/NASA-PDS/registry-api/issues/287)
 - Format the source code in google style [\#272](https://github.com/NASA-PDS/registry-api/issues/272)
 - Add --reset flag to scheduled provenance invocation [\#265](https://github.com/NASA-PDS/registry-api/issues/265)
