@@ -155,8 +155,8 @@ def get_extant_lidvids(host: HOST) -> Iterable[str]:
     clusters = [node + ":registry" for node in host.nodes]
     path = ','.join(['registry'] + clusters) + '/_search?scroll=10m'
     extant_lidvids = []
-    query = {'query': {'bool': {'must_not': [
-        {'term': {'ops:Tracking_Meta/ops:archive_status': 'staged'}}]}},
+    query = {'query': {'bool': {'must': [
+        {'terms': {'ops:Tracking_Meta/ops:archive_status': ['archived', 'certified']}}]}},
         '_source': {'includes': ['lidvid']},
         'size': 10000}
 
