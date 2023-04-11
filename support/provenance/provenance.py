@@ -45,7 +45,7 @@ import argparse
 import collections
 import json
 import logging
-from typing import Union, List, Mapping
+from typing import Union, List, Mapping, Iterable
 
 log = logging.getLogger('provenance')
 import requests
@@ -103,8 +103,8 @@ def run(
 
     host = HOST(cluster_nodes, password, base_url, username, verify_host_certs)
 
-    provenance = get_lidvids_and_direct_successors(host)
-    updates = get_successors_by_lidvid(provenance)
+    extant_lidvids = get_extant_lidvids(host)
+    updates = get_successors_by_lidvid(extant_lidvids)
 
     if updates:
         write_updated_docs(host, updates)
@@ -112,19 +112,18 @@ def run(
     log.info('completed CLI processing')
 
 
-def get_successors_by_lidvid(provenance: Mapping[str, str]) -> Mapping[str, str]:
+def get_successors_by_lidvid(extant_lidvids: Iterable[str]) -> Mapping[str, str]:
     """
-    Given a collection of LIDVIDs mapped onto their current direct successors (current successors no longer used by this
-    function), return a new mapping to their updated direct successors.
+    Given a collection of LIDVIDs, return a new mapping to their updated direct successors.
     """
 
     log.info('Generating updated history...')
 
-    unique_lids = {lidvid.split('::')[0] for lidvid in provenance}
+    unique_lids = {lidvid.split('::')[0] for lidvid in extant_lidvids}
 
     log.info('   ...binning LIDVIDs by LID...')
     lidvid_aggregates_by_lid = {lid: [] for lid in unique_lids}
-    for lidvid in provenance:
+    for lidvid in extant_lidvids:
         lid = lidvid.split('::')[0]
         lidvid_aggregates_by_lid[lid].append(lidvid)
 
@@ -146,20 +145,19 @@ def get_successors_by_lidvid(provenance: Mapping[str, str]) -> Mapping[str, str]
     return successors_by_lidvid
 
 
-def get_lidvids_and_direct_successors(host: HOST) -> Mapping[str, str]:
+def get_extant_lidvids(host: HOST) -> Iterable[str]:
     """
-    Given an OpenSearch host, return a collection of all extant LIDVIDs, mapped onto their immediate successors (or None)
+    Given an OpenSearch host, return all extant LIDVIDs
     """
 
-    log.info('Retrieving LIDVIDs with current direct successors')
+    log.info('Retrieving extant LIDVIDs')
 
     clusters = [node + ":registry" for node in host.nodes]
-    successor_key = METADATA_SUCCESSOR_KEY
     path = ','.join(['registry'] + clusters) + '/_search?scroll=10m'
-    provenance = {}
+    extant_lidvids = []
     query = {'query': {'bool': {'must_not': [
         {'term': {'ops:Tracking_Meta/ops:archive_status': 'staged'}}]}},
-        '_source': {'includes': ['lidvid', successor_key]},
+        '_source': {'includes': ['lidvid']},
         'size': 10000}
 
     more_data_exists = True
@@ -172,12 +170,12 @@ def get_lidvids_and_direct_successors(host: HOST) -> Mapping[str, str]:
         data = resp.json()
         path = '_search/scroll'
         query = {'scroll': '10m', 'scroll_id': data['_scroll_id']}
-        provenance.update({hit['_source']['lidvid']: hit['_source'].get(successor_key, None) for hit in data['hits']['hits']})
-        more_data_exists = len(provenance) < data['hits']['total']['value']
+        extant_lidvids.extend([hit['_source']['lidvid'] for hit in data['hits']['hits']])
+        more_data_exists = len(extant_lidvids) < data['hits']['total']['value']
 
         hits = data['hits']['total']['value']
-        percent_hit = int(round(len(provenance) / hits * 100))
-        log.info(f'   ...{len(provenance)} of {hits} retrieved ({percent_hit}%)...')
+        percent_hit = int(round(len(extant_lidvids) / hits * 100))
+        log.info(f'   ...{len(extant_lidvids)} of {hits} retrieved ({percent_hit}%)...')
 
     if 'scroll_id' in query:
         path = '_search/scroll/' + query['scroll_id']
@@ -187,7 +185,7 @@ def get_lidvids_and_direct_successors(host: HOST) -> Mapping[str, str]:
 
     log.info('Finished retrieving LIDVIDs with current direct successors!')
 
-    return provenance
+    return extant_lidvids
 
 
 def write_updated_docs(host: HOST, lidvids_and_successors: Mapping[str, str]):
