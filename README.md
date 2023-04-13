@@ -41,7 +41,7 @@ Follow instructions in README.txt in the decompressed folder
 
 To build and run the application you need:
 
-- jdk 11
+- jdk 17
 - maven
 
 Additionally, harvested data will only be picked up correctly by the API if all of the following are true:
