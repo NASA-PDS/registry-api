@@ -1,6 +1,6 @@
 # Registry API
 
-[![🤪 Unstable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml) [![😌 Stable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml)
+[![DOI](https://zenodo.org/badge/444555977.svg)](https://zenodo.org/badge/latestdoi/444555977) [![🤪 Unstable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml) [![😌 Stable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml)
 
 This repository implements the [search API v1.0.0-SNAPSHOT](https://nasa-pds.github.io/pds-api/specifications.html) for the PDS registry.
 
