@@ -2,6 +2,7 @@ package gov.nasa.pds.api.registry.controller;
 
 import java.util.List;
 import java.util.Optional;
+import gov.nasa.pds.api.base.ProductPropertiesApi;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmuter
-    implements ControlContext, ProductsApi, ClassesApi {
+    implements ControlContext, ProductsApi, ClassesApi, ProductPropertiesApi {
 
   public Optional<NativeWebRequest> getRequest() {
     return Optional.empty();
@@ -111,5 +112,14 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
       @Valid List<String> fields) {
     return this.processs(new Standard(), this.uriParametersBuilder.setIdentifier(identifier)
         .setFields(fields).setVersion(ProductVersionSelector.LATEST).build());
+  }
+
+  @Override
+  public ResponseEntity<Object> productPropertiesList() {
+
+    String registryIndexName = this.getConnection().getRegistryIndex();
+    EndpointHandler handler = new GetIndexHandler(registryIndexName);
+    URIParameters uriParameters = this.uriParametersBuilder.build();
+    return this.processs(handler, uriParameters);
   }
 }
