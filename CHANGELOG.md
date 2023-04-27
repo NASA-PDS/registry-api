@@ -1,8 +1,16 @@
 # Changelog
 
-## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-04-11)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-04-25)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
+
+**Other closed issues:**
+
+- Update staging and production Registry APIs to increase window limit [\#291](https://github.com/NASA-PDS/registry-api/issues/291)
+
+## [v1.2.0](https://github.com/NASA-PDS/registry-api/tree/v1.2.0) (2023-04-11)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0)
 
 **Requirements:**
 

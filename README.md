@@ -1,6 +1,6 @@
 # Registry API
 
-[![🤪 Unstable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml) [![😌 Stable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml)
+[![DOI](https://zenodo.org/badge/444555977.svg)](https://zenodo.org/badge/latestdoi/444555977) [![🤪 Unstable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/unstable-cicd.yaml) [![😌 Stable integration & delivery](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml/badge.svg)](https://github.com/NASA-PDS/registry-api/actions/workflows/stable-cicd.yaml)
 
 This repository implements the [search API v1.0.0-SNAPSHOT](https://nasa-pds.github.io/pds-api/specifications.html) for the PDS registry.
 
@@ -77,7 +77,8 @@ The API will now be accessible on (by default) https://localhost:8080
        
 6. Specific configuration profile: if you run the application in a specific environment you can define a dedicated `application.properties`, for example `application-dev.properties` that does not need to be commited on git. Launch it as follow:
 
-     mvn -Dspring-boot.run.profiles=dev spring-boot:run
+
+    mvn -Dspring-boot.run.profiles=dev spring-boot:run
      
 
     
