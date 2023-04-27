@@ -22,17 +22,17 @@ public class GroupConstraintImpl implements GroupConstraint {
   }
 
   @Override
-  public Map<String, List<String>> all() {
+  public Map<String, List<String>> must() {
     return all;
   }
 
   @Override
-  public Map<String, List<String>> any() {
+  public Map<String, List<String>> filter() {
     return any;
   }
 
   @Override
-  public Map<String, List<String>> not() {
+  public Map<String, List<String>> mustNot() {
     return not;
   }
 
