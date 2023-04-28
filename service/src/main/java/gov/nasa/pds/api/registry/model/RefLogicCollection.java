@@ -68,7 +68,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
                 control.getConnection().getRegistryRefIndex()))) {
       productLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control,
           RequestBuildContextFactory.given(false, "lidvid",
-              ReferencingLogicTransmuter.Product.impl().constraints()),
+              ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints()),
           productLidvids.convert(kvp.get("product_lid"))));
     }
     return productLidvids;
