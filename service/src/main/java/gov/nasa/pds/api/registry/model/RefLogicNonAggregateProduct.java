@@ -33,8 +33,8 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 @Immutable
-class RefLogicProduct extends RefLogicAny implements ReferencingLogic {
-  private static final Logger log = LoggerFactory.getLogger(RefLogicProduct.class);
+class RefLogicNonAggregateProduct extends RefLogicAny implements ReferencingLogic {
+  private static final Logger log = LoggerFactory.getLogger(RefLogicNonAggregateProduct.class);
 
   @Override
   public GroupConstraint constraints() {
@@ -46,7 +46,7 @@ class RefLogicProduct extends RefLogicAny implements ReferencingLogic {
   static Pagination<String> grandparents(ControlContext control, ProductVersionSelector selection,
       LidvidsContext uid) throws IOException, LidVidNotFoundException {
     log.info("Find the grandparents of a product -- both all and latest");
-    List<String> parents = RefLogicProduct
+    List<String> parents = RefLogicNonAggregateProduct
         .parents(control, ProductVersionSelector.LATEST, new Unlimited(uid.getLidVid())).page();
     PaginationLidvidBuilder grandparents = new PaginationLidvidBuilder(uid);
     for (String parent : parents) {

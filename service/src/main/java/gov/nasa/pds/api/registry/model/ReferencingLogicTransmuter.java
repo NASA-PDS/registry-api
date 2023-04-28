@@ -14,7 +14,7 @@ public enum ReferencingLogicTransmuter {
       "bundles"), Collection(new RefLogicCollection(), "Product_Collection",
           "collections"), Document(new RefLogicDocument(), "Product_Document",
               "documents"), Observational(new RefLogicObservational(), "Product_Observational",
-                  "observationals"), Product(new RefLogicProduct(), "", "products");
+                  "observationals"), NonAggregateProduct(new RefLogicNonAggregateProduct(), "", "non-aggregate-products");
 
   final private ReferencingLogic refLogic;
   final private String pds_name;
