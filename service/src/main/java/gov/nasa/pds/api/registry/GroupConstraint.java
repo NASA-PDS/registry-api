@@ -30,4 +30,10 @@ public interface GroupConstraint {
    * Group.
    */
   public Map<String, List<String>> mustNot();
+
+  /**
+   * Return the union of this GroupConstraint and another.  Equivalent to taking the union of both FILTER sets, the union of both MUST sets, and the union of both MUSTNOT sets
+   */
+
+  public GroupConstraint union(GroupConstraint otherConstraint);
 }
