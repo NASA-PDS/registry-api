@@ -311,6 +311,26 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
 
+  /properties:
+    get:
+      tags:
+        - 1. all products
+      summary: |
+        return a list of all possible searchable metadata fields for products published in the registry
+      operationId: product-properties-list
+      responses:
+        '200':
+          $ref: "#/components/responses/PropertiesList"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters: []
+
   /products/{identifier}:
     get:
       tags:
@@ -1284,6 +1304,26 @@ components:
         text/xml:
           schema:
             $ref: '#/components/schemas/pdsProducts'
+    PropertiesList:
+      description: An array of all searchable properties of products in the registry.
+      content:
+        "*":
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                property:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - "string"
+                    - "integer"
+                    - "float"
+                    - "boolean"
+                    - "timestamp"
+                    - "unsupported"
     Singular:
       description: Successful request
       content:
