@@ -2,6 +2,8 @@ package gov.nasa.pds.api.registry.controller;
 
 import java.io.IOException;
 import java.util.List;
+import gov.nasa.pds.api.base.PropertiesApi;
+import gov.nasa.pds.model.ProductPropertiesList200ResponseInner;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
@@ -26,12 +28,11 @@ import gov.nasa.pds.api.registry.exceptions.MembershipException;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
-import gov.nasa.pds.model.ErrorMessage;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 
 @Controller
 public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
-    implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi {
+    implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi, PropertiesApi {
 
 
   private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);
@@ -430,9 +431,16 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
 
   @Override
   public ResponseEntity<Object> classMembersVers(String propertyClass, String identifier,
-      String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
+       @Valid List<String> sort, @Min(0) @Valid Integer start) {
     // TODO Auto-generated method stub
     return super.classMembersVers(propertyClass, identifier, versions, fields, limit, sort, start);
   }
+
+  @Override
+  public ResponseEntity<List<ProductPropertiesList200ResponseInner>> productPropertiesList() {
+    // TODO Auto-generated method stub
+    return super.productPropertiesList();
+  }
+
 }

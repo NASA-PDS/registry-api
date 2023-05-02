@@ -63,10 +63,10 @@ class RefLogicAny implements ReferencingLogic {
           RefLogicCollection.children(context, input.getSelector(), input));
     if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Bundle)
       return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-          RefLogicProduct.grandparents(context, input.getSelector(), input));
+          RefLogicNonAggregateProduct.grandparents(context, input.getSelector(), input));
     if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Collection)
       return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-          RefLogicProduct.parents(context, input.getSelector(), input));
+          RefLogicNonAggregateProduct.parents(context, input.getSelector(), input));
 
     throw new IOException("Waiting on implementation until references are figured out in database");
     // FIXME: return isIdToGroup ? this.idToGroup() : this.groupToId();
@@ -99,8 +99,8 @@ class RefLogicAny implements ReferencingLogic {
       MembershipException, UnknownGroupNameException {
     if (twoSteps)
       return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-          RefLogicProduct.grandparents(context, input.getSelector(), input));
+          RefLogicNonAggregateProduct.grandparents(context, input.getSelector(), input));
     return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-        RefLogicProduct.parents(context, input.getSelector(), input));
+        RefLogicNonAggregateProduct.parents(context, input.getSelector(), input));
   }
 }
