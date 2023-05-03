@@ -1,11 +1,14 @@
 /*
 Cloudfront Function which performs URL rewrite to direct requests of the form:
-    /api/<service>{-node}/<version>/<request>
+    /api/<service>{-node}/<version>/<request> or /api/<service>{-node}/<version>[/]
 to:
     /<request>
-    + the http header json : { "x-request-node" : { "value" : "<service>{-node}/<version>" }
+    + the http header json : { "x-request-node" : { "value" : "<service>{-node}/<version>" }, { "x-forwarded-prefix" : { "value" : "/api/<service>{-node}/<version>" }
     
 This version also fufills the transition from major.minor to major (only) 
+
+x-forwarded-prefix header is used by swagger-ui 
+
 version specs in the API request.
 */
 
