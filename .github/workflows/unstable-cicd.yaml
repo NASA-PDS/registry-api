@@ -80,7 +80,7 @@ jobs:
             -
                 name: 🫙 Jar File Determination
                 id: jarrer
-                run: echo "::set-output name=jar_file::$(ls ./service/target/*.jar)"
+                run: echo "jar_file=$(ls ./service/target/*.jar)" >> $GITHUB_OUTPUT
             -
                 name: 💳 Docker Hub Identification
                 uses: docker/login-action@v2
