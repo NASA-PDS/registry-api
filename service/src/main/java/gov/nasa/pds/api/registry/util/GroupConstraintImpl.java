@@ -10,30 +10,30 @@ import gov.nasa.pds.api.registry.GroupConstraint;
 
 @Immutable
 public class GroupConstraintImpl implements GroupConstraint {
-  final private Map<String, List<String>> all;
-  final private Map<String, List<String>> any;
-  final private Map<String, List<String>> not;
+  final private Map<String, List<String>> filter;
+  final private Map<String, List<String>> must;
+  final private Map<String, List<String>> mustNot;
 
-  private GroupConstraintImpl(Map<String, List<String>> all, Map<String, List<String>> any,
-      Map<String, List<String>> not) {
-    this.all = Map.copyOf(all);
-    this.any = Map.copyOf(any);
-    this.not = Map.copyOf(not);
+  private GroupConstraintImpl(Map<String, List<String>> must, Map<String, List<String>> filter,
+                              Map<String, List<String>> mustNot) {
+    this.must = Map.copyOf(must);
+    this.filter = Map.copyOf(filter);
+    this.mustNot = Map.copyOf(mustNot);
   }
 
   @Override
-  public Map<String, List<String>> all() {
-    return all;
+  public Map<String, List<String>> must() {
+    return must;
   }
 
   @Override
-  public Map<String, List<String>> any() {
-    return any;
+  public Map<String, List<String>> filter() {
+    return filter;
   }
 
   @Override
-  public Map<String, List<String>> not() {
-    return not;
+  public Map<String, List<String>> mustNot() {
+    return mustNot;
   }
 
   final private static Map<String, List<String>> EMPTY = new HashMap<String, List<String>>();

@@ -1,9 +1,11 @@
 package gov.nasa.pds.api.registry.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
@@ -14,7 +16,7 @@ public enum ReferencingLogicTransmuter {
       "bundles"), Collection(new RefLogicCollection(), "Product_Collection",
           "collections"), Document(new RefLogicDocument(), "Product_Document",
               "documents"), Observational(new RefLogicObservational(), "Product_Observational",
-                  "observationals"), Product(new RefLogicProduct(), "", "products");
+                  "observationals"), NonAggregateProduct(new RefLogicNonAggregateProduct(), "", "non-aggregate-products");
 
   final private ReferencingLogic refLogic;
   final private String pds_name;
@@ -73,8 +75,14 @@ public enum ReferencingLogicTransmuter {
 
   public static List<String> getSwaggerNames() {
     List<String> names = new ArrayList<String>();
+//    It is arguably not desirable to expose the concept of "non-aggregate products" to the user as a category
+//    See: https://github.com/NASA-PDS/registry-api/issues/326
+    Set<String> excludedNames = Set.of(ReferencingLogicTransmuter.NonAggregateProduct.swagger_name);
     for (ReferencingLogicTransmuter rlt : ReferencingLogicTransmuter.values())
-      names.add(rlt.swagger_name);
+      if (!excludedNames.contains(rlt.swagger_name)){
+        names.add(rlt.swagger_name);
+      }
+
     return names;
   }
 

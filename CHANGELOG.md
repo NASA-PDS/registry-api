@@ -1,8 +1,22 @@
 # Changelog
 
-## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-04-11)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-05-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
+
+**Defects:**
+
+- Product summary object has an incomplete "properties" set [\#277](https://github.com/NASA-PDS/registry-api/issues/277) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
+**Other closed issues:**
+
+- Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
+- Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
+- Update staging and production Registry APIs to increase window limit [\#291](https://github.com/NASA-PDS/registry-api/issues/291)
+
+## [v1.2.0](https://github.com/NASA-PDS/registry-api/tree/v1.2.0) (2023-04-11)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0)
 
 **Requirements:**
 

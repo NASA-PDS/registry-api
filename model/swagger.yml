@@ -10,13 +10,13 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  
+
 tags:
   - name: 1. all products
     description: search any classe of product and resolve product's identifiers
   - name: 2. product references
     description: explore the product hierarchy
-  - name: 3. by product classes 
+  - name: 3. by product classes
     description: search by class of product, bundles, collections, ...
   - name: 4. deprecated
     description: end-points which should not be used anymore
@@ -24,7 +24,7 @@ tags:
 externalDocs:
     description: User's Guide
     url: https://nasa-pds.github.io/pds-api/guides/search.html
-    
+
 servers:
   - url: https://pds.nasa.gov/api/registry/1
     description: production server
@@ -310,6 +310,26 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+
+  /properties:
+    get:
+      tags:
+        - 1. all products
+      summary: |
+        return a list of all possible searchable metadata fields for products published in the registry
+      operationId: product-properties-list
+      responses:
+        '200':
+          $ref: "#/components/responses/PropertiesList"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters: []
 
   /products/{identifier}:
     get:
@@ -1122,7 +1142,7 @@ components:
       required: true
       schema:
         type: string
-        enum: [any,bundles,collections,documents,observationals,products]
+        enum: [any,bundles,collections,documents,observationals]
     Identifier:
       name: identifier
       in: path
@@ -1284,6 +1304,26 @@ components:
         text/xml:
           schema:
             $ref: '#/components/schemas/pdsProducts'
+    PropertiesList:
+      description: An array of all searchable properties of products in the registry.
+      content:
+        "*":
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                property:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - "string"
+                    - "integer"
+                    - "float"
+                    - "boolean"
+                    - "timestamp"
+                    - "unsupported"
     Singular:
       description: Successful request
       content:

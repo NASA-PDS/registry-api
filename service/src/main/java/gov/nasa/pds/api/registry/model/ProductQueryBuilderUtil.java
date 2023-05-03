@@ -69,17 +69,17 @@ public class ProductQueryBuilderUtil {
 
   public static void addPresetCriteria(BoolQueryBuilder boolQuery, GroupConstraint presetCriteria) {
     if (presetCriteria != null) {
-      presetCriteria.all().forEach((key, list) -> {
+      presetCriteria.must().forEach((key, list) -> {
         list.forEach(value -> {
           boolQuery.must(QueryBuilders.termQuery(key, value));
         });
       });
-      presetCriteria.any().forEach((key, list) -> {
+      presetCriteria.filter().forEach((key, list) -> {
         list.forEach(value -> {
           boolQuery.filter(QueryBuilders.termQuery(key, value));
         });
       });
-      presetCriteria.not().forEach((key, list) -> {
+      presetCriteria.mustNot().forEach((key, list) -> {
         list.forEach(value -> {
           boolQuery.mustNot(QueryBuilders.termQuery(key, value));
         });
