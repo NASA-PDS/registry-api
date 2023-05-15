@@ -5,8 +5,8 @@ public class PdsVid implements Comparable<PdsVid> {
   private final int minorVersion;
 
   public PdsVid(int majorVersion, int minorVersion) {
-    if (majorVersion < 1) {
-      String errMsg = String.format("majorVersion must be 1 or higher (got '%d'))", majorVersion);
+    if (majorVersion < 0) {
+      String errMsg = String.format("majorVersion must be 0 or higher (got '%d'))", majorVersion);
       throw new IllegalArgumentException(errMsg);
     }
 
