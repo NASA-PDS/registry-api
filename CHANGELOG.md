@@ -1,15 +1,17 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-05-01)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-05-15)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
 **Defects:**
 
+- PdsVid erroneously fails major-version of zero during validation [\#334](https://github.com/NASA-PDS/registry-api/issues/334)
 - Product summary object has an incomplete "properties" set [\#277](https://github.com/NASA-PDS/registry-api/issues/277) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
+- Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
 - Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
 - Update staging and production Registry APIs to increase window limit [\#291](https://github.com/NASA-PDS/registry-api/issues/291)
 

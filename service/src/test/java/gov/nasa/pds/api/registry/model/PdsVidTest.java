@@ -14,10 +14,6 @@ public class PdsVidTest {
   @Test
   public void testInvalidInstantiations() {
     Assert.assertThrows(IllegalArgumentException.class, () -> {
-      PdsVid.fromString("0.1");
-    });
-
-    Assert.assertThrows(IllegalArgumentException.class, () -> {
       PdsVid.fromString("1.-1");
     });
 
