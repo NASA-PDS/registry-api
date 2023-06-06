@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-05-15)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-06-06)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
@@ -13,6 +13,8 @@
 
 - Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
 - Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
+- Remove ./support tree from repository [\#321](https://github.com/NASA-PDS/registry-api/issues/321)
+- As a EN Operator, I want to the registry API to be fault tolerant, analysis [\#297](https://github.com/NASA-PDS/registry-api/issues/297)
 - Update staging and production Registry APIs to increase window limit [\#291](https://github.com/NASA-PDS/registry-api/issues/291)
 
 ## [v1.2.0](https://github.com/NASA-PDS/registry-api/tree/v1.2.0) (2023-04-11)
