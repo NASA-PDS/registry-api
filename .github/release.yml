@@ -1,0 +1,9 @@
+changelog:
+  categories:
+    - title: New Features
+      labels:
+        - requirement
+    - title: Bug Fixes 🎉
+      labels:
+        - bug
+
