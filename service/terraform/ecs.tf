@@ -3,8 +3,8 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = "pds-${var.node_name_abbr}-${var.venue}-reg-cluster"
 
   tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
+    Alfa    = var.node_name_abbr
+    Bravo   = var.venue
     Charlie = "registry"
   }
 }
@@ -19,8 +19,8 @@ resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
   name = "/ecs/pds-${var.node_name_abbr}-${var.venue}-reg-api-svc-task"
 
   tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
+    Alfa    = var.node_name_abbr
+    Bravo   = var.venue
     Charlie = "registry"
   }
 }
@@ -42,13 +42,13 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups = var.aws_fg_security_groups
-    subnets = var.aws_fg_subnets
+    security_groups  = var.aws_fg_security_groups
+    subnets          = var.aws_fg_subnets
   }
 
   tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
+    Alfa    = var.node_name_abbr
+    Bravo   = var.venue
     Charlie = "registry"
   }
 }
@@ -99,23 +99,23 @@ EOF
   task_role_arn      = data.aws_iam_role.pds-task-execution-role.arn
 
   # These are the minimum values for Fargate containers.
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = var.aws_fg_cpu_units
+  memory                   = var.aws_fg_ram_units
   requires_compatibilities = ["FARGATE"]
 
   # This is required for Fargate containers
   network_mode = "awsvpc"
 
   tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
+    Alfa    = var.node_name_abbr
+    Bravo   = var.venue
     Charlie = "registry"
   }
 }
 
 # role under which ECS will execute tasks.
 data "aws_iam_role" "pds-task-execution-role" {
-  name    = "am-ecs-task-execution"
+  name = "am-ecs-task-execution"
 }
 
 resource "aws_lb_target_group" "pds-registry-target-group" {
@@ -126,9 +126,9 @@ resource "aws_lb_target_group" "pds-registry-target-group" {
   vpc_id      = var.aws_fg_vpc
 
   health_check {
-    enabled = true
-    path    = "/swagger-ui/index.html"
-    matcher = "200,301,302"
+    enabled  = true
+    path     = "/swagger-ui/index.html"
+    matcher  = "200,301,302"
     interval = 60
   }
 }
@@ -138,13 +138,13 @@ resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
 
   action {
     type             = "forward"
-    target_group_arn =  aws_lb_target_group.pds-registry-target-group.arn
+    target_group_arn = aws_lb_target_group.pds-registry-target-group.arn
   }
 
   condition {
     http_header {
       http_header_name = var.http_header_forward_name
-      values           = [var.http_header_forward_value,]
+      values           = [var.http_header_forward_value, ]
     }
   }
 }
