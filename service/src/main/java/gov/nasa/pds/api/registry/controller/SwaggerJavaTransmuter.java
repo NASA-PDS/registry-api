@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Map;
 import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.model.ProductPropertiesList200ResponseInner;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;
@@ -122,11 +121,6 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
       log.info(
           "Transmuter processing of request took: " + (System.currentTimeMillis() - begin) + " ms");
     }
-  }
-
-  private boolean proxyRunsOnDefaultPort() {
-    return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443))
-        || ("http".equals(this.context.getScheme()) && (this.context.getServerPort() == 80)));
   }
 
   @Override
