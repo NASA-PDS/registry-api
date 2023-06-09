@@ -20,6 +20,8 @@ tags:
     description: search by class of product, bundles, collections, ...
   - name: 4. deprecated
     description: end-points which should not be used anymore
+  - name: 5. healthcheck
+    description: end-point for evaluating system health
 
 externalDocs:
     description: User's Guide
@@ -30,6 +32,36 @@ servers:
     description: production server
 
 paths:
+  /healthcheck:
+    get:
+      tags:
+        - 5. healthcheck
+      summary: |
+        returns payload of system health information. Detection of any fatal issues results in a non-200 response. The primary intention of this endpoint is to provide an accurate assessment of the service to determine if ECS/Fargate should instantiate a new instance of the task.
+      operationId: healthcheck
+      responses:
+        '200':
+          description: The system checked out as healthy, returning a JSON payload of results
+          content:
+            "*":
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '418':
+          description: The system did not check out as healthy, returning a JSON payload of results, including error messages indicating the source(s) of the failure(s)
+          content:
+            "*":
+              schema:
+                type: object
+                additionalProperties: true
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
   /classes:
     get:
       tags:

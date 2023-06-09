@@ -2,10 +2,12 @@ package gov.nasa.pds.api.registry.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.model.ProductPropertiesList200ResponseInner;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import gov.nasa.pds.api.base.BundlesApi;
 import gov.nasa.pds.api.base.ClassesApi;
 import gov.nasa.pds.api.base.CollectionsApi;
 import gov.nasa.pds.api.base.ProductsApi;
+import gov.nasa.pds.api.base.HealthcheckApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -29,11 +32,11 @@ import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.HealthcheckLogic;
 
 @Controller
-public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
-    implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi, PropertiesApi {
-
+public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
+    implements ControlContext, BundlesApi, CollectionsApi, ClassesApi, ProductsApi, HealthcheckApi, PropertiesApi {
 
   private static final Logger log = LoggerFactory.getLogger(SwaggerJavaTransmuter.class);
   private final ObjectMapper objectMapper;
@@ -103,6 +106,34 @@ public class SwaggerJavaTransmuter extends SwaggerJavaDeprecatedTransmuter
     }
   }
 
+  protected ResponseEntity<Map<String,Object>> processHealthcheck() {
+    long begin = System.currentTimeMillis();
+    try {
+      HttpStatus responseStatus = HttpStatus.OK;
+      HealthcheckLogic hcLogic = new HealthcheckLogic(this);
+      Map<String, Object> response = hcLogic.healthcheck();
+
+      if ((boolean) response.get(HealthcheckLogic.FAILURES_PRESENT)) {
+        responseStatus = HttpStatus.I_AM_A_TEAPOT;
+      }
+             
+      return new ResponseEntity<Map<String,Object>>(response, responseStatus);
+    } finally {
+      log.info(
+          "Transmuter processing of request took: " + (System.currentTimeMillis() - begin) + " ms");
+    }
+  }
+
+  private boolean proxyRunsOnDefaultPort() {
+    return (("https".equals(this.context.getScheme()) && (this.context.getServerPort() == 443))
+        || ("http".equals(this.context.getScheme()) && (this.context.getServerPort() == 80)));
+  }
+
+  @Override
+  public ResponseEntity<Map<String,Object>> healthcheck() {
+    // TODO Auto-generated method stub
+    return super.healthcheck();
+  }
 
   @Override
   public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords,
