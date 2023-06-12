@@ -112,6 +112,8 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
       HealthcheckLogic hcLogic = new HealthcheckLogic(this);
       Map<String, Object> response = hcLogic.healthcheck();
 
+      // If there are failures present, return a 418 to indicate to monitoring entities (e.g. ECS) that
+      // something is amiss.
       if ((boolean) response.get(HealthcheckLogic.FAILURES_PRESENT)) {
         responseStatus = HttpStatus.I_AM_A_TEAPOT;
       }
