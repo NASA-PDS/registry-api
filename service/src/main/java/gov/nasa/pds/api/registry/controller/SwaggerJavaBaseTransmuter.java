@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.registry.controller;
 
 import java.util.List;
+import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ abstract class SwaggerJavaBaseTransmuter {
 
   abstract protected ResponseEntity<Object> processs(EndpointHandler handler,
       URIParameters parameters);
+
+  abstract protected ResponseEntity<Map<String,Object>> processHealthcheck();
 
   public ResponseEntity<Object> groupReferencingId(String group, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
