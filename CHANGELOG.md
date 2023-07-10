@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.2.0](https://github.com/NASA-PDS/registry-api/tree/1.2.0) (2023-06-20)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-07-10)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...1.2.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
 **Defects:**
 
@@ -22,11 +22,7 @@
 
 ## [v1.2.0](https://github.com/NASA-PDS/registry-api/tree/v1.2.0) (2023-04-11)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.2.0...v1.2.0)
-
-## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-04-11)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0)
 
 **Requirements:**
 
@@ -82,11 +78,7 @@
 
 ## [v1.1.12](https://github.com/NASA-PDS/registry-api/tree/v1.1.12) (2022-12-22)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.12...v1.1.12)
-
-## [release/1.1.12](https://github.com/NASA-PDS/registry-api/tree/release/1.1.12) (2022-12-22)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...release/1.1.12)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...v1.1.12)
 
 **Requirements:**
 
@@ -103,11 +95,7 @@
 
 ## [v1.1.11](https://github.com/NASA-PDS/registry-api/tree/v1.1.11) (2022-12-14)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.11...v1.1.11)
-
-## [release/1.1.11](https://github.com/NASA-PDS/registry-api/tree/release/1.1.11) (2022-12-14)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...release/1.1.11)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.1.11)
 
 **Defects:**
 
