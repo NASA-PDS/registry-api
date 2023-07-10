@@ -8,7 +8,7 @@ This repository implements the [search API v1.0.0-SNAPSHOT](https://nasa-pds.git
 It is composed with the following subcomponents:
 - lexer: parse the API request queries (q parameter), based on antlr4 grammar
 - model: library end-point controller definition and response objects generated from the openAPI specification (see https://github.com/NASA-PDS/pds-api/)
-- api: the API service, a spring-boot application
+- service: the API service, a spring-boot application
 
 
 ## Prerequisites
@@ -46,9 +46,7 @@ To build and run the application you need:
 
 Additionally, harvested data will only be picked up correctly by the API if all of the following are true:
  - the data has been given a status of "archived" using registry-mgr
- - [provenance.py](./support/provenance.py) has been run since the data was ingested, unless only one version of each product has been harvested.
-   
-   This requires use of a python3 venv with `requests` installed, and is performed with `python provenance.py -b https://localhost:9200 -p admin -u admin`, but this may be streamlined in the future.
+ - the registry-sweepers have been executed to update required metadata, see https://github.com/NASA-PDS/registry-sweepers
 
 There are two approaches to running a local development instance of the API
 
