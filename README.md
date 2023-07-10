@@ -46,7 +46,7 @@ To build and run the application you need:
 
 Additionally, harvested data will only be picked up correctly by the API if all of the following are true:
  - the data has been given a status of "archived" using registry-mgr
- - the registry-sweepers runs on the registry used as a back-end, see https://github.com/NASA-PDS/registry-sweepers
+ - the registry-sweepers have been executed to update required metadata, see https://github.com/NASA-PDS/registry-sweepers
 
 There are two approaches to running a local development instance of the API
 
