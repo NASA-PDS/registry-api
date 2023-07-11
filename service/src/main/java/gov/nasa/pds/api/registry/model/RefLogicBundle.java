@@ -137,7 +137,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
 
     ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection")));
     ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection_secondary")));
-
+    lidvids.addAll (ids);
     // !!! NOTE !!!
     // Harvest converts LIDVID references to LID references and stores them in
     // "ref_lid_collection" and "ref_lid_collection_secondary" fields.
