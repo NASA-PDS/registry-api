@@ -1,0 +1,21 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-merge-conflict
+    - id: debug-statements
+    - id: check-yaml
+    - id: check-json #checks json files for parseable syntax.
+    - id: pretty-format-json #sets a standard for formatting json files.
+
+-   repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.81.0
+    hooks:
+    - id: terraform_fmt #Rewrites all Terraform configuration files to a canonical format.
+    - id: terraform_validate #Validates all Terraform configuration files.
+    - id: terraform_tflint #Validates all Terraform configuration files with TFLint.
+    # - id: terrascan #Detect compliance and security violations of Terraform templates.
+    # - id: terraform_tfsec
+    # - id: terraform_docs

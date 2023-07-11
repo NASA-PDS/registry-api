@@ -1,0 +1,90 @@
+name: 'Terraform-Workflow'
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [opened, edited, reopened, ready_for_review, review_requested]
+  workflow_dispatch:
+
+permissions:
+  id-token: write  # required to use OIDC authentication
+  contents: read # required to checkout the code from the repo
+
+jobs:
+  deploy:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+    environment: NGAP DEV
+    env:
+      TF_LOG: INFO
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-region: "${{ secrets.AWS_REGION }}"
+        role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+        role-session-name: PDS_GitHub_OIDC_TERRAFORM
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Fmt, Init & Validate
+      id: fmt_init_validate
+      env:
+        AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME}}
+        AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME}}
+      run: |
+        terraform fmt
+        terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}"
+        terraform validate -no-color
+
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      env:
+        TF_VAR_aws_fg_vpc: "${{ secrets.AWS_FG_VPC }}"
+        TF_VAR_aws_fg_security_groups: "${{ secrets.AWS_FG_SECURITY_GROUPS }}"
+        TF_VAR_aws_fg_subnets: "${{ secrets.AWS_FG_SUBSETS }}"
+        TF_VAR_aws_fg_cpu_units: 256
+        TF_VAR_aws_fg_ram_units: 512
+        TF_VAR_aws_fg_image: "${{ secrets.AWS_FG_IMAGE }}"
+        TF_VAR_aws_lb_listener_arn: "${{ secrets.AWS_LB_LISTENER_ARN }}"
+        TF_VAR_es_hosts: "${{ secrets.ES_HOSTS }}"
+        TF_VAR_es_user_name: "${{ secrets.ES_USER_NAME }}"
+        TF_VAR_http_header_forward_value: "search-en-delta/1"
+        TF_VAR_node_name_abbr: "en"
+        TF_VAR_venue: "delta"
+      run: terraform plan -no-color
+      continue-on-error:  true
+
+    - name: Terraform Plan Status
+      id : plan_status
+      if: steps.plan.outcome == 'failure' && github.event_name == 'pull_request'
+      run: exit 1
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      env:
+        TF_VAR_aws_fg_vpc: "${{ secrets.AWS_FG_VPC }}"
+        TF_VAR_aws_fg_security_groups: "${{ secrets.AWS_FG_SECURITY_GROUPS }}"
+        TF_VAR_aws_fg_subnets: "${{ secrets.AWS_FG_SUBSETS }}"
+        TF_VAR_aws_fg_cpu_units: 256
+        TF_VAR_aws_fg_ram_units: 512
+        TF_VAR_aws_fg_image: "${{ secrets.AWS_FG_IMAGE }}"
+        TF_VAR_aws_lb_listener_arn: "${{ secrets.AWS_LB_LISTENER_ARN }}"
+        TF_VAR_es_hosts: "${{ secrets.ES_HOSTS }}"
+        TF_VAR_es_user_name: "${{ secrets.ES_USER_NAME }}"
+        TF_VAR_http_header_forward_value: "search-en-delta/1"
+        TF_VAR_node_name_abbr: "en"
+        TF_VAR_venue: "delta"
+      run: terraform apply -auto-approve
