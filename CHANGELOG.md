@@ -1,17 +1,24 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-07-10)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-07-17)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
+**Requirements:**
+
+- As a PDS operator, I want to know the health of the registry API service [\#336](https://github.com/NASA-PDS/registry-api/issues/336)
+
 **Defects:**
 
+- api does not return information that OpenSearch says is public [\#355](https://github.com/NASA-PDS/registry-api/issues/355) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- members of a bundle does not work on new test dataset [\#341](https://github.com/NASA-PDS/registry-api/issues/341) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - PdsVid erroneously fails major-version of zero during validation [\#334](https://github.com/NASA-PDS/registry-api/issues/334)
 - Product summary object has an incomplete "properties" set [\#277](https://github.com/NASA-PDS/registry-api/issues/277) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
 - Design Logging and Monitoring Approach for Nucleus [\#342](https://github.com/NASA-PDS/registry-api/issues/342)
+- Investigate how Google DataSet Search can help with the Search [\#338](https://github.com/NASA-PDS/registry-api/issues/338)
 - Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
 - Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
 - Remove ./support tree from repository [\#321](https://github.com/NASA-PDS/registry-api/issues/321)
