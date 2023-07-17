@@ -10,7 +10,7 @@ FROM ubuntu:20.04
      apt-get install -y curl \
                         libtcnative-1 \
                         maven \
-                        openjdk-11-jdk-headless \
+                        openjdk-17-jdk-headless \
                         tar
 
  # Make room for the app
