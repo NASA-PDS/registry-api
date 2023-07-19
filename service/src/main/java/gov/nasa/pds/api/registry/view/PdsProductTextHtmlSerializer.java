@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -37,12 +36,11 @@ public class PdsProductTextHtmlSerializer extends AbstractHttpMessageConverter<P
   protected void writeInternal(PdsProduct t, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
+    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
     OutputStream os = outputMessage.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os, Charset.defaultCharset());
     mapper.setSerializationInclusion(Include.NON_NULL);
-    wr.write("<html><body><h1>JSON as text</h1><p><pre>");
-    wr.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(t));
-    wr.write("</pre></p></body></html>");
+    wr.write(mapper.writeValueAsString(t));
     wr.close();
   }
 }

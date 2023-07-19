@@ -37,6 +37,7 @@ public class PdsProductsTextHtmlSerializer extends AbstractHttpMessageConverter<
   protected void writeInternal(PdsProducts t, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
+    outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML); // must be before body is fetched
     OutputStream os = outputMessage.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os, Charset.defaultCharset());
     mapper.setSerializationInclusion(Include.NON_NULL);

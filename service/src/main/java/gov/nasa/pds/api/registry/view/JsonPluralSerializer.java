@@ -34,9 +34,8 @@ public class JsonPluralSerializer extends AbstractHttpMessageConverter<WyriwygPr
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(Include.NON_NULL);
-
+    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
     OutputStream os = outputMessage.getBody();
-
     OutputStreamWriter wr = new OutputStreamWriter(os);
     Utilities.fix(t.getSummary());
     WyriwygSerializer.writeJSON(t, wr, mapper);

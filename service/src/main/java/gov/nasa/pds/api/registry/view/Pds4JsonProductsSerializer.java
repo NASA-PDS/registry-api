@@ -48,6 +48,7 @@ public class Pds4JsonProductsSerializer extends AbstractHttpMessageConverter<Pds
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(Include.NON_NULL);
+    msg.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
 
     OutputStream os = msg.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os);

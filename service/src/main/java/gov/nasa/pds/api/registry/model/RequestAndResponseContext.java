@@ -296,7 +296,6 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
       throw new NothingFoundException();
     }
     return response;
-
   }
 
   public void setResponse(HitIterator hits, int real_total) {
