@@ -40,7 +40,7 @@ public class PdsProductTextHtmlSerializer extends AbstractHttpMessageConverter<P
     OutputStream os = outputMessage.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os, Charset.defaultCharset());
     mapper.setSerializationInclusion(Include.NON_NULL);
-    wr.writerWithDefaultPrettyPrinter().write(mapper.writeValueAsString(t));
+    wr.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(t));
     wr.close();
   }
 }
