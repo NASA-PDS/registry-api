@@ -20,12 +20,12 @@ Building a local image:
 $ git clone https://github.com/NASA-PDS/registry-api.git
 $ cd registry-api
 $ mvn package
-$ docker image build --build-arg api_jar=service/target/registry-api-service-*.jar --tag registry-api-service:latest --file service/docker/Dockerfile .
+$ docker image build --build-arg api_jar=service/target/registry-api-service-*.jar --tag registry-api-service:latest --file docker/Dockerfile .
 ```
 
 Building an image from a released jar file:
 ```console
-$ docker image build --build-arg api_jar=https://github.com/NASA-PDS/registry-api/releases/download/v1.0.0/registry-api-service-1.0.0.jar --tag nasapds/registry-api-service:1.0.0 --file service/docker/Dockerfile .
+$ docker image build --build-arg api_jar=https://github.com/NASA-PDS/registry-api/releases/download/v1.0.0/registry-api-service-1.0.0.jar --tag nasapds/registry-api-service:1.0.0 --file docker/Dockerfile .
 ```
 
 ## 📍 Dockerfile.aws
