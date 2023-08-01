@@ -20,11 +20,13 @@
 **Other closed issues:**
 
 - Investigate usage of registry api [\#364](https://github.com/NASA-PDS/registry-api/issues/364)
+- Update the aws\_lb\_target\_group to use the new healthcheck endpoint [\#347](https://github.com/NASA-PDS/registry-api/issues/347)
 - Design Logging and Monitoring Approach for Nucleus [\#342](https://github.com/NASA-PDS/registry-api/issues/342)
 - Investigate how Google DataSet Search can help with the Search [\#338](https://github.com/NASA-PDS/registry-api/issues/338)
 - Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
 - Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
 - Remove ./support tree from repository [\#321](https://github.com/NASA-PDS/registry-api/issues/321)
+- Move terraform and docker folder to the root of the repository [\#320](https://github.com/NASA-PDS/registry-api/issues/320)
 - Add parent collection identifier to product metadata [\#319](https://github.com/NASA-PDS/registry-api/issues/319)
 - Add parent bundle identifier to collection metadata [\#318](https://github.com/NASA-PDS/registry-api/issues/318)
 - As a EN Operator, I want to the registry API to be fault tolerant, analysis [\#297](https://github.com/NASA-PDS/registry-api/issues/297)
