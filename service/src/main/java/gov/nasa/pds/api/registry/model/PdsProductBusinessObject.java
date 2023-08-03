@@ -79,7 +79,7 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
         if (kvp.containsKey("lidvid")) {
           lidvid = kvp.get("lidvid").toString();
         }
-        log.error ("CRITICAL: could not convert opensearch document to EntityProduct for lidvid: " + lidvid);
+        log.error ("CRITICAL: could not convert opensearch document to EntityProduct for lidvid: " + lidvid, t);
       }
     }
     count = products.getData().size();
