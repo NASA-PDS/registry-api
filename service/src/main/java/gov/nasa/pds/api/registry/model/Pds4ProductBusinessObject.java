@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
@@ -16,6 +18,7 @@ import gov.nasa.pds.model.Summary;
 
 
 public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
+  private static final Logger log = LoggerFactory.getLogger(Pds4ProductBusinessObject.class);
   @SuppressWarnings("unused")
   private ObjectMapper objectMapper;
   private Pds4Product product = null;
@@ -87,8 +90,16 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
       uniqueProperties
           .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
-      Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
-      list.add(prod);
+      try {
+        Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
+        list.add(prod);
+      } catch (Throwable t) {
+        String lidvid = "unknown";
+        if (kvp.containsKey("lidvid")) {
+          lidvid = kvp.get("lidvid").toString();
+        }
+        log.error ("CRITICAL: could not convert opensearch document to Pds4Product for lidvid: " + lidvid);
+      }
     }
 
     products.setData(list);
@@ -112,8 +123,12 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
       uniqueProperties
           .addAll(ProductBusinessObject.getFilteredProperties(fieldMap, fields, null).keySet());
 
-      Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
-      list.add(prod);
+      try {
+        Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
+        list.add(prod);
+      } catch (Throwable t) {
+        log.error ("CRITICAL: could not convert opensearch document to Pds4Product for lidvid: " + hit.getId());
+      }
     }
     products.setData(list);
     products.setSummary(summary);
