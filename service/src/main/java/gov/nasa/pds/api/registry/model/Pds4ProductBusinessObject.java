@@ -98,7 +98,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
         if (kvp.containsKey("lidvid")) {
           lidvid = kvp.get("lidvid").toString();
         }
-        log.error ("CRITICAL: could not convert opensearch document to Pds4Product for lidvid: " + lidvid, t);
+        log.error ("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: " + lidvid, t);
       }
     }
 
@@ -127,7 +127,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
         Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
         list.add(prod);
       } catch (Throwable t) {
-        log.error ("CRITICAL: could not convert opensearch document to Pds4Product for lidvid: " + hit.getId(), t);
+        log.error ("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: " + hit.getId(), t);
       }
     }
     products.setData(list);

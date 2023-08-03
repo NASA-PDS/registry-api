@@ -79,7 +79,7 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
         if (kvp.containsKey("lidvid")) {
           lidvid = kvp.get("lidvid").toString();
         }
-        log.error ("CRITICAL: could not convert opensearch document to EntityProduct for lidvid: " + lidvid, t);
+        log.error ("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: " + lidvid, t);
       }
     }
     count = products.getData().size();
@@ -109,7 +109,7 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
             .setProperties((Map<String, List<String>>) (Map<String, ?>) ProductBusinessObject
                 .getFilteredProperties(kvp, null, null));
         } catch (Throwable t) {
-          log.error("CRITICAL: could not convert opensearch document to EntityProduct for lidvid: " + hit.getId(), t);
+          log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: " + hit.getId(), t);
         }
     }
 
