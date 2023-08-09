@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.view;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -16,7 +17,6 @@ public class JsonProductSerializer extends MappingJackson2HttpMessageConverter {
 
     List<MediaType> supportMediaTypes = new ArrayList<MediaType>();
     supportMediaTypes.add(MediaType.APPLICATION_JSON);
-    supportMediaTypes.add(MediaType.TEXT_HTML);
     supportMediaTypes.add(MediaType.ALL);
     supportMediaTypes.add(new MediaType("*"));
 
@@ -30,8 +30,8 @@ public class JsonProductSerializer extends MappingJackson2HttpMessageConverter {
   @Override
   protected void writeInternal(Object object, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
-    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-
+    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
+    outputMessage.getHeaders().setContentDisposition(ContentDisposition.empty());
     super.writeInternal(object, outputMessage);
   }
 

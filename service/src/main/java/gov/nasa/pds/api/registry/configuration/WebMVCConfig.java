@@ -25,6 +25,8 @@ import gov.nasa.pds.api.registry.view.Pds4JsonProductSerializer;
 import gov.nasa.pds.api.registry.view.Pds4JsonProductsSerializer;
 import gov.nasa.pds.api.registry.view.Pds4XmlProductSerializer;
 import gov.nasa.pds.api.registry.view.Pds4XmlProductsSerializer;
+import gov.nasa.pds.api.registry.view.PdsProductTextHtmlSerializer;
+import gov.nasa.pds.api.registry.view.PdsProductsTextHtmlSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductXMLSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductsXMLSerializer;
 import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
@@ -67,14 +69,8 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    WebMVCConfig.log.info("Number of converters available " + Integer.toString(converters.size()));
-
-    // basic converter for /api-docs end-point, new with springdoc 2
-    converters.add(new ByteArrayHttpMessageConverter());
-
-    // basic converter for swagger-ui resources
-    converters.add(new StringHttpMessageConverter());
-
+    WebMVCConfig.log.info("Number of converters available at start " + Integer.toString(converters.size()));
+    
     // csv converters
     converters.add(new CsvErrorMessageSerializer());
     converters.add(new CsvPluralSerializer());
@@ -97,8 +93,22 @@ public class WebMVCConfig implements WebMvcConfigurer {
     converters.add(new PdsProductsXMLSerializer());
     converters.add(new XmlErrorMessageSerializer());
 
+    // text converters for PdsProduct(s)
+    converters.add(new PdsProductTextHtmlSerializer());
+    converters.add(new PdsProductsTextHtmlSerializer());
+
+    // Introduce basics that are not PDS related but may overload MediaType
+    // Put them after the PDS so that it always has priority except JSON below because it has */*
+    // basic converter for /api-docs end-point, new with springdoc 2
+    converters.add(new ByteArrayHttpMessageConverter());
+
+    // basic converter for swagger-ui resources
+    converters.add(new StringHttpMessageConverter());
+
     // default json converters
-    converters.add(new JsonProductSerializer());
     converters.add(new JsonErrorMessageSerializer());
+    converters.add(new JsonProductSerializer()); // this one must be last because it contains */*
+
+    WebMVCConfig.log.info("Number of converters available after adding locals " + Integer.toString(converters.size()));
   }
 }

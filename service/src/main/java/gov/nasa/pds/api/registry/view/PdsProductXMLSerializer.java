@@ -42,6 +42,7 @@ public class PdsProductXMLSerializer extends AbstractHttpMessageConverter<PdsPro
   protected void writeInternal(PdsProduct product, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
     try {
+      outputMessage.getHeaders().setContentType(MediaType.TEXT_XML); // must be before body is fetched
       OutputStream outputStream = outputMessage.getBody();
       XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
       outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", true);

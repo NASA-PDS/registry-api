@@ -35,7 +35,7 @@ public class CsvPluralSerializer extends AbstractHttpMessageConverter<WyriwygPro
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(Include.NON_NULL);
-
+    outputMessage.getHeaders().setContentType(MediaType.TEXT_PLAIN); // must be before body is fetched
     OutputStream os = outputMessage.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os);
     Utilities.fix(t.getSummary());

@@ -32,6 +32,7 @@ public class XmlErrorMessageSerializer extends AbstractHttpMessageConverter<Erro
   @Override
   protected void writeInternal(ErrorMessage t, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
+    outputMessage.getHeaders().setContentType(MediaType.TEXT_XML); // must be before body is fetched
     OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
     try {
       osw.write("<error><request>");

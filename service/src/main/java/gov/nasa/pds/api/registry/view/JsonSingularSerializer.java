@@ -3,7 +3,6 @@ package gov.nasa.pds.api.registry.view;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -37,7 +36,7 @@ public class JsonSingularSerializer extends AbstractHttpMessageConverter<Wyriwyg
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(Include.NON_NULL);
-
+    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
     OutputStream os = outputMessage.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os);
     WyriwygSerializer.writeJSON(t, wr, mapper);

@@ -13,8 +13,7 @@ import gov.nasa.pds.model.ErrorMessage;
 public class JsonErrorMessageSerializer extends AbstractHttpMessageConverter<ErrorMessage> {
   public JsonErrorMessageSerializer() {
     super(MediaType.APPLICATION_JSON, new MediaType("application", "kvp+json"),
-        new MediaType("application", "vnd.nasa.pds.pds4+json"), MediaType.ALL, new MediaType("*"),
-        MediaType.TEXT_HTML);
+        new MediaType("application", "vnd.nasa.pds.pds4+json"), MediaType.ALL, new MediaType("*"));
   }
 
   @Override
@@ -31,10 +30,8 @@ public class JsonErrorMessageSerializer extends AbstractHttpMessageConverter<Err
   @Override
   protected void writeInternal(ErrorMessage t, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
+    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
     OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
-
-    // force content type to JSON
-    // outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
     try {
       osw.write("{\"request\":\"");
       osw.write(t.getRequest());

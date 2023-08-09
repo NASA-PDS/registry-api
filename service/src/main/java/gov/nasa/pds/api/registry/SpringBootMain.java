@@ -26,6 +26,7 @@ public class SpringBootMain implements CommandLineRunner {
     ctx.refresh();
 
     new SpringApplication(SpringBootMain.class).run(args);
+    ctx.close();
   }
 
   class ExitException extends RuntimeException implements ExitCodeGenerator {

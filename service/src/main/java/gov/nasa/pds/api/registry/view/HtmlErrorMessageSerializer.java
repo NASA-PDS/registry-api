@@ -31,6 +31,7 @@ public class HtmlErrorMessageSerializer extends AbstractHttpMessageConverter<Err
   @Override
   protected void writeInternal(ErrorMessage t, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
+    outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML); // must be before body is fetched
     OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), "UTF-8");
     try {
       osw.write("<html><body><h1>Error Message</h1><h2>From Request</h2><p>");

@@ -37,13 +37,12 @@ public class PdsProductsTextHtmlSerializer extends AbstractHttpMessageConverter<
   protected void writeInternal(PdsProducts t, HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
     ObjectMapper mapper = new ObjectMapper();
+    outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON); // must be before body is fetched
     OutputStream os = outputMessage.getBody();
     OutputStreamWriter wr = new OutputStreamWriter(os, Charset.defaultCharset());
     mapper.setSerializationInclusion(Include.NON_NULL);
     Utilities.fix(t.getSummary());
-    wr.write("<html><body><h1>JSON as text</h1><p><pre>");
     wr.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(t));
-    wr.write("</pre></p></body></html>");
     wr.close();
   }
 }
