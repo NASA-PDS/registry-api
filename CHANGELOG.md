@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-08-01)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-08-09)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
@@ -31,6 +31,7 @@
 - Add parent bundle identifier to collection metadata [\#318](https://github.com/NASA-PDS/registry-api/issues/318)
 - As a EN Operator, I want to the registry API to be fault tolerant, analysis [\#297](https://github.com/NASA-PDS/registry-api/issues/297)
 - Update staging and production Registry APIs to increase window limit [\#291](https://github.com/NASA-PDS/registry-api/issues/291)
+- Add registry/docker compose integration tests to github action on dev branches [\#269](https://github.com/NASA-PDS/registry-api/issues/269)
 
 ## [v1.2.0](https://github.com/NASA-PDS/registry-api/tree/v1.2.0) (2023-04-11)
 
