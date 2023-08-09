@@ -258,7 +258,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   private String find_match(String from_user) {
     String match = from_user;
     StringTokenizer mimes = new StringTokenizer(from_user, ",");
-
+    
     while (mimes.hasMoreTokens()) {
       /* separate the mime_type/mime_subtype from ;* stuff */
       String mime = mimes.nextToken();
