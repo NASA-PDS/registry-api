@@ -28,7 +28,7 @@ on:
 
 jobs:
     branch-testing:
-        name: 🪵 Branch Testing
+        name: 🪵 Branch Testing
         runs-on: ubuntu-latest
         if: github.actor != 'pdsen-ci'
 
@@ -38,14 +38,14 @@ jobs:
 
         steps:
             -
-                name: 💳 Checkout
+                name: 💳 Checkout
                 uses: actions/checkout@v3
                 with:
                     lfs: true
                     fetch-depth: 0
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
             -
-                name: 💵 Maven Cache
+                name: 💵 Maven Cache
                 uses: actions/cache@v3
                 with:
                     path: ~/.m2/repository
@@ -57,14 +57,51 @@ jobs:
                     # To restore a set of files, we only need to match a prefix of the saved key.
                     restore-keys: pds-${{runner.os}}-mvn-
             -
-                name: ☕️ Set up OpenJDK
-                uses: actions/setup-java@v2
+                name: ☕️ Set up OpenJDK
+                uses: actions/setup-java@v3
                 with:
                     distribution: 'adopt'
                     java-version: ${{matrix.java-version}}
             -
-                name: 🩺 Test Software
-                run: mvn test
+                name: 🩺 Unit tests
+                run: mvn --quiet test
+            -
+                name: 📦 Package construction
+                run: mvn --quiet package
+            -
+                name: 🫙 Jar File Determination
+                id: jarrer
+                run: echo "jar_file=$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT)?\.jar')" >> $GITHUB_OUTPUT
+            -
+                name: 🎰 QEMU Multiple Machine Emulation
+                uses: docker/setup-qemu-action@v2
+            -
+                name: 🚢 Docker Buildx
+                uses: docker/setup-buildx-action@v2
+            -
+                name: 🧱 Image Construction and Publication
+                uses: docker/build-push-action@v3
+                with:
+                    context: ./
+                    file: ./docker/Dockerfile
+                    build-args: api_jar=${{steps.jarrer.outputs.jar_file}}
+                    push: false
+                    load: true
+                    tags: nasapds/registry-api-service:latest
+            -
+                name: ∫ Integration tests … hold onto your hats, pardners
+                run: |
+                    git clone --quiet https://github.com/NASA-PDS/registry.git
+                    cd registry/docker/certs
+                    ./generate-certs.sh
+                    cd ..
+                    docker image inspect nasapds/registry-api-service:latest >/dev/null
+                    docker compose \
+                        --ansi never --profile int-registry-batch-loader --project-name registry \
+                        up --detach --quiet-pull
+                    docker compose \
+                        --ansi never --profile int-registry-batch-loader --project-name registry \
+                        run --rm --no-TTY reg-api-integration-test-with-wait
 
 ...
 
