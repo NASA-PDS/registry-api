@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.PdsProduct;
@@ -15,6 +17,7 @@ import gov.nasa.pds.model.Summary;
 
 
 public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
+  private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
   private ObjectMapper objectMapper;
   private PdsProduct product = null;
   private PdsProducts products = null;
@@ -62,14 +65,22 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
     Set<String> uniqueProperties = new TreeSet<String>();
 
     for (Map<String, Object> kvp : hits) {
-      uniqueProperties
-          .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
+      try {
+        uniqueProperties
+            .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
-      products.addDataItem(SearchUtil.entityProductToAPIProduct(
-          objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-      products.getData().get(products.getData().size() - 1)
-          .setProperties((Map<String, List<String>>) (Map<String, ?>) ProductBusinessObject
-              .getFilteredProperties(kvp, null, null));
+        products.addDataItem(SearchUtil.entityProductToAPIProduct(
+            objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+        products.getData().get(products.getData().size() - 1)
+            .setProperties((Map<String, List<String>>) (Map<String, ?>) ProductBusinessObject
+                .getFilteredProperties(kvp, null, null));
+      } catch (Throwable t) {
+        String lidvid = "unknown";
+        if (kvp.containsKey("lidvid")) {
+          lidvid = kvp.get("lidvid").toString();
+        }
+        log.error ("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: " + lidvid, t);
+      }
     }
     count = products.getData().size();
 
@@ -87,15 +98,19 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
     Set<String> uniqueProperties = new TreeSet<String>();
 
     for (SearchHit hit : hits) {
-      kvp = hit.getSourceAsMap();
-      uniqueProperties
-          .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
+      try {
+        kvp = hit.getSourceAsMap();
+        uniqueProperties
+            .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
 
-      products.addDataItem(SearchUtil.entityProductToAPIProduct(
-          objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-      products.getData().get(products.getData().size() - 1)
-          .setProperties((Map<String, List<String>>) (Map<String, ?>) ProductBusinessObject
-              .getFilteredProperties(kvp, null, null));
+        products.addDataItem(SearchUtil.entityProductToAPIProduct(
+            objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+        products.getData().get(products.getData().size() - 1)
+            .setProperties((Map<String, List<String>>) (Map<String, ?>) ProductBusinessObject
+                .getFilteredProperties(kvp, null, null));
+        } catch (Throwable t) {
+          log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: " + hit.getId(), t);
+        }
     }
 
     summary.setProperties(new ArrayList<String>(uniqueProperties));
