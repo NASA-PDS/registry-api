@@ -18,10 +18,11 @@ tags:
     description: explore the product hierarchy
   - name: 3. by product classes
     description: search by class of product, bundles, collections, ...
-  - name: 4. deprecated
-    description: end-points which should not be used anymore
-  - name: 5. healthcheck
+  - name: 4. healthcheck
     description: end-point for evaluating system health
+  - name: 5. deprecated
+    description: end-points which should not be used anymore
+    
 
 externalDocs:
     description: User's Guide
@@ -35,7 +36,7 @@ paths:
   /healthcheck:
     get:
       tags:
-        - 5. healthcheck
+        - 4. healthcheck
       summary: |
         returns payload of system health information. Detection of any fatal issues results in a non-200 response. The primary intention of this endpoint is to provide an accurate assessment of the service to determine if ECS/Fargate should instantiate a new instance of the task.
       operationId: healthcheck
@@ -115,7 +116,7 @@ paths:
   /classes/{class}/{identifier}/members:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that are members of the given PDS product class and lid/lidvid.
       operationId: class-members
@@ -140,7 +141,7 @@ paths:
   /classes/{class}/{identifier}/members/{versions}:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that are members of the given PDS product class and lid/lidvid.
       operationId: class-members-vers
@@ -166,7 +167,7 @@ paths:
   /classes/{class}/{identifier}/members/members:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that are the members of the members of the given PDS product class and lid/lidvid.
       operationId: class-members-members
@@ -191,7 +192,7 @@ paths:
   /classes/{class}/{identifier}/members/members/{versions}:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that are the members of the members of the given PDS product class and lid/lidvid.
       operationId: class-members-members-vers
@@ -217,7 +218,7 @@ paths:
   /classes/{class}/{identifier}/member-of:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member.
       operationId: class-member-of
@@ -242,7 +243,7 @@ paths:
   /classes/{class}/{identifier}/member-of/{versions}:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member.
       operationId: class-member-of-vers
@@ -268,7 +269,7 @@ paths:
   /classes/{class}/{identifier}/member-of/member-of:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member of its members.
       operationId: class-member-of-of
@@ -293,7 +294,7 @@ paths:
   /classes/{class}/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: |
         returns one or more PDS Products that have the given PDS product class and lid/lidvid as a member of its members.
       operationId: class-member-of-of-vers
@@ -343,25 +344,6 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
 
-  /properties:
-    get:
-      tags:
-        - 1. all products
-      summary: |
-        return a list of all possible searchable metadata fields for products published in the registry
-      operationId: product-properties-list
-      responses:
-        '200':
-          $ref: "#/components/responses/PropertiesList"
-        '400':
-          $ref: "#/components/responses/Error"
-        '404':
-          $ref: "#/components/responses/Error"
-        '500':
-          $ref: "#/components/responses/Error"
-        '501':
-          $ref: "#/components/responses/Error"
-    parameters: []
 
   /products/{identifier}:
     get:
@@ -384,6 +366,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      
   /products/{identifier}/latest:
     get:
       tags:
@@ -405,6 +388,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
+      
   /products/{identifier}/all:
     get:
       tags:
@@ -431,6 +415,29 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
+      
+      
+  /properties:
+    get:
+      tags:
+        - 1. all products
+      summary: |
+        return a list of all possible searchable metadata fields for products published in the registry
+      operationId: product-properties-list
+      responses:
+        '200':
+          $ref: "#/components/responses/PropertiesList"
+        '400':
+          $ref: "#/components/responses/Error"
+        '404':
+          $ref: "#/components/responses/Error"
+        '500':
+          $ref: "#/components/responses/Error"
+        '501':
+          $ref: "#/components/responses/Error"
+    parameters: []      
+      
+      
   /products/{identifier}/members:
     get:
       tags:
@@ -632,7 +639,7 @@ paths:
   /bundles:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundle-list
       responses:
@@ -657,7 +664,7 @@ paths:
   /bundles/{identifier}:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid
       responses:
@@ -678,7 +685,7 @@ paths:
   /bundles/{identifier}/all:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid-all
       responses:
@@ -702,7 +709,7 @@ paths:
   /bundles/{identifier}/latest:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid-latest
       responses:
@@ -723,7 +730,7 @@ paths:
   /bundles/{identifier}/collections:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid-collections
       responses:
@@ -747,7 +754,7 @@ paths:
   /bundles/{identifier}/collections/all:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid-collections-all
       responses:
@@ -771,7 +778,7 @@ paths:
   /bundles/{identifier}/collections/latest:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid-collections-latest
       responses:
@@ -795,7 +802,7 @@ paths:
   /bundles/{identifier}/products:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: bundles-lidvid-products
       responses:
@@ -819,7 +826,7 @@ paths:
   /collections:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collection-list
       responses:
@@ -844,7 +851,7 @@ paths:
   /collections/{identifier}:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid
       responses:
@@ -865,7 +872,7 @@ paths:
   /collections/{identifier}/all:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid-all
       responses:
@@ -889,7 +896,7 @@ paths:
   /collections/{identifier}/latest:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid-latest
       responses:
@@ -910,7 +917,7 @@ paths:
   /collections/{identifier}/bundles:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid-bundles
       responses:
@@ -934,7 +941,7 @@ paths:
   /collections/{identifier}/products:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid-products
       responses:
@@ -958,7 +965,7 @@ paths:
   /collections/{identifier}/products/all:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid-products-all
       responses:
@@ -982,7 +989,7 @@ paths:
   /collections/{identifier}/products/latest:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: collections-lidvid-products-latest
       responses:
@@ -1006,7 +1013,7 @@ paths:
   /products/{identifier}/bundles:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: products-lidvid-bundles
       responses:
@@ -1030,7 +1037,7 @@ paths:
   /products/{identifier}/bundles/all:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: products-lidivid-bundles-all
       responses:
@@ -1054,7 +1061,7 @@ paths:
   /products/{identifier}/bundles/latest:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: products-lidvid-bundles-latest
       responses:
@@ -1078,7 +1085,7 @@ paths:
   /products/{identifier}/collections:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: products-lidvid-collections
       responses:
@@ -1102,7 +1109,7 @@ paths:
   /products/{identifier}/collections/all:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: products-lidvid-collections-all
       responses:
@@ -1126,7 +1133,7 @@ paths:
   /products/{identifier}/collections/latest:
     get:
       tags:
-        - 4. deprecated
+        - 5. deprecated
       summary: deprecated
       operationId: products-lidvid-collections-latest
       responses:
