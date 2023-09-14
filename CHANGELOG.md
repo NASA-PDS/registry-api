@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-08-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-09-14)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
@@ -11,8 +11,10 @@
 
 **Defects:**
 
+- field case in response and query have mismatched cases [\#362](https://github.com/NASA-PDS/registry-api/issues/362) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - `Accept:*` response not defaulting to valid application/json [\#356](https://github.com/NASA-PDS/registry-api/issues/356) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - api does not return information that OpenSearch says is public [\#355](https://github.com/NASA-PDS/registry-api/issues/355) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Request for json+pds4 response fails in production [\#349](https://github.com/NASA-PDS/registry-api/issues/349) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - API falsely reports 10000 hits for hits\>10000 [\#343](https://github.com/NASA-PDS/registry-api/issues/343) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - members of a bundle does not work on new test dataset [\#341](https://github.com/NASA-PDS/registry-api/issues/341) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - PdsVid erroneously fails major-version of zero during validation [\#334](https://github.com/NASA-PDS/registry-api/issues/334)
@@ -21,6 +23,7 @@
 
 **Other closed issues:**
 
+- Create Cloudwatch alarm when Registry API throws an error [\#366](https://github.com/NASA-PDS/registry-api/issues/366)
 - Investigate usage of registry api [\#364](https://github.com/NASA-PDS/registry-api/issues/364)
 - Update the aws\_lb\_target\_group to use the new healthcheck endpoint [\#347](https://github.com/NASA-PDS/registry-api/issues/347)
 - Design Logging and Monitoring Approach for Nucleus [\#342](https://github.com/NASA-PDS/registry-api/issues/342)
