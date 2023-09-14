@@ -104,7 +104,7 @@ jobs:
                 uses: docker/build-push-action@v3
                 with:
                     context: ./
-                    file: ./service/docker/Dockerfile
+                    file: ./docker/Dockerfile
                     build-args: api_jar=${{steps.jartag.outputs.jar_file}}
                     platforms: linux/amd64,linux/arm64
                     push: true
