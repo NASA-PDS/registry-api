@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-09-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-10-06)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
 
@@ -11,6 +11,7 @@
 
 **Defects:**
 
+- /products API endpoint is broken [\#379](https://github.com/NASA-PDS/registry-api/issues/379)
 - field case in response and query have mismatched cases [\#362](https://github.com/NASA-PDS/registry-api/issues/362) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - `Accept:*` response not defaulting to valid application/json [\#356](https://github.com/NASA-PDS/registry-api/issues/356) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - api does not return information that OpenSearch says is public [\#355](https://github.com/NASA-PDS/registry-api/issues/355) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
