@@ -57,7 +57,7 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
       WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       try {
         kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
-        kvp.setValue(String.valueOf(pair.getValue()));
+        kvp.setValue(getStringValueOf(pair.getValue()));
         product.addKeyValuePairsItem(kvp);
       } catch (UnsupportedSearchProperty e) {
         log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
@@ -80,7 +80,7 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
         WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
         try {
           kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
-          kvp.setValue(String.valueOf(pair.getValue()));
+          kvp.setValue(getStringValueOf(pair.getValue()));
           product.addKeyValuePairsItem(kvp);
         } catch (UnsupportedSearchProperty e) {
           log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
