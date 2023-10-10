@@ -1,8 +1,16 @@
 # Changelog
 
-## [release/1.3.1](https://github.com/NASA-PDS/registry-api/tree/release/1.3.1) (2023-10-10)
+## [1.3.0](https://github.com/NASA-PDS/registry-api/tree/1.3.0) (2023-10-10)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.3.0...release/1.3.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...1.3.0)
+
+**Other closed issues:**
+
+- Have the inner list shown as string with | delimiter for singular results [\#381](https://github.com/NASA-PDS/registry-api/issues/381)
+
+## [v1.3.1](https://github.com/NASA-PDS/registry-api/tree/v1.3.1) (2023-10-10)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.3.0...v1.3.1)
 
 ## [release/1.3.0](https://github.com/NASA-PDS/registry-api/tree/release/1.3.0) (2023-10-10)
 
