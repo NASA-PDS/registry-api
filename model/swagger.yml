@@ -22,7 +22,7 @@ tags:
     description: end-point for evaluating system health
   - name: 5. deprecated
     description: end-points which should not be used anymore
-    
+
 
 externalDocs:
     description: User's Guide
@@ -366,7 +366,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-      
+
   /products/{identifier}/latest:
     get:
       tags:
@@ -388,7 +388,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
-      
+
   /products/{identifier}/all:
     get:
       tags:
@@ -415,8 +415,8 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/Start"
-      
-      
+
+
   /properties:
     get:
       tags:
@@ -435,9 +435,9 @@ paths:
           $ref: "#/components/responses/Error"
         '501':
           $ref: "#/components/responses/Error"
-    parameters: []      
-      
-      
+    parameters: []
+
+
   /products/{identifier}/members:
     get:
       tags:
@@ -1515,7 +1515,7 @@ components:
           $ref: '#/components/schemas/metadata'
         properties:
           type: object
-          description: properties extracted from pds4 model, syntax for property name is {namespace}:{property}[{namespace}:{property}]*
+          description: propertie's values extracted from pds4 model, as a dictionnary, syntax for property name is <namespace>:<property>[<namespace>:<property>]*
           additionalProperties:
             $ref: '#/components/schemas/propertyArrayValues'
           xml:

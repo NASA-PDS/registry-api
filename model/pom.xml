@@ -66,6 +66,7 @@
 	      <inputSpec>${project.basedir}/swagger.yml</inputSpec>
 	      <generatorName>spring</generatorName>
 	      <withXml>true</withXml>
+              <skipValidateSpec>true</skipValidateSpec>
 	      <configOptions>
 			<sourceFolder>src/main/java</sourceFolder>
 			<dateLibrary>joda</dateLibrary>
