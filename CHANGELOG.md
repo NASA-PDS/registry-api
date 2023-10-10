@@ -1,8 +1,8 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-10-09)
+## [release/1.3.0](https://github.com/NASA-PDS/registry-api/tree/release/1.3.0) (2023-10-09)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/test_new_release...release/1.3.0)
 
 **Requirements:**
 
@@ -19,8 +19,6 @@
 - Request for json+pds4 response fails in production [\#349](https://github.com/NASA-PDS/registry-api/issues/349) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - API falsely reports 10000 hits for hits\>10000 [\#343](https://github.com/NASA-PDS/registry-api/issues/343) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - members of a bundle does not work on new test dataset [\#341](https://github.com/NASA-PDS/registry-api/issues/341) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- PdsVid erroneously fails major-version of zero during validation [\#334](https://github.com/NASA-PDS/registry-api/issues/334)
-- Product summary object has an incomplete "properties" set [\#277](https://github.com/NASA-PDS/registry-api/issues/277) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - the request url in the error message does not make sense [\#262](https://github.com/NASA-PDS/registry-api/issues/262) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 
 **Other closed issues:**
@@ -30,19 +28,35 @@
 - Update the aws\_lb\_target\_group to use the new healthcheck endpoint [\#347](https://github.com/NASA-PDS/registry-api/issues/347)
 - Design Logging and Monitoring Approach for Nucleus [\#342](https://github.com/NASA-PDS/registry-api/issues/342)
 - Investigate how Google DataSet Search can help with the Search [\#338](https://github.com/NASA-PDS/registry-api/issues/338)
-- Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
-- Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
-- Remove ./support tree from repository [\#321](https://github.com/NASA-PDS/registry-api/issues/321)
 - Move terraform and docker folder to the root of the repository [\#320](https://github.com/NASA-PDS/registry-api/issues/320)
 - Add parent collection identifier to product metadata [\#319](https://github.com/NASA-PDS/registry-api/issues/319)
 - Add parent bundle identifier to collection metadata [\#318](https://github.com/NASA-PDS/registry-api/issues/318)
+- Add registry/docker compose integration tests to github action on dev branches [\#269](https://github.com/NASA-PDS/registry-api/issues/269)
+
+## [test_new_release](https://github.com/NASA-PDS/registry-api/tree/test_new_release) (2023-06-06)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.2.0...test_new_release)
+
+**Defects:**
+
+- PdsVid erroneously fails major-version of zero during validation [\#334](https://github.com/NASA-PDS/registry-api/issues/334)
+- Product summary object has an incomplete "properties" set [\#277](https://github.com/NASA-PDS/registry-api/issues/277) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
+**Other closed issues:**
+
+- Make the registry-api 1.2.0 deployment work on gamma [\#330](https://github.com/NASA-PDS/registry-api/issues/330)
+- Remove the 'products' in the /classes [\#326](https://github.com/NASA-PDS/registry-api/issues/326)
+- Remove ./support tree from repository [\#321](https://github.com/NASA-PDS/registry-api/issues/321)
 - As a EN Operator, I want to the registry API to be fault tolerant, analysis [\#297](https://github.com/NASA-PDS/registry-api/issues/297)
 - Update staging and production Registry APIs to increase window limit [\#291](https://github.com/NASA-PDS/registry-api/issues/291)
-- Add registry/docker compose integration tests to github action on dev branches [\#269](https://github.com/NASA-PDS/registry-api/issues/269)
 
 ## [v1.2.0](https://github.com/NASA-PDS/registry-api/tree/v1.2.0) (2023-04-11)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...v1.2.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.2.0...v1.2.0)
+
+## [release/1.2.0](https://github.com/NASA-PDS/registry-api/tree/release/1.2.0) (2023-04-11)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.12...release/1.2.0)
 
 **Requirements:**
 
@@ -98,7 +112,11 @@
 
 ## [v1.1.12](https://github.com/NASA-PDS/registry-api/tree/v1.1.12) (2022-12-22)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...v1.1.12)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.12...v1.1.12)
+
+## [release/1.1.12](https://github.com/NASA-PDS/registry-api/tree/release/1.1.12) (2022-12-22)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.11...release/1.1.12)
 
 **Requirements:**
 
@@ -115,7 +133,11 @@
 
 ## [v1.1.11](https://github.com/NASA-PDS/registry-api/tree/v1.1.11) (2022-12-14)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.1.11)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.1.11...v1.1.11)
+
+## [release/1.1.11](https://github.com/NASA-PDS/registry-api/tree/release/1.1.11) (2022-12-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...release/1.1.11)
 
 **Defects:**
 
