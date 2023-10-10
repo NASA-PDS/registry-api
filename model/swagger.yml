@@ -1515,7 +1515,7 @@ components:
           $ref: '#/components/schemas/metadata'
         properties:
           type: object
-          description: propertie's values extracted from pds4 model, as a dictionnary, syntax for property name is <namespace>:<property>[<namespace>:<property>]*
+          description: propertie's values extracted from pds4 model, as a dictionnary, syntax for property name is {namespace}:{property}[{namespace}:{property}]*
           additionalProperties:
             $ref: '#/components/schemas/propertyArrayValues'
           xml:
