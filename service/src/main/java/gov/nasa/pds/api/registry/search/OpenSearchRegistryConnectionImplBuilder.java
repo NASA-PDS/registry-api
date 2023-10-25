@@ -55,6 +55,11 @@ class OpenSearchRegistryConnectionImplBuilder {
     return timeOutSeconds;
   }
 
+  
+  public boolean getCCSEnabled() {
+    return CCSEnabled;
+  }
+  
   public boolean isSsl() {
     return ssl;
   }
@@ -66,6 +71,7 @@ class OpenSearchRegistryConnectionImplBuilder {
   private final String registryIndex;
   private final String registryRefIndex;
   private final int timeOutSeconds;
+  private final boolean CCSEnabled;
   private final boolean ssl;
   private final boolean sslCertificateCNVerification;
 
@@ -78,6 +84,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.registryIndex = "registry";
     this.registryRefIndex = "registry-refs";
     this.timeOutSeconds = 5;
+    this.CCSEnabled = true;
     this.username = null;
     this.password = null;
     this.ssl = false;
@@ -91,6 +98,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.registryIndex = openSearchConfig.getRegistryIndex();
     this.registryRefIndex = openSearchConfig.getRegistryRefIndex();
     this.timeOutSeconds = openSearchConfig.getTimeOutSeconds();
+    this.CCSEnabled = openSearchConfig.getCCSEnabled();
     this.ssl = openSearchConfig.isSsl();
     this.sslCertificateCNVerification = openSearchConfig.doesSslCertificateVCNerification();
     this.username = openSearchConfig.getUsername();
