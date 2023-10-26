@@ -38,7 +38,7 @@ public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
   public static String CLUSTER_REMOTE_KEY = "cluster.remote";
 
   private static final Logger log = LoggerFactory.getLogger(OpenSearchRegistryConnectionImpl.class);
-
+ 
   private RestHighLevelClient restHighLevelClient;
   private String registryIndex;
   private String registryRefIndex;
@@ -106,8 +106,15 @@ public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 
     this.restHighLevelClient = new RestHighLevelClient(clientBuilder);
 
-    this.crossClusterNodes = checkCCSConfig();
-    this.registryIndex = createCCSIndexString(connectionBuilder.getRegistryIndex());
+    String registryIndex = connectionBuilder.getRegistryIndex();
+    if (connectionBuilder.getCCSEnabled()) {
+      this.crossClusterNodes = checkCCSConfig();
+      this.registryIndex = createCCSIndexString(registryIndex);
+    }
+    else {
+      this.registryIndex = registryIndex;
+    }
+    
     this.registryRefIndex = createCCSIndexString(connectionBuilder.getRegistryRefIndex());
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 
