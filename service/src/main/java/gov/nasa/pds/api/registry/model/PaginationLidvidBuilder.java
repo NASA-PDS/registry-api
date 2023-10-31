@@ -8,29 +8,32 @@ import gov.nasa.pds.api.registry.LidvidsContext;
 
 class PaginationLidvidBuilder implements Pagination<String> {
   final private int limit;
-  final private int start;
+  final private List<String> searchAfter;
   final private List<String> page = new ArrayList<String>();
 
   private int total = 0;
 
   PaginationLidvidBuilder(LidvidsContext bounds) {
     this.limit = bounds.getLimit();
-    this.start = bounds.getStart();
+    this.searchAfter = bounds.getSearchAfter();
   }
 
   void addAll(List<String> data) {
-    int remainingDataCount = this.limit - this.page.size();
+    //    TODO: implement searchAfter pagination
+    throw new RuntimeException("searchAfter pagination not yet implemented");
 
-    boolean trimDataHead = this.total < this.start;
-    int sliceBeginIdx = trimDataHead ? Math.min(this.start - this.total, data.size()) : 0;
-
-    boolean trimDataTail = sliceBeginIdx + remainingDataCount < data.size();
-    int sliceEndIdx =
-        trimDataTail ? Math.min(sliceBeginIdx + remainingDataCount, data.size()) : data.size();
-
-    List<String> slice = data.subList(sliceBeginIdx, sliceEndIdx);
-    page.addAll(slice);
-    this.total += data.size();
+//    int remainingDataCount = this.limit - this.page.size();
+//
+//    boolean trimDataHead = this.total < this.start;
+//    int sliceBeginIdx = trimDataHead ? Math.min(this.start - this.total, data.size()) : 0;
+//
+//    boolean trimDataTail = sliceBeginIdx + remainingDataCount < data.size();
+//    int sliceEndIdx =
+//        trimDataTail ? Math.min(sliceBeginIdx + remainingDataCount, data.size()) : data.size();
+//
+//    List<String> slice = data.subList(sliceBeginIdx, sliceEndIdx);
+//    page.addAll(slice);
+//    this.total += data.size();
   }
 
   void add(Object sourceMapValue) {
@@ -61,8 +64,8 @@ class PaginationLidvidBuilder implements Pagination<String> {
   }
 
   @Override
-  public int start() {
-    return this.start;
+  public List<String> searchAfter() {
+    return this.searchAfter;
   }
 
   @Override

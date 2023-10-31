@@ -9,7 +9,8 @@ public interface Pagination<T> {
 
   public int size(); // number of items T in List<T> returned by page()
 
-  public int start(); // first index of page is this index in all possible items T over all pages
+//  TODO: reimplement this as proper searchAfter (key[], value[]) object, vs hardcoded single-value (lidvid)
+  public List<String> searchAfter(); // lidvid of last element of previous page in this index in all possible items T over all pages
 
   public int total(); // total number of items T over all pages
 }
