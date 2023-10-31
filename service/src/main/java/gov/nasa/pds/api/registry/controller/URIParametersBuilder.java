@@ -89,21 +89,38 @@ public class URIParametersBuilder {
   }
 
   public URIParametersBuilder setSort(List<String> sort) {
-    if (sort != null)
+    if (searchAfter != null) {
+      throw new RuntimeException(
+          "Cannot call URIParmetersBuilder.setSort() after URIParametersBuilder.setSearchAfter() has already been called");
+    }
+
+    if (sort != null) {
       this.sort = sort;
+    }
+
     return this;
   }
 
 
-  public URIParametersBuilder setSearchAfter(List<String> searchAfterStr) {
-    if (searchAfterStr == null || searchAfterStr.isEmpty()) {
-      this.searchAfter = null;
-    } else {
-//    TODO: Reimplement with support for array-like values, as this will be necessary if/when additional user sorts are implemented
-      this.searchAfter = searchAfterStr;
+  public URIParametersBuilder setSearchAfter(List<String> sortFields, List<String> searchAfterValues) {
+    sortFields = sortFields == null ? new ArrayList<>() : sortFields;
+
+    if (searchAfterValues == null || searchAfterValues.isEmpty()) {
+//      if searchAfterValues is null/empty, fill with empty values to match length of sortFields
+      searchAfterValues = new ArrayList<>();
+      while (searchAfterValues.size() < sortFields.size()) {
+        searchAfterValues.add("");
+      }
     }
 
-    return this;
+    if (sortFields.size() != searchAfterValues.size()) {
+        throw new RuntimeException("Cannot set searchAfterValues with length not matching sortFields");
+    }
+
+    this.sort = sortFields;
+    this.searchAfter = searchAfterValues;
+
+  return this;
   }
 
   public URIParametersBuilder setVerifyClassAndId(boolean verify) {

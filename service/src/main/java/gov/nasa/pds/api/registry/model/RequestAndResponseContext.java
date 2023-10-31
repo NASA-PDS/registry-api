@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.search.SearchHit;
@@ -258,7 +259,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   private String find_match(String from_user) {
     String match = from_user;
     StringTokenizer mimes = new StringTokenizer(from_user, ",");
-    
+
     while (mimes.hasMoreTokens()) {
       /* separate the mime_type/mime_subtype from ;* stuff */
       String mime = mimes.nextToken();
@@ -373,9 +374,24 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
             "Registry returned unexpected response (could not parse hits count from response)");
       }
     } else {
+
       request.source().size(this.getLimit());
-      request.source().from(this.getStart());
-      this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
+      this.getSort().forEach(request.source()::sort);  // Currently, no user-set sort order is implemented
+      if (!String.join("", this.getSearchAfter()).isEmpty()) {  // if searchAfter contains no non-empty values
+        request.source().searchAfter(this.getSearchAfter().toArray());
+      }
+
+      long responseStart = System.currentTimeMillis();
+      SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+      long responseStop = System.currentTimeMillis();
+      long responseElapsed = responseStop - responseStart;
+
+      long getHitsStart = responseStop;
+      this.setResponse(response.getHits());
+      long getHitsStop = System.currentTimeMillis();
+      long getHitsElapsed = getHitsStop - getHitsStart;
+
+      System.out.println("response took " + responseElapsed + "ms.  getHits took " + getHitsElapsed + "ms");
     }
   }
 }
