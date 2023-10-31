@@ -43,7 +43,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private PdsProductIdentifier productIdentifier;
   final private List<String> fields;
   final private List<String> sort;
-  final private int start;
+  final private List<String> searchAfter;
   final private int limit;
 
   final private boolean singletonResultExpected;
@@ -134,7 +134,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     this.productIdentifier = LidVidUtils.resolve(parameters.getIdentifier(), versionSelectionScope,
         controlContext, RequestBuildContextFactory
             .given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-    this.start = parameters.getStart();
+    this.searchAfter = parameters.getSearchAfter();
     this.limit = parameters.getLimit();
     this.singletonResultExpected = parameters.getSingletonResultExpected();
     this.sort = parameters.getSort();
@@ -171,8 +171,8 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     return this.sort;
   }
 
-  public int getStart() {
-    return this.start;
+  public List<String> getSearchAfter() {
+    return this.searchAfter;
   }
 
   public int getLimit() {
@@ -292,7 +292,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
       log.warn("   sorting: " + String.valueOf(this.getSort().size()));
       for (String sort : this.getSort())
         log.warn("      " + sort);
-      log.warn("   start: " + String.valueOf(this.getStart()));
+      log.warn("   searchAfter: " + String.valueOf(this.getSearchAfter()));
       throw new NothingFoundException();
     }
     return response;
@@ -301,7 +301,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   public void setResponse(HitIterator hits, int real_total) {
     Summary summary = new Summary();
     summary.setQ(this.getQueryString());
-    summary.setStart(this.getStart());
+    summary.setSearchAfter(this.getSearchAfter());
     summary.setLimit(this.getLimit());
     summary.setSort(this.getSort());
     summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields));
@@ -326,7 +326,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     if (hits != null) {
       Summary summary = new Summary();
       summary.setQ(this.getQueryString());
-      summary.setStart(this.getStart());
+      summary.setSearchAfter(this.getSearchAfter());
       summary.setLimit(this.getLimit());
       summary.setSort(this.getSort());
       summary.setHits(total_hits);

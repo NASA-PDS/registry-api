@@ -2,6 +2,8 @@ package gov.nasa.pds.api.registry.model;
 
 import gov.nasa.pds.api.registry.LidvidsContext;
 
+import java.util.List;
+
 class Unlimited implements LidvidsContext {
   final private String lidvid;
 
@@ -20,8 +22,8 @@ class Unlimited implements LidvidsContext {
   }
 
   @Override
-  public Integer getStart() {
-    return 0;
+  public List<String> getSearchAfter() {
+    return null;
   }
 
   @Override

@@ -20,7 +20,7 @@ public class URIParametersBuilder {
   public String group = "";
   public String identifier = "";
   public List<String> keywords = new ArrayList<String>();
-  public Integer start = 0;
+  public List<String> searchAfter = null;
   public Integer limit = 0; // Actual default value is passed in from the upstream frames of the
                             // call stack, but it's unclear where it comes from. Not swagger.yml,
                             // at least.
@@ -94,18 +94,15 @@ public class URIParametersBuilder {
     return this;
   }
 
-  public URIParametersBuilder setStart(Integer start) {
-    if (start == null) {
-      return this;
+
+  public URIParametersBuilder setSearchAfter(List<String> searchAfterStr) {
+    if (searchAfterStr == null || searchAfterStr.isEmpty()) {
+      this.searchAfter = null;
+    } else {
+//    TODO: Reimplement with support for array-like values, as this will be necessary if/when additional user sorts are implemented
+      this.searchAfter = searchAfterStr;
     }
 
-    if (start < 0) {
-      String errMsg = String.format("start index must be 0 or higher (got '%d'))", start);
-      throw new IllegalArgumentException(errMsg);
-    }
-
-    this.start = start;
-    this.singletonResultExpected = false;
     return this;
   }
 

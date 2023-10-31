@@ -248,11 +248,11 @@ public class PaginationLidvidBuilderTest {
 
 
 class LidvidsContextStub implements LidvidsContext {
-  private final int start;
+  private final List<String> searchAfter;
   private final int limit;
 
   public LidvidsContextStub(int start, int limit) {
-    this.start = start;
+    this.searchAfter = null;
     this.limit = limit;
   }
 
@@ -267,8 +267,8 @@ class LidvidsContextStub implements LidvidsContext {
   }
 
   @Override
-  public Integer getStart() {
-    return start;
+  public List<String> getSearchAfter() {
+    return searchAfter;
   }
 
   @Override

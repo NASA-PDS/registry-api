@@ -37,7 +37,7 @@ class URIParameters implements UserContext {
   private final String group;
   private final String identifier;
   private final List<String> keywords;
-  private final Integer start;
+  private final List<String> searchAfter;
   private final Integer limit;
   private final Boolean singletonResultExpected;
   private final String query;
@@ -56,7 +56,7 @@ class URIParameters implements UserContext {
     this.group = builder.group;
     this.identifier = builder.identifier;
     this.keywords = builder.keywords;
-    this.start = builder.start;
+    this.searchAfter = builder.searchAfter;
     this.limit = builder.limit;
     this.singletonResultExpected = builder.singletonResultExpected;
     this.query = builder.query;
@@ -129,8 +129,8 @@ class URIParameters implements UserContext {
   }
 
   @Override
-  public Integer getStart() {
-    return start;
+  public List<String> getSearchAfter() {
+    return searchAfter;
   }
 
   public boolean getVerifyClassAndId() {
