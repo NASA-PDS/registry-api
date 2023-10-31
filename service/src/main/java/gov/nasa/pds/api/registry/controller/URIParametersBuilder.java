@@ -73,7 +73,7 @@ public class URIParametersBuilder {
     }
 
     if (limit < 0) {
-      String errMsg = String.format("start index must be 0 or higher (got '%d'))", start);
+      String errMsg = String.format("hit limit must be 0 or higher (got '%d'))", limit);
       throw new IllegalArgumentException(errMsg);
     }
 
