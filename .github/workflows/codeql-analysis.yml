@@ -59,6 +59,13 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
 
+    -
+        name: ☕️ Set up OpenJDK
+        uses: actions/setup-java@v3
+        with:
+            distribution: 'adopt'
+            java-version: 17
+
     - run: |
        mvn clean install
 
