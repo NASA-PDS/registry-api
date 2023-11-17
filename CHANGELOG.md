@@ -1,8 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-10-26)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-11-17)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...«unknown»)
+
+**Defects:**
+
+- api is not returning consistent answer  [\#229](https://github.com/NASA-PDS/registry-api/issues/229) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
