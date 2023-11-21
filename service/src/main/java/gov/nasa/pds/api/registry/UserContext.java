@@ -19,7 +19,9 @@ public interface UserContext extends LidvidsContext {
 
   public ProductVersionSelector getSelector();
 
-  public List<String> getSort();
+  public List<String> getSortFields();
+
+  public List<String> getSearchAfterValues();
 
   public String getVersion();
 }

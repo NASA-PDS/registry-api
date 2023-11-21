@@ -135,10 +135,10 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     this.productIdentifier = LidVidUtils.resolve(parameters.getIdentifier(), versionSelectionScope,
         controlContext, RequestBuildContextFactory
             .given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-    this.searchAfter = parameters.getSearchAfter();
+    this.searchAfter = parameters.getSearchAfterValues();
     this.limit = parameters.getLimit();
     this.singletonResultExpected = parameters.getSingletonResultExpected();
-    this.sort = parameters.getSort();
+    this.sort = parameters.getSortFields();
     this.presetCriteria = outPreset;
     this.selector = parameters.getSelector();
   }

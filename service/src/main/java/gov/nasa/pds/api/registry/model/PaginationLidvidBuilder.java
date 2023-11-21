@@ -8,14 +8,16 @@ import gov.nasa.pds.api.registry.LidvidsContext;
 
 class PaginationLidvidBuilder implements Pagination<String> {
   final private int limit;
-  final private List<String> searchAfter;
+  private List<String> sortFields;
+  private List<String> searchAfterValues;
   final private List<String> page = new ArrayList<String>();
 
   private int total = 0;
 
   PaginationLidvidBuilder(LidvidsContext bounds) {
     this.limit = bounds.getLimit();
-    this.searchAfter = bounds.getSearchAfter();
+    this.sortFields = bounds.getSortFields();
+    this.searchAfterValues = bounds.getSearchAfterValues();
   }
 
   void addAll(List<String> data) {
@@ -64,8 +66,11 @@ class PaginationLidvidBuilder implements Pagination<String> {
   }
 
   @Override
-  public List<String> searchAfter() {
-    return this.searchAfter;
+  public List<String> getSortFields() {
+    return this.sortFields;
+  }
+  public List<String> getSearchAfterValues() {
+    return this.searchAfterValues;
   }
 
   @Override

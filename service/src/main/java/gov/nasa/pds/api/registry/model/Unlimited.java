@@ -22,8 +22,13 @@ class Unlimited implements LidvidsContext {
   }
 
   @Override
-  public List<String> getSearchAfter() {
-    return null;
+  public List<String> getSortFields() {
+    return List.of("ops:Harvest_Info/ops:harvest_date_time");
+  }
+
+  @Override
+  public List<String> getSearchAfterValues() {
+    return List.of("");  // TODO: Check whether this actually works or if it needs to be set per-page in the contexts in which Unlimited is used
   }
 
   @Override

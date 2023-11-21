@@ -7,7 +7,9 @@ public interface LidvidsContext {
 
   public Integer getLimit();
 
-  public List<String> getSearchAfter();
+  public List<String> getSortFields();
+
+  public List<String> getSearchAfterValues();
 
   public boolean getSingletonResultExpected();
 }
