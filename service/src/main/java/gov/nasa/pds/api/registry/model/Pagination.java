@@ -5,12 +5,15 @@ import java.util.List;
 public interface Pagination<T> {
   public int limit(); // maximum number of items T in a page
 
-  public List<T> page(); // actual page of items T
+  public List<T> page(); // return page of items T
 
   public int size(); // number of items T in List<T> returned by page()
 
-//  TODO: reimplement this as proper searchAfter (key[], value[]) object, vs hardcoded single-value (lidvid)
-  public List<String> searchAfter(); // lidvid of last element of previous page in this index in all possible items T over all pages
+  public List<String> getSortFields(); // sequence of sort fields, for use with searchAfter
+
+  public List<String>
+      getSearchAfterValues(); // values of sort fields for the last element in the most-recently-returned
+                     // page
 
   public int total(); // total number of items T over all pages
 }
