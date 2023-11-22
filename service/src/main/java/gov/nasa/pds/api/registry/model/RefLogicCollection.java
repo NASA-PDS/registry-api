@@ -3,12 +3,11 @@ package gov.nasa.pds.api.registry.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.ControlContext;
@@ -18,10 +17,8 @@ import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.UserContext;
-import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
-import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
-import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
+import gov.nasa.pds.api.registry.search.QuickSearch;
 import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +34,8 @@ import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
 import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
+
+import static gov.nasa.pds.api.registry.model.identifiers.LidVidUtils.getAllLidVidsByLids;
 
 @Immutable
 class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
@@ -66,7 +65,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
             RequestConstructionContextFactory.given("collection_lidvid", uid.getLidVid(), true),
             control.getConnection()).build(RequestBuildContextFactory.given(false, "product_lid"),
                 control.getConnection().getRegistryRefIndex()))) {
-      productLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control,
+      productLidvids.addAll(getAllLidVidsByLids(control,
           RequestBuildContextFactory.given(false, "lidvid",
               ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints()),
           productLidvids.convert(kvp.get("product_lid"))));
@@ -100,56 +99,29 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
   }
 
   static Pagination<String> parents(ControlContext control, ProductVersionSelector selection,
-      LidvidsContext uid) throws IOException, LidVidNotFoundException {
+      LidvidsContext searchContext) throws IOException, LidVidNotFoundException {
     // TODO: Fully convert this function's internals (and eventually, interface) to use
     // PdsProductIdentifier classes instead of strings
-    List<String> keys = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary",
-        "ref_lidvid_collection", "ref_lidvid_collection_secondary");
-    List<String> sortedLidStrings;
-    Set<String> lids = new HashSet<String>();
-    PdsProductIdentifier productIdentifier = PdsProductIdentifier.fromString(uid.getLidVid());
-    PaginationLidvidBuilder bundleLidvids = new PaginationLidvidBuilder(uid);
 
-    log.info("Find parents of a collection -- both all and latest");
-    log.info("Find parents of collection: " + uid.getLidVid() + "  --- "
-        + productIdentifier.getLid().toString());
-    for (String key : keys) {
-      for (final Map<String, Object> kvp : new HitIterator(
-          control.getConnection().getRestHighLevelClient(),
-          new SearchRequestFactory(RequestConstructionContextFactory.given(key,
-              productIdentifier.getLid().toString(), true), control.getConnection())
-                  .build(
-                      RequestBuildContextFactory.given(true, "lid",
-                          ReferencingLogicTransmuter.Bundle.impl().constraints()),
-                      control.getConnection().getRegistryIndex()))) {
-        lids.addAll(bundleLidvids.convert(kvp.get("lid")));
-      }
-    }
-    sortedLidStrings = new ArrayList<String>(lids);
-    Collections.sort(sortedLidStrings); // TODO: Implement comparison for PdsLids (only with other
-                                        // PdsLids)
-    List<PdsProductIdentifier> sortedLids =
-        sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
+    PdsProductIdentifier targetProduct = PdsProductIdentifier.fromString(searchContext.getLidVid());
+    PaginationLidvidBuilder bundleLidvidsPager = new PaginationLidvidBuilder(searchContext);
 
-    if (selection == ProductVersionSelector.ALL) {
-      bundleLidvids.addAll(LidVidUtils.getAllLidVidsByLids(control,
-          RequestBuildContextFactory.empty(), sortedLidStrings));
-    } else {
-      RequestBuildContext reqContext = RequestBuildContextFactory.empty();
-      for (PdsProductIdentifier lid : sortedLids) {
-        try {
-          PdsLidVid latestLidvid =
-              LidVidUtils.getLatestLidVidByLid(control, reqContext, lid.getLid().toString());
-          bundleLidvids.add(latestLidvid.toString());
-        } catch (LidVidNotFoundException e) {
-          log.warn(
-              "LID is referenced but is in non-findable archive-status or does not exist in db: "
-                  + e.toString());
-        }
-      }
-    }
+    List<String> parentIds = QuickSearch.getValues(control.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
 
-    return bundleLidvids;
+//    Get all the LIDVID refs, convert the LID refs to LIDVIDs, then add them all together
+    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::isLidvid).collect(Collectors.toSet());
+    List<String> parentLids = parentIds.stream().filter(Predicate.not(PdsProductIdentifier::isLidvid)).collect(Collectors.toList());
+    List<String> implicitParentLidvids =
+        getAllLidVidsByLids(
+            control,
+            RequestBuildContextFactory.given(
+                false, "lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
+            parentLids);
+    parentLidvids.addAll(implicitParentLidvids);
+
+    bundleLidvidsPager.addAll(new ArrayList<>(parentLidvids));
+
+    return bundleLidvidsPager;
   }
 
   @Override
