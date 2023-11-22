@@ -21,21 +21,8 @@ class PaginationLidvidBuilder implements Pagination<String> {
   }
 
   void addAll(List<String> data) {
-    //    TODO: implement searchAfter pagination
-    throw new RuntimeException("searchAfter pagination not yet implemented");
-
-//    int remainingDataCount = this.limit - this.page.size();
-//
-//    boolean trimDataHead = this.total < this.start;
-//    int sliceBeginIdx = trimDataHead ? Math.min(this.start - this.total, data.size()) : 0;
-//
-//    boolean trimDataTail = sliceBeginIdx + remainingDataCount < data.size();
-//    int sliceEndIdx =
-//        trimDataTail ? Math.min(sliceBeginIdx + remainingDataCount, data.size()) : data.size();
-//
-//    List<String> slice = data.subList(sliceBeginIdx, sliceEndIdx);
-//    page.addAll(slice);
-//    this.total += data.size();
+    page.addAll(data);
+    this.total += data.size();
   }
 
   void add(Object sourceMapValue) {
