@@ -6,6 +6,14 @@ import java.util.List;
 
 import gov.nasa.pds.api.registry.LidvidsContext;
 
+/*
+Exists as a mechanism for paging over a set of LIDVIDs.  This is typically needed when the documents associated with
+a large, fast-to-generate collection of LIDVIDs must be paged, to avoid the overhead of loading the documents for
+LIDVIDs not in the active page.
+
+It's currently unclear how this class will/should implement the new search-after pagination approach used by the API.
+This is an open design question.
+ */
 class PaginationLidvidBuilder implements Pagination<String> {
   final private int limit;
   private List<String> sortFields;
