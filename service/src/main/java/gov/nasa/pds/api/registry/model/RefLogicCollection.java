@@ -50,19 +50,18 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
 
   static Pagination<String> children(ControlContext control, ProductVersionSelector selection,
       LidvidsContext uid) throws IOException, LidVidNotFoundException {
-    log.info("Find children of a collection -- both all and latest");
     return selection == ProductVersionSelector.ALL ? RefLogicCollection.childrenAll(control, uid)
         : RefLogicCollection.childrenLatest(control, uid);
   }
 
-  private static Pagination<String> childrenAll(ControlContext control, LidvidsContext uid)
+  private static Pagination<String> childrenAll(ControlContext control, LidvidsContext searchContext)
       throws IOException, LidVidNotFoundException {
-    PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(uid);
+    PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(searchContext);
 
     for (final Map<String, Object> kvp : new HitIterator(
         control.getConnection().getRestHighLevelClient(),
         new SearchRequestFactory(
-            RequestConstructionContextFactory.given("collection_lidvid", uid.getLidVid(), true),
+            RequestConstructionContextFactory.given("collection_lidvid", searchContext.getLidVid(), true),
             control.getConnection()).build(RequestBuildContextFactory.given(false, "product_lid"),
                 control.getConnection().getRegistryRefIndex()))) {
       productLidvids.addAll(getAllLidVidsByLids(control,
@@ -73,11 +72,11 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     return productLidvids;
   }
 
-  private static Pagination<String> childrenLatest(ControlContext control, LidvidsContext uid)
+  private static Pagination<String> childrenLatest(ControlContext control, LidvidsContext searchContext)
       throws IOException, LidVidNotFoundException {
-    PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(uid);
+    PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(searchContext);
     RequestConstructionContext requestConstructionContext =
-        RequestConstructionContextFactory.given("collection_lidvid", uid.getLidVid(), true);
+        RequestConstructionContextFactory.given("collection_lidvid", searchContext.getLidVid(), true);
     RequestBuildContext requestBuildContext =
         RequestBuildContextFactory.given(true, "product_lidvid");
     String registryRefIndex = control.getConnection().getRegistryRefIndex();
