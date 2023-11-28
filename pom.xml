@@ -51,7 +51,7 @@ Go through this file line-by-line and replace the template values with your own.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <spring-framework-version>6.0.6</spring-framework-version>
+        <spring-framework-version>6.0.14</spring-framework-version>
     </properties>
 
     <groupId>gov.nasa.pds</groupId>
