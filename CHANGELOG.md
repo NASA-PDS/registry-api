@@ -1,8 +1,8 @@
 # Changelog
 
-## [v1.4.0-SNAPSHOT](https://github.com/NASA-PDS/registry-api/tree/v1.4.0-SNAPSHOT) (2023-11-17)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-11-28)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...v1.4.0-SNAPSHOT)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...«unknown»)
 
 **Defects:**
 
