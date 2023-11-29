@@ -80,8 +80,11 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
             control.getConnection().getRegistryIndex());
 
 
-//    TODO: FIGURE OUT SEARCHAFTER PAGING
+//    TODO NEXT : FIGURE OUT SEARCHAFTER PAGING, RIP OUT PaginationLidVidBuilder AND IMPLEMENT SEARCH-AFTER PAGING OF
+//     THE QUERY RESULTS
+
 //    TODO: FIGURE OUT /all functionality
+
 //    Add the lidvids of all those products to the pager
     for (final Map<String, Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(), searchRequest)) {
       bundleLidvidsPager.addLidvid((String) kvp.get("lidvid"));
