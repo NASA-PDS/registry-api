@@ -2,6 +2,8 @@ package gov.nasa.pds.api.registry.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import gov.nasa.pds.api.registry.UserContext;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.SearchUtil;
@@ -154,7 +156,30 @@ public class URIParametersBuilder {
 
   public URIParameters build() {
 
-    this.accept = this.request.getHeader("Accept");
+    if (this.request != null) {
+      this.accept = this.request.getHeader("Accept");
+    }
+
     return new URIParameters(this);
+  }
+
+  /*
+  Yield a new builder from an existing URIParameters instance, to allow mutation of a clone
+   */
+  static public URIParametersBuilder fromInstance(UserContext source) {
+    URIParametersBuilder builder = new URIParametersBuilder();
+    builder.accept = source.getAccept();
+    builder.fields = source.getFields();
+    builder.group = source.getGroup();
+    builder.identifier = source.getIdentifier();
+    builder.keywords = source.getKeywords();
+    builder.searchAfter = source.getSearchAfterValues();
+    builder.limit = source.getLimit();
+    builder.singletonResultExpected = source.getSingletonResultExpected();
+    builder.query = source.getQuery();
+    builder.selector = source.getSelector();
+    builder.sort = source.getSortFields();
+    builder.version = source.getVersion();
+    return builder;
   }
 }
