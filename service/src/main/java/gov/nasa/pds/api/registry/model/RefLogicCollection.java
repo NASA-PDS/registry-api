@@ -182,12 +182,40 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
   }
 
   @Override
-  public RequestAndResponseContext memberOf(ControlContext context, UserContext input,
+  public RequestAndResponseContext memberOf(ControlContext ctrlContext, UserContext searchContext,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      MembershipException, UnknownGroupNameException {
+      MembershipException {
     if (twoSteps)
-      throw new MembershipException(input.getIdentifier(), "member-of/member-of", "collections");
-    return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-        RefLogicCollection.parents(context, input.getSelector(), input));
+      throw new MembershipException(searchContext.getIdentifier(), "member-of/member-of", "collections");
+
+    List<String> parentIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
+
+//    Get all the LIDVID refs, convert the LID refs to LIDVIDs, then add them all together
+    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::isLidvid).collect(Collectors.toSet());
+    List<String> parentLids = parentIds.stream().filter(Predicate.not(PdsProductIdentifier::isLidvid)).collect(Collectors.toList());
+    List<String> implicitParentLidvids =
+            getAllLidVidsByLids(
+                    ctrlContext,
+                    RequestBuildContextFactory.given(
+                            false, "lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
+                    parentLids);
+    parentLidvids.addAll(implicitParentLidvids);
+
+    GroupConstraint productClassConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
+    GroupConstraint parentSelectorConstraint =
+            GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvids)));
+    productClassConstraints.union(parentSelectorConstraint);
+
+    // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
+    UserContext newUserContext = URIParametersBuilder.fromInstance(searchContext).setIdentifier("").build();
+
+    RequestAndResponseContext rrContext =
+            RequestAndResponseContext.buildRequestAndResponseContext(
+                    ctrlContext, newUserContext, parentSelectorConstraint);
+    rrContext.setResponse(
+            ctrlContext.getConnection().getRestHighLevelClient(),
+            new SearchRequestFactory(rrContext, ctrlContext.getConnection())
+                    .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
+    return rrContext;
   }
 }
