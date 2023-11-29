@@ -33,6 +33,11 @@ class PaginationLidvidBuilder implements Pagination<String> {
     this.total += data.size();
   }
 
+  void addLidvid(String lidvid) {
+    page.add(lidvid);
+    this.total += 1;
+  }
+
   void add(Object sourceMapValue) {
     this.addAll(this.convert(sourceMapValue));
   }
