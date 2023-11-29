@@ -151,7 +151,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
       throw new MembershipException(userContext.getIdentifier(), "members/members", "collections");
-    GroupConstraint childrenConstraint = getChildrenConstraint(ctrlContext, userContext);
+    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext);
 
     // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
     UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
@@ -166,18 +166,13 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     return rrContext;
   }
 
-  private GroupConstraint getChildrenConstraint(ControlContext control, LidvidsContext searchContext) throws IOException, LidVidNotFoundException {
-//    HACKY CONSTRUCTION OF GroupConstraint due to immutability
-//    TODO: Fix this
-    GroupConstraint productTypeConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
-    Map<String, List<String>> constraintFilter = new HashMap<>(productTypeConstraints.filter());
-    Map<String, List<String>> constraintMust = new HashMap<>(productTypeConstraints.must());
-    Map<String, List<String>> constraintMustNot = productTypeConstraints.mustNot();
-
+  private GroupConstraint getChildProductsConstraint(ControlContext control, LidvidsContext searchContext) throws IOException, LidVidNotFoundException {
+//    TODO: targetProductAlternateIds should depend on all/latest/specific behaviour
     List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, searchContext.getLidVid(), "alternate_ids");
-    constraintFilter.put("ops:Provenance/ops:parent_collection_identifier", targetProductAlternateIds);
-    GroupConstraint searchConstraints = GroupConstraintImpl.build(constraintMust, constraintFilter, constraintMustNot);
-    return searchConstraints;
+
+    GroupConstraint productClassConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
+    GroupConstraint childrenSelectorConstraint = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_collection_identifier", targetProductAlternateIds));
+    return productClassConstraints.union(childrenSelectorConstraint);
   }
 
   @Override
