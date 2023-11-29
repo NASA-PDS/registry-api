@@ -17,6 +17,7 @@ import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.controller.URIParametersBuilder;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 import org.opensearch.action.search.SearchRequest;
@@ -145,13 +146,38 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
   }
 
   @Override
-  public RequestAndResponseContext member(ControlContext context, UserContext input,
-      boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      MembershipException, UnknownGroupNameException {
+  public RequestAndResponseContext member(
+      ControlContext ctrlContext, UserContext userContext, boolean twoSteps)
+      throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
-      throw new MembershipException(input.getIdentifier(), "members/members", "collections");
-    return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-        RefLogicCollection.children(context, input.getSelector(), input));
+      throw new MembershipException(userContext.getIdentifier(), "members/members", "collections");
+    GroupConstraint childrenConstraint = getChildrenConstraint(ctrlContext, userContext);
+
+    // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
+    UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
+
+    RequestAndResponseContext rrContext =
+        RequestAndResponseContext.buildRequestAndResponseContext(
+            ctrlContext, newUserContext, childrenConstraint);
+    rrContext.setResponse(
+        ctrlContext.getConnection().getRestHighLevelClient(),
+        new SearchRequestFactory(rrContext, ctrlContext.getConnection())
+            .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
+    return rrContext;
+  }
+
+  private GroupConstraint getChildrenConstraint(ControlContext control, LidvidsContext searchContext) throws IOException, LidVidNotFoundException {
+//    HACKY CONSTRUCTION OF GroupConstraint due to immutability
+//    TODO: Fix this
+    GroupConstraint productTypeConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
+    Map<String, List<String>> constraintFilter = new HashMap<>(productTypeConstraints.filter());
+    Map<String, List<String>> constraintMust = new HashMap<>(productTypeConstraints.must());
+    Map<String, List<String>> constraintMustNot = productTypeConstraints.mustNot();
+
+    List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, searchContext.getLidVid(), "alternate_ids");
+    constraintFilter.put("ops:Provenance/ops:parent_collection_identifier", targetProductAlternateIds);
+    GroupConstraint searchConstraints = GroupConstraintImpl.build(constraintMust, constraintFilter, constraintMustNot);
+    return searchConstraints;
   }
 
   @Override
