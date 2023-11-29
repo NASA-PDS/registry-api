@@ -50,6 +50,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
   }
 
   static Pagination<String> children(ControlContext control, ProductVersionSelector selection,
+//      TODO: Delete after all usages are gone
       LidvidsContext uid) throws IOException, LidVidNotFoundException {
     return selection == ProductVersionSelector.ALL ? RefLogicCollection.childrenAll(control, uid)
         : RefLogicCollection.childrenLatest(control, uid);
@@ -57,6 +58,8 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
 
   private static Pagination<String> childrenAll(ControlContext control, LidvidsContext searchContext)
       throws IOException, LidVidNotFoundException {
+//      TODO: Delete after all usages are gone
+
     // TODO: Fully convert this function's internals (and eventually, interface) to use
     //  PdsProductIdentifier classes instead of strings
 
@@ -95,6 +98,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
   }
 
   private static Pagination<String> childrenLatest(ControlContext control, LidvidsContext searchContext)
+//      TODO: Delete after all usages are gone
       throws IOException, LidVidNotFoundException {
     PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(searchContext);
     RequestConstructionContext requestConstructionContext =
@@ -121,6 +125,8 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
 
   static Pagination<String> parents(ControlContext control, ProductVersionSelector selection,
       LidvidsContext searchContext) throws IOException, LidVidNotFoundException {
+//      TODO: Delete after all usages are gone
+
     // TODO: Fully convert this function's internals (and eventually, interface) to use
     // PdsProductIdentifier classes instead of strings
 
