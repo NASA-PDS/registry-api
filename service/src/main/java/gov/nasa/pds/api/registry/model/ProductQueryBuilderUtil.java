@@ -75,9 +75,7 @@ public class ProductQueryBuilderUtil {
         });
       });
       presetCriteria.filter().forEach((key, list) -> {
-        list.forEach(value -> {
-          boolQuery.filter(QueryBuilders.termQuery(key, value));
-        });
+        boolQuery.filter(QueryBuilders.termsQuery(key, list));
       });
       presetCriteria.mustNot().forEach((key, list) -> {
         list.forEach(value -> {
