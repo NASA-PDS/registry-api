@@ -56,20 +56,38 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
 
   private static Pagination<String> childrenAll(ControlContext control, LidvidsContext searchContext)
       throws IOException, LidVidNotFoundException {
-    PaginationLidvidBuilder productLidvids = new PaginationLidvidBuilder(searchContext);
+    // TODO: Fully convert this function's internals (and eventually, interface) to use
+    //  PdsProductIdentifier classes instead of strings
 
-    for (final Map<String, Object> kvp : new HitIterator(
-        control.getConnection().getRestHighLevelClient(),
-        new SearchRequestFactory(
-            RequestConstructionContextFactory.given("collection_lidvid", searchContext.getLidVid(), true),
-            control.getConnection()).build(RequestBuildContextFactory.given(false, "product_lid"),
-                control.getConnection().getRegistryRefIndex()))) {
-      productLidvids.addAll(getAllLidVidsByLids(control,
-          RequestBuildContextFactory.given(false, "lidvid",
-              ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints()),
-          productLidvids.convert(kvp.get("product_lid"))));
+    PaginationLidvidBuilder bundleLidvidsPager = new PaginationLidvidBuilder(searchContext);
+
+//    Get all non-aggregate products having this collection an ancestor
+
+    GroupConstraint productTypeConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
+    Map<String, List<String>> constraintFilter = new HashMap<>(productTypeConstraints.filter());
+    Map<String, List<String>> constraintMust = new HashMap<>(productTypeConstraints.must());
+    Map<String, List<String>> constraintMustNot = productTypeConstraints.mustNot();
+
+    List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, searchContext.getLidVid(), "alternate_ids");
+    constraintFilter.put("ops:Provenance/ops:parent_collection_identifier", targetProductAlternateIds);
+    GroupConstraint searchConstraints = GroupConstraintImpl.build(constraintMust, constraintFilter, constraintMustNot);
+
+
+    RequestBuildContext childSearchReqBuildContext =
+        RequestBuildContextFactory.given(false, "lidvid", searchConstraints);
+
+    SearchRequest searchRequest= new SearchRequestFactory(RequestConstructionContextFactory.minimal(), control.getConnection()).build(childSearchReqBuildContext,
+            control.getConnection().getRegistryIndex());
+
+
+//    TODO: FIGURE OUT SEARCHAFTER PAGING
+//    TODO: FIGURE OUT /all functionality
+//    Add the lidvids of all those products to the pager
+    for (final Map<String, Object> kvp : new HitIterator(control.getConnection().getRestHighLevelClient(), searchRequest)) {
+      bundleLidvidsPager.addLidvid((String) kvp.get("lidvid"));
     }
-    return productLidvids;
+
+    return bundleLidvidsPager;
   }
 
   private static Pagination<String> childrenLatest(ControlContext control, LidvidsContext searchContext)
