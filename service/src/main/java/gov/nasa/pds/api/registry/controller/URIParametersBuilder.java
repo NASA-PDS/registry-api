@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.UserContext;
+
+import gov.nasa.pds.api.registry.UserContext;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.SearchUtil;
