@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -136,8 +137,8 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     List<String> parentIds = QuickSearch.getValues(control.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
 
 //    Get all the LIDVID refs, convert the LID refs to LIDVIDs, then add them all together
-    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::isLidvid).collect(Collectors.toSet());
-    List<String> parentLids = parentIds.stream().filter(Predicate.not(PdsProductIdentifier::isLidvid)).collect(Collectors.toList());
+    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
+    List<String> parentLids = parentIds.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toList());
     List<String> implicitParentLidvids =
         getAllLidVidsByLids(
             control,
@@ -181,8 +182,8 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     List<String> parentIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
 
 //    Get all the LIDVID refs, convert the LID refs to LIDVIDs, then add them all together
-    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::isLidvid).collect(Collectors.toSet());
-    List<String> parentLids = parentIds.stream().filter(Predicate.not(PdsProductIdentifier::isLidvid)).collect(Collectors.toList());
+    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
+    List<String> parentLids = parentIds.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toList());
     List<String> implicitParentLidvids =
             getAllLidVidsByLids(
                     ctrlContext,

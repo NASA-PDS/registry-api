@@ -24,7 +24,21 @@ public abstract class PdsProductIdentifier {
     return PdsLid.fromString(identifier.split(LIDVID_SEPARATOR)[0]);
   }
 
-  public static boolean isLidvid(String identifier) {
-    return PdsProductIdentifier.fromString(identifier) instanceof PdsLidVid;
+  public boolean isLidvid() {
+    return this instanceof PdsLidVid;
+  }
+
+  public boolean isLid() {
+    return this instanceof PdsLid;
+  }
+
+  public static boolean stringIsLidvid(String identifierStr) {
+    PdsProductIdentifier identifierObj = PdsProductIdentifier.fromString(identifierStr);
+    return identifierObj != null && identifierObj.isLidvid();
+  }
+
+  public static boolean stringIsLid(String identifierStr) {
+    PdsProductIdentifier identifierObj = PdsProductIdentifier.fromString(identifierStr);
+    return identifierObj != null && identifierObj.isLid();
   }
 }

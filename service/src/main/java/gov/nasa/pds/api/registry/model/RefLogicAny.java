@@ -95,18 +95,14 @@ class RefLogicAny implements ReferencingLogic {
   public RequestAndResponseContext member(ControlContext context, UserContext input,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
       MembershipException, UnknownGroupNameException {
-    throw new MembershipException(input.getIdentifier(), "members", "product");
+    throw new RuntimeException("member() is not defined for arbitrary products - requires concrete product type");
   }
 
   @Override
   public RequestAndResponseContext memberOf(ControlContext context, UserContext input,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
       MembershipException, UnknownGroupNameException {
-    if (twoSteps)
-      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-          RefLogicNonAggregateProduct.grandparents(context, input.getSelector(), input));
-    return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-        RefLogicNonAggregateProduct.parents(context, input.getSelector(), input));
+    throw new RuntimeException("memberOf() is not defined for arbitrary products - requires concrete product type");
   }
 
   /*
