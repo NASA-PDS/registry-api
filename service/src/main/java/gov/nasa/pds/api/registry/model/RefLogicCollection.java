@@ -159,16 +159,25 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       throw new MembershipException(userContext.getIdentifier(), "members/members", "collections");
     GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getLidVid());
 
+    return rrContextFromConstraint(ctrlContext, userContext, childrenConstraint);
+  }
+
+  /*
+  Given a control and user context, and a constraint specifying a membership-related subset of documents, return a
+  RequestAndResponseContext to yield that subset.
+  Incorporates a workaround to prevent the initial target product's identifier from intefering with the query resolution
+   */
+  private RequestAndResponseContext rrContextFromConstraint(ControlContext ctrlContext, UserContext userContext, GroupConstraint constraint) throws IOException, ApplicationTypeException, LidVidNotFoundException {
     // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
     UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
 
     RequestAndResponseContext rrContext =
-        RequestAndResponseContext.buildRequestAndResponseContext(
-            ctrlContext, newUserContext, childrenConstraint);
+            RequestAndResponseContext.buildRequestAndResponseContext(
+                    ctrlContext, newUserContext, constraint);
     rrContext.setResponse(
-        ctrlContext.getConnection().getRestHighLevelClient(),
-        new SearchRequestFactory(rrContext, ctrlContext.getConnection())
-            .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
+            ctrlContext.getConnection().getRestHighLevelClient(),
+            new SearchRequestFactory(rrContext, ctrlContext.getConnection())
+                    .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
     return rrContext;
   }
 
@@ -206,16 +215,6 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
             GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvids)));
     productClassConstraints.union(parentSelectorConstraint);
 
-    // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
-    UserContext newUserContext = URIParametersBuilder.fromInstance(searchContext).setIdentifier("").build();
-
-    RequestAndResponseContext rrContext =
-            RequestAndResponseContext.buildRequestAndResponseContext(
-                    ctrlContext, newUserContext, parentSelectorConstraint);
-    rrContext.setResponse(
-            ctrlContext.getConnection().getRestHighLevelClient(),
-            new SearchRequestFactory(rrContext, ctrlContext.getConnection())
-                    .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
-    return rrContext;
+    return rrContextFromConstraint(ctrlContext, searchContext, parentSelectorConstraint);
   }
 }
