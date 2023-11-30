@@ -157,7 +157,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
       throw new MembershipException(userContext.getIdentifier(), "members/members", "collections");
-    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext);
+    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getLidVid());
 
     // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
     UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
@@ -172,9 +172,9 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     return rrContext;
   }
 
-  private GroupConstraint getChildProductsConstraint(ControlContext control, LidvidsContext searchContext) throws IOException, LidVidNotFoundException {
+  private GroupConstraint getChildProductsConstraint(ControlContext control, String parentCollectionLidvid) throws IOException, LidVidNotFoundException {
 //    TODO: targetProductAlternateIds should depend on all/latest/specific behaviour
-    List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, searchContext.getLidVid(), "alternate_ids");
+    List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, parentCollectionLidvid, "alternate_ids");
 
     GroupConstraint productClassConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
     GroupConstraint childrenSelectorConstraint = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_collection_identifier", targetProductAlternateIds));
