@@ -162,25 +162,6 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     return rrContextFromConstraint(ctrlContext, userContext, childrenConstraint);
   }
 
-  /*
-  Given a control and user context, and a constraint specifying a membership-related subset of documents, return a
-  RequestAndResponseContext to yield that subset.
-  Incorporates a workaround to prevent the initial target product's identifier from intefering with the query resolution
-   */
-  private RequestAndResponseContext rrContextFromConstraint(ControlContext ctrlContext, UserContext userContext, GroupConstraint constraint) throws IOException, ApplicationTypeException, LidVidNotFoundException {
-    // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
-    UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
-
-    RequestAndResponseContext rrContext =
-            RequestAndResponseContext.buildRequestAndResponseContext(
-                    ctrlContext, newUserContext, constraint);
-    rrContext.setResponse(
-            ctrlContext.getConnection().getRestHighLevelClient(),
-            new SearchRequestFactory(rrContext, ctrlContext.getConnection())
-                    .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
-    return rrContext;
-  }
-
   private GroupConstraint getChildProductsConstraint(ControlContext control, String parentCollectionLidvid) throws IOException, LidVidNotFoundException {
 //    TODO: targetProductAlternateIds should depend on all/latest/specific behaviour
     List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, parentCollectionLidvid, "alternate_ids");

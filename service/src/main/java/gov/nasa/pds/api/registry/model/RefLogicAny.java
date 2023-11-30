@@ -8,6 +8,7 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.controller.URIParametersBuilder;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.MembershipException;
@@ -16,6 +17,7 @@ import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
+import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 @Immutable
@@ -105,5 +107,24 @@ class RefLogicAny implements ReferencingLogic {
           RefLogicNonAggregateProduct.grandparents(context, input.getSelector(), input));
     return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
         RefLogicNonAggregateProduct.parents(context, input.getSelector(), input));
+  }
+
+  /*
+  Given a control and user context, and a constraint specifying a membership-related subset of documents, return a
+  RequestAndResponseContext to yield that subset.
+  Incorporates a workaround to prevent the initial target product's identifier from intefering with the query resolution
+   */
+  RequestAndResponseContext rrContextFromConstraint(ControlContext ctrlContext, UserContext userContext, GroupConstraint constraint) throws IOException, ApplicationTypeException, LidVidNotFoundException {
+    // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
+    UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
+
+    RequestAndResponseContext rrContext =
+            RequestAndResponseContext.buildRequestAndResponseContext(
+                    ctrlContext, newUserContext, constraint);
+    rrContext.setResponse(
+            ctrlContext.getConnection().getRestHighLevelClient(),
+            new SearchRequestFactory(rrContext, ctrlContext.getConnection())
+                    .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
+    return rrContext;
   }
 }
