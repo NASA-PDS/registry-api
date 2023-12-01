@@ -9,7 +9,7 @@ import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
-class RefLogicDocument extends RefLogicAny implements ReferencingLogic {
+class RefLogicDocument extends RefLogicNonAggregateProduct implements ReferencingLogic {
   @Override
   public GroupConstraint constraints() {
     Map<String, List<String>> preset = new HashMap<String, List<String>>();
