@@ -37,28 +37,6 @@ class RefLogicAny implements ReferencingLogic {
         productIdentifier != null ? productIdentifier.toString() : "", "product_class"));
   }
 
-  private RequestAndResponseContext search(ControlContext context, UserContext input,
-      boolean isIdToGroup) throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      UnknownGroupNameException {
-
-//    check git blame for previous implementation if this exception is ever encountered --- edunn 20231130
-    throw new IOException("DEVELOPMENT THROW - HOPEFULLY THIS ISN'T NECESSARY AND CAN BE EXCISED");
-  }
-
-  @Override
-  public RequestAndResponseContext find(ControlContext context, UserContext input)
-      throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      UnknownGroupNameException {
-    return this.search(context, input, false);
-  }
-
-  @Override
-  public RequestAndResponseContext given(ControlContext context, UserContext input)
-      throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      UnknownGroupNameException {
-    return this.search(context, input, true);
-  }
-
   @Override
   public RequestAndResponseContext member(ControlContext context, UserContext input,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
