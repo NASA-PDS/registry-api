@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,7 @@ public enum ReferencingLogicTransmuter {
       throws NothingFoundException {
     ReferencingLogicTransmuter resultant = null;
 
-    if (name.length() == 0)
-      return ReferencingLogicTransmuter.Any;
+    if (name.isEmpty() || name.equals("any")) return ReferencingLogicTransmuter.Any;
 
     for (ReferencingLogicTransmuter pc : ReferencingLogicTransmuter.values()) {
       if (name.equals(usingPDSName ? pc.pds_name : pc.swagger_name)) {
@@ -42,9 +42,11 @@ public enum ReferencingLogicTransmuter {
       }
     }
 
-    if (resultant == null)
-      throw new NothingFoundException();
-    return resultant;
+      //      Previously, this would throw a NothingFoundException, but this prevents non-enumerated non-aggregate products
+      //      like Product_Ancillary from being correctly resolved.  It's necessary to either enumerate all non-aggregate
+      //      product names (which I believe may not be possible), or accept that anything not enumerated will be considered
+      //      a non-aggregate product --- edunn 2023-11-30
+      return Objects.requireNonNullElse(resultant, ReferencingLogicTransmuter.NonAggregateProduct);
   }
 
   public static ReferencingLogicTransmuter getByProductClass(String name)
