@@ -27,11 +27,7 @@ class RefLogicAny implements ReferencingLogic {
     return GroupConstraintImpl.empty();
   }
 
-  private boolean isGrandchild(ReferencingLogicTransmuter idType) {
-    return !(idType == ReferencingLogicTransmuter.Bundle
-        || idType == ReferencingLogicTransmuter.Collection);
-  }
-
+//  TODO: Clarify what this does and whether it can be excised --- edunn
   private ReferencingLogicTransmuter resolveID(ControlContext context, UserContext input)
       throws IOException, LidVidNotFoundException, UnknownGroupNameException {
     PdsProductIdentifier productIdentifier = LidVidUtils.resolve(input.getIdentifier(),
@@ -45,36 +41,8 @@ class RefLogicAny implements ReferencingLogic {
       boolean isIdToGroup) throws ApplicationTypeException, IOException, LidVidNotFoundException,
       UnknownGroupNameException {
 
+//    check git blame for previous implementation if this exception is ever encountered --- edunn 20231130
     throw new IOException("DEVELOPMENT THROW - HOPEFULLY THIS ISN'T NECESSARY AND CAN BE EXCISED");
-
-//    // find all of the given group that reference the specified ID
-//    ReferencingLogicTransmuter groupType =
-//        ReferencingLogicTransmuter.getBySwaggerGroup(input.getGroup());
-//    ReferencingLogicTransmuter idType = this.resolveID(context, input);
-//
-//    if (idType == ReferencingLogicTransmuter.Bundle
-//        && groupType == ReferencingLogicTransmuter.Collection)
-//      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-//          RefLogicBundle.children(context, input.getSelector(), input));
-//    if (idType == ReferencingLogicTransmuter.Bundle && this.isGrandchild(groupType))
-//      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-//          RefLogicBundle.grandchildren(context, input.getSelector(), input));
-//    if (idType == ReferencingLogicTransmuter.Collection
-//        && groupType == ReferencingLogicTransmuter.Bundle)
-//      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-//          RefLogicCollection.parents(context, input.getSelector(), input));
-//    if (idType == ReferencingLogicTransmuter.Collection && this.isGrandchild(groupType))
-//      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-//          RefLogicCollection.children(context, input.getSelector(), input));
-//    if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Bundle)
-//      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-//          RefLogicNonAggregateProduct.grandparents(context, input.getSelector(), input));
-//    if (this.isGrandchild(idType) && groupType == ReferencingLogicTransmuter.Collection)
-//      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-//          RefLogicNonAggregateProduct.parents(context, input.getSelector(), input));
-//
-//    throw new IOException("Waiting on implementation until references are figured out in database");
-//    // FIXME: return isIdToGroup ? this.idToGroup() : this.groupToId();
   }
 
   @Override
