@@ -8,7 +8,6 @@ import java.util.Set;
 import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.GroupConstraint;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,14 +16,20 @@ public class GroupConstraintImpl implements GroupConstraint {
 
   private static final Logger log = LoggerFactory.getLogger(GroupConstraintImpl.class);
 
-  final private Map<String, List<String>> filter;
+  final private Map<String, List<String>> filterToAny;
   final private Map<String, List<String>> must;
   final private Map<String, List<String>> mustNot;
 
-  private GroupConstraintImpl(Map<String, List<String>> must, Map<String, List<String>> filter,
+  private GroupConstraintImpl(Map<String, List<String>> must, Map<String, List<String>> filterToAny,
                               Map<String, List<String>> mustNot) {
+    int filterTermsKeysCount = filterToAny.keySet().size();
+    if (filterTermsKeysCount > 1) {
+      throw new RuntimeException(
+              "Filtering on multiple keys is not supported by OpenSearch terms query, so is undefined");
+    }
+
     this.must = Map.copyOf(must);
-    this.filter = Map.copyOf(filter);
+    this.filterToAny = Map.copyOf(filterToAny);
     this.mustNot = Map.copyOf(mustNot);
   }
 
@@ -34,8 +39,8 @@ public class GroupConstraintImpl implements GroupConstraint {
   }
 
   @Override
-  public Map<String, List<String>> filter() {
-    return filter;
+  public Map<String, List<String>> filterToAny() {
+    return filterToAny;
   }
 
   @Override
@@ -80,7 +85,7 @@ public class GroupConstraintImpl implements GroupConstraint {
   @Override
   public GroupConstraint union(GroupConstraint otherGroupConstraint) {
     Map<String, List<String>> unionFilter =
-        performConstraintUnion(this.filter, otherGroupConstraint.filter());
+        performConstraintUnion(this.filterToAny, otherGroupConstraint.filterToAny());
     Map<String, List<String>> unionMust =
         performConstraintUnion(this.must, otherGroupConstraint.must());
     Map<String, List<String>> unionMustNot =

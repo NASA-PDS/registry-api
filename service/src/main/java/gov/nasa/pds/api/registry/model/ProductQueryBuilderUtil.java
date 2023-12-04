@@ -69,12 +69,18 @@ public class ProductQueryBuilderUtil {
 
   public static void addPresetCriteria(BoolQueryBuilder boolQuery, GroupConstraint presetCriteria) {
     if (presetCriteria != null) {
+      int filterTermsKeysCount = presetCriteria.filterToAny().keySet().size();
+      if (filterTermsKeysCount > 1) {
+        throw new RuntimeException(
+            "Filtering on multiple keys is undefined and not supported by OpenSearch terms query");
+      }
+
       presetCriteria.must().forEach((key, list) -> {
         list.forEach(value -> {
           boolQuery.must(QueryBuilders.termQuery(key, value));
         });
       });
-      presetCriteria.filter().forEach((key, list) -> {
+      presetCriteria.filterToAny().forEach((key, list) -> {
         boolQuery.filter(QueryBuilders.termsQuery(key, list));
       });
       presetCriteria.mustNot().forEach((key, list) -> {
