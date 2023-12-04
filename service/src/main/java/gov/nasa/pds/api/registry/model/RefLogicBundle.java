@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.HitIterator;
@@ -81,8 +82,9 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
             Set<String> lidReferences = refStrings.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toSet());
             for (String lidRef : lidReferences) {
               try {
-                String latestLidvidRef = LidVidUtils.getLatestLidVidByLid(ctrlContext, RequestBuildContextFactory.given(true, "_id"), lidRef).toString();
-                lidvidReferences.add(latestLidvidRef);
+                PdsLid lid = PdsLid.fromString(lidRef);
+                PdsLidVid latestLidvid = LidVidUtils.getLatestLidVidByLid(ctrlContext, RequestBuildContextFactory.given(true, "_id"), lid);
+                lidvidReferences.add(latestLidvid.toString());
               } catch (IOException | LidVidNotFoundException e) {
                 log.warn("Failed to find extant LIDVID for given LID: " + lidRef);
               }

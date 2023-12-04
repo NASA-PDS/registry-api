@@ -37,9 +37,8 @@ public class LidVidUtils {
   private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
 
   public static PdsLidVid getLatestLidVidByLid(ControlContext ctlContext,
-      RequestBuildContext reqContext, String productIdentifier)
+      RequestBuildContext reqContext, PdsLid lid)
       throws IOException, LidVidNotFoundException {
-    PdsLid lid = PdsProductIdentifier.fromString(productIdentifier).getLid();
 
     SearchRequest searchRequest = new SearchRequestFactory(
         RequestConstructionContextFactory.given("lid", lid.toString(), true),
@@ -106,12 +105,12 @@ public class LidVidUtils {
           // to force that kind of resolution.
           result = productIdentifier instanceof PdsLidVid ? productIdentifier
               : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext,
-                  productIdentifier.getLid().toString());
+                  productIdentifier.getLid());
           break;
         case TYPED:
           result = productIdentifier instanceof PdsLidVid ? productIdentifier
               : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext,
-                  productIdentifier.getLid().toString());
+                  productIdentifier.getLid());
           break;
         case ORIGINAL:
           throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");
