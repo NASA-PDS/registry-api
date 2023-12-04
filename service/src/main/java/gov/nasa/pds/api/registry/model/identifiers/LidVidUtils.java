@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
@@ -66,19 +67,20 @@ public class LidVidUtils {
     throw new LidVidNotFoundException(lid.toString());
   }
 
-  public static List<String> getAllLidVidsByLids(ControlContext ctlContext,
-      RequestBuildContext reqContext, Collection<String> lids) throws IOException {
-    List<String> lidvids = new ArrayList<String>();
+  public static List<PdsLidVid> getAllLidVidsByLids(ControlContext ctlContext,
+      RequestBuildContext reqContext, Collection<PdsLid> lids) throws IOException {
+    List<PdsLidVid> lidvids = new ArrayList<>();
 
-    if (0 < lids.size()) {
+    if (!lids.isEmpty()) {
+      List<String> lidStrings = lids.stream().map(PdsLid::toString).collect(Collectors.toList());
       ctlContext.getConnection().getRestHighLevelClient()
           .search(new SearchRequestFactory(
-              RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true),
+              RequestConstructionContextFactory.given("lid", new ArrayList<>(lidStrings), true),
               ctlContext.getConnection()).build(reqContext,
                   ctlContext.getConnection().getRegistryIndex()),
               RequestOptions.DEFAULT)
           .getHits().forEach((hit) -> {
-            lidvids.add(hit.getId());
+            lidvids.add(PdsLidVid.fromString(hit.getId()));
           });
     }
     return lidvids;

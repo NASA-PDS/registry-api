@@ -65,24 +65,26 @@ class RefLogicNonAggregateProduct extends RefLogicAny implements ReferencingLogi
 
     //    Get all the LIDVID refs, resolve the LID refs to all relevant LIDVIDs, then add them all
     // together
-    Set<String> parentLidvids =
+    Set<String> parentLidvidStrings =
         ancestorIdentifiers.stream()
             .filter(PdsProductIdentifier::stringIsLidvid)
             .collect(Collectors.toSet());
-    List<String> parentLids =
+    List<PdsLid> parentLids =
         ancestorIdentifiers.stream()
-            .filter(PdsProductIdentifier::stringIsLid)
+            .map(PdsLid::fromString)
+            .filter(PdsLid::isLid)
             .collect(Collectors.toList());
-    List<String> implicitParentLidvids =
+    List<PdsLidVid> implicitParentLidvids =
         getAllLidVidsByLids(
             ctrlContext,
             RequestBuildContextFactory.given(false, "lid", ancestorClass.impl().constraints()),
             parentLids);
-    parentLidvids.addAll(implicitParentLidvids);
+    List<String> implicitParentLidvidStrings = implicitParentLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+    parentLidvidStrings.addAll(implicitParentLidvidStrings);
 
     GroupConstraint ancestorProductTypeContstraints = ancestorClass.impl().constraints();
     GroupConstraint ancestorSelectorConstraint =
-        GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvids)));
+        GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvidStrings)));
     ancestorProductTypeContstraints.union(ancestorSelectorConstraint);
 
     return rrContextFromConstraint(ctrlContext, searchContext, ancestorSelectorConstraint);
