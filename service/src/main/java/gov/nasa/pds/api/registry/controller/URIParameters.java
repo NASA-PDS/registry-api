@@ -35,7 +35,7 @@ class URIParameters implements UserContext {
   private final String accept;
   private final List<String> fields;
   private final String group;
-  private final String identifier;
+  private final PdsProductIdentifier identifier;
   private final List<String> keywords;
   private final List<String> searchAfterValues;
   private final Integer limit;
@@ -89,7 +89,7 @@ class URIParameters implements UserContext {
   }
 
   @Override
-  public String getIdentifier() {
+  public PdsProductIdentifier getIdentifier() {
     return identifier;
   }
 

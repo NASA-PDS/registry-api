@@ -30,7 +30,7 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 /**
  * Methods to get latest versions of LIDs
- * 
+ *
  * @author karpenko
  */
 public class LidVidUtils {
@@ -85,11 +85,9 @@ public class LidVidUtils {
     return lidvids;
   }
 
-  public static PdsProductIdentifier resolve(String productIdentifierString,
+  public static PdsProductIdentifier resolve(PdsProductIdentifier productIdentifier,
       ProductVersionSelector scope, ControlContext ctlContext, RequestBuildContext reqContext)
       throws IOException, LidVidNotFoundException {
-    PdsProductIdentifier productIdentifier =
-        PdsProductIdentifier.fromString(productIdentifierString);
     PdsProductIdentifier result = null;
 
     if (productIdentifier != null) {

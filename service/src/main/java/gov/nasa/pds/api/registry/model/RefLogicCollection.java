@@ -44,7 +44,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       ControlContext ctrlContext, UserContext userContext, boolean twoSteps)
       throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
-      throw new MembershipException(userContext.getIdentifier(), "members/members", "collections");
+      throw new MembershipException(userContext.getIdentifier().toString(), "members/members", "collections");
     GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getLidVid());
 
     return rrContextFromConstraint(ctrlContext, userContext, childrenConstraint);
@@ -64,7 +64,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
       MembershipException {
     if (twoSteps)
-      throw new MembershipException(searchContext.getIdentifier(), "member-of/member-of", "collections");
+      throw new MembershipException(searchContext.getIdentifier().toString(), "member-of/member-of", "collections");
 
     List<String> parentIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
 

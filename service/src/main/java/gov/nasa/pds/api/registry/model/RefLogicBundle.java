@@ -119,7 +119,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
   @Override
   public RequestAndResponseContext memberOf(ControlContext context, UserContext input,
       boolean twoSteps) throws MembershipException {
-    throw new MembershipException(input.getIdentifier(), "member-of", "bundle");
+    throw new MembershipException(input.getIdentifier().toString(), "member-of", "bundle");
   }
 
 }

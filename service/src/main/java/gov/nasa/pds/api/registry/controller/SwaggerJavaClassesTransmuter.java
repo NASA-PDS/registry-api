@@ -1,6 +1,8 @@
 package gov.nasa.pds.api.registry.controller;
 
 import java.util.List;
+
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
@@ -37,7 +39,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Valid List<String> searchAfter) {
     return this.processs(new Member(false, false),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).build());
   }
@@ -47,7 +49,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Valid List<String> searchAfter) {
     return this.processs(new Member(false, true),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).build());
   }
@@ -57,7 +59,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
       @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(false, true),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).setVersion(versions).build());
   }
@@ -67,7 +69,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
       @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(false, false),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).setVersion(versions).build());
   }
@@ -77,7 +79,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Valid List<String> searchAfter) {
     return this.processs(new Member(true, false),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).build());
   }
@@ -87,7 +89,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Valid List<String> searchAfter) {
     return this.processs(new Member(true, true),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).build());
   }
@@ -97,7 +99,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
       @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(true, true),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).setVersion(versions).build());
   }
@@ -107,7 +109,7 @@ abstract class SwaggerJavaClassesTransmuter extends SwaggerJavaBaseTransmuter
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
       @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(true, false),
-        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup(propertyClass).setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
             .setVerifyClassAndId(true).setVersion(versions).build());
   }

@@ -58,7 +58,7 @@ class RefLogicAny implements ReferencingLogic {
    */
   RequestAndResponseContext rrContextFromConstraint(ControlContext ctrlContext, UserContext userContext, GroupConstraint constraint) throws IOException, ApplicationTypeException, LidVidNotFoundException {
     // Reset identifier to prevent it being applied as a filter during query, which would result in zero hits
-    UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier("").build();
+    UserContext newUserContext = URIParametersBuilder.fromInstance(userContext).setIdentifier(null).build();
 
     RequestAndResponseContext rrContext =
             RequestAndResponseContext.buildRequestAndResponseContext(
