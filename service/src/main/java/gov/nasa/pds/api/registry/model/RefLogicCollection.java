@@ -6,22 +6,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
-import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
-import gov.nasa.pds.api.registry.RequestConstructionContext;
-import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.UserContext;
-import gov.nasa.pds.api.registry.controller.URIParametersBuilder;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.QuickSearch;
-import org.opensearch.action.search.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +23,7 @@ import com.google.errorprone.annotations.Immutable;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
 import gov.nasa.pds.api.registry.exceptions.MembershipException;
-import gov.nasa.pds.api.registry.exceptions.UnknownGroupNameException;
-import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 import static gov.nasa.pds.api.registry.model.identifiers.LidVidUtils.getAllLidVidsByLids;

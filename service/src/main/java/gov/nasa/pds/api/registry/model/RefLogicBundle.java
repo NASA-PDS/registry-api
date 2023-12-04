@@ -3,25 +3,18 @@ package gov.nasa.pds.api.registry.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 import org.opensearch.action.search.SearchRequest;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +22,6 @@ import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
-import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -126,8 +118,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
 
   @Override
   public RequestAndResponseContext memberOf(ControlContext context, UserContext input,
-      boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      MembershipException, UnknownGroupNameException {
+      boolean twoSteps) throws MembershipException {
     throw new MembershipException(input.getIdentifier(), "member-of", "bundle");
   }
 
