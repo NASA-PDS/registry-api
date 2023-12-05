@@ -13,33 +13,19 @@ import gov.nasa.pds.api.registry.model.RequestAndResponseContext;
 @Immutable
 public interface ReferencingLogic {
   /**
-   * Map the set of PDS constraints that define just PDS items that make up this Group.
+   * Map the set of PDS constraints that define just PDS items that make up this product type/group.
    */
   public GroupConstraint constraints();
 
   /**
-   * Find all of the PDS items of the given Group that reference the specified ID.
-   */
-  public RequestAndResponseContext find(ControlContext context, UserContext input)
-      throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      UnknownGroupNameException;
-
-  /**
-   * Find all of the PDS items of the given ID that reference the specified Group.
-   */
-  public RequestAndResponseContext given(ControlContext context, UserContext input)
-      throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      UnknownGroupNameException;
-
-  /**
-   * Find descendants as in children or grandchildren
+   * Find descendant members of aggregate products, or throw exception if undefined
    */
   public RequestAndResponseContext member(ControlContext context, UserContext input,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
       MembershipException, UnknownGroupNameException;
 
   /**
-   * Find heredity as in parents or grandparents
+   * Find ancestor members non-bundle products, or throw exception if undefined
    */
   public RequestAndResponseContext memberOf(ControlContext context, UserContext input,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,

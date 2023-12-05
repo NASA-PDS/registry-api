@@ -12,10 +12,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.RequestBuildContext;
+import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
+import gov.nasa.pds.api.registry.search.QuickSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +35,8 @@ import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
 import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
+import static gov.nasa.pds.api.registry.model.identifiers.LidVidUtils.getAllLidVidsByLids;
+
 @Immutable
 class RefLogicNonAggregateProduct extends RefLogicAny implements ReferencingLogic {
   private static final Logger log = LoggerFactory.getLogger(RefLogicNonAggregateProduct.class);
@@ -43,62 +48,45 @@ class RefLogicNonAggregateProduct extends RefLogicAny implements ReferencingLogi
     return GroupConstraintImpl.buildNot(preset);
   }
 
-  static Pagination<String> grandparents(ControlContext control, ProductVersionSelector selection,
-      LidvidsContext uid) throws IOException, LidVidNotFoundException {
-    log.info("Find the grandparents of a product -- both all and latest");
-    List<String> parents = RefLogicNonAggregateProduct
-        .parents(control, ProductVersionSelector.LATEST, new Unlimited(uid.getLidVid())).page();
-    PaginationLidvidBuilder grandparents = new PaginationLidvidBuilder(uid);
-    for (String parent : parents) {
-      log.info("Find all the parents of collection: " + parent);
-      grandparents
-          .addAll(RefLogicCollection.parents(control, selection, new Unlimited(parent)).page());
-      log.info("Find grandparents size: " + String.valueOf(grandparents.size()));
-      for (String gp : grandparents.page()) {
-        log.info("   grandparent: " + gp);
-      }
-    }
-    return grandparents;
-  }
+  @Override
+  public RequestAndResponseContext memberOf(
+      ControlContext ctrlContext, UserContext searchContext, boolean twoSteps)
+      throws ApplicationTypeException, IOException, LidVidNotFoundException {
+    String ancestorMetadataKey =
+        twoSteps
+            ? "ops:Provenance/ops:parent_bundle_identifier"
+            : "ops:Provenance/ops:parent_collection_identifier";
+    ReferencingLogicTransmuter ancestorClass =
+        twoSteps ? ReferencingLogicTransmuter.Bundle : ReferencingLogicTransmuter.Collection;
 
-  static Pagination<String> parents(ControlContext control, ProductVersionSelector selection,
-      LidvidsContext uid) throws IOException, LidVidNotFoundException {
-    List<String> sortedLidStrings;
-    PaginationLidvidBuilder parents = new PaginationLidvidBuilder(uid);
-    Set<String> lids = new HashSet<String>();
+    List<String> ancestorIdentifiers =
+        QuickSearch.getValues(
+            ctrlContext.getConnection(), false, searchContext.getLidVid(), ancestorMetadataKey);
 
-    log.info("Find the parents of a product -- both all and latest");
-    for (final Map<String, Object> kvp : new HitIterator(
-        control.getConnection().getRestHighLevelClient(),
-        new SearchRequestFactory(
-            RequestConstructionContextFactory.given("product_lidvid", uid.getLidVid(), true),
-            control.getConnection()).build(RequestBuildContextFactory.given(true, "collection_lid"),
-                control.getConnection().getRegistryRefIndex()))) {
-      lids.addAll(parents.convert(kvp.get("collection_lid")));
-    }
-    sortedLidStrings = new ArrayList<>(lids);
-    Collections.sort(sortedLidStrings);
-    List<PdsProductIdentifier> sortedLids =
-        sortedLidStrings.stream().map(PdsLid::fromString).collect(Collectors.toList());
+    //    Get all the LIDVID refs, resolve the LID refs to all relevant LIDVIDs, then add them all
+    // together
+    Set<String> parentLidvidStrings =
+        ancestorIdentifiers.stream()
+            .filter(PdsProductIdentifier::stringIsLidvid)
+            .collect(Collectors.toSet());
+    List<PdsLid> parentLids =
+        ancestorIdentifiers.stream()
+            .map(PdsLid::fromString)
+            .filter(PdsLid::isLid)
+            .collect(Collectors.toList());
+    List<PdsLidVid> implicitParentLidvids =
+        getAllLidVidsByLids(
+            ctrlContext,
+            RequestBuildContextFactory.given(false, "lid", ancestorClass.impl().constraints()),
+            parentLids);
+    List<String> implicitParentLidvidStrings = implicitParentLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+    parentLidvidStrings.addAll(implicitParentLidvidStrings);
 
-    if (selection == ProductVersionSelector.ALL) {
-      parents.addAll(LidVidUtils.getAllLidVidsByLids(control, RequestBuildContextFactory.empty(),
-          sortedLidStrings));
-    } else {
-      RequestBuildContext reqContext = RequestBuildContextFactory.empty();
-      for (PdsProductIdentifier id : sortedLids) {
-        try {
-          PdsLidVid latestLidvid =
-              LidVidUtils.getLatestLidVidByLid(control, reqContext, id.getLid().toString());
-          parents.add(latestLidvid.toString());
-        } catch (LidVidNotFoundException e) {
-          log.warn(
-              "LID is referenced but is in non-findable archive-status or does not exist in db: "
-                  + e.toString());
-        }
-      }
-    }
+    GroupConstraint ancestorProductTypeContstraints = ancestorClass.impl().constraints();
+    GroupConstraint ancestorSelectorConstraint =
+        GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvidStrings)));
+    ancestorProductTypeContstraints.union(ancestorSelectorConstraint);
 
-    return parents;
+    return rrContextFromConstraint(ctrlContext, searchContext, ancestorSelectorConstraint);
   }
 }

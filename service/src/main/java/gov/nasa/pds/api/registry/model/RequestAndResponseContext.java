@@ -53,30 +53,6 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private String format;
   final private Map<String, ProductBusinessLogic> formatters;
 
-
-  static public RequestAndResponseContext buildRequestAndResponseContext(ControlContext connection, // webby
-                                                                                                    // criteria
-      UserContext parameters, Pagination<String> lidvids) throws ApplicationTypeException,
-      LidVidNotFoundException, IOException, UnknownGroupNameException {
-    GroupConstraint any = ReferencingLogicTransmuter.Any.impl().constraints();
-    /**
-     * The line in this comment block is valid back when referencing was used and the user told us
-     * what group they wanted explicitly. With members, this is no longer true and the group is
-     * actually wrong in most cases. GroupConstraint preset =
-     * ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
-     */
-    RequestAndResponseContext response =
-        new RequestAndResponseContext(connection, parameters, any, any);
-    SearchRequest request =
-        new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()),
-            connection.getConnection()).build(response,
-                connection.getConnection().getRegistryIndex());
-    request.source().size(lidvids.size());
-    response.setResponse(connection.getConnection().getRestHighLevelClient()
-        .search(request, RequestOptions.DEFAULT).getHits(), null, lidvids.total());
-    return response;
-  }
-
   static public RequestAndResponseContext buildRequestAndResponseContext(ControlContext connection, // webby
                                                                                                     // criteria
       UserContext parameters, GroupConstraint outPreset // when first and last node of the endpoint

@@ -1,6 +1,8 @@
 package gov.nasa.pds.api.registry.controller;
 
 import java.util.List;
+
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   @Override
   public ResponseEntity<Object> bundlesLidvid(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(), this.uriParametersBuilder.setGroup("bundles")
-        .setIdentifier(identifier).setFields(fields).setVerifyClassAndId(true).build());
+        .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setVerifyClassAndId(true).build());
   }
 
   @Override
@@ -29,7 +31,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
 //    TODO: Investigate why start/searchAfter is just disregarded for this endpoint
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("bundles").setIdentifier(identifier).setFields(fields)
+        this.uriParametersBuilder.setGroup("bundles").setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
             .setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL).build());
   }
 
@@ -57,7 +59,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   @Override
   public ResponseEntity<Object> bundlesLidvidLatest(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("bundles").setIdentifier(identifier).setFields(fields)
+        this.uriParametersBuilder.setGroup("bundles").setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
             .setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST).build());
   }
 
@@ -77,7 +79,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   @Override
   public ResponseEntity<Object> collectionsLidvid(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(), this.uriParametersBuilder.setGroup("collections")
-        .setIdentifier(identifier).setFields(fields).setVerifyClassAndId(true).build());
+        .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setVerifyClassAndId(true).build());
   }
 
   @Override
@@ -85,7 +87,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
 //    TODO: Investigate why start/searchAfter is disregarded in this case
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("collections").setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup("collections").setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL)
             .build());
   }
@@ -101,7 +103,7 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   public ResponseEntity<Object> collectionsLidvidLatest(String identifier,
       @Valid List<String> fields) {
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("collections").setIdentifier(identifier)
+        this.uriParametersBuilder.setGroup("collections").setIdentifier(PdsProductIdentifier.fromString(identifier))
             .setFields(fields).setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST)
             .build());
   }

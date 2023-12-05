@@ -7,17 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
+import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.QuickSearch;
 import org.opensearch.action.search.SearchRequest;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +23,6 @@ import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
-import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
@@ -46,151 +43,6 @@ import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
   private static final Logger log = LoggerFactory.getLogger(RefLogicBundle.class);
 
-  static Pagination<String> children(ControlContext control, ProductVersionSelector selection,
-      LidvidsContext uid) throws ApplicationTypeException, IOException, LidVidNotFoundException {
-    log.info("Find children of a bundle");
-    return selection == ProductVersionSelector.ALL ? getAllBundleCollectionLidVids(uid, control)
-        : getBundleCollectionLidVids(uid, control);
-  }
-
-  /**
-   * Get all versions of bundle's collections by bundle LIDVID.
-   */
-  static private Pagination<String> getAllBundleCollectionLidVids(LidvidsContext idContext,
-      ControlContext ctlContext) throws IOException, LidVidNotFoundException {
-    // Fetch collection references only.
-    List<String> fields = Arrays.asList("ref_lid_collection", "ref_lid_collection_secondary");
-
-    // Get bundle by lidvid.
-    SearchRequest request =
-        new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()),
-            ctlContext.getConnection())
-                .build(
-                    RequestBuildContextFactory.given(false, fields,
-                        ReferencingLogicTransmuter.Bundle.impl().constraints()),
-                    ctlContext.getConnection().getRegistryIndex());
-
-    // Call opensearch
-    SearchHit hit;
-    SearchHits hits = ctlContext.getConnection().getRestHighLevelClient()
-        .search(request, RequestOptions.DEFAULT).getHits();
-    if (hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
-      throw new LidVidNotFoundException(idContext.getLidVid());
-    else
-      hit = hits.getAt(0);
-
-    // Get fields
-    Map<String, Object> fieldMap = hit.getSourceAsMap();
-
-    // Lid references (e.g., Kaguya bundle)
-    List<String> ids = new ArrayList<String>();
-    PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
-
-    ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
-    ids.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
-    ids = LidVidUtils.getAllLidVidsByLids(ctlContext, RequestBuildContextFactory.given(false,
-        "lidvid", ReferencingLogicTransmuter.Collection.impl().constraints()), ids);
-    lidvids.addAll(ids);
-    return lidvids;
-  }
-
-  /**
-   * Get collections of a bundle by bundle LIDVID. If a bundle has LIDVID collection references,
-   * then those collections are returned. If a bundle has LID collection references, then the latest
-   * versions of collections are returned.
-   * 
-   * @return a list of collection LIDVIDs
-   * @throws IOException IO exception
-   * @throws LidVidNotFoundException LIDVID not found exception
-   */
-  static private Pagination<String> getBundleCollectionLidVids(LidvidsContext idContext,
-      ControlContext ctlContext) throws IOException, LidVidNotFoundException {
-    // TODO: Fully convert this function's internals (and eventually, interface) to use
-    // PdsProductIdentifier classes instead of strings
-    // Fetch collection references only.
-    List<String> fields = Arrays.asList("ref_lidvid_collection", "ref_lidvid_collection_secondary",
-        "ref_lid_collection", "ref_lid_collection_secondary");
-
-    // Get bundle by lidvid.
-    SearchRequest request =
-        new SearchRequestFactory(RequestConstructionContextFactory.given(idContext.getLidVid()),
-            ctlContext.getConnection())
-                .build(
-                    RequestBuildContextFactory.given(true, fields,
-                        ReferencingLogicTransmuter.Bundle.impl().constraints()),
-                    ctlContext.getConnection().getRegistryIndex());
-
-    // Call opensearch
-    SearchHit hit;
-    SearchHits hits = ctlContext.getConnection().getRestHighLevelClient()
-        .search(request, RequestOptions.DEFAULT).getHits();
-    if (hits == null || hits.getTotalHits() == null || hits.getTotalHits().value != 1)
-      throw new LidVidNotFoundException(idContext.getLidVid());
-    else
-      hit = hits.getAt(0);
-
-    // Get fields
-    // LidVid references (e.g., OREX bundle)
-    List<String> ids = new ArrayList<String>();
-    Map<String, Object> fieldMap = hit.getSourceAsMap();
-    PaginationLidvidBuilder lidvids = new PaginationLidvidBuilder(idContext);
-
-    ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection")));
-    ids.addAll(lidvids.convert(fieldMap.get("ref_lidvid_collection_secondary")));
-    lidvids.addAll (ids);
-    // !!! NOTE !!!
-    // Harvest converts LIDVID references to LID references and stores them in
-    // "ref_lid_collection" and "ref_lid_collection_secondary" fields.
-    // To get "real" LID references, we have to exclude LIDVID references from these
-    // fields.
-    Set<String> lidsToRemove = new TreeSet<String>();
-    for (String id : ids) {
-      int idx = id.indexOf("::");
-      if (idx > 0) {
-        String lid = id.substring(0, idx);
-        lidsToRemove.add(lid);
-      }
-    }
-
-    // Lid references (e.g., Kaguya bundle) plus LIDVID references converted by
-    // Harvest
-    List<String> lidStrings = new ArrayList<String>();
-    lidStrings.addAll(lidvids.convert(fieldMap.get("ref_lid_collection")));
-    lidStrings.addAll(lidvids.convert(fieldMap.get("ref_lid_collection_secondary")));
-
-    // Get "real" LIDs
-    if (!lidsToRemove.isEmpty()) {
-      lidStrings.removeAll(lidsToRemove);
-    }
-
-    // Get the latest versions of LIDs
-    List<PdsProductIdentifier> productIdentifiers =
-        lidStrings.stream().map(PdsProductIdentifier::fromString).collect(Collectors.toList());
-    RequestBuildContext reqContext = RequestBuildContextFactory.given(true, "lid",
-        ReferencingLogicTransmuter.Collection.impl().constraints());
-    for (PdsProductIdentifier id : productIdentifiers) {
-      try {
-        PdsLidVid latestLidVid =
-            LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext, id.getLid().toString());
-        lidvids.add(latestLidVid.toString());
-      } catch (LidVidNotFoundException e) {
-        log.warn("LID is referenced but is in non-findable archive-status or does not exist in db: "
-            + e.toString());
-      }
-    }
-
-    return lidvids;
-  }
-
-  static Pagination<String> grandchildren(ControlContext control, ProductVersionSelector selection,
-      LidvidsContext uid) throws ApplicationTypeException, IOException, LidVidNotFoundException {
-    log.info("Find grandchildren of a bundle");
-    PaginationLidvidBuilder ids = new PaginationLidvidBuilder(uid);
-    for (String cid : getBundleCollectionLidVids(new Unlimited(uid.getLidVid()), control).page()) {
-      ids.addAll(RefLogicCollection.children(control, selection, new Unlimited(cid)).page());
-    }
-    return ids;
-  }
 
   @Override
   public GroupConstraint constraints() {
@@ -199,22 +51,77 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
     return GroupConstraintImpl.buildAll(preset);
   }
 
+  /**
+   * Get collections of a bundle by bundle LIDVID. If a bundle has LIDVID collection references,
+   * then those collections are returned. If a bundle has LID collection references, then the latest
+   * versions of collections are returned.
+   *
+   * @return a list of collection LIDVIDs
+   * @throws IOException IO exception
+   */
+  static private List<String> getAllBundleCollectionLidVids(ControlContext ctrlContext, PdsLidVid bundleLidvid) throws IOException {
+    List<String> collectionPropertyKeys = List.of("ref_lid_collection", "ref_lid_collection_secondary");
+    SearchRequest collectionReferencesRequest =
+        new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidvid.toString()),
+            ctrlContext.getConnection())
+                .build(
+                    RequestBuildContextFactory.given(false, collectionPropertyKeys,
+                        ReferencingLogicTransmuter.Bundle.impl().constraints()),
+                    ctrlContext.getConnection().getRegistryIndex());
+
+    //    Retrieve member collection LIDVIDs
+    List<String> results = new ArrayList<>();
+    for (final Map<String, Object> kvp : new HitIterator(ctrlContext.getConnection().getRestHighLevelClient(), collectionReferencesRequest)) {
+      collectionPropertyKeys.forEach(
+          key -> {
+            Object referencesRawObj = kvp.get(key);
+            if (referencesRawObj == null) return;
+
+            List<String> refStrings = (List<String>) referencesRawObj;
+            Set<String> lidvidReferences = refStrings.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
+            Set<String> lidReferences = refStrings.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toSet());
+            for (String lidRef : lidReferences) {
+              try {
+                PdsLid lid = PdsLid.fromString(lidRef);
+                PdsLidVid latestLidvid = LidVidUtils.getLatestLidVidByLid(ctrlContext, RequestBuildContextFactory.given(true, "_id"), lid);
+                lidvidReferences.add(latestLidvid.toString());
+              } catch (IOException | LidVidNotFoundException e) {
+                log.warn("Failed to find extant LIDVID for given LID: " + lidRef);
+              }
+            }
+
+            results.addAll(lidvidReferences);
+          });
+    }
+
+    return results;
+  }
+
+
   @Override
-  public RequestAndResponseContext member(ControlContext context, UserContext input,
-      boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      MembershipException, UnknownGroupNameException {
-    if (twoSteps)
-      return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-          RefLogicBundle.grandchildren(context, input.getSelector(), input));
-    return RequestAndResponseContext.buildRequestAndResponseContext(context, input,
-        RefLogicBundle.children(context, input.getSelector(), input));
+  public RequestAndResponseContext member(ControlContext ctrlContext, UserContext searchContext,
+      boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException {
+
+    List<String> collectionLidvids = getAllBundleCollectionLidVids(ctrlContext, PdsLidVid.fromString(searchContext.getLidVid()));
+    GroupConstraint collectionMemberSelector = GroupConstraintImpl.buildAny(Map.of("_id", collectionLidvids));
+    if (twoSteps) {
+//      Current behaviour is to return all non-aggregate products referencing this bundle's LID or LIDVID as a parent.
+//      This may not be desirable as it *may* end up inconsistent with "the member products of the collections returned
+//      by the non-twoSteps query", but this is simple to change later once desired behaviour is ironed out.
+      GroupConstraint nonAggregateSelector = ReferencingLogicTransmuter.getBySwaggerGroup("non-aggregate-products").impl().constraints();
+      List<String> bundleAlternateIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "alternate_ids");
+      GroupConstraint memberSelector = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_bundle_identifier", bundleAlternateIds));
+      GroupConstraint nonAggregateMemberSelector = nonAggregateSelector.union(memberSelector);
+      return rrContextFromConstraint(ctrlContext, searchContext, nonAggregateMemberSelector);
+    } else {
+      return rrContextFromConstraint(ctrlContext, searchContext, collectionMemberSelector);
+    }
   }
 
   @Override
   public RequestAndResponseContext memberOf(ControlContext context, UserContext input,
-      boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
-      MembershipException, UnknownGroupNameException {
-    throw new MembershipException(input.getIdentifier(), "member-of", "bundle");
+      boolean twoSteps) throws MembershipException {
+    throw new MembershipException(input.getIdentifier().toString(), "member-of", "bundle");
   }
 
 }
