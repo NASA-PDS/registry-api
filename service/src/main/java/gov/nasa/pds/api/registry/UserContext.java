@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 
 public interface UserContext extends LidvidsContext {
   public String getAccept();
@@ -11,7 +12,7 @@ public interface UserContext extends LidvidsContext {
 
   public String getGroup();
 
-  public String getIdentifier();
+  public PdsProductIdentifier getIdentifier();
 
   public List<String> getKeywords();
 

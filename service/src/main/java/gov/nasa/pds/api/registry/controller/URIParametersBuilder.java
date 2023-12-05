@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
+
+import gov.nasa.pds.api.registry.UserContext;
 import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.SearchUtil;
@@ -23,7 +26,7 @@ public class URIParametersBuilder {
   public String accept = "application/json";
   public List<String> fields = new ArrayList<String>();
   public String group = "";
-  public String identifier = "";
+  public PdsProductIdentifier identifier = null;
   public List<String> keywords = new ArrayList<String>();
   public List<String> searchAfter = null;
   public Integer limit = 0; // Actual default value is passed in from the upstream frames of the
@@ -60,9 +63,8 @@ public class URIParametersBuilder {
     return this;
   }
 
-  public URIParametersBuilder setIdentifier(String identifier) {
-    if (identifier != null)
-      this.identifier = identifier;
+  public URIParametersBuilder setIdentifier(PdsProductIdentifier identifier) {
+    this.identifier = identifier;
     return this;
   }
 

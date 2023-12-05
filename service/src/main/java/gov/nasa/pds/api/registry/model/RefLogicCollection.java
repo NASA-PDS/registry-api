@@ -13,6 +13,8 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.UserContext;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.QuickSearch;
 import org.slf4j.Logger;
@@ -44,7 +46,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       ControlContext ctrlContext, UserContext userContext, boolean twoSteps)
       throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
-      throw new MembershipException(userContext.getIdentifier(), "members/members", "collections");
+      throw new MembershipException(userContext.getIdentifier().toString(), "members/members", "collections");
     GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getLidVid());
 
     return rrContextFromConstraint(ctrlContext, userContext, childrenConstraint);
@@ -64,24 +66,25 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException,
       MembershipException {
     if (twoSteps)
-      throw new MembershipException(searchContext.getIdentifier(), "member-of/member-of", "collections");
+      throw new MembershipException(searchContext.getIdentifier().toString(), "member-of/member-of", "collections");
 
-    List<String> parentIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
+    List<String> parentIdStrings = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
 
-//    Get all the LIDVID refs, convert the LID refs to LIDVIDs, then add them all together
-    Set<String> parentLidvids = parentIds.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
-    List<String> parentLids = parentIds.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toList());
-    List<String> implicitParentLidvids =
+//    Get all the LIDVID strings, convert the LID strings to LIDVID strings, then add them all together
+    Set<String> parentLidvidStrings = parentIdStrings.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
+    List<PdsLid> parentLids = parentIdStrings.stream().map(PdsLid::fromString).filter(PdsLid::isLid).collect(Collectors.toList());
+    List<PdsLidVid> implicitParentLidvids =
             getAllLidVidsByLids(
                     ctrlContext,
                     RequestBuildContextFactory.given(
                             false, "lid", ReferencingLogicTransmuter.Bundle.impl().constraints()),
                     parentLids);
-    parentLidvids.addAll(implicitParentLidvids);
+    List<String> implicitParentLidvidStrings = implicitParentLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+    parentLidvidStrings.addAll(implicitParentLidvidStrings);
 
     GroupConstraint productClassConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
     GroupConstraint parentSelectorConstraint =
-            GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvids)));
+            GroupConstraintImpl.buildAny(Map.of("_id", new ArrayList<>(parentLidvidStrings)));
     productClassConstraints.union(parentSelectorConstraint);
 
     return rrContextFromConstraint(ctrlContext, searchContext, parentSelectorConstraint);
