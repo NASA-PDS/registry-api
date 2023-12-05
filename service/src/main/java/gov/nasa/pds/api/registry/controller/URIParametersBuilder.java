@@ -2,6 +2,9 @@ package gov.nasa.pds.api.registry.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import gov.nasa.pds.api.registry.model.SearchUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
@@ -95,7 +98,7 @@ public class URIParametersBuilder {
     }
 
     if (sort != null) {
-      this.sort = sort;
+      this.sort = sort.stream().map(SearchUtil::jsonPropertyToOpenProperty).collect(Collectors.toList());
     }
 
     return this;
@@ -117,7 +120,7 @@ public class URIParametersBuilder {
         throw new RuntimeException("Cannot set searchAfterValues with length not matching sortFields");
     }
 
-    this.sort = sortFields;
+    this.setSort(sortFields);
     this.searchAfter = searchAfterValues;
 
   return this;
