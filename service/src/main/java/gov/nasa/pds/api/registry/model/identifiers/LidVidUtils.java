@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 import gov.nasa.pds.api.registry.model.ReferencingLogicTransmuter;
@@ -30,16 +31,15 @@ import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 
 /**
  * Methods to get latest versions of LIDs
- * 
+ *
  * @author karpenko
  */
 public class LidVidUtils {
   private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
 
   public static PdsLidVid getLatestLidVidByLid(ControlContext ctlContext,
-      RequestBuildContext reqContext, String productIdentifier)
+      RequestBuildContext reqContext, PdsLid lid)
       throws IOException, LidVidNotFoundException {
-    PdsLid lid = PdsProductIdentifier.fromString(productIdentifier).getLid();
 
     SearchRequest searchRequest = new SearchRequestFactory(
         RequestConstructionContextFactory.given("lid", lid.toString(), true),
@@ -67,29 +67,28 @@ public class LidVidUtils {
     throw new LidVidNotFoundException(lid.toString());
   }
 
-  public static List<String> getAllLidVidsByLids(ControlContext ctlContext,
-      RequestBuildContext reqContext, Collection<String> lids) throws IOException {
-    List<String> lidvids = new ArrayList<String>();
+  public static List<PdsLidVid> getAllLidVidsByLids(ControlContext ctlContext,
+      RequestBuildContext reqContext, Collection<PdsLid> lids) throws IOException {
+    List<PdsLidVid> lidvids = new ArrayList<>();
 
-    if (0 < lids.size()) {
+    if (!lids.isEmpty()) {
+      List<String> lidStrings = lids.stream().map(PdsLid::toString).collect(Collectors.toList());
       ctlContext.getConnection().getRestHighLevelClient()
           .search(new SearchRequestFactory(
-              RequestConstructionContextFactory.given("lid", new ArrayList<String>(lids), true),
+              RequestConstructionContextFactory.given("lid", new ArrayList<>(lidStrings), true),
               ctlContext.getConnection()).build(reqContext,
                   ctlContext.getConnection().getRegistryIndex()),
               RequestOptions.DEFAULT)
           .getHits().forEach((hit) -> {
-            lidvids.add(hit.getId());
+            lidvids.add(PdsLidVid.fromString(hit.getId()));
           });
     }
     return lidvids;
   }
 
-  public static PdsProductIdentifier resolve(String productIdentifierString,
+  public static PdsProductIdentifier resolve(PdsProductIdentifier productIdentifier,
       ProductVersionSelector scope, ControlContext ctlContext, RequestBuildContext reqContext)
       throws IOException, LidVidNotFoundException {
-    PdsProductIdentifier productIdentifier =
-        PdsProductIdentifier.fromString(productIdentifierString);
     PdsProductIdentifier result = null;
 
     if (productIdentifier != null) {
@@ -108,12 +107,12 @@ public class LidVidUtils {
           // to force that kind of resolution.
           result = productIdentifier instanceof PdsLidVid ? productIdentifier
               : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext,
-                  productIdentifier.getLid().toString());
+                  productIdentifier.getLid());
           break;
         case TYPED:
           result = productIdentifier instanceof PdsLidVid ? productIdentifier
               : LidVidUtils.getLatestLidVidByLid(ctlContext, reqContext,
-                  productIdentifier.getLid().toString());
+                  productIdentifier.getLid());
           break;
         case ORIGINAL:
           throw new LidVidNotFoundException("ProductVersionSelector.ORIGINAL not supported");

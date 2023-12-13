@@ -117,7 +117,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
       if ((boolean) response.get(HealthcheckLogic.FAILURES_PRESENT)) {
         responseStatus = HttpStatus.I_AM_A_TEAPOT;
       }
-             
+
       return new ResponseEntity<Map<String,Object>>(response, responseStatus);
     } finally {
       log.info(
@@ -134,9 +134,9 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
   @Override
   public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords,
       @Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.bundleList(fields, keywords, limit, q, sort, start);
+    return super.bundleList(fields, keywords, limit, q, sort, searchAfter);
   }
 
   @Override
@@ -147,33 +147,33 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
 
   @Override
   public ResponseEntity<Object> bundlesLidvidAll(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.bundlesLidvidAll(identifier, fields, limit, sort, start);
+    return super.bundlesLidvidAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> bundlesLidvidCollections(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.bundlesLidvidCollections(identifier, fields, limit, sort, start);
+    return super.bundlesLidvidCollections(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> bundlesLidvidCollectionsAll(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.bundlesLidvidCollectionsAll(identifier, fields, limit, sort, start);
+    return super.bundlesLidvidCollectionsAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> bundlesLidvidCollectionsLatest(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.bundlesLidvidCollectionsLatest(identifier, fields, limit, sort, start);
+    return super.bundlesLidvidCollectionsLatest(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
@@ -184,17 +184,17 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
 
   @Override
   public ResponseEntity<Object> bundlesLidvidProducts(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.bundlesLidvidProducts(identifier, fields, limit, sort, start);
+    return super.bundlesLidvidProducts(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> collectionList(@Valid List<String> fields,
       @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.collectionList(fields, keywords, limit, q, sort, start);
+    return super.collectionList(fields, keywords, limit, q, sort, searchAfter);
   }
 
   @Override
@@ -205,17 +205,17 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
 
   @Override
   public ResponseEntity<Object> collectionsLidvidAll(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.collectionsLidvidAll(identifier, fields, limit, sort, start);
+    return super.collectionsLidvidAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> collectionsLidvidBundles(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.collectionsLidvidBundles(identifier, fields, limit, sort, start);
+    return super.collectionsLidvidBundles(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
@@ -228,140 +228,140 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
   @Override
   public ResponseEntity<Object> collectionsLidvidProducts(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.collectionsLidvidProducts(identifier, fields, limit, sort, start);
+    return super.collectionsLidvidProducts(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> collectionsLidvidProductsAll(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.collectionsLidvidProductsAll(identifier, fields, limit, sort, start);
+    return super.collectionsLidvidProductsAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> collectionsLidvidProductsLatest(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.collectionsLidvidProductsLatest(identifier, fields, limit, sort, start);
+    return super.collectionsLidvidProductsLatest(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productList(@Valid List<String> fields,
       @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productList(fields, keywords, limit, q, sort, start);
+    return super.productList(fields, keywords, limit, q, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productsLidividBundlesAll(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productsLidividBundlesAll(identifier, fields, limit, sort, start);
+    return super.productsLidividBundlesAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productsLidvidBundles(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productsLidvidBundles(identifier, fields, limit, sort, start);
+    return super.productsLidvidBundles(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productsLidvidBundlesLatest(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productsLidvidBundlesLatest(identifier, fields, limit, sort, start);
+    return super.productsLidvidBundlesLatest(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productsLidvidCollections(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productsLidvidCollections(identifier, fields, limit, sort, start);
+    return super.productsLidvidCollections(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productsLidvidCollectionsAll(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productsLidvidCollectionsAll(identifier, fields, limit, sort, start);
+    return super.productsLidvidCollectionsAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productsLidvidCollectionsLatest(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productsLidvidCollectionsLatest(identifier, fields, limit, sort, start);
+    return super.productsLidvidCollectionsLatest(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMemberOf(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMemberOf(identifier, fields, limit, sort, start);
+    return super.productMemberOf(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfOf(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMemberOfOf(identifier, fields, limit, sort, start);
+    return super.productMemberOfOf(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfOfVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMemberOfOfVers(identifier, versions, fields, limit, sort, start);
+    return super.productMemberOfOfVers(identifier, versions, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMemberOfVers(identifier, versions, fields, limit, sort, start);
+    return super.productMemberOfVers(identifier, versions, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMembers(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMembers(identifier, fields, limit, sort, start);
+    return super.productMembers(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMembersMembers(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMembersMembers(identifier, fields, limit, sort, start);
+    return super.productMembersMembers(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMembersMembersVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMembersMembersVers(identifier, versions, fields, limit, sort, start);
+    return super.productMembersMembersVers(identifier, versions, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMembersVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.productMembersVers(identifier, versions, fields, limit, sort, start);
+    return super.productMembersVers(identifier, versions, fields, limit, sort, searchAfter);
   }
 
   @Override
@@ -372,9 +372,9 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
 
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.selectByLidvidAll(identifier, fields, limit, sort, start);
+    return super.selectByLidvidAll(identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
@@ -393,75 +393,75 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
   @Override
   public ResponseEntity<Object> classList(String propertyClass, @Valid List<String> fields,
       @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classList(propertyClass, fields, keywords, limit, q, sort, start);
+    return super.classList(propertyClass, fields, keywords, limit, q, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMemberOf(String propertyClass, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classMemberOf(propertyClass, identifier, fields, limit, sort, start);
+    return super.classMemberOf(propertyClass, identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMemberOfOf(String propertyClass, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classMemberOfOf(propertyClass, identifier, fields, limit, sort, start);
+    return super.classMemberOfOf(propertyClass, identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMemberOfOfVers(String propertyClass, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
     return super.classMemberOfOfVers(propertyClass, identifier, versions, fields, limit, sort,
-        start);
+        searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMemberOfVers(String propertyClass, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classMemberOfVers(propertyClass, identifier, versions, fields, limit, sort, start);
+    return super.classMemberOfVers(propertyClass, identifier, versions, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMembers(String propertyClass, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classMembers(propertyClass, identifier, fields, limit, sort, start);
+    return super.classMembers(propertyClass, identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMembersMembers(String propertyClass, String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classMembersMembers(propertyClass, identifier, fields, limit, sort, start);
+    return super.classMembersMembers(propertyClass, identifier, fields, limit, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMembersMembersVers(String propertyClass, String identifier,
       String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
     return super.classMembersMembersVers(propertyClass, identifier, versions, fields, limit, sort,
-        start);
+        searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> classMembersVers(String propertyClass, String identifier,
        String versions, @Valid List<String> fields, @Min(0) @Valid Integer limit,
-       @Valid List<String> sort, @Min(0) @Valid Integer start) {
+       @Valid List<String> sort, @Valid List<String> searchAfter) {
     // TODO Auto-generated method stub
-    return super.classMembersVers(propertyClass, identifier, versions, fields, limit, sort, start);
+    return super.classMembersVers(propertyClass, identifier, versions, fields, limit, sort, searchAfter);
   }
 
   @Override

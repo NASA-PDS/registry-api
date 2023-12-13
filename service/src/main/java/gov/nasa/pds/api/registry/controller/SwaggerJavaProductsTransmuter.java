@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import gov.nasa.pds.api.base.PropertiesApi;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.model.ProductPropertiesList200ResponseInner;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -35,95 +36,95 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
   @Override
   public ResponseEntity<Object> productList(@Valid List<String> fields,
       @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
-      @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    return super.classList("any", fields, keywords, limit, q, sort, start);
+      @Valid List<String> sort, @Valid List<String> searchAfter) {
+    return super.classList("any", fields, keywords, limit, q, sort, searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> productMemberOf(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(false, false),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).build());
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfOf(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(false, true),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).build());
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfOfVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     return this.processs(new Member(false, true),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).setVersion(versions).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> productMemberOfVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     return this.processs(new Member(false, false),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).setVersion(versions).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembers(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Member(true, false),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembersMembers(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
-    return this.processs(new Member(true, true), this.uriParametersBuilder.setIdentifier(identifier)
-        .setFields(fields).setLimit(limit).setSort(sort).setStart(start).build());
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+    return this.processs(new Member(true, true), this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+        .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembersMembersVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     return this.processs(new Member(true, true),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).setVersion(versions).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> productMembersVers(String identifier, String versions,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Min(0) @Valid Integer start) {
+      @Valid List<String> searchAfter) {
     return this.processs(new Member(true, false),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).setVersion(versions).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).build());
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Min(0) @Valid Integer start) {
+      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setIdentifier(identifier).setFields(fields).setLimit(limit)
-            .setSort(sort).setStart(start).setVersion(ProductVersionSelector.ALL).build());
+        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
+            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(ProductVersionSelector.ALL).build());
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvidLatest(String identifier,
       @Valid List<String> fields) {
-    return this.processs(new Standard(), this.uriParametersBuilder.setIdentifier(identifier)
+    return this.processs(new Standard(), this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
         .setFields(fields).setVersion(ProductVersionSelector.LATEST).build());
   }
 

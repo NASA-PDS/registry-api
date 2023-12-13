@@ -112,7 +112,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
-        - $ref: "#/components/parameters/Start"
+        - $ref: "#/components/parameters/SearchAfter"
   /classes/{class}/{identifier}/members:
     get:
       tags:
@@ -137,7 +137,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /classes/{class}/{identifier}/members/{versions}:
     get:
       tags:
@@ -162,7 +162,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/members/members:
     get:
@@ -188,7 +188,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /classes/{class}/{identifier}/members/members/{versions}:
     get:
       tags:
@@ -213,7 +213,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/member-of:
     get:
@@ -239,7 +239,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /classes/{class}/{identifier}/member-of/{versions}:
     get:
       tags:
@@ -264,7 +264,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
   /classes/{class}/{identifier}/member-of/member-of:
     get:
@@ -290,7 +290,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /classes/{class}/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
@@ -315,7 +315,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
 
   /products:
@@ -342,7 +342,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
 
   /products/{identifier}:
@@ -414,7 +414,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
 
   /properties:
@@ -461,7 +461,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/members/{versions}:
     get:
       tags:
@@ -485,7 +485,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
   /products/{identifier}/members/members:
     get:
@@ -510,7 +510,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/members/members/{versions}:
     get:
       tags:
@@ -534,7 +534,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
   /products/{identifier}/member-of:
     get:
@@ -559,7 +559,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/member-of/{versions}:
     get:
       tags:
@@ -583,7 +583,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
   /products/{identifier}/member-of/member-of:
     get:
@@ -608,7 +608,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
@@ -632,7 +632,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
 
 # begin deprecated: this is the older API that is clutter
@@ -659,7 +659,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /bundles/{identifier}:
     get:
@@ -704,7 +704,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /bundles/{identifier}/latest:
     get:
@@ -749,7 +749,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /bundles/{identifier}/collections/all:
     get:
@@ -773,7 +773,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /bundles/{identifier}/collections/latest:
     get:
@@ -797,7 +797,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /bundles/{identifier}/products:
     get:
@@ -821,7 +821,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /collections:
     get:
@@ -846,7 +846,7 @@ paths:
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /collections/{identifier}:
     get:
@@ -891,7 +891,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /collections/{identifier}/latest:
     get:
@@ -936,7 +936,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /collections/{identifier}/products:
     get:
@@ -960,7 +960,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /collections/{identifier}/products/all:
     get:
@@ -984,7 +984,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /collections/{identifier}/products/latest:
     get:
@@ -1008,7 +1008,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /products/{identifier}/bundles:
     get:
@@ -1032,7 +1032,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /products/{identifier}/bundles/all:
     get:
@@ -1056,7 +1056,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /products/{identifier}/bundles/latest:
     get:
@@ -1080,7 +1080,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /products/{identifier}/collections:
     get:
@@ -1104,7 +1104,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /products/{identifier}/collections/all:
     get:
@@ -1128,7 +1128,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 
   /products/{identifier}/collections/latest:
     get:
@@ -1152,7 +1152,7 @@ paths:
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
       - $ref: "#/components/parameters/Sort"
-      - $ref: "#/components/parameters/Start"
+      - $ref: "#/components/parameters/SearchAfter"
 # end deprecated: for easy clutter removal
 
 components:
@@ -1239,26 +1239,28 @@ components:
       name: sort
       in: query
       description: |
-        syntax: sort=asc(field0),desc(field1),...
+        syntax: sort=field0,field1,...
 
-        behavior: is this implemented?
+        behavior: currently only sorts ascending
       required: false
       schema:
         type: array
         items:
           type: string
-    Start:
-      name: start
+    SearchAfter:
+      name: search-after
       in: query
       description: |
-        syntax: start=12
+        syntax: search-after=sortField0Value,sortField1Value,...
 
-        behavior: offset in matching result list, for pagination
+        behavior: for each field specified in the "sort" qparam, specify the field value for the last result returned in the previous page
+          It is strongly recommended to use ops:Harvest_Info/ops:harvest_date_time as your final sort field, to ensure successful pagination.
+          Remember to url-encode special characters, ex. /products?limit=10&sort=ops%3AHarvest_Info%2Fops%3Aharvest_date_time
       required: false
       schema:
-        type: integer
-        minimum: 0
-        default: 0
+        type: array
+        items:
+          type: string
     Versions:
       name: versions
       in: path
@@ -1420,8 +1422,10 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
-        start:
-          type: integer
+        search_after:
+          type: array
+          items:
+            type: string
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'

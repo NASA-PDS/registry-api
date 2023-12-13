@@ -8,6 +8,10 @@ import java.util.Map;
 import gov.nasa.pds.api.registry.RequestConstructionContext;
 
 public class RequestConstructionContextFactory {
+
+  public static RequestConstructionContext minimal() {
+    return new SimpleRequestConstructionContext(new HashMap<>(), true);
+  }
   public static RequestConstructionContext given(String lidvid) {
     return new SimpleRequestConstructionContext(lidvid);
   }

@@ -35,14 +35,14 @@ class URIParameters implements UserContext {
   private final String accept;
   private final List<String> fields;
   private final String group;
-  private final String identifier;
+  private final PdsProductIdentifier identifier;
   private final List<String> keywords;
-  private final Integer start;
+  private final List<String> searchAfterValues;
   private final Integer limit;
   private final Boolean singletonResultExpected;
   private final String query;
   private final ProductVersionSelector selector;
-  private final List<String> sort;
+  private final List<String> sortFields;
   private final String version;
 
   private PdsProductIdentifier productIdentifier;
@@ -56,12 +56,12 @@ class URIParameters implements UserContext {
     this.group = builder.group;
     this.identifier = builder.identifier;
     this.keywords = builder.keywords;
-    this.start = builder.start;
+    this.searchAfterValues = builder.searchAfter;
     this.limit = builder.limit;
     this.singletonResultExpected = builder.singletonResultExpected;
     this.query = builder.query;
     this.selector = builder.selector;
-    this.sort = builder.sort;
+    this.sortFields = builder.sort;
     this.version = builder.version;
 
   }
@@ -89,7 +89,7 @@ class URIParameters implements UserContext {
   }
 
   @Override
-  public String getIdentifier() {
+  public PdsProductIdentifier getIdentifier() {
     return identifier;
   }
 
@@ -124,13 +124,13 @@ class URIParameters implements UserContext {
   }
 
   @Override
-  public List<String> getSort() {
-    return sort;
+  public List<String> getSortFields() {
+    return sortFields;
   }
 
   @Override
-  public Integer getStart() {
-    return start;
+  public List<String> getSearchAfterValues() {
+    return searchAfterValues;
   }
 
   public boolean getVerifyClassAndId() {

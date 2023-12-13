@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.search.SearchHit;
@@ -43,7 +44,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private PdsProductIdentifier productIdentifier;
   final private List<String> fields;
   final private List<String> sort;
-  final private int start;
+  final private List<String> searchAfter;
   final private int limit;
 
   final private boolean singletonResultExpected;
@@ -51,30 +52,6 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   final private ProductVersionSelector selector;
   final private String format;
   final private Map<String, ProductBusinessLogic> formatters;
-
-
-  static public RequestAndResponseContext buildRequestAndResponseContext(ControlContext connection, // webby
-                                                                                                    // criteria
-      UserContext parameters, Pagination<String> lidvids) throws ApplicationTypeException,
-      LidVidNotFoundException, IOException, UnknownGroupNameException {
-    GroupConstraint any = ReferencingLogicTransmuter.Any.impl().constraints();
-    /**
-     * The line in this comment block is valid back when referencing was used and the user told us
-     * what group they wanted explicitly. With members, this is no longer true and the group is
-     * actually wrong in most cases. GroupConstraint preset =
-     * ReferencingLogicTransmuter.getBySwaggerGroup(parameters.getGroup()).impl().constraints();
-     */
-    RequestAndResponseContext response =
-        new RequestAndResponseContext(connection, parameters, any, any);
-    SearchRequest request =
-        new SearchRequestFactory(RequestConstructionContextFactory.given(lidvids.page()),
-            connection.getConnection()).build(response,
-                connection.getConnection().getRegistryIndex());
-    request.source().size(lidvids.size());
-    response.setResponse(connection.getConnection().getRestHighLevelClient()
-        .search(request, RequestOptions.DEFAULT).getHits(), null, lidvids.total());
-    return response;
-  }
 
   static public RequestAndResponseContext buildRequestAndResponseContext(ControlContext connection, // webby
                                                                                                     // criteria
@@ -134,10 +111,10 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     this.productIdentifier = LidVidUtils.resolve(parameters.getIdentifier(), versionSelectionScope,
         controlContext, RequestBuildContextFactory
             .given(parameters.getSelector() == ProductVersionSelector.LATEST, fields, resPreset));
-    this.start = parameters.getStart();
+    this.searchAfter = parameters.getSearchAfterValues();
     this.limit = parameters.getLimit();
     this.singletonResultExpected = parameters.getSingletonResultExpected();
-    this.sort = parameters.getSort();
+    this.sort = parameters.getSortFields();
     this.presetCriteria = outPreset;
     this.selector = parameters.getSelector();
   }
@@ -171,8 +148,8 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     return this.sort;
   }
 
-  public int getStart() {
-    return this.start;
+  public List<String> getSearchAfter() {
+    return this.searchAfter;
   }
 
   public int getLimit() {
@@ -258,7 +235,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   private String find_match(String from_user) {
     String match = from_user;
     StringTokenizer mimes = new StringTokenizer(from_user, ",");
-    
+
     while (mimes.hasMoreTokens()) {
       /* separate the mime_type/mime_subtype from ;* stuff */
       String mime = mimes.nextToken();
@@ -292,7 +269,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
       log.warn("   sorting: " + String.valueOf(this.getSort().size()));
       for (String sort : this.getSort())
         log.warn("      " + sort);
-      log.warn("   start: " + String.valueOf(this.getStart()));
+      log.warn("   searchAfter: " + String.valueOf(this.getSearchAfter()));
       throw new NothingFoundException();
     }
     return response;
@@ -301,7 +278,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
   public void setResponse(HitIterator hits, int real_total) {
     Summary summary = new Summary();
     summary.setQ(this.getQueryString());
-    summary.setStart(this.getStart());
+    summary.setSearchAfter(this.getSearchAfter());
     summary.setLimit(this.getLimit());
     summary.setSort(this.getSort());
     summary.setHits(this.formatters.get(this.format).setResponse(hits, summary, this.fields));
@@ -326,7 +303,7 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
     if (hits != null) {
       Summary summary = new Summary();
       summary.setQ(this.getQueryString());
-      summary.setStart(this.getStart());
+      summary.setSearchAfter(this.getSearchAfter());
       summary.setLimit(this.getLimit());
       summary.setSort(this.getSort());
       summary.setHits(total_hits);
@@ -373,9 +350,24 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
             "Registry returned unexpected response (could not parse hits count from response)");
       }
     } else {
+
       request.source().size(this.getLimit());
-      request.source().from(this.getStart());
-      this.setResponse(client.search(request, RequestOptions.DEFAULT).getHits());
+      this.getSort().forEach(request.source()::sort);  // Currently, no user-set sort order is implemented
+      if (!String.join("", this.getSearchAfter()).isEmpty()) {  // if searchAfter contains no non-empty values
+        request.source().searchAfter(this.getSearchAfter().toArray());
+      }
+
+      long responseStart = System.currentTimeMillis();
+      SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+      long responseStop = System.currentTimeMillis();
+      long responseElapsed = responseStop - responseStart;
+
+      long getHitsStart = responseStop;
+      this.setResponse(response.getHits());
+      long getHitsStop = System.currentTimeMillis();
+      long getHitsElapsed = getHitsStop - getHitsStart;
+
+      System.out.println("response took " + responseElapsed + "ms.  getHits took " + getHitsElapsed + "ms");
     }
   }
 }
