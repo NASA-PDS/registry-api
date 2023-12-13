@@ -6,6 +6,7 @@
 
 **Defects:**
 
+- Pagination performance does not meet requirements [\#352](https://github.com/NASA-PDS/registry-api/issues/352) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - api is not returning consistent answer  [\#229](https://github.com/NASA-PDS/registry-api/issues/229) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
