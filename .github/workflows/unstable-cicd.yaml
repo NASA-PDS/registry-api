@@ -104,7 +104,20 @@ jobs:
                     platforms: linux/amd64,linux/arm64
                     push: true
                     tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:latest
-
+            -
+                name: ∫ Integration tests … hold onto your hats, pardners
+                run: |
+                    git clone --quiet https://github.com/NASA-PDS/registry.git
+                    cd registry/docker/certs
+                    ./generate-certs.sh
+                    cd ..
+                    docker image inspect nasapds/registry-api-service:latest >/dev/null
+                    docker compose \
+                        --ansi never --profile int-registry-batch-loader --project-name registry \
+                        up --detach --quiet-pull
+                    docker compose \
+                        --ansi never --profile int-registry-batch-loader --project-name registry \
+                        run --rm --no-TTY reg-api-integration-test-with-wait
 ...
 
 # -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
