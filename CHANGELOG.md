@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2023-12-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-01-23)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...«unknown»)
 
@@ -13,6 +13,7 @@
 
 - Have the inner list shown as string with | delimiter for singular results [\#381](https://github.com/NASA-PDS/registry-api/issues/381)
 - Investigate and fix intermittent Registry-API Errors [\#378](https://github.com/NASA-PDS/registry-api/issues/378)
+- registry-api needs to use the new ancestry fields [\#353](https://github.com/NASA-PDS/registry-api/issues/353) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 ## [v1.3.1](https://github.com/NASA-PDS/registry-api/tree/v1.3.1) (2023-10-10)
 
