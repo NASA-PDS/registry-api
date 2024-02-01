@@ -1,13 +1,20 @@
 # Changelog
 
-## [release/1.4.0](https://github.com/NASA-PDS/registry-api/tree/release/1.4.0) (2024-01-23)
+## [1.3.1](https://github.com/NASA-PDS/registry-api/tree/1.3.1) (2024-02-01)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...release/1.4.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...1.3.1)
+
+**Defects:**
+
+- Broken tests per pagination upgrade \#397 [\#404](https://github.com/NASA-PDS/registry-api/issues/404) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+## [v1.4.0](https://github.com/NASA-PDS/registry-api/tree/v1.4.0) (2024-01-23)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.3.1...v1.4.0)
 
 **Defects:**
 
 - Pagination performance does not meet requirements [\#352](https://github.com/NASA-PDS/registry-api/issues/352) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- api is not returning consistent answer  [\#229](https://github.com/NASA-PDS/registry-api/issues/229) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
@@ -36,7 +43,6 @@
 
 - /products API endpoint is broken [\#379](https://github.com/NASA-PDS/registry-api/issues/379)
 - text/csv format is impacted by the repairkit script \(apparently\) [\#375](https://github.com/NASA-PDS/registry-api/issues/375) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
-- field case in response and query have mismatched cases [\#362](https://github.com/NASA-PDS/registry-api/issues/362) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - `Accept:*` response not defaulting to valid application/json [\#356](https://github.com/NASA-PDS/registry-api/issues/356) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - api does not return information that OpenSearch says is public [\#355](https://github.com/NASA-PDS/registry-api/issues/355) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Request for json+pds4 response fails in production [\#349](https://github.com/NASA-PDS/registry-api/issues/349) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
