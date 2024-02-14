@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import gov.nasa.pds.api.base.PropertiesApi;
-import gov.nasa.pds.model.ProductPropertiesList200ResponseInner;
+import gov.nasa.pds.model.PropertiesListInner;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
@@ -465,7 +465,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
   }
 
   @Override
-  public ResponseEntity<List<ProductPropertiesList200ResponseInner>> productPropertiesList() {
+  public ResponseEntity<Object> productPropertiesList() {
     // TODO Auto-generated method stub
     return super.productPropertiesList();
   }
