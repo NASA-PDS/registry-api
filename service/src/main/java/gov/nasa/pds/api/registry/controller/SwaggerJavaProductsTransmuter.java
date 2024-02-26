@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
-import gov.nasa.pds.model.ProductPropertiesList200ResponseInner;
+import gov.nasa.pds.model.PropertiesListInner;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.opensearch.client.RequestOptions;
@@ -129,7 +129,7 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
   }
 
   @Override
-  public ResponseEntity<List<ProductPropertiesList200ResponseInner>> productPropertiesList() {
+  public ResponseEntity<Object> productPropertiesList() {
 
     try {
       String registryIndexName = this.getConnection().getRegistryIndex();
@@ -156,20 +156,20 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
               "float", "float",
               "double", "float");
 
-      List<ProductPropertiesList200ResponseInner> results = new ArrayList<>();
+      List<PropertiesListInner> results = new ArrayList<>();
       content
           .fieldNames()
           .forEachRemaining(
               (String propertyName) -> {
-                ProductPropertiesList200ResponseInner propertyElement =
-                    new ProductPropertiesList200ResponseInner();
+                PropertiesListInner propertyElement =
+                    new PropertiesListInner();
 
                 propertyElement.setProperty(propertyName);
 
                 String rawType = content.get(propertyName).get("type").asText();
                 String displayType = displayTypesByDbType.getOrDefault(rawType, "unsupported");
-                ProductPropertiesList200ResponseInner.TypeEnum enumType =
-                    ProductPropertiesList200ResponseInner.TypeEnum.fromValue(displayType);
+                PropertiesListInner.TypeEnum enumType =
+                    PropertiesListInner.TypeEnum.fromValue(displayType);
                 propertyElement.setType(enumType);
 
                 results.add(propertyElement);
