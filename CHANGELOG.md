@@ -1,12 +1,13 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-02-01)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-02-26)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...«unknown»)
 
 **Defects:**
 
 - Broken tests per pagination upgrade \#397 [\#404](https://github.com/NASA-PDS/registry-api/issues/404) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- /properties always returns json format [\#339](https://github.com/NASA-PDS/registry-api/issues/339) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 ## [v1.4.0](https://github.com/NASA-PDS/registry-api/tree/v1.4.0) (2024-01-23)
 
