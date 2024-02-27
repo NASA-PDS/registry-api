@@ -3,18 +3,14 @@ package gov.nasa.pds.api.registry.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.ApplicationTypeException;
-import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
@@ -26,13 +22,9 @@ import com.google.errorprone.annotations.Immutable;
 
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.GroupConstraint;
-import gov.nasa.pds.api.registry.LidvidsContext;
 import gov.nasa.pds.api.registry.ReferencingLogic;
 import gov.nasa.pds.api.registry.exceptions.LidVidNotFoundException;
-import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.api.registry.search.RequestBuildContextFactory;
-import gov.nasa.pds.api.registry.search.RequestConstructionContextFactory;
-import gov.nasa.pds.api.registry.search.SearchRequestFactory;
 import gov.nasa.pds.api.registry.util.GroupConstraintImpl;
 
 import static gov.nasa.pds.api.registry.model.identifiers.LidVidUtils.getAllLidVidsByLids;
@@ -61,7 +53,7 @@ class RefLogicNonAggregateProduct extends RefLogicAny implements ReferencingLogi
 
     List<String> ancestorIdentifiers =
         QuickSearch.getValues(
-            ctrlContext.getConnection(), false, searchContext.getLidVid(), ancestorMetadataKey);
+            ctrlContext.getConnection(), false, searchContext.getProductIdentifierStr(), ancestorMetadataKey);
 
     //    Get all the LIDVID refs, resolve the LID refs to all relevant LIDVIDs, then add them all
     // together

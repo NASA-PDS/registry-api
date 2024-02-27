@@ -47,7 +47,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
       throw new MembershipException(userContext.getIdentifier().toString(), "members/members", "collections");
-    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getLidVid());
+    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getProductIdentifierStr());
 
     return rrContextFromConstraint(ctrlContext, userContext, childrenConstraint);
   }
@@ -68,7 +68,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     if (twoSteps)
       throw new MembershipException(searchContext.getIdentifier().toString(), "member-of/member-of", "collections");
 
-    List<String> parentIdStrings = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
+    List<String> parentIdStrings = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getProductIdentifierStr(), "ops:Provenance/ops:parent_bundle_identifier");
 
 //    Get all the LIDVID strings, convert the LID strings to LIDVID strings, then add them all together
     Set<String> parentLidvidStrings = parentIdStrings.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());

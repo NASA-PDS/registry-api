@@ -102,14 +102,14 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
   public RequestAndResponseContext member(ControlContext ctrlContext, UserContext searchContext,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException {
 
-    List<String> collectionLidvids = getAllBundleCollectionLidVids(ctrlContext, PdsLidVid.fromString(searchContext.getLidVid()));
+    List<String> collectionLidvids = getAllBundleCollectionLidVids(ctrlContext, PdsLidVid.fromString(searchContext.getProductIdentifierStr()));
     GroupConstraint collectionMemberSelector = GroupConstraintImpl.buildAny(Map.of("_id", collectionLidvids));
     if (twoSteps) {
 //      Current behaviour is to return all non-aggregate products referencing this bundle's LID or LIDVID as a parent.
 //      This may not be desirable as it *may* end up inconsistent with "the member products of the collections returned
 //      by the non-twoSteps query", but this is simple to change later once desired behaviour is ironed out.
       GroupConstraint nonAggregateSelector = ReferencingLogicTransmuter.getBySwaggerGroup("non-aggregate-products").impl().constraints();
-      List<String> bundleAlternateIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "alternate_ids");
+      List<String> bundleAlternateIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getProductIdentifierStr(), "alternate_ids");
       GroupConstraint memberSelector = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_bundle_identifier", bundleAlternateIds));
       GroupConstraint nonAggregateMemberSelector = nonAggregateSelector.union(memberSelector);
       return rrContextFromConstraint(ctrlContext, searchContext, nonAggregateMemberSelector);

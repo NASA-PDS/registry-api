@@ -131,12 +131,12 @@ public class LidVidUtils {
 
     if (expected_rlt != ReferencingLogicTransmuter.Any) {
       String actual_group =
-          QuickSearch.getValue(control.getConnection(), false, user.getLidVid(), "product_class");
+          QuickSearch.getValue(control.getConnection(), false, user.getProductIdentifierStr(), "product_class");
       ReferencingLogicTransmuter actual_rlt =
           ReferencingLogicTransmuter.getByProductClass(actual_group);
 
       if (actual_rlt != expected_rlt)
-        throw new LidVidMismatchException(user.getLidVid(), user.getGroup(), actual_group);
+        throw new LidVidMismatchException(user.getProductIdentifierStr(), user.getGroup(), actual_group);
     }
   }
 }
