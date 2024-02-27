@@ -106,12 +106,10 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
     List<String> collectionLidvidStrs = collectionLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
     GroupConstraint collectionMemberSelector = GroupConstraintImpl.buildAny(Map.of("_id", collectionLidvidStrs));
     if (twoSteps) {
-//      Current behaviour is to return all non-aggregate products referencing this bundle's LID or LIDVID as a parent.
-//      This may not be desirable as it *may* end up inconsistent with "the member products of the collections returned
-//      by the non-twoSteps query", but this is simple to change later once desired behaviour is ironed out.
       GroupConstraint nonAggregateSelector = ReferencingLogicTransmuter.getBySwaggerGroup("non-aggregate-products").impl().constraints();
-      List<String> bundleAlternateIds = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getProductIdentifierStr(), "alternate_ids");
-      GroupConstraint memberSelector = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_bundle_identifier", bundleAlternateIds));
+      PdsLidVid parentBundleLidvid = PdsLidVid.fromString(searchContext.getProductIdentifierStr());
+      List<String> parentBundleConstraintValues = List.of(parentBundleLidvid.toString());
+      GroupConstraint memberSelector = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_bundle_identifier", parentBundleConstraintValues));
       GroupConstraint nonAggregateMemberSelector = nonAggregateSelector.union(memberSelector);
       return rrContextFromConstraint(ctrlContext, searchContext, nonAggregateMemberSelector);
     } else {
