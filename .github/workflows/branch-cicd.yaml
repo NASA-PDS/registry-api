@@ -103,6 +103,20 @@ jobs:
                         --ansi never --profile int-registry-batch-loader --project-name registry \
                         run --rm --no-TTY reg-api-integration-test-with-wait
 
+            -
+                name: Set up Python 3
+                uses: actions/setup-python@v4
+                with:
+                    python-version: '3.9'
+
+            -
+                name: ∫ Test PDS Deep Archive compatibility
+                run: |
+                    git clone --quiet https://github.com/NASA-PDS/deep-archive.git
+                    cd deep-archive
+                    pip install .
+                    pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
+
 ...
 
 # -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
