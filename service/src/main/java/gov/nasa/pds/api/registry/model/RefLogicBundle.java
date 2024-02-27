@@ -59,7 +59,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
    * @return a list of collection LIDVIDs
    * @throws IOException IO exception
    */
-  static private List<String> getAllBundleCollectionLidVids(ControlContext ctrlContext, PdsLidVid bundleLidvid) throws IOException {
+  static private List<PdsLidVid> getAllBundleCollectionLidVids(ControlContext ctrlContext, PdsLidVid bundleLidvid) throws IOException {
     List<String> collectionPropertyKeys = List.of("ref_lid_collection", "ref_lid_collection_secondary");
     SearchRequest collectionReferencesRequest =
         new SearchRequestFactory(RequestConstructionContextFactory.given(bundleLidvid.toString()),
@@ -70,7 +70,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
                     ctrlContext.getConnection().getRegistryIndex());
 
     //    Retrieve member collection LIDVIDs
-    List<String> results = new ArrayList<>();
+    List<PdsLidVid> results = new ArrayList<>();
     for (final Map<String, Object> kvp : new HitIterator(ctrlContext.getConnection().getRestHighLevelClient(), collectionReferencesRequest)) {
       collectionPropertyKeys.forEach(
           key -> {
@@ -78,19 +78,19 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
             if (referencesRawObj == null) return;
 
             List<String> refStrings = (List<String>) referencesRawObj;
-            Set<String> lidvidReferences = refStrings.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
-            Set<String> lidReferences = refStrings.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toSet());
-            for (String lidRef : lidReferences) {
+            Set<PdsLidVid> collectionRefLidVids = refStrings.stream().filter(PdsProductIdentifier::stringIsLidvid).map(PdsLidVid::fromString).collect(Collectors.toSet());
+            Set<String> lidRefStrs = refStrings.stream().filter(PdsProductIdentifier::stringIsLid).collect(Collectors.toSet());
+            for (String lidRef : lidRefStrs) {
               try {
                 PdsLid lid = PdsLid.fromString(lidRef);
                 PdsLidVid latestLidvid = LidVidUtils.getLatestLidVidByLid(ctrlContext, RequestBuildContextFactory.given(true, "_id"), lid);
-                lidvidReferences.add(latestLidvid.toString());
+                collectionRefLidVids.add(latestLidvid);
               } catch (IOException | LidVidNotFoundException e) {
                 log.warn("Failed to find extant LIDVID for given LID: " + lidRef);
               }
             }
 
-            results.addAll(lidvidReferences);
+            results.addAll(collectionRefLidVids);
           });
     }
 
@@ -102,8 +102,9 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
   public RequestAndResponseContext member(ControlContext ctrlContext, UserContext searchContext,
       boolean twoSteps) throws ApplicationTypeException, IOException, LidVidNotFoundException, UnknownGroupNameException {
 
-    List<String> collectionLidvids = getAllBundleCollectionLidVids(ctrlContext, PdsLidVid.fromString(searchContext.getProductIdentifierStr()));
-    GroupConstraint collectionMemberSelector = GroupConstraintImpl.buildAny(Map.of("_id", collectionLidvids));
+    List<PdsLidVid> collectionLidvids = getAllBundleCollectionLidVids(ctrlContext, PdsLidVid.fromString(searchContext.getProductIdentifierStr()));
+    List<String> collectionLidvidStrs = collectionLidvids.stream().map(PdsLidVid::toString).collect(Collectors.toList());
+    GroupConstraint collectionMemberSelector = GroupConstraintImpl.buildAny(Map.of("_id", collectionLidvidStrs));
     if (twoSteps) {
 //      Current behaviour is to return all non-aggregate products referencing this bundle's LID or LIDVID as a parent.
 //      This may not be desirable as it *may* end up inconsistent with "the member products of the collections returned
