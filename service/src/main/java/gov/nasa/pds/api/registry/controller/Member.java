@@ -35,7 +35,7 @@ class Member implements EndpointHandler {
       transmuter = ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl();
     else
       transmuter = ReferencingLogicTransmuter.getByProductClass(QuickSearch
-          .getValue(control.getConnection(), false, content.getLidVid(), "product_class")).impl();
+          .getValue(control.getConnection(), false, content.getProductIdentifierStr(), "product_class")).impl();
 
     RequestAndResponseContext context =
         this.offspring ? transmuter.member(control, content, this.twoSteps)

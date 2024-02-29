@@ -12,7 +12,7 @@ class Unlimited implements LidvidsContext {
   }
 
   @Override
-  public String getLidVid() {
+  public String getProductIdentifierStr() {
     return this.lidvid;
   }
 

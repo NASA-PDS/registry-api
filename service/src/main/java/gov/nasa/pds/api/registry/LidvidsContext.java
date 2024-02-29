@@ -3,7 +3,7 @@ package gov.nasa.pds.api.registry;
 import java.util.List;
 
 public interface LidvidsContext {
-  public String getLidVid();
+  public String getProductIdentifierStr();
 
   public Integer getLimit();
 

@@ -109,7 +109,7 @@ class URIParameters implements UserContext {
   }
 
   @Override
-  public String getLidVid() {
+  public String getProductIdentifierStr() {
     return productIdentifier != null ? productIdentifier.toString() : "";
   }
 

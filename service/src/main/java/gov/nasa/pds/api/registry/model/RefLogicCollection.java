@@ -47,17 +47,16 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
       throws ApplicationTypeException, IOException, LidVidNotFoundException, MembershipException {
     if (twoSteps)
       throw new MembershipException(userContext.getIdentifier().toString(), "members/members", "collections");
-    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, userContext.getLidVid());
+    PdsLidVid collectionLidvid = PdsLidVid.fromString(userContext.getProductIdentifierStr());
+    GroupConstraint childrenConstraint = getChildProductsConstraint(ctrlContext, collectionLidvid);
 
     return rrContextFromConstraint(ctrlContext, userContext, childrenConstraint);
   }
 
-  private GroupConstraint getChildProductsConstraint(ControlContext control, String parentCollectionLidvid) throws IOException, LidVidNotFoundException {
-//    TODO: targetProductAlternateIds should depend on all/latest/specific behaviour
-    List<String> targetProductAlternateIds = QuickSearch.getValues(control.getConnection(), false, parentCollectionLidvid, "alternate_ids");
-
+  private GroupConstraint getChildProductsConstraint(ControlContext control, PdsLidVid parentCollectionLidvid) throws IOException, LidVidNotFoundException {
+    List<String> parentCollectionConstraintValues = List.of(parentCollectionLidvid.toString());
     GroupConstraint productClassConstraints = ReferencingLogicTransmuter.NonAggregateProduct.impl().constraints();
-    GroupConstraint childrenSelectorConstraint = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_collection_identifier", targetProductAlternateIds));
+    GroupConstraint childrenSelectorConstraint = GroupConstraintImpl.buildAny(Map.of("ops:Provenance/ops:parent_collection_identifier", parentCollectionConstraintValues));
     return productClassConstraints.union(childrenSelectorConstraint);
   }
 
@@ -68,7 +67,7 @@ class RefLogicCollection extends RefLogicAny implements ReferencingLogic {
     if (twoSteps)
       throw new MembershipException(searchContext.getIdentifier().toString(), "member-of/member-of", "collections");
 
-    List<String> parentIdStrings = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getLidVid(), "ops:Provenance/ops:parent_bundle_identifier");
+    List<String> parentIdStrings = QuickSearch.getValues(ctrlContext.getConnection(), false, searchContext.getProductIdentifierStr(), "ops:Provenance/ops:parent_bundle_identifier");
 
 //    Get all the LIDVID strings, convert the LID strings to LIDVID strings, then add them all together
     Set<String> parentLidvidStrings = parentIdStrings.stream().filter(PdsProductIdentifier::stringIsLidvid).collect(Collectors.toSet());
