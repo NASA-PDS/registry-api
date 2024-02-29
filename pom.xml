@@ -56,7 +56,7 @@ Go through this file line-by-line and replace the template values with your own.
 
     <groupId>gov.nasa.pds</groupId>
     <artifactId>registry-api</artifactId>
-    <version>1.4.1</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project-name}</name>
