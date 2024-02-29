@@ -1,8 +1,16 @@
 # Changelog
 
-## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...«unknown»)
+
+**Other closed issues:**
+
+- Add pds-deep-registry-archive execution to branch testing [\#412](https://github.com/NASA-PDS/registry-api/issues/412)
+
+## [v1.4.1](https://github.com/NASA-PDS/registry-api/tree/v1.4.1) (2024-02-29)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...v1.4.1)
 
 **Defects:**
 
