@@ -1,8 +1,16 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-02-27)
+## [1.4.1](https://github.com/NASA-PDS/registry-api/tree/1.4.1) (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.4.1...1.4.1)
+
+**Defects:**
+
+- members query return 500 when members do not exist in the registry or alternate\_id does not exists [\#411](https://github.com/NASA-PDS/registry-api/issues/411) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+
+## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
 
 **Defects:**
 
