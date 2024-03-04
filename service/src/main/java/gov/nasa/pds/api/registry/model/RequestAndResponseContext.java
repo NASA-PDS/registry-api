@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
@@ -256,19 +258,19 @@ public class RequestAndResponseContext implements RequestBuildContext, RequestCo
 
     if (response == null) {
       log.warn("Could not find any data given these conditions");
-      log.warn("   fields: " + String.valueOf(this.getFields().size()));
+      log.warn("   fields (whitespace-normalized): " + String.valueOf(this.getFields().size()));
       for (String field : this.getFields())
-        log.warn("      " + field);
-      log.warn("   keyword: " + String.valueOf(this.getKeywords().size()));
+        log.warn("      " + StringUtils.normalizeSpace(field));
+      log.warn("   keyword (whitespace-normalized): " + String.valueOf(this.getKeywords().size()));
       for (String keyword : this.getKeywords())
-        log.warn("    " + keyword);
-      log.warn("   lidvid: " + this.getProductIdentifierString());
+        log.warn("    " + StringUtils.normalizeSpace(keyword));
+      log.warn("   lidvid (whitespace-normalized): " + StringUtils.normalizeSpace(this.getProductIdentifierString()));
       log.warn("   limit: " + String.valueOf(this.getLimit()));
       log.warn("   query string: " + String.valueOf(this.getQueryString()));
       log.warn("   selector: " + String.valueOf(this.getSelector()));
-      log.warn("   sorting: " + String.valueOf(this.getSort().size()));
+      log.warn("   sorting (whitespace-normalized): " + String.valueOf(this.getSort().size()));
       for (String sort : this.getSort())
-        log.warn("      " + sort);
+        log.warn("      " + StringUtils.normalizeSpace(sort));
       log.warn("   searchAfter: " + String.valueOf(this.getSearchAfter()));
       throw new NothingFoundException();
     }
