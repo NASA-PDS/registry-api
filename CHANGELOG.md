@@ -1,8 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-03-02)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-03-06)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...«unknown»)
+
+**Defects:**
+
+- Cleanup logging of keys [\#387](https://github.com/NASA-PDS/registry-api/issues/387) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
