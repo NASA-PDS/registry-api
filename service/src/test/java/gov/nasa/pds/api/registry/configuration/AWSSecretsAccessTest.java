@@ -24,14 +24,13 @@ public class AWSSecretsAccessTest {
     return result;
   }
 
-  public static final void main(String args[]) {
+  public static void main(String[] args) {
     for (String secretName : args) {
       DefaultKeyValue<String, String> secret = testGetSecret(secretName);
       if (secret != null) {
-        log.info(String.format("Secret name : %s, Secret Id : %s / Secret Value : %s", secretName,
-            secret.getKey(), secret.getValue()));
+        log.info("Successfully retrieved secret.");
       } else {
-        log.error(String.format("Lookup for secrete %s returned null.", secretName));
+        log.error("Lookup for secret returned null.");
       }
     }
   }

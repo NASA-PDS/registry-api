@@ -43,7 +43,7 @@ public class AWSSecretsAccess {
       region = REGISTRY_DEFAULT_AWS_REGION;
     }
 
-    log.debug(String.format("Looking up secret %s in region %s", secretName, region));
+    log.debug(String.format("Looking up secret in non-default region %s", region));
 
     // Create a Secrets Manager client
     AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard().withRegion(region).build();

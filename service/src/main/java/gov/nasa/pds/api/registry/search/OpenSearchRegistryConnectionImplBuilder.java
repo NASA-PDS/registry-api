@@ -55,11 +55,11 @@ class OpenSearchRegistryConnectionImplBuilder {
     return timeOutSeconds;
   }
 
-  
+
   public boolean getCCSEnabled() {
     return CCSEnabled;
   }
-  
+
   public boolean isSsl() {
     return ssl;
   }
@@ -123,7 +123,6 @@ class OpenSearchRegistryConnectionImplBuilder {
 
       this.username = esCreds.getKey();
       this.password = esCreds.getValue();
-      log.debug(String.format("ES Username from environment : [%s]", this.username));
     }
   }
 
