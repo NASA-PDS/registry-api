@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,11 +79,11 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
       return new ResponseEntity<Object>(this.errorMessageFactory.get(e),
           HttpStatus.INTERNAL_SERVER_ERROR);
     } catch (LidVidMismatchException e) {
-      log.warn("The lid(vid) '" + parameters.getIdentifier()
-          + "' in the data base type does not match given type '" + parameters.getGroup() + "'");
+      log.warn("The lid(vid) (whitespace-normalized) '" + StringUtils.normalizeSpace(parameters.getIdentifier().toString())
+          + "' in the data base type does not match given type '" + StringUtils.normalizeSpace(parameters.getGroup()) + "'");
       return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (LidVidNotFoundException e) {
-      log.warn("Could not find lid(vid) in database: " + parameters.getIdentifier());
+      log.warn("Could not find lid(vid) in database (whitespace-normalized): " + StringUtils.normalizeSpace(parameters.getIdentifier().toString()));
       return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (MembershipException e) {
       log.warn("The given lid(vid) does not support the requested membership.");
@@ -91,7 +92,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
       log.warn("Could not find any matching reference(s) in database.");
       return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (NoViableAltException | ParseCancellationException e) {
-      log.warn("The given search string '" + parameters.getQuery() + "' cannot be parsed.");
+      log.warn("The given search string (whitespace-normalized) '" + StringUtils.normalizeSpace(parameters.getQuery()) + "' cannot be parsed.");
       ParseCancellationException forwarded_exception = new ParseCancellationException(
           "The given search string '" + parameters.getQuery() + "' cannot be parsed.");
       return new ResponseEntity<Object>(this.errorMessageFactory.get(forwarded_exception),
