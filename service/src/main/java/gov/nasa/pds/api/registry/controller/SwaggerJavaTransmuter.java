@@ -80,7 +80,7 @@ public class SwaggerJavaTransmuter extends SwaggerJavaHealthcheckTransmuter
           HttpStatus.INTERNAL_SERVER_ERROR);
     } catch (LidVidMismatchException e) {
       log.warn("The lid(vid) (whitespace-normalized) '" + StringUtils.normalizeSpace(parameters.getIdentifier().toString())
-          + "' in the data base type does not match given type () '" + StringUtils.normalizeSpace(parameters.getGroup()) + "'");
+          + "' in the data base type does not match given type '" + StringUtils.normalizeSpace(parameters.getGroup()) + "'");
       return new ResponseEntity<Object>(this.errorMessageFactory.get(e), HttpStatus.NOT_FOUND);
     } catch (LidVidNotFoundException e) {
       log.warn("Could not find lid(vid) in database (whitespace-normalized): " + StringUtils.normalizeSpace(parameters.getIdentifier().toString()));
