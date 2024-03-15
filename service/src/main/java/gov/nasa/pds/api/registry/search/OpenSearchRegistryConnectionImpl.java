@@ -25,6 +25,7 @@ import org.opensearch.client.RequestOptions;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +33,14 @@ import com.google.common.base.Splitter;
 
 import gov.nasa.pds.api.registry.ConnectionContext;
 
+
 public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 
   // key for getting the remotes from cross cluster config
   public static String CLUSTER_REMOTE_KEY = "cluster.remote";
 
   private static final Logger log = LoggerFactory.getLogger(OpenSearchRegistryConnectionImpl.class);
- 
+
   private RestHighLevelClient restHighLevelClient;
   private String registryIndex;
   private String registryRefIndex;
@@ -71,7 +73,7 @@ public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
       OpenSearchRegistryConnectionImpl.log.info("Set openSearch connection with username/password");
       final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(AuthScope.ANY,
-          new UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
+          new UsernamePasswordCredentials(username, new String(connectionBuilder.getPassword())));
 
       clientBuilder = RestClient.builder(httpHosts.toArray(new HttpHost[httpHosts.size()]))
           .setHttpClientConfigCallback(new HttpClientConfigCallback() {
@@ -106,21 +108,22 @@ public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 
     this.restHighLevelClient = new RestHighLevelClient(clientBuilder);
 
+
+
     String registryIndex = connectionBuilder.getRegistryIndex();
     if (connectionBuilder.getCCSEnabled()) {
       this.crossClusterNodes = checkCCSConfig();
       this.registryIndex = createCCSIndexString(registryIndex);
-    }
-    else {
+    } else {
       this.registryIndex = registryIndex;
     }
-    
+
     this.registryRefIndex = createCCSIndexString(connectionBuilder.getRegistryRefIndex());
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 
   }
 
-  public RestHighLevelClient getRestHighLevelClient() {
+  public RestHighLevelClient getOpenSearchClient() {
     return restHighLevelClient;
   }
 

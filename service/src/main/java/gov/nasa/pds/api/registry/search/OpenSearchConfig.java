@@ -38,30 +38,30 @@ public class OpenSearchConfig {
 
   @Value("${openSearch.timeOutSeconds:60}")
   private int timeOutSeconds;
-  
+
   public int getTimeOutSeconds() {
     return timeOutSeconds;
   }
-  
+
   public void setTimeOutSeconds(int timeOutSeconds) {
     this.timeOutSeconds = timeOutSeconds;
   }
-  
+
   @Value("${openSearch.CCSEnabled:true}")
   private boolean CCSEnabled;
-  
+
   public boolean getCCSEnabled() {
     return CCSEnabled;
   }
-  
+
   @Value("${openSearch.username:}")
   private String username;
 
-  public String getPassword() {
+  public char[] getPassword() {
     return password;
   }
 
-  public void setPassword(String password) {
+  public void setPassword(char[] password) {
     this.password = password;
   }
 
@@ -74,7 +74,7 @@ public class OpenSearchConfig {
   }
 
   @Value("${openSearch.password:}")
-  private String password;
+  private char[] password;
 
   @Value("${openSearch.ssl:false}")
   private boolean ssl;
