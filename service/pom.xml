@@ -44,11 +44,10 @@
 
   <description>Registry API Service contributing to the PDS Federated Search API</description>
   <properties>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson-version>2.16.1</jackson-version>
     <spring-boot-version>3.0.4</spring-boot-version>
+    <jackson-version>2.16.1</jackson-version>
   </properties>
   <build>
     <resources>
@@ -112,52 +111,21 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>11</source>
-          <target>11</target>
-	      </configuration>
       </plugin>
-      <plugin>
-	    <groupId>com.iluwatar.urm</groupId>
-	    <artifactId>urm-maven-plugin</artifactId>
-	    <version>2.0.0</version>
-	    <configuration>
-	        <outputDirectory>${project.basedir}/target</outputDirectory>
-	        <packages>
-	            <param>gov.nasa.pds.api.registry</param>
-	        </packages>
-	        <ignores>
-	        </ignores>
-	        <includeMainDirectory>true</includeMainDirectory>
-	        <includeTestDirectory>false</includeTestDirectory>
-	        <presenter>mermaid</presenter>
-	        <descriptorRefs>
-	            <descriptorRef>jar-with-dependencies</descriptorRef>
-	        </descriptorRefs>
-	    </configuration>
-	    <executions>
-	        <execution>
-	            <phase>process-classes</phase>
-	            <goals>
-	                <goal>map</goal>
-	            </goals>
-	        </execution>
-	    </executions>
-	</plugin>
     </plugins>
     
   </build>
 
   <dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-
-  <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+  
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
     <dependency>
@@ -197,14 +165,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
     </dependency>
-
-	<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-config -->
-	<dependency>
-	    <groupId>org.springframework.cloud</groupId>
-	    <artifactId>spring-cloud-starter-config</artifactId>
-	    <version>4.1.0</version>
-	</dependency>
-
 
 
 	<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
