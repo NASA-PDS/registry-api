@@ -64,7 +64,7 @@ class RefLogicAny implements ReferencingLogic {
             RequestAndResponseContext.buildRequestAndResponseContext(
                     ctrlContext, newUserContext, constraint);
     rrContext.setResponse(
-            ctrlContext.getConnection().getRestHighLevelClient(),
+            ctrlContext.getConnection().getOpenSearchClient(),
             new SearchRequestFactory(rrContext, ctrlContext.getConnection())
                     .build(rrContext, ctrlContext.getConnection().getRegistryIndex()));
     return rrContext;

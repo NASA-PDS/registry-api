@@ -17,7 +17,7 @@ public class QuickSearch {
         new SearchRequestFactory(RequestConstructionContextFactory.given(lidvid), connection)
             .build(RequestBuildContextFactory.given(justLatest, name), index);
     SearchResponse result =
-        connection.getRestHighLevelClient().search(request, RequestOptions.DEFAULT);
+        connection.getOpenSearchClient().search(request, RequestOptions.DEFAULT);
 
     if (result.getHits().getTotalHits().value == 0L)
       throw new LidVidNotFoundException(lidvid);

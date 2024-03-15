@@ -39,4 +39,4 @@ openSearch.ssl=true
 filter.archiveStatus=archived,certified
 
 # source version - this needs to be manually updated for AWS ECR docker images
-registry.service.version=1.4.0
+registry.service.version=1.4.1

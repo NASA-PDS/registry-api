@@ -23,7 +23,7 @@ class Standard implements EndpointHandler {
     RequestAndResponseContext context =
         RequestAndResponseContext.buildRequestAndResponseContext(control, content,
             ReferencingLogicTransmuter.getBySwaggerGroup(content.getGroup()).impl().constraints());
-    context.setResponse(control.getConnection().getRestHighLevelClient(),
+    context.setResponse(control.getConnection().getOpenSearchClient(),
         new SearchRequestFactory(context, control.getConnection()).build(context,
             control.getConnection().getRegistryIndex()));
     return new ResponseEntity<Object>(context.getResponse(), HttpStatus.OK);

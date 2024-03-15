@@ -68,7 +68,7 @@ public class HealthcheckLogic {
 
       countRequest.query(QueryBuilders.matchAllQuery());
 
-      CountResponse countResponse = control.getConnection().getRestHighLevelClient().count(countRequest, RequestOptions.DEFAULT);
+      CountResponse countResponse = control.getConnection().getOpenSearchClient().count(countRequest, RequestOptions.DEFAULT);
       RestStatus countResponseStatus = countResponse.status();
       if (countResponseStatus != RestStatus.OK) {
         addFailureMessage(response, String.format("Opensearch count request failure [%d]", countResponseStatus));

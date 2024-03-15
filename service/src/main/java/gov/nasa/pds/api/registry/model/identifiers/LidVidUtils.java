@@ -46,7 +46,7 @@ public class LidVidUtils {
         ctlContext.getConnection()).build(
             RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()),
             ctlContext.getConnection().getRegistryIndex());
-    SearchResponse searchResponse = ctlContext.getConnection().getRestHighLevelClient()
+    SearchResponse searchResponse = ctlContext.getConnection().getOpenSearchClient()
         .search(searchRequest, RequestOptions.DEFAULT);
 
     if (searchResponse != null) {
@@ -73,7 +73,7 @@ public class LidVidUtils {
 
     if (!lids.isEmpty()) {
       List<String> lidStrings = lids.stream().map(PdsLid::toString).collect(Collectors.toList());
-      ctlContext.getConnection().getRestHighLevelClient()
+      ctlContext.getConnection().getOpenSearchClient()
           .search(new SearchRequestFactory(
               RequestConstructionContextFactory.given("lid", new ArrayList<>(lidStrings), true),
               ctlContext.getConnection()).build(reqContext,
