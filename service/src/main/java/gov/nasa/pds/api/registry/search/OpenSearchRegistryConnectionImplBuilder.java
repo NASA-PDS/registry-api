@@ -35,11 +35,11 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.username = username;
   }
 
-  public String getPassword() {
+  public char[] getPassword() {
     return password;
   }
 
-  public void setPassword(String password) {
+  public void setPassword(char[] password) {
     this.password = password;
   }
 
@@ -55,11 +55,11 @@ class OpenSearchRegistryConnectionImplBuilder {
     return timeOutSeconds;
   }
 
-  
+
   public boolean getCCSEnabled() {
     return CCSEnabled;
   }
-  
+
   public boolean isSsl() {
     return ssl;
   }
@@ -76,7 +76,7 @@ class OpenSearchRegistryConnectionImplBuilder {
   private final boolean sslCertificateCNVerification;
 
   private String username;
-  private String password;
+  private char[] password;
 
   public OpenSearchRegistryConnectionImplBuilder() {
     // Default builder
@@ -122,7 +122,7 @@ class OpenSearchRegistryConnectionImplBuilder {
       }
 
       this.username = esCreds.getKey();
-      this.password = esCreds.getValue();
+      this.password = esCreds.getValue().toCharArray();
       log.debug(String.format("ES Username from environment : [%s]", this.username));
     }
   }

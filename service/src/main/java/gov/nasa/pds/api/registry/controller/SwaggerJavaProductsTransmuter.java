@@ -138,7 +138,7 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
       mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
       GetIndexRequest req = new GetIndexRequest(registryIndexName);
-      RestHighLevelClient client = this.getConnection().getRestHighLevelClient();
+      RestHighLevelClient client = this.getConnection().getOpenSearchClient();
       GetIndexResponse response = client.indices().get(req, RequestOptions.DEFAULT);
 
       JsonNode content =

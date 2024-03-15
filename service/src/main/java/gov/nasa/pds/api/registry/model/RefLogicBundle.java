@@ -71,7 +71,7 @@ class RefLogicBundle extends RefLogicAny implements ReferencingLogic {
 
     //    Retrieve member collection LIDVIDs
     List<PdsLidVid> results = new ArrayList<>();
-    for (final Map<String, Object> kvp : new HitIterator(ctrlContext.getConnection().getRestHighLevelClient(), collectionReferencesRequest)) {
+    for (final Map<String, Object> kvp : new HitIterator(ctrlContext.getConnection().getOpenSearchClient(), collectionReferencesRequest)) {
       collectionPropertyKeys.forEach(
           key -> {
             Object referencesRawObj = kvp.get(key);
