@@ -103,12 +103,10 @@ public class SearchRequestFactory {
       ProductQueryBuilderUtil.addPresetCriteria(this.base, context.getPresetCriteria());
     }
 
-    return new SearchRequest()
-        .indices(index)
-        .source(new SearchSourceBuilder()
-            .query(this.base)
+    return new SearchRequest().indices(index)
+        .source(new SearchSourceBuilder().query(this.base)
             .fetchSource(context.getFields().toArray(new String[0]),
-                         SearchRequestFactory.excludes(context.getFields()))
+                SearchRequestFactory.excludes(context.getFields()))
             .trackTotalHits(true));
   }
 }

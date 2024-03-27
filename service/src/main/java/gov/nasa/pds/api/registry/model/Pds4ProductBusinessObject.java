@@ -29,7 +29,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
   public final boolean isJSON;
   public final String[] PDS4_PRODUCT_FIELDS;
 
-  Pds4ProductBusinessObject(boolean isJSON) {
+  public Pds4ProductBusinessObject(boolean isJSON) {
     super();
     String temp[] = {
         // BLOB
@@ -75,6 +75,13 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
     this.objectMapper = om;
   }
 
+
+  @Override
+  public void setResponse(Map<String, Object> kvp, List<String> fields) {
+    // TODO: to be implemented
+    this.product = null;
+  }
+
   @Override
   public void setResponse(SearchHit hit, List<String> fields) {
     this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON);
@@ -98,7 +105,8 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
         if (kvp.containsKey("lidvid")) {
           lidvid = kvp.get("lidvid").toString();
         }
-        log.error ("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: " + lidvid, t);
+        log.error("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: "
+            + lidvid, t);
       }
     }
 
@@ -127,7 +135,8 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
         Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
         list.add(prod);
       } catch (Throwable t) {
-        log.error ("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: " + hit.getId(), t);
+        log.error("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: "
+            + hit.getId(), t);
       }
     }
     products.setData(list);

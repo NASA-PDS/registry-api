@@ -37,10 +37,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 
-import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.ConnectionContextNew;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
-public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
+@Component
+public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew {
 
   // key for getting the remotes from cross cluster config
   public static String CLUSTER_REMOTE_KEY = "cluster.remote";
@@ -60,6 +62,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
     this(new OpenSearchRegistryConnectionImplBuilder());
   }
 
+  @Autowired
   public OpenSearchRegistryConnectionNewImpl(
       OpenSearchRegistryConnectionImplBuilder connectionBuilder)
       throws java.security.NoSuchAlgorithmException, java.security.KeyStoreException,
@@ -73,6 +76,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
       List<String> hostAndPort = Splitter.on(':').splitToList(host);
       OpenSearchRegistryConnectionNewImpl.log
           .info("Host " + hostAndPort.get(0) + ":" + hostAndPort.get(1));
+      log.info("Connection to host" + host);
       httpHosts.add(new HttpHost((connectionBuilder.isSsl() ? "https" : "http"), hostAndPort.get(0),
           Integer.parseInt(hostAndPort.get(1))));
 
@@ -89,8 +93,14 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
     // we should either take them all or make httpHosts a single element
     // I have no idea not why httpHosts is a list in the first place, maybe because we are
     // supposed to query a cluster.
+    /*
+     * credentialsProvider.setCredentials(new AuthScope(httpHosts.get(0)), new
+     * UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
+     */
+    // hardcoded to test
+    char[] password = "admin".toCharArray();
     credentialsProvider.setCredentials(new AuthScope(httpHosts.get(0)),
-        new UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
+        new UsernamePasswordCredentials("admin", password));
     // }
 
     final ApacheHttpClient5TransportBuilder builder = ApacheHttpClient5TransportBuilder
@@ -154,11 +164,10 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
 
   }
 
-  public RestHighLevelClient getOpenSearchClient() {
-    return null;
+
+  public OpenSearchClient getOpenSearchClient() {
+    return this.openSearchClient;
   }
-
-
 
   public String getRegistryIndex() {
     return registryIndex;

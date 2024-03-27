@@ -13,8 +13,8 @@ import gov.nasa.pds.api.registry.search.OpenSearchRegistryConnectionNewImpl;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration ",
-    "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.model",
-    "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
+    /* "gov.nasa.pds.api.registry.controller", */ "gov.nasa.pds.api.registry.controllersnew",
+    "gov.nasa.pds.api.registry.model", "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
 public class SpringBootMain implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootMain.class);

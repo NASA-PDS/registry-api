@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.registry.model;
 
 import java.util.List;
+import java.util.Map;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,8 @@ public interface ProductBusinessLogic {
   public Object getResponse();
 
   public void setObjectMapper(ObjectMapper om);
+
+  public void setResponse(Map<String, Object> hit, List<String> fields);
 
   public void setResponse(SearchHit hit, List<String> fields);
 

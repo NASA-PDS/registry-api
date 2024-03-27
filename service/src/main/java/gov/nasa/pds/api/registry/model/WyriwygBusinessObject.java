@@ -50,10 +50,12 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
     this.om = om;
   }
 
+
   @Override
-  public void setResponse(SearchHit hit, List<String> fields) {
+  public void setResponse(Map<String, Object> kvps, List<String> fields) {
+    // TODO: to be implemented
     WyriwygProduct product = new WyriwygProduct();
-    for (Entry<String, Object> pair : hit.getSourceAsMap().entrySet()) {
+    for (Entry<String, Object> pair : kvps.entrySet()) {
       WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       try {
         kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
@@ -63,7 +65,13 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
         log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
       }
     }
+
     this.product = product;
+  }
+
+  @Override
+  public void setResponse(SearchHit hit, List<String> fields) {
+    this.setResponse(hit.getSourceAsMap(), fields);
   }
 
   @Override
@@ -130,7 +138,7 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
     String valueOf;
     if (o instanceof Iterable) {
       List<String> stringRepresentations = new ArrayList<>();
-      for (Object el : (Iterable<Object>) o ) {
+      for (Object el : (Iterable<Object>) o) {
         stringRepresentations.add(String.valueOf(el));
       }
 

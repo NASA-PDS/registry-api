@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.ConnectionContextBase;
 
 /*
  * Keep this eventhough not directly referenced
@@ -122,10 +122,10 @@ public class OpenSearchConfig {
     this.ssl = ssl;
   }
 
-  private ConnectionContext connection = null;
+  private ConnectionContextBase connection = null;
 
   @Bean("connection")
-  public ConnectionContext connectionContext() {
+  public ConnectionContextBase connectionContext() {
 
     if (connection == null) {
 
