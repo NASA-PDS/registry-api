@@ -43,18 +43,24 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
     this.objectMapper = om;
   }
 
+
+  @Override
+  public void setResponse(Map<String, Object> kvp, List<String> fields) {
+    product = SearchUtil.entityProductToAPIProduct(
+        objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+    PdsProduct product = new PdsProduct();
+    product.setProperties(
+        (Map<String, List<String>>) ProductBusinessObject.getFilteredProperties(kvp, null, null));
+    this.product = product;
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   public void setResponse(SearchHit hit, List<String> fields) {
     Map<String, Object> kvp = hit.getSourceAsMap();;
-    PdsProduct product;
 
-    product = SearchUtil.entityProductToAPIProduct(
-        objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+    this.setResponse(kvp, fields);
 
-    product.setProperties(
-        (Map<String, List<String>>) ProductBusinessObject.getFilteredProperties(kvp, null, null));
-    this.product = product;
   }
 
   @Override
@@ -79,7 +85,8 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
         if (kvp.containsKey("lidvid")) {
           lidvid = kvp.get("lidvid").toString();
         }
-        log.error ("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: " + lidvid, t);
+        log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: "
+            + lidvid, t);
       }
     }
     count = products.getData().size();
@@ -108,9 +115,10 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
         products.getData().get(products.getData().size() - 1)
             .setProperties((Map<String, List<String>>) (Map<String, ?>) ProductBusinessObject
                 .getFilteredProperties(kvp, null, null));
-        } catch (Throwable t) {
-          log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: " + hit.getId(), t);
-        }
+      } catch (Throwable t) {
+        log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: "
+            + hit.getId(), t);
+      }
     }
 
     summary.setProperties(new ArrayList<String>(uniqueProperties));

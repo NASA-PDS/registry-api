@@ -6,10 +6,12 @@ import java.util.List;
 import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import gov.nasa.pds.api.registry.SystemConstants;
 import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
 
+@Component
 class OpenSearchRegistryConnectionImplBuilder {
 
   private static final String DEFAULT_ES_HOST = "localhost:9200";
@@ -92,6 +94,7 @@ class OpenSearchRegistryConnectionImplBuilder {
 
   }
 
+  @Autowired
   public OpenSearchRegistryConnectionImplBuilder(OpenSearchConfig openSearchConfig) {
 
     this.hosts = openSearchConfig.getHosts();

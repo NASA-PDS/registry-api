@@ -27,106 +27,114 @@ import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmuter
-    implements ControlContext, ProductsApi, ClassesApi, PropertiesApi {
+    implements ControlContext, /* ProductsApi, */ ClassesApi, PropertiesApi {
 
   public Optional<NativeWebRequest> getRequest() {
     return Optional.empty();
   }
 
-  @Override
-  public ResponseEntity<Object> productList(@Valid List<String> fields,
-      @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
-      @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return super.classList("any", fields, keywords, limit, q, sort, searchAfter);
-  }
 
-  @Override
-  public ResponseEntity<Object> productMemberOf(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return this.processs(new Member(false, false),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMemberOfOf(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return this.processs(new Member(false, true),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMemberOfOfVers(String identifier, String versions,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.processs(new Member(false, true),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMemberOfVers(String identifier, String versions,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.processs(new Member(false, false),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMembers(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return this.processs(new Member(true, false),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMembersMembers(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return this.processs(new Member(true, true), this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
-        .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMembersMembersVers(String identifier, String versions,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.processs(new Member(true, true),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> productMembersVers(String identifier, String versions,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.processs(new Member(true, false),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(versions).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields) {
-    return this.processs(new Standard(),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> selectByLidvidAll(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return this.processs(new Standard(),
-        this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setLimit(limit)
-            .setSort(sort).setSearchAfter(sort, searchAfter).setVersion(ProductVersionSelector.ALL).build());
-  }
-
-  @Override
-  public ResponseEntity<Object> selectByLidvidLatest(String identifier,
-      @Valid List<String> fields) {
-    return this.processs(new Standard(), this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
-        .setFields(fields).setVersion(ProductVersionSelector.LATEST).build());
-  }
+  /*
+   * @Override public ResponseEntity<Object> productList(@Valid List<String> fields,
+   * 
+   * @Valid List<String> keywords, @Min(0) @Valid Integer limit, @Valid String q,
+   * 
+   * @Valid List<String> sort, @Valid List<String> searchAfter) { return super.classList("any",
+   * fields, keywords, limit, q, sort, searchAfter); }
+   * 
+   * 
+   * @Override public ResponseEntity<Object> productMemberOf(String identifier, @Valid List<String>
+   * fields,
+   * 
+   * @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+   * return this.processs(new Member(false, false),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter) .build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMemberOfOf(String identifier, @Valid
+   * List<String> fields,
+   * 
+   * @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+   * return this.processs(new Member(false, true),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter) .build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMemberOfOfVers(String identifier, String
+   * versions,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.processs(new Member(false, true),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
+   * .setVersion(versions).build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMemberOfVers(String identifier, String versions,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.processs(new Member(false, false),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
+   * .setVersion(versions).build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMembers(String identifier, @Valid List<String>
+   * fields,
+   * 
+   * @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+   * return this.processs(new Member(true, false),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter) .build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMembersMembers(String identifier, @Valid
+   * List<String> fields,
+   * 
+   * @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+   * return this.processs(new Member(true, true),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter) .build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMembersMembersVers(String identifier, String
+   * versions,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.processs(new Member(true, true),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
+   * .setVersion(versions).build()); }
+   * 
+   * @Override public ResponseEntity<Object> productMembersVers(String identifier, String versions,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.processs(new Member(true, false),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
+   * .setVersion(versions).build()); }
+   * 
+   * 
+   * @Override public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String>
+   * fields) { return this.processs(new Standard(),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(
+   * fields).build()); }
+   * 
+   * 
+   * @Override public ResponseEntity<Object> selectByLidvidAll(String identifier, @Valid
+   * List<String> fields,
+   * 
+   * @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+   * return this.processs(new Standard(),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setLimit(limit).setSort(sort).setSearchAfter(sort, searchAfter)
+   * .setVersion(ProductVersionSelector.ALL).build()); }
+   * 
+   * @Override public ResponseEntity<Object> selectByLidvidLatest(String identifier,
+   * 
+   * @Valid List<String> fields) { return this.processs(new Standard(),
+   * this.uriParametersBuilder.setIdentifier(PdsProductIdentifier.fromString(identifier))
+   * .setFields(fields).setVersion(ProductVersionSelector.LATEST).build()); }
+   */
 
   @Override
   public ResponseEntity<Object> productPropertiesList() {
@@ -138,42 +146,30 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
       mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
       GetIndexRequest req = new GetIndexRequest(registryIndexName);
-      RestHighLevelClient client = this.getConnection().getOpenSearchClient();
+      RestHighLevelClient client = (RestHighLevelClient) this.getConnection().getOpenSearchClient();
       GetIndexResponse response = client.indices().get(req, RequestOptions.DEFAULT);
 
       JsonNode content =
-          mapper
-              .valueToTree(response.getMappings().get(registryIndexName).getSourceAsMap())
+          mapper.valueToTree(response.getMappings().get(registryIndexName).getSourceAsMap())
               .get("properties");
 
       Map<String, String> displayTypesByDbType =
-          Map.of(
-              "keyword", "string",
-              "text", "string",
-              "date", "timestamp",
-              "integer", "integer",
-              "long", "integer",
-              "float", "float",
-              "double", "float");
+          Map.of("keyword", "string", "text", "string", "date", "timestamp", "integer", "integer",
+              "long", "integer", "float", "float", "double", "float");
 
       List<PropertiesListInner> results = new ArrayList<>();
-      content
-          .fieldNames()
-          .forEachRemaining(
-              (String propertyName) -> {
-                PropertiesListInner propertyElement =
-                    new PropertiesListInner();
+      content.fieldNames().forEachRemaining((String propertyName) -> {
+        PropertiesListInner propertyElement = new PropertiesListInner();
 
-                propertyElement.setProperty(propertyName);
+        propertyElement.setProperty(propertyName);
 
-                String rawType = content.get(propertyName).get("type").asText();
-                String displayType = displayTypesByDbType.getOrDefault(rawType, "unsupported");
-                PropertiesListInner.TypeEnum enumType =
-                    PropertiesListInner.TypeEnum.fromValue(displayType);
-                propertyElement.setType(enumType);
+        String rawType = content.get(propertyName).get("type").asText();
+        String displayType = displayTypesByDbType.getOrDefault(rawType, "unsupported");
+        PropertiesListInner.TypeEnum enumType = PropertiesListInner.TypeEnum.fromValue(displayType);
+        propertyElement.setType(enumType);
 
-                results.add(propertyElement);
-              });
+        results.add(propertyElement);
+      });
 
       return new ResponseEntity<>(results, HttpStatus.OK);
     } catch (IOException err) {
@@ -181,4 +177,6 @@ abstract class SwaggerJavaProductsTransmuter extends SwaggerJavaClassesTransmute
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
 }

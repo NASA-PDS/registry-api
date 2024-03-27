@@ -24,7 +24,7 @@ import org.opensearch.index.query.QueryBuilders;
 
 import com.google.errorprone.annotations.Immutable;
 
-import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.ConnectionContextBase;
 import gov.nasa.pds.api.registry.ControlContext;
 import gov.nasa.pds.api.registry.exceptions.NothingFoundException;
 import gov.nasa.pds.api.registry.model.identifiers.LidVidUtils;

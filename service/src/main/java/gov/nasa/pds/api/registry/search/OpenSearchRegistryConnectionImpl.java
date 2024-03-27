@@ -24,7 +24,8 @@ import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
 import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ import com.google.common.base.Splitter;
 
 import gov.nasa.pds.api.registry.ConnectionContext;
 
-
+@Component
 public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
 
   // key for getting the remotes from cross cluster config
@@ -51,6 +52,7 @@ public class OpenSearchRegistryConnectionImpl implements ConnectionContext {
     this(new OpenSearchRegistryConnectionImplBuilder());
   }
 
+  @Autowired
   public OpenSearchRegistryConnectionImpl(
       OpenSearchRegistryConnectionImplBuilder connectionBuilder) {
 

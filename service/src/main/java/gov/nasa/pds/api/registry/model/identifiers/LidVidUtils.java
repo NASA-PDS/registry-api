@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.ControlContext;
+import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.RequestBuildContext;
 import gov.nasa.pds.api.registry.UserContext;
 import gov.nasa.pds.api.registry.exceptions.LidVidMismatchException;
@@ -38,12 +39,11 @@ public class LidVidUtils {
   private static final Logger log = LoggerFactory.getLogger(LidVidUtils.class);
 
   public static PdsLidVid getLatestLidVidByLid(ControlContext ctlContext,
-      RequestBuildContext reqContext, PdsLid lid)
-      throws IOException, LidVidNotFoundException {
+      RequestBuildContext reqContext, PdsLid lid) throws IOException, LidVidNotFoundException {
 
     SearchRequest searchRequest = new SearchRequestFactory(
         RequestConstructionContextFactory.given("lid", lid.toString(), true),
-        ctlContext.getConnection()).build(
+        (ConnectionContext) ctlContext.getConnection()).build(
             RequestBuildContextFactory.given(true, "lidvid", reqContext.getPresetCriteria()),
             ctlContext.getConnection().getRegistryIndex());
     SearchResponse searchResponse = ctlContext.getConnection().getOpenSearchClient()
@@ -130,13 +130,14 @@ public class LidVidUtils {
         ReferencingLogicTransmuter.getBySwaggerGroup(user.getGroup());
 
     if (expected_rlt != ReferencingLogicTransmuter.Any) {
-      String actual_group =
-          QuickSearch.getValue(control.getConnection(), false, user.getProductIdentifierStr(), "product_class");
+      String actual_group = QuickSearch.getValue(control.getConnection(), false,
+          user.getProductIdentifierStr(), "product_class");
       ReferencingLogicTransmuter actual_rlt =
           ReferencingLogicTransmuter.getByProductClass(actual_group);
 
       if (actual_rlt != expected_rlt)
-        throw new LidVidMismatchException(user.getProductIdentifierStr(), user.getGroup(), actual_group);
+        throw new LidVidMismatchException(user.getProductIdentifierStr(), user.getGroup(),
+            actual_group);
     }
   }
 }

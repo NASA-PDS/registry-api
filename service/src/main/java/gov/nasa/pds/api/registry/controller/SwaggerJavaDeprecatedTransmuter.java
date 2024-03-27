@@ -12,7 +12,7 @@ import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.model.ProductVersionSelector;
 
 abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransmuter
-    implements BundlesApi, CollectionsApi, ProductsApi {
+    implements BundlesApi, CollectionsApi /* , ProductsApi */ {
   @Override
   public ResponseEntity<Object> bundleList(@Valid List<String> fields, @Valid List<String> keywords,
       @Min(0) @Valid Integer limit, @Valid String q, @Valid List<String> sort,
@@ -22,16 +22,19 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 
   @Override
   public ResponseEntity<Object> bundlesLidvid(String identifier, @Valid List<String> fields) {
-    return this.processs(new Standard(), this.uriParametersBuilder.setGroup("bundles")
-        .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setVerifyClassAndId(true).build());
+    return this.processs(new Standard(),
+        this.uriParametersBuilder.setGroup("bundles")
+            .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
+            .setVerifyClassAndId(true).build());
   }
 
   @Override
   public ResponseEntity<Object> bundlesLidvidAll(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-//    TODO: Investigate why start/searchAfter is just disregarded for this endpoint
+    // TODO: Investigate why start/searchAfter is just disregarded for this endpoint
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("bundles").setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
+        this.uriParametersBuilder.setGroup("bundles")
+            .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
             .setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL).build());
   }
 
@@ -59,7 +62,8 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   @Override
   public ResponseEntity<Object> bundlesLidvidLatest(String identifier, @Valid List<String> fields) {
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("bundles").setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
+        this.uriParametersBuilder.setGroup("bundles")
+            .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
             .setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST).build());
   }
 
@@ -78,18 +82,20 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
 
   @Override
   public ResponseEntity<Object> collectionsLidvid(String identifier, @Valid List<String> fields) {
-    return this.processs(new Standard(), this.uriParametersBuilder.setGroup("collections")
-        .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields).setVerifyClassAndId(true).build());
+    return this.processs(new Standard(),
+        this.uriParametersBuilder.setGroup("collections")
+            .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
+            .setVerifyClassAndId(true).build());
   }
 
   @Override
   public ResponseEntity<Object> collectionsLidvidAll(String identifier, @Valid List<String> fields,
       @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-//    TODO: Investigate why start/searchAfter is disregarded in this case
+    // TODO: Investigate why start/searchAfter is disregarded in this case
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("collections").setIdentifier(PdsProductIdentifier.fromString(identifier))
-            .setFields(fields).setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL)
-            .build());
+        this.uriParametersBuilder.setGroup("collections")
+            .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
+            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.ALL).build());
   }
 
   @Override
@@ -103,9 +109,9 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   public ResponseEntity<Object> collectionsLidvidLatest(String identifier,
       @Valid List<String> fields) {
     return this.processs(new Standard(),
-        this.uriParametersBuilder.setGroup("collections").setIdentifier(PdsProductIdentifier.fromString(identifier))
-            .setFields(fields).setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST)
-            .build());
+        this.uriParametersBuilder.setGroup("collections")
+            .setIdentifier(PdsProductIdentifier.fromString(identifier)).setFields(fields)
+            .setVerifyClassAndId(true).setVersion(ProductVersionSelector.LATEST).build());
   }
 
   @Override
@@ -119,54 +125,59 @@ abstract class SwaggerJavaDeprecatedTransmuter extends SwaggerJavaProductsTransm
   public ResponseEntity<Object> collectionsLidvidProductsAll(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Valid List<String> searchAfter) {
-    return this.classMembersVers("collections", identifier, "all", fields, limit, sort, searchAfter);
+    return this.classMembersVers("collections", identifier, "all", fields, limit, sort,
+        searchAfter);
   }
 
   @Override
   public ResponseEntity<Object> collectionsLidvidProductsLatest(String identifier,
       @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
       @Valid List<String> searchAfter) {
-    return this.classMembersVers("collections", identifier, "latest", fields, limit, sort, searchAfter);
+    return this.classMembersVers("collections", identifier, "latest", fields, limit, sort,
+        searchAfter);
   }
 
-  @Override
-  public ResponseEntity<Object> productsLidividBundlesAll(String identifier,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.classMemberOfOfVers("any", identifier, "all", fields, limit, sort, searchAfter);
-  }
 
-  @Override
-  public ResponseEntity<Object> productsLidvidBundles(String identifier, @Valid List<String> fields,
-      @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
-    return this.classMemberOfOf("any", identifier, fields, limit, sort, searchAfter);
-  }
-
-  @Override
-  public ResponseEntity<Object> productsLidvidBundlesLatest(String identifier,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.classMemberOfOfVers("any", identifier, "latest", fields, limit, sort, searchAfter);
-  }
-
-  @Override
-  public ResponseEntity<Object> productsLidvidCollections(String identifier,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.classMemberOf("any", identifier, fields, limit, sort, searchAfter);
-  }
-
-  @Override
-  public ResponseEntity<Object> productsLidvidCollectionsAll(String identifier,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.classMemberOfVers("any", identifier, "all", fields, limit, sort, searchAfter);
-  }
-
-  @Override
-  public ResponseEntity<Object> productsLidvidCollectionsLatest(String identifier,
-      @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
-      @Valid List<String> searchAfter) {
-    return this.classMemberOfVers("any", identifier, "latest", fields, limit, sort, searchAfter);
-  }
+  /*
+   * @Override public ResponseEntity<Object> productsLidividBundlesAll(String identifier,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.classMemberOfOfVers("any", identifier, "all",
+   * fields, limit, sort, searchAfter); }
+   * 
+   * @Override public ResponseEntity<Object> productsLidvidBundles(String identifier, @Valid
+   * List<String> fields,
+   * 
+   * @Min(0) @Valid Integer limit, @Valid List<String> sort, @Valid List<String> searchAfter) {
+   * return this.classMemberOfOf("any", identifier, fields, limit, sort, searchAfter); }
+   * 
+   * @Override public ResponseEntity<Object> productsLidvidBundlesLatest(String identifier,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.classMemberOfOfVers("any", identifier, "latest",
+   * fields, limit, sort, searchAfter); }
+   * 
+   * @Override public ResponseEntity<Object> productsLidvidCollections(String identifier,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.classMemberOf("any", identifier, fields, limit,
+   * sort, searchAfter); }
+   * 
+   * @Override public ResponseEntity<Object> productsLidvidCollectionsAll(String identifier,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.classMemberOfVers("any", identifier, "all",
+   * fields, limit, sort, searchAfter); }
+   * 
+   * @Override public ResponseEntity<Object> productsLidvidCollectionsLatest(String identifier,
+   * 
+   * @Valid List<String> fields, @Min(0) @Valid Integer limit, @Valid List<String> sort,
+   * 
+   * @Valid List<String> searchAfter) { return this.classMemberOfVers("any", identifier, "latest",
+   * fields, limit, sort, searchAfter); }
+   */
 }
