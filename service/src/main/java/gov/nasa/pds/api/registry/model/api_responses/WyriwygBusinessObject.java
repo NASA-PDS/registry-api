@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.model;
+package gov.nasa.pds.api.registry.model.api_responses;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
+import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
@@ -80,8 +81,7 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
     WyriwygProducts products = new WyriwygProducts();
 
     for (Map<String, Object> kvps : hits) {
-      uniqueProperties
-          .addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
+      uniqueProperties.addAll(getFilteredProperties(kvps, fields, null).keySet());
 
       WyriwygProduct product = new WyriwygProduct();
       for (Entry<String, Object> pair : kvps.entrySet()) {
@@ -111,8 +111,7 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
 
     for (SearchHit hit : hits.getHits()) {
       Map<String, Object> kvps = hit.getSourceAsMap();
-      uniqueProperties
-          .addAll(ProductBusinessObject.getFilteredProperties(kvps, fields, null).keySet());
+      uniqueProperties.addAll(getFilteredProperties(kvps, fields, null).keySet());
 
       WyriwygProduct product = new WyriwygProduct();
       for (Entry<String, Object> pair : kvps.entrySet()) {

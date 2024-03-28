@@ -1,17 +1,63 @@
-package gov.nasa.pds.api.registry.model;
+package gov.nasa.pds.api.registry.model.api_responses;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
+import gov.nasa.pds.api.registry.model.SearchUtil;
 
-public class ProductBusinessObject {
-  private static final Logger log = LoggerFactory.getLogger(ProductBusinessObject.class);
+@Component
+@RequestScope
+public abstract class ProductBusinessLogicImpl implements ProductBusinessLogic {
+  private static final Logger log = LoggerFactory.getLogger(ProductBusinessLogicImpl.class);
 
   private static final String DEFAULT_NULL_VALUE = null;
+
+  protected URL baseURL;
+
+
+
+  public ProductBusinessLogicImpl() {
+    try {
+
+      HttpServletRequest request =
+          ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+      String proxyContextPath = request.getContextPath();
+      ProductBusinessLogicImpl.log.debug("contextPath is: '" + proxyContextPath + "'");
+
+      if (ProductBusinessLogicImpl.proxyRunsOnDefaultPort(request)) {
+        this.baseURL = new URL(request.getScheme(), request.getServerName(), proxyContextPath);
+      } else {
+        this.baseURL = new URL(request.getScheme(), request.getServerName(),
+            request.getServerPort(), proxyContextPath);
+      }
+
+      log.debug("baseUrl is " + this.baseURL.toString());
+
+
+    } catch (MalformedURLException e) {
+      log.error("Server URL was not retrieved");
+
+    }
+  }
+
+
+  private static boolean proxyRunsOnDefaultPort(HttpServletRequest request) {
+    return (("https".equals(request.getScheme()) && (request.getServerPort() == 443))
+        || ("http".equals(request.getScheme()) && (request.getServerPort() == 80)));
+  }
+
 
   private static List<String> object2PropertyValue(Object o) {
     ArrayList<String> pv = new ArrayList<String>();
@@ -51,8 +97,7 @@ public class ProductBusinessObject {
         try {
           apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
           if ((excluded_fields == null) || !excluded_fields.contains(apiProperty))
-            filteredMapJsonProperties.put(apiProperty,
-                ProductBusinessObject.object2PropertyValue(entry.getValue()));
+            filteredMapJsonProperties.put(apiProperty, object2PropertyValue(entry.getValue()));
         } catch (UnsupportedSearchProperty e) {
           log.warn("openSearch property " + entry.getKey() + " is not supported, ignored");
         }
@@ -63,14 +108,15 @@ public class ProductBusinessObject {
         esField = SearchUtil.jsonPropertyToOpenProperty(field);
 
         if (sourceAsMap.containsKey(esField)) {
-          filteredMapJsonProperties.put(field,
-              ProductBusinessObject.object2PropertyValue(sourceAsMap.get(esField)));
+          filteredMapJsonProperties.put(field, object2PropertyValue(sourceAsMap.get(esField)));
         } else {
           filteredMapJsonProperties.put(field,
-              ProductBusinessObject.object2PropertyValue(ProductBusinessObject.DEFAULT_NULL_VALUE));
+              object2PropertyValue(ProductBusinessLogicImpl.DEFAULT_NULL_VALUE));
         }
       }
     }
     return filteredMapJsonProperties;
   }
 }
+
+

@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.model;
+package gov.nasa.pds.api.registry.model.api_responses;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import org.opensearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.nasa.pds.api.registry.model.Pds4ProductFactory;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
@@ -94,8 +95,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
     Set<String> uniqueProperties = new TreeSet<String>();
 
     for (Map<String, Object> kvp : hits) {
-      uniqueProperties
-          .addAll(ProductBusinessObject.getFilteredProperties(kvp, fields, null).keySet());
+      uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
 
       try {
         Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
@@ -128,8 +128,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
       String id = hit.getId();
       Map<String, Object> fieldMap = hit.getSourceAsMap();
 
-      uniqueProperties
-          .addAll(ProductBusinessObject.getFilteredProperties(fieldMap, fields, null).keySet());
+      uniqueProperties.addAll(getFilteredProperties(fieldMap, fields, null).keySet());
 
       try {
         Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
