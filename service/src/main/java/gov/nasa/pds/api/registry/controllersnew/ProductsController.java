@@ -25,10 +25,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContextNew;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
-import gov.nasa.pds.api.registry.model.PdsProductBusinessObject;
-import gov.nasa.pds.api.registry.model.ProductBusinessLogic;
-import gov.nasa.pds.api.registry.model.ProductBusinessLogicImpl;
-import gov.nasa.pds.api.registry.model.WyriwygBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
+import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogicImpl;
+import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 
 @Controller

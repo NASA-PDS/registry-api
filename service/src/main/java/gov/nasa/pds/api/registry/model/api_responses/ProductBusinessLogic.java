@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.model;
+package gov.nasa.pds.api.registry.model.api_responses;
 
 import java.util.List;
 import java.util.Map;
