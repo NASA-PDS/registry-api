@@ -21,6 +21,17 @@ class OpenSearchRegistryConnectionImplBuilder {
 
   private List<String> hosts;
 
+
+  private final String registryIndex;
+  private final String registryRefIndex;
+  private final int timeOutSeconds;
+  private final boolean CCSEnabled;
+  private final List<String> disciplineNodes;
+  private final boolean ssl;
+  private final boolean sslCertificateCNVerification;
+  private String username;
+  private char[] password;
+
   public List<String> getHosts() {
     return hosts;
   }
@@ -53,6 +64,10 @@ class OpenSearchRegistryConnectionImplBuilder {
     return registryRefIndex;
   }
 
+  public List<String> getDisciplineNodes() {
+    return disciplineNodes;
+  }
+
   public int getTimeOutSeconds() {
     return timeOutSeconds;
   }
@@ -70,15 +85,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     return sslCertificateCNVerification;
   }
 
-  private final String registryIndex;
-  private final String registryRefIndex;
-  private final int timeOutSeconds;
-  private final boolean CCSEnabled;
-  private final boolean ssl;
-  private final boolean sslCertificateCNVerification;
 
-  private String username;
-  private char[] password;
 
   public OpenSearchRegistryConnectionImplBuilder() {
     // Default builder
@@ -87,6 +94,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.registryRefIndex = "registry-refs";
     this.timeOutSeconds = 5;
     this.CCSEnabled = true;
+    this.disciplineNodes = Arrays.asList(new String[] {""});
     this.username = null;
     this.password = null;
     this.ssl = false;
@@ -102,6 +110,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.registryRefIndex = openSearchConfig.getRegistryRefIndex();
     this.timeOutSeconds = openSearchConfig.getTimeOutSeconds();
     this.CCSEnabled = openSearchConfig.getCCSEnabled();
+    this.disciplineNodes = openSearchConfig.getDisciplineNodes();
     this.ssl = openSearchConfig.isSsl();
     this.sslCertificateCNVerification = openSearchConfig.doesSslCertificateVCNerification();
     this.username = openSearchConfig.getUsername();
