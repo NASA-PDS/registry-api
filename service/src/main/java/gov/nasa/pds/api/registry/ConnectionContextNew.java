@@ -5,7 +5,6 @@ import org.opensearch.client.opensearch.OpenSearchClient;
 
 public interface ConnectionContextNew extends ConnectionContextBase {
 
-  // OpenSearchClient or RestHighLevelClient
   public OpenSearchClient getOpenSearchClient();
 
   public List<String> getRegistryIndices();
