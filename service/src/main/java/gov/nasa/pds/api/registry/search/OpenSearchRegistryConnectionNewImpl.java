@@ -5,19 +5,15 @@ import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-
-
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
-import org.opensearch.action.admin.cluster.settings.ClusterGetSettingsResponse;
-
-
+import java.util.Arrays;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
@@ -28,6 +24,7 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.apache.hc.core5.reactor.ssl.TlsDetails;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
+
 import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBuilder;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -42,25 +39,84 @@ import gov.nasa.pds.api.registry.ConnectionContextNew;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
+
 @Component
 public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew {
 
   // key for getting the remotes from cross cluster config
   public static String CLUSTER_REMOTE_KEY = "cluster.remote";
+  public static List<String> SINGLE_EMPTY_STRING = Arrays.asList("");
 
   private static final Logger log =
       LoggerFactory.getLogger(OpenSearchRegistryConnectionNewImpl.class);
 
   private PoolingAsyncClientConnectionManager connectionManager = null;
   private OpenSearchClient openSearchClient;
-  private List<String> registryIndices;
-  private List<String> registryRefIndices;
+  private List<String> registryIndices = new ArrayList<String>();
+  private List<String> registryRefIndices = new ArrayList<String>();
   private int timeOutSeconds;
   private ArrayList<String> crossClusterNodes;
 
   public OpenSearchRegistryConnectionNewImpl() throws java.security.NoSuchAlgorithmException,
       java.security.KeyStoreException, java.security.KeyManagementException {
     this(new OpenSearchRegistryConnectionImplBuilder());
+  }
+
+  private HttpAsyncClientBuilder clientBuilderForHttpTransport(HttpAsyncClientBuilder builder,
+      String userName, char[] password, HttpHost host, boolean ssl,
+      boolean sslCertificateCNVerification) {
+
+    try {
+      PoolingAsyncClientConnectionManagerBuilder connectionManagerBuilder =
+          PoolingAsyncClientConnectionManagerBuilder.create();
+
+      final SSLContext sslContext =
+          SSLContextBuilder.create().loadTrustMaterial(null, (chains, authType) -> true).build();
+
+      if (ssl) {
+        OpenSearchRegistryConnectionNewImpl.log.info("Connection over SSL");
+
+
+        ClientTlsStrategyBuilder clientTlsStrategyBuilder =
+            ClientTlsStrategyBuilder.create().setSslContext(sslContext)
+                // See https://issues.apache.org/jira/browse/HTTPCLIENT-2219
+                .setTlsDetailsFactory(new Factory<SSLEngine, TlsDetails>() {
+                  @Override
+                  public TlsDetails create(final SSLEngine sslEngine) {
+                    return new TlsDetails(sslEngine.getSession(),
+                        sslEngine.getApplicationProtocol());
+                  }
+                });
+
+        if (!sslCertificateCNVerification) {
+          clientTlsStrategyBuilder.setHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+        }
+        final TlsStrategy tlsStrategy = clientTlsStrategyBuilder.build();
+        connectionManagerBuilder = connectionManagerBuilder.setTlsStrategy(tlsStrategy);
+
+      }
+
+      this.connectionManager = connectionManagerBuilder.build();
+
+      if ((userName != null) && !userName.equals("")) {
+        OpenSearchRegistryConnectionNewImpl.log
+            .info("Set openSearch connection with username/password");
+        final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+
+        credentialsProvider.setCredentials(new AuthScope(host),
+            new UsernamePasswordCredentials(userName, password));
+
+        builder = builder.setDefaultCredentialsProvider(credentialsProvider);
+      }
+
+      return builder.setConnectionManager(connectionManager);
+
+    } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+      log.error("Ssl issue while connecting to openSearch" + e.getMessage());
+      return null;
+    }
   }
 
   @Autowired
@@ -83,80 +139,43 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
 
     }
 
-    // TODO develop other cases for authentication
-    String username = connectionBuilder.getUsername();
-    // TODO reintroduce the multiple case as needed for the AWS deployment
-    // if ((username != null) && !username.equals("")) {
-    OpenSearchRegistryConnectionNewImpl.log
-        .info("Set openSearch connection with username/password");
-    final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
     // TODO we only take the first of the hosts to create the AuthScope
     // we should either take them all or make httpHosts a single element
     // I have no idea not why httpHosts is a list in the first place, maybe because we are
     // supposed to query a cluster.
-    /*
-     * credentialsProvider.setCredentials(new AuthScope(httpHosts.get(0)), new
-     * UsernamePasswordCredentials(username, connectionBuilder.getPassword()));
-     */
-    // hardcoded to test
-    char[] password = "admin".toCharArray();
-    credentialsProvider.setCredentials(new AuthScope(httpHosts.get(0)),
-        new UsernamePasswordCredentials("admin", password));
-    // }
+    // TODO add case for AWS
+
+    String userName = connectionBuilder.getUsername();
+    char[] password = connectionBuilder.getPassword();
+
 
     final ApacheHttpClient5TransportBuilder builder = ApacheHttpClient5TransportBuilder
         .builder(httpHosts.toArray(new HttpHost[httpHosts.size()]));
 
-    final SSLContext sslContext =
-        SSLContextBuilder.create().loadTrustMaterial(null, (chains, authType) -> true).build();
+
 
     builder.setHttpClientConfigCallback(httpClientBuilder -> {
-
-      PoolingAsyncClientConnectionManagerBuilder connectionManagerBuilder =
-          PoolingAsyncClientConnectionManagerBuilder.create();
-
-      if (connectionBuilder.isSsl()) {
-        OpenSearchRegistryConnectionNewImpl.log.info("Connection over SSL");
-
-
-        ClientTlsStrategyBuilder clientTlsStrategyBuilder =
-            ClientTlsStrategyBuilder.create().setSslContext(sslContext)
-                // See https://issues.apache.org/jira/browse/HTTPCLIENT-2219
-                .setTlsDetailsFactory(new Factory<SSLEngine, TlsDetails>() {
-                  @Override
-                  public TlsDetails create(final SSLEngine sslEngine) {
-                    return new TlsDetails(sslEngine.getSession(),
-                        sslEngine.getApplicationProtocol());
-                  }
-                });
-
-        if (!connectionBuilder.isSslCertificateCNVerification()) {
-          clientTlsStrategyBuilder.setHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-        }
-        final TlsStrategy tlsStrategy = clientTlsStrategyBuilder.build();
-        connectionManagerBuilder = connectionManagerBuilder.setTlsStrategy(tlsStrategy);
-
-      }
-
-      this.connectionManager = connectionManagerBuilder.build();
-
-      return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-          .setConnectionManager(connectionManager);
+      return this.clientBuilderForHttpTransport(httpClientBuilder, userName, password,
+          httpHosts.get(0), connectionBuilder.isSsl(),
+          connectionBuilder.isSslCertificateCNVerification());
     });
 
     final OpenSearchTransport transport = builder.build();
     this.openSearchClient = new OpenSearchClient(transport);
 
-
-    String registryIndex = connectionBuilder.getRegistryIndex();
+    // create indices strings from discipline nodes and index suffixes
     List<String> disciplineNodes = connectionBuilder.getDisciplineNodes();
-
-    this.registryIndices =
-        disciplineNodes.stream().map(c -> c + "-" + registryIndex).collect(Collectors.toList());
-
-    String registryRefIndex = connectionBuilder.getRegistryRefIndex();
-    this.registryRefIndices =
-        disciplineNodes.stream().map(c -> c + "-" + registryRefIndex).collect(Collectors.toList());
+    log.info("Use disipline nodes: " + String.join(",", disciplineNodes) + "End discipline nodes");
+    String prefix;
+    for (String disciplineNode : disciplineNodes) {
+      prefix = (disciplineNode.length() != 0) ? disciplineNode + "-" : "";
+      this.registryIndices.add(prefix + connectionBuilder.getRegistryIndex());
+      this.registryRefIndices.add(prefix + connectionBuilder.getRegistryRefIndex());
+    }
+    log.debug("Use registry indices:" + String.join(",", this.registryIndices) + "End indices");
+    log.debug(
+        "Use registryRef indices:" + String.join(",", this.registryRefIndices) + "End indices");
 
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 
@@ -179,7 +198,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
     return registryRefIndices;
   }
 
-  public void setRegistryRefIndex(List<String> registryRefIndices) {
+  public void setRegistryRefIndices(List<String> registryRefIndices) {
     this.registryRefIndices = registryRefIndices;
   }
 

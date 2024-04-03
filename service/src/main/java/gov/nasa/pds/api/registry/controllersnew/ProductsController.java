@@ -54,8 +54,11 @@ public class ProductsController implements ProductsApi {
     this.errorMessageFactory = errorMessageFactory;
     this.objectMapper = objectMapper;
 
+    List<String> registryIndices = this.connectionContext.getRegistryIndices();
+    log.info("Use indices: " + String.join(",", registryIndices) + "End indices");
     SearchRequest.Builder searchRequestConstantBuilder =
-        new SearchRequest.Builder().index(this.connectionContext.getRegistryIndex());
+        new SearchRequest.Builder().index(registryIndices);
+
 
     // complete with other preset criteria for the current controller
     this.presetSearchRequest = searchRequestConstantBuilder.build();
@@ -111,7 +114,6 @@ public class ProductsController implements ProductsApi {
 
 
   @Override
-  // /product/<lidvid>?field=dffdfm,dfdfdf
   public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields) {
 
     HashMap<String, Object> product;
@@ -163,8 +165,7 @@ public class ProductsController implements ProductsApi {
 
     MatchQuery lidvidMatch = new MatchQuery.Builder().field("_id").query(lidvidFieldValue).build();
 
-    SearchRequest searchRequest = searchRequestBuilder.index(connectionContext.getRegistryIndices())
-        .query(qb -> qb.match(lidvidMatch)).build();
+    SearchRequest searchRequest = searchRequestBuilder.query(qb -> qb.match(lidvidMatch)).build();
 
 
     OpenSearchClient client = this.connectionContext.getOpenSearchClient();

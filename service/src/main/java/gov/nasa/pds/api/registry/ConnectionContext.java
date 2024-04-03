@@ -6,4 +6,8 @@ public interface ConnectionContext extends ConnectionContextBase {
 
   public RestHighLevelClient getOpenSearchClient();
 
+  public String getRegistryIndex();
+
+  public String getRegistryRefIndex();
+
 }

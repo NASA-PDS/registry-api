@@ -36,7 +36,7 @@ public class OpenSearchConfig {
   @Value("${openSearch.registryRefIndex:registry-refs}")
   private String registryRefIndex;
 
-  @Value("${openSearch.disciplineNodes:}")
+  @Value("#{'${openSearch.disciplineNodes:}'.split(',')}")
   private List<String> disciplineNodes;
 
   @Value("${openSearch.timeOutSeconds:60}")
@@ -50,6 +50,12 @@ public class OpenSearchConfig {
     this.timeOutSeconds = timeOutSeconds;
   }
 
+  @Value("${openSearch.CCSEnabled:true}")
+  private boolean CCSEnabled;
+
+  public boolean getCCSEnabled() {
+    return CCSEnabled;
+  }
 
   @Value("${openSearch.username:}")
   private String username;
