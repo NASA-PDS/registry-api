@@ -6,6 +6,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 
@@ -52,8 +53,8 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
 
   private PoolingAsyncClientConnectionManager connectionManager = null;
   private OpenSearchClient openSearchClient;
-  private String registryIndex;
-  private String registryRefIndex;
+  private List<String> registryIndices;
+  private List<String> registryRefIndices;
   private int timeOutSeconds;
   private ArrayList<String> crossClusterNodes;
 
@@ -148,18 +149,15 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
 
 
     String registryIndex = connectionBuilder.getRegistryIndex();
-    if (connectionBuilder.getCCSEnabled()) {
-      // TODO something different need to be done to add all the indices for all the nodes hosted in
-      // the multitenant OpenSearch
-      this.crossClusterNodes = checkCCSConfig();
-      this.registryIndex = createCCSIndexString(registryIndex);
-    } else {
-      this.registryIndex = registryIndex;
-    }
+    List<String> disciplineNodes = connectionBuilder.getDisciplineNodes();
 
-    this.registryRefIndex =
+    this.registryIndices =
+        disciplineNodes.stream().map(c -> c + "-" + registryIndex).collect(Collectors.toList());
 
-        createCCSIndexString(connectionBuilder.getRegistryRefIndex());
+    String registryRefIndex = connectionBuilder.getRegistryRefIndex();
+    this.registryRefIndices =
+        disciplineNodes.stream().map(c -> c + "-" + registryRefIndex).collect(Collectors.toList());
+
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 
   }
@@ -169,20 +167,20 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
     return this.openSearchClient;
   }
 
-  public String getRegistryIndex() {
-    return registryIndex;
+  public List<String> getRegistryIndices() {
+    return registryIndices;
   }
 
-  public void setRegistryIndex(String registryRefIndex) {
-    this.registryRefIndex = registryRefIndex;
+  public void setRegistryIndices(List<String> registryRefIndices) {
+    this.registryRefIndices = registryRefIndices;
   }
 
-  public String getRegistryRefIndex() {
-    return registryRefIndex;
+  public List<String> getRegistryRefIndices() {
+    return registryRefIndices;
   }
 
-  public void setRegistryRefIndex(String registryRefIndex) {
-    this.registryRefIndex = registryRefIndex;
+  public void setRegistryRefIndex(List<String> registryRefIndices) {
+    this.registryRefIndices = registryRefIndices;
   }
 
   public int getTimeOutSeconds() {

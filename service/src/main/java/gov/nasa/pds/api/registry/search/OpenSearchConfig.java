@@ -36,6 +36,9 @@ public class OpenSearchConfig {
   @Value("${openSearch.registryRefIndex:registry-refs}")
   private String registryRefIndex;
 
+  @Value("${openSearch.disciplineNodes:}")
+  private List<String> disciplineNodes;
+
   @Value("${openSearch.timeOutSeconds:60}")
   private int timeOutSeconds;
 
@@ -47,12 +50,6 @@ public class OpenSearchConfig {
     this.timeOutSeconds = timeOutSeconds;
   }
 
-  @Value("${openSearch.CCSEnabled:true}")
-  private boolean CCSEnabled;
-
-  public boolean getCCSEnabled() {
-    return CCSEnabled;
-  }
 
   @Value("${openSearch.username:}")
   private String username;
@@ -104,6 +101,10 @@ public class OpenSearchConfig {
 
   public void setRegistryRefIndex(String registryRefIndex) {
     this.registryRefIndex = registryRefIndex;
+  }
+
+  public List<String> getDisciplineNodes() {
+    return disciplineNodes;
   }
 
   public boolean isSsl() {

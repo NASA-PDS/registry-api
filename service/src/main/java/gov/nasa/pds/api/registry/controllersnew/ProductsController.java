@@ -111,6 +111,7 @@ public class ProductsController implements ProductsApi {
 
 
   @Override
+  // /product/<lidvid>?field=dffdfm,dfdfdf
   public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields) {
 
     HashMap<String, Object> product;
@@ -150,18 +151,21 @@ public class ProductsController implements ProductsApi {
    */
 
   @SuppressWarnings("unchecked")
-  private HashMap<String, Object> getLidVid(PdsProductIdentifier lidvid, List<String> fields)
+  private HashMap<String, Object> getLidVid(PdsProductIdentifier identifier, List<String> fields)
       throws OpenSearchException, IOException {
 
     // copy the preset searchRequest for this controller.
     SearchRequest.Builder searchRequestBuilder = this.presetSearchRequest.toBuilder();
 
 
-    FieldValue lidvidFieldValue = new FieldValue.Builder().stringValue(lidvid.toString()).build();
+    FieldValue lidvidFieldValue =
+        new FieldValue.Builder().stringValue(identifier.toString()).build();
 
     MatchQuery lidvidMatch = new MatchQuery.Builder().field("_id").query(lidvidFieldValue).build();
 
-    SearchRequest searchRequest = searchRequestBuilder.query(qb -> qb.match(lidvidMatch)).build();
+    SearchRequest searchRequest = searchRequestBuilder.index(connectionContext.getRegistryIndices())
+        .query(qb -> qb.match(lidvidMatch)).build();
+
 
     OpenSearchClient client = this.connectionContext.getOpenSearchClient();
 
