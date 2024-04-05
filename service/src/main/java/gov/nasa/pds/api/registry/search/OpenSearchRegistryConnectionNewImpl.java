@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import software.amazon.awssdk.http.SdkHttpClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.regions.Region;
 
 import java.util.stream.Collectors;
 import java.security.KeyManagementException;
@@ -27,6 +30,8 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 
 import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBuilder;
 import org.opensearch.client.transport.OpenSearchTransport;
+import org.opensearch.client.transport.aws.AwsSdk2Transport;
+import org.opensearch.client.transport.aws.AwsSdk2TransportOptions;
 import org.opensearch.client.opensearch.OpenSearchClient;
 
 
@@ -119,6 +124,51 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
     }
   }
 
+  private void setIndices(List<String> disciplineNodes, String registrySuffix,
+      String registryRefsSuffix) {
+    // create indices strings from discipline nodes and index suffixes
+    log.info("Use disipline nodes: " + String.join(",", disciplineNodes) + "End discipline nodes");
+    String prefix;
+    for (String disciplineNode : disciplineNodes) {
+      prefix = (disciplineNode.length() != 0) ? disciplineNode + "-" : "";
+      this.registryIndices.add(prefix + registrySuffix);
+      this.registryRefIndices.add(prefix + registryRefsSuffix);
+    }
+    log.debug("Use registry indices:" + String.join(",", this.registryIndices) + "End indices");
+    log.debug(
+        "Use registryRef indices:" + String.join(",", this.registryRefIndices) + "End indices");
+  }
+
+  private OpenSearchTransport getLocalTransport(List<HttpHost> httpHosts, Boolean ssl,
+      Boolean sslCertificateCNVerification, String username, char[] password) {
+
+
+
+    // TODO we only take the first of the hosts to create the AuthScope
+    // we should either take them all or make httpHosts a single element
+    // I have no idea not why httpHosts is a list in the first place, maybe because we are
+    // supposed to query a cluster.
+
+    final ApacheHttpClient5TransportBuilder builder = ApacheHttpClient5TransportBuilder
+        .builder(httpHosts.toArray(new HttpHost[httpHosts.size()]));
+
+
+    builder.setHttpClientConfigCallback(httpClientBuilder -> {
+      return this.clientBuilderForHttpTransport(httpClientBuilder, username, password,
+          httpHosts.get(0), ssl, sslCertificateCNVerification);
+    });
+
+    return builder.build();
+  }
+
+
+  private OpenSearchTransport getAWSTransport(List<HttpHost> httpHosts) {
+    SdkHttpClient httpClient = ApacheHttpClient.builder().build();
+
+    return new AwsSdk2Transport(httpClient, "p5qmxrldysl1gy759hqf.us-west-2.aoss.amazonaws.com",
+        Region.US_WEST_2, AwsSdk2TransportOptions.builder().build());
+  }
+
   @Autowired
   public OpenSearchRegistryConnectionNewImpl(
       OpenSearchRegistryConnectionImplBuilder connectionBuilder)
@@ -127,7 +177,6 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
 
     List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 
-    OpenSearchRegistryConnectionNewImpl.log.info("Connection to open search");
     for (String host : connectionBuilder.getHosts()) {
 
       List<String> hostAndPort = Splitter.on(':').splitToList(host);
@@ -139,43 +188,27 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
 
     }
 
+    OpenSearchRegistryConnectionNewImpl.log.info("Connection to open search");
 
-    // TODO we only take the first of the hosts to create the AuthScope
-    // we should either take them all or make httpHosts a single element
-    // I have no idea not why httpHosts is a list in the first place, maybe because we are
-    // supposed to query a cluster.
-    // TODO add case for AWS
+    final OpenSearchTransport transport;
 
-    String userName = connectionBuilder.getUsername();
-    char[] password = connectionBuilder.getPassword();
+    // test if we are running on ECS,
+    String env_value = System.getenv("ECS_CONTAINER_METADATA_URI_V4");
+    if (env_value == null) {
+      // if environment variable does not exist,
+      // means we are trying to reach a regular OpenSearch
+      transport = getLocalTransport(httpHosts, connectionBuilder.isSsl(),
+          connectionBuilder.isSslCertificateCNVerification(), connectionBuilder.getUsername(),
+          connectionBuilder.getPassword());
+    } else {
+      // otherwise, we try to connect to AWS opensearch serverless.
+      transport = this.getAWSTransport(httpHosts);
+    }
 
-
-    final ApacheHttpClient5TransportBuilder builder = ApacheHttpClient5TransportBuilder
-        .builder(httpHosts.toArray(new HttpHost[httpHosts.size()]));
-
-
-
-    builder.setHttpClientConfigCallback(httpClientBuilder -> {
-      return this.clientBuilderForHttpTransport(httpClientBuilder, userName, password,
-          httpHosts.get(0), connectionBuilder.isSsl(),
-          connectionBuilder.isSslCertificateCNVerification());
-    });
-
-    final OpenSearchTransport transport = builder.build();
     this.openSearchClient = new OpenSearchClient(transport);
 
-    // create indices strings from discipline nodes and index suffixes
-    List<String> disciplineNodes = connectionBuilder.getDisciplineNodes();
-    log.info("Use disipline nodes: " + String.join(",", disciplineNodes) + "End discipline nodes");
-    String prefix;
-    for (String disciplineNode : disciplineNodes) {
-      prefix = (disciplineNode.length() != 0) ? disciplineNode + "-" : "";
-      this.registryIndices.add(prefix + connectionBuilder.getRegistryIndex());
-      this.registryRefIndices.add(prefix + connectionBuilder.getRegistryRefIndex());
-    }
-    log.debug("Use registry indices:" + String.join(",", this.registryIndices) + "End indices");
-    log.debug(
-        "Use registryRef indices:" + String.join(",", this.registryRefIndices) + "End indices");
+    this.setIndices(connectionBuilder.getDisciplineNodes(), connectionBuilder.getRegistryIndex(),
+        connectionBuilder.getRegistryRefIndex());
 
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
 
