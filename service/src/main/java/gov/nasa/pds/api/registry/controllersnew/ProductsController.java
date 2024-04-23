@@ -121,12 +121,13 @@ public class ProductsController implements ProductsApi {
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
 
-
-      if (pdsIdentifier.isLidvid()) {
-        product = this.getLidVid(pdsIdentifier, fields);
-      } else {
-        product = this.getLatestLidVid(pdsIdentifier, fields);
-      }
+      // simplify for now since on opensearch serverless _id are not lidvids anyway
+      // but we want them to be handled as lidvid for this simple case
+      // if (pdsIdentifier.isLidvid()) {
+      product = this.getLidVid(pdsIdentifier, fields);
+      // } else {
+      // product = this.getLatestLidVid(pdsIdentifier, fields);
+      // }
     } catch (IOException | OpenSearchException e) {
       log.warn("Retrieve content from the database", e);
       return new ResponseEntity<Object>(this.errorMessageFactory.get(e),
@@ -174,7 +175,8 @@ public class ProductsController implements ProductsApi {
     // because of compilation features, see
     // https://stackoverflow.com/questions/2390662/java-how-do-i-get-a-class-literal-from-a-generic-type
     SearchResponse<HashMap> searchResponse = client.search(searchRequest, HashMap.class);
-
+    HashMap<String, Object> product = searchResponse.hits().hits().get(0).source();
+    ProductsController.log.debug("Found product with lid=" + product.get("lid"));
     return (HashMap<String, Object>) searchResponse.hits().hits().get(0).source();
 
   }

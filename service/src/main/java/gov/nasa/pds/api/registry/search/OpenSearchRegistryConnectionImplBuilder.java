@@ -1,15 +1,18 @@
 package gov.nasa.pds.api.registry.search;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import gov.nasa.pds.api.registry.SystemConstants;
-import gov.nasa.pds.api.registry.configuration.AWSSecretsAccess;
+import gov.nasa.pds.api.registry.util.AWSCredentialsFetcher;
 
 @Component
 class OpenSearchRegistryConnectionImplBuilder {
@@ -106,6 +109,12 @@ class OpenSearchRegistryConnectionImplBuilder {
   public OpenSearchRegistryConnectionImplBuilder(OpenSearchConfig openSearchConfig) {
 
     this.hosts = openSearchConfig.getHosts();
+
+    if (this.hosts == null || this.hosts.size() == 0 || this.hosts.get(0) == null
+        || "".equals(this.hosts.get(0))) {
+      this.setESHostsFromEnvOrDefault();
+    }
+
     this.registryIndex = openSearchConfig.getRegistryIndex();
     this.registryRefIndex = openSearchConfig.getRegistryRefIndex();
     this.timeOutSeconds = openSearchConfig.getTimeOutSeconds();
@@ -116,26 +125,15 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.username = openSearchConfig.getUsername();
     this.password = openSearchConfig.getPassword();
 
+    this.awsCredentialsFetcher().fetchCredentials();
+
+
   }
 
-  public void trySetESCredsFromEnv() {
-
-    String esCredsFromEnv = System.getenv(SystemConstants.ES_CREDENTIALS_ENV_VAR);
-
-    if (esCredsFromEnv != null && !"".equals(esCredsFromEnv)) {
-      log.info("Received ES login from environment");
-      DefaultKeyValue<String, String> esCreds = AWSSecretsAccess.parseSecret(esCredsFromEnv);
-      if (esCreds == null) {
-        String message =
-            String.format("Value of %s environment variable is not in appropriate JSON format",
-                SystemConstants.ES_CREDENTIALS_ENV_VAR);
-        log.error(message);
-        throw new RuntimeException(message);
-      }
-
-      this.username = esCreds.getKey();
-      this.password = esCreds.getValue().toCharArray();
-    }
+  @Bean
+  @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+  public AWSCredentialsFetcher awsCredentialsFetcher() {
+    return new AWSCredentialsFetcher();
   }
 
   public void setESHostsFromEnvOrDefault() {

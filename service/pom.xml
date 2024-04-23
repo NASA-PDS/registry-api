@@ -71,7 +71,7 @@
 	<configuration>
 	  <mainClass>gov.nasa.pds.api.registry.SpringBootMain</mainClass>
       <imageName>nasapds/registry-api-service</imageName>
-
+      <layout>JAR</layout>
       <image>
           <env>
               <BP_JVM_VERSION>17</BP_JVM_VERSION>
@@ -314,22 +314,25 @@
 	<dependency>
 	    <groupId>org.opensearch.client</groupId>
 	    <artifactId>opensearch-java</artifactId>
-	    <version>2.9.0</version>
+	    <version>2.9.1</version>
 	</dependency>
 
 	<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
 	<dependency>
 	    <groupId>org.apache.httpcomponents.client5</groupId>
 	    <artifactId>httpclient5</artifactId>
-	    <version>5.2.3</version>
+	    <!--version>5.2.3</version-->
+	    <version>5.3.1</version>
 	</dependency>
 	
 	<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5 -->
+
 	<dependency>
 	    <groupId>org.apache.httpcomponents.core5</groupId>
 	    <artifactId>httpcore5</artifactId>
 	    <version>5.2.4</version>
 	</dependency>
+
 
 	<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5 -->
 	<dependency>
@@ -352,15 +355,31 @@
 	<dependency>
 	    <groupId>software.amazon.awssdk</groupId>
 	    <artifactId>apache-client</artifactId>
-	    <version>2.25.18</version>
+	    <version>2.25.21</version>
 	</dependency>
+	
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+      <version>2.25.21</version>
+    </dependency>
 	
 	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/regions -->
 	<dependency>
 	    <groupId>software.amazon.awssdk</groupId>
 	    <artifactId>regions</artifactId>
-	    <version>2.25.18</version>
+	    <version>2.25.21</version>
 	</dependency>
+	
+	
+	
+	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/regions -->
+	<dependency>
+	    <groupId>software.amazon.awssdk</groupId>
+	    <artifactId>auth</artifactId>
+	    <version>2.25.21</version>
+	</dependency>
+
 	
 	<dependency>
 		<groupId>com.amazonaws</groupId>

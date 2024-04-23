@@ -76,14 +76,14 @@ RUN : &&\
 #
 # External context.
 
+ARG SERVER_PORT=80
+ARG SPRING_BOOT_APP_ARGS=" "
+ARG JAVA_OPTS="-Xmx6144m -Xms512Mb"
+
 WORKDIR /usr/local/registry-api-service
-EXPOSE  80
-CMD     [ \
-    "java",  "-Xmx6144m", \
-    "-Xms", "512Mb", \
-    "-jar", "/usr/local/registry-api-service/registry-api-service.jar", \
-    "gov.nasa.pds.api.registry.SpringBootMain" \
-]
+EXPOSE  ${SERVER_PORT}
+CMD java $JAVA_OPT -jar /usr/local/registry-api-service/registry-api-service.jar \
+    gov.nasa.pds.api.registry.SpringBootMain --server.port=${SERVER_PORT} ${SPRING_BOOT_APP_ARGS}
 
 
 # Labels
