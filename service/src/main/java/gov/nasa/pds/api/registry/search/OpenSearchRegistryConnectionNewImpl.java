@@ -33,8 +33,8 @@ import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.aws.AwsSdk2Transport;
 import org.opensearch.client.transport.aws.AwsSdk2TransportOptions;
 import org.opensearch.client.opensearch.OpenSearchClient;
-
-
+import org.opensearch.client.opensearch.core.InfoRequest;
+import org.opensearch.client.opensearch.core.InfoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,11 +162,12 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
   }
 
 
-  private OpenSearchTransport getAWSTransport(List<HttpHost> httpHosts) {
+  private OpenSearchTransport getAWSTransport(String host) {
     SdkHttpClient httpClient = ApacheHttpClient.builder().build();
+    log.info("trying to connect to host:" + host);
+    return new AwsSdk2Transport(httpClient, host, "aoss", Region.US_WEST_2,
+        AwsSdk2TransportOptions.builder().build());
 
-    return new AwsSdk2Transport(httpClient, "p5qmxrldysl1gy759hqf.us-west-2.aoss.amazonaws.com",
-        Region.US_WEST_2, AwsSdk2TransportOptions.builder().build());
   }
 
   @Autowired
@@ -175,18 +176,8 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
       throws java.security.NoSuchAlgorithmException, java.security.KeyStoreException,
       java.security.KeyManagementException {
 
+
     List<HttpHost> httpHosts = new ArrayList<HttpHost>();
-
-    for (String host : connectionBuilder.getHosts()) {
-
-      List<String> hostAndPort = Splitter.on(':').splitToList(host);
-      OpenSearchRegistryConnectionNewImpl.log
-          .info("Host " + hostAndPort.get(0) + ":" + hostAndPort.get(1));
-      log.info("Connection to host" + host);
-      httpHosts.add(new HttpHost((connectionBuilder.isSsl() ? "https" : "http"), hostAndPort.get(0),
-          Integer.parseInt(hostAndPort.get(1))));
-
-    }
 
     OpenSearchRegistryConnectionNewImpl.log.info("Connection to open search");
 
@@ -197,20 +188,44 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
     if (env_value == null) {
       // if environment variable does not exist,
       // means we are trying to reach a regular OpenSearch
+      for (String host : connectionBuilder.getHosts()) {
+
+        List<String> hostAndPort = Splitter.on(':').splitToList(host);
+        OpenSearchRegistryConnectionNewImpl.log
+            .info("Host " + hostAndPort.get(0) + ":" + hostAndPort.get(1));
+        log.info("Connection to host" + host);
+        httpHosts.add(new HttpHost((connectionBuilder.isSsl() ? "https" : "http"),
+            hostAndPort.get(0), Integer.parseInt(hostAndPort.get(1))));
+
+      }
+
       transport = getLocalTransport(httpHosts, connectionBuilder.isSsl(),
           connectionBuilder.isSslCertificateCNVerification(), connectionBuilder.getUsername(),
           connectionBuilder.getPassword());
     } else {
       // otherwise, we try to connect to AWS opensearch serverless.
-      transport = this.getAWSTransport(httpHosts);
+      String host = connectionBuilder.getHosts().get(0);
+      transport = this.getAWSTransport(host);
     }
 
+
+
     this.openSearchClient = new OpenSearchClient(transport);
+
+    /*
+     * fails with error 404 InfoResponse info = this.openSearchClient.info();
+     * log.info("OpenSearch client info: " + info.version().distribution() + ": " +
+     * info.version().number()); log.info("OpenSearch client info, cluster name: " +
+     * info.clusterName()); log.info("OpenSearch client info, cluster uuid: " + info.clusterUuid());
+     * log.info("OpenSearch client info, api name: " + info.name());
+     * log.info("OpenSearch client info, tagline: " + info.tagline());
+     */
 
     this.setIndices(connectionBuilder.getDisciplineNodes(), connectionBuilder.getRegistryIndex(),
         connectionBuilder.getRegistryRefIndex());
 
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
+
 
   }
 

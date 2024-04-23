@@ -4,10 +4,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import gov.nasa.pds.api.registry.ConnectionContextBase;
 
 /*
  * Keep this eventhough not directly referenced
@@ -129,32 +126,6 @@ public class OpenSearchConfig {
     this.ssl = ssl;
   }
 
-  private ConnectionContextBase connection = null;
 
-  @Bean("connection")
-  public ConnectionContextBase connectionContext() {
 
-    if (connection == null) {
-
-      OpenSearchRegistryConnectionImplBuilder connectionBuilder =
-          new OpenSearchRegistryConnectionImplBuilder(this);
-
-      // see if ES user name is not set - if not, try to get from environment
-      if (this.username == null || "".equals(this.username)) {
-        connectionBuilder.trySetESCredsFromEnv();
-      }
-
-      // do the same for ES hosts - the defaulting mechanism causes a rather elaborate
-      // check
-      log.debug(String.format("this.hosts : %s (%d)", this.hosts, this.hosts.size()));
-      if (this.hosts == null || this.hosts.size() == 0 || this.hosts.get(0) == null
-          || "".equals(this.hosts.get(0))) {
-        connectionBuilder.setESHostsFromEnvOrDefault();
-      }
-
-      this.connection = new OpenSearchRegistryConnectionImpl(connectionBuilder);
-
-    }
-    return this.connection;
-  }
 }

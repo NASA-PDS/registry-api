@@ -27,7 +27,7 @@ server.ssl.key-store=classpath:keystore.p12
 server.ssl.key-store-type=PKCS12
 
 ## note the port is mandatory even when it is default :80 or :443
-openSearch.host=p5qmxrldysl1gy759hqf.us-west-2.aoss.amazonaws.com
+openSearch.host=
 openSearch.registryIndex=registry
 openSearch.registryRefIndex=registry-refs
 openSearch.timeOutSeconds=60

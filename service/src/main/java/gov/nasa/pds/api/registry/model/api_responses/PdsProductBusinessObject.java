@@ -48,8 +48,8 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
   @Override
   public void setResponse(Map<String, Object> kvp, List<String> fields) {
-    product = SearchUtil.entityProductToAPIProduct(
-        objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+    EntityProduct ep = objectMapper.convertValue(kvp, EntityProduct.class);
+    product = SearchUtil.entityProductToAPIProduct(ep, this.baseURL);
     PdsProduct product = new PdsProduct();
     // TODO: findout why the getFilteredProperties method is used here. Should we add fields as a
     // second argument instead of null ?

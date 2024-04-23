@@ -9,7 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import gov.nasa.pds.api.registry.search.OpenSearchRegistryConnectionNewImpl;
+
+
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration ",
@@ -18,6 +19,7 @@ import gov.nasa.pds.api.registry.search.OpenSearchRegistryConnectionNewImpl;
 public class SpringBootMain implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootMain.class);
+
 
 
   @Override
