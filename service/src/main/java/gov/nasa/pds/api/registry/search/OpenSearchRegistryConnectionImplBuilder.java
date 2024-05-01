@@ -34,6 +34,11 @@ class OpenSearchRegistryConnectionImplBuilder {
   private final boolean sslCertificateCNVerification;
   private String username;
   private char[] password;
+  private final List<String> archiveStatus;
+
+  public List<String> getArchiveStatus() {
+    return archiveStatus;
+  }
 
   public List<String> getHosts() {
     return hosts;
@@ -102,6 +107,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.password = null;
     this.ssl = false;
     this.sslCertificateCNVerification = true;
+    this.archiveStatus = null;
 
   }
 
@@ -124,6 +130,7 @@ class OpenSearchRegistryConnectionImplBuilder {
     this.sslCertificateCNVerification = openSearchConfig.doesSslCertificateVCNerification();
     this.username = openSearchConfig.getUsername();
     this.password = openSearchConfig.getPassword();
+    this.archiveStatus = openSearchConfig.getArchiveStatus();
 
     this.awsCredentialsFetcher().fetchCredentials();
 

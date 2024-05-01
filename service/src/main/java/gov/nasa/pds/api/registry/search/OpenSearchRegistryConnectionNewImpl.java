@@ -40,14 +40,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 
-import gov.nasa.pds.api.registry.ConnectionContextNew;
+import gov.nasa.pds.api.registry.ConnectionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 
 @Component
-public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew {
+public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
 
   // key for getting the remotes from cross cluster config
   public static String CLUSTER_REMOTE_KEY = "cluster.remote";
@@ -61,7 +61,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
   private List<String> registryIndices = new ArrayList<String>();
   private List<String> registryRefIndices = new ArrayList<String>();
   private int timeOutSeconds;
-  private ArrayList<String> crossClusterNodes;
+  private List<String> archiveStatus;
 
   public OpenSearchRegistryConnectionNewImpl() throws java.security.NoSuchAlgorithmException,
       java.security.KeyStoreException, java.security.KeyManagementException {
@@ -225,6 +225,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
         connectionBuilder.getRegistryRefIndex());
 
     this.timeOutSeconds = connectionBuilder.getTimeOutSeconds();
+    this.archiveStatus = connectionBuilder.getArchiveStatus();
 
 
   }
@@ -258,25 +259,14 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContextNew
     this.timeOutSeconds = timeOutSeconds;
   }
 
-  private ArrayList<String> checkCCSConfig() {
-    // returns all the indices from the nodes
-    ArrayList<String> result = null;
-
-    // TODO: get all the indices which following a pattern related to the registry_index and
-    // registry_ref_index value.
-    return result;
+  public List<String> getArchiveStatus() {
+    return archiveStatus;
   }
 
-  // if CCS configuration has been detected, use nodes in consolidated index
-  // names, otherwise just return the index
-  private String createCCSIndexString(String indexName) {
-    String result = indexName;
-    if (this.crossClusterNodes != null) {
-      // TODO create the names of the index
-    }
-
-    return result;
+  public void setArchiveStatus(List<String> archiveStatus) {
+    this.archiveStatus = archiveStatus;
   }
+
 
   public void close() {
     try {
