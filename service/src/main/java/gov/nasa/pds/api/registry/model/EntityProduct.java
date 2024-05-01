@@ -66,8 +66,9 @@ public class EntityProduct {
   @JsonProperty("ops:Label_File_Info/ops:file_ref")
   private List<String> pds4FileReference;
 
+  @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
   @JsonProperty("ops:Tracking_Meta/ops:archive_status")
-  private String archive_status;
+  private List<String> archive_status;
 
   private Map<String, Object> properties;
 
@@ -139,7 +140,7 @@ public class EntityProduct {
     return version;
   }
 
-  public String getArchiveStatus() {
+  public List<String> getArchiveStatus() {
     return this.archive_status;
   }
 }

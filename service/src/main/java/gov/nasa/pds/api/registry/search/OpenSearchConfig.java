@@ -57,6 +57,13 @@ public class OpenSearchConfig {
   @Value("${openSearch.username:}")
   private String username;
 
+  @Value("#{'${filter.archiveStatus:}'.split(',')}")
+  private List<String> archiveStatus;
+
+  public List<String> getArchiveStatus() {
+    return archiveStatus;
+  }
+
   public char[] getPassword() {
     return password;
   }
@@ -81,6 +88,8 @@ public class OpenSearchConfig {
 
   @Value("${openSearch.sslCertificateCNVerification:false}")
   private boolean sslCertificateCNVerification;
+
+
 
   public List<String> getHosts() {
     return hosts;

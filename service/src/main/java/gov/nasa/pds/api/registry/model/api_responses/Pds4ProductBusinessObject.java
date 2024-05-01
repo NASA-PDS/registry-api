@@ -144,4 +144,34 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
     this.products = products;
     return (int) hits.getTotalHits().value;
   }
+
+
+  @Override
+  public void setResponse(List<Map<String, Object>> hits, Summary summary, List<String> fields) {
+    List<Pds4Product> list = new ArrayList<Pds4Product>();
+    Pds4Products products = new Pds4Products();
+    Set<String> uniqueProperties = new TreeSet<String>();
+    String id;
+    // Products
+    for (Map<String, Object> hit : hits) {
+      // TODO complete that
+      id = (String) hit.get("_id");
+      uniqueProperties.addAll(getFilteredProperties(hit, fields, null).keySet());
+
+      try {
+        Pds4Product prod = Pds4ProductFactory.createProduct(id, hit, this.isJSON);
+        list.add(prod);
+      } catch (Throwable t) {
+        log.error(
+            "DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: " + id,
+            t);
+      }
+    }
+    products.setData(list);
+    products.setSummary(summary);
+    summary.setProperties(new ArrayList<String>(uniqueProperties));
+    this.products = products;
+  }
+
+
 }

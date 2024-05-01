@@ -10,12 +10,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-
+// TODO
+// add archive status filter
+// add other resolver endpoints
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration ",
-    /* "gov.nasa.pds.api.registry.controller", */ "gov.nasa.pds.api.registry.controllersnew",
-    "gov.nasa.pds.api.registry.model", "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
+    "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.model",
+    "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
 public class SpringBootMain implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootMain.class);

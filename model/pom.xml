@@ -76,6 +76,7 @@
 			<generateSupportingFiles>false</generateSupportingFiles>
 			<interfaceOnly>false</interfaceOnly>
 			<useSpringBoot3>true</useSpringBoot3>
+			<unhandledException>true</unhandledException>
 	      </configOptions>
 
 	</configuration>

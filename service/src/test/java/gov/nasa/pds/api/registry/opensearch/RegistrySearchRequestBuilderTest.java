@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nasa.pds.api.registry.ConnectionContextBase;
 
 // @ExtendWith(SpringExtension.class)
 // @SpringBootTest

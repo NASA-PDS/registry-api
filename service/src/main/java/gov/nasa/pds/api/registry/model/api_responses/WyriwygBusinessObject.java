@@ -133,6 +133,37 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
     return (int) (hits.getTotalHits().value);
   }
 
+
+  @Override
+  public void setResponse(List<Map<String, Object>> hits, Summary summary, List<String> fields) {
+
+    Set<String> uniqueProperties = new TreeSet<String>();
+    WyriwygProducts products = new WyriwygProducts();
+
+    for (Map<String, Object> hit : hits) {
+
+      uniqueProperties.addAll(getFilteredProperties(hit, fields, null).keySet());
+
+      WyriwygProduct product = new WyriwygProduct();
+      for (Entry<String, Object> pair : hit.entrySet()) {
+        WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
+        try {
+          kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
+          kvp.setValue(getStringValueOf(pair.getValue()));
+          product.addKeyValuePairsItem(kvp);
+        } catch (UnsupportedSearchProperty e) {
+          log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
+        }
+      }
+      products.addDataItem(product);
+    }
+
+    summary.setProperties(new ArrayList<String>(uniqueProperties));
+    products.setSummary(summary);
+    this.products = products;
+  }
+
+
   private String getStringValueOf(Object o) {
     String valueOf;
     if (o instanceof Iterable) {

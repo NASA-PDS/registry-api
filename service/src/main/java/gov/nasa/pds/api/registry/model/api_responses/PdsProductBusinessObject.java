@@ -50,12 +50,16 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
   public void setResponse(Map<String, Object> kvp, List<String> fields) {
     EntityProduct ep = objectMapper.convertValue(kvp, EntityProduct.class);
     product = SearchUtil.entityProductToAPIProduct(ep, this.baseURL);
-    PdsProduct product = new PdsProduct();
+    PdsProduct product = SearchUtil.entityProductToAPIProduct(
+        objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+
+
     // TODO: findout why the getFilteredProperties method is used here. Should we add fields as a
     // second argument instead of null ?
     product.setProperties((Map<String, List<String>>) getFilteredProperties(kvp, null, null));
     this.product = product;
   }
+
 
   @Override
   @SuppressWarnings("unchecked")
@@ -65,6 +69,38 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
     this.setResponse(kvp, fields);
 
   }
+
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void setResponse(List<Map<String, Object>> hits, Summary summary, List<String> fields) {
+    PdsProducts products = new PdsProducts();
+    Set<String> uniqueProperties = new TreeSet<String>();
+
+    for (Map<String, Object> kvp : hits) {
+      try {
+        uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
+
+        products.addDataItem(SearchUtil.entityProductToAPIProduct(
+            objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
+        products.getData().get(products.getData().size() - 1).setProperties(
+            (Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp, null, null));
+      } catch (Throwable t) {
+        String lidvid = "unknown";
+        if (kvp.containsKey("lidvid")) {
+          lidvid = kvp.get("lidvid").toString();
+        }
+        log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: "
+            + lidvid, t);
+      }
+    }
+
+    summary.setProperties(new ArrayList<String>(uniqueProperties));
+    products.setSummary(summary);
+    this.products = products;
+  }
+
+
 
   @Override
   @SuppressWarnings("unchecked")
