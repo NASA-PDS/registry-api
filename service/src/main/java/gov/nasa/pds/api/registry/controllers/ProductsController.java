@@ -30,6 +30,7 @@ import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
+import gov.nasa.pds.api.registry.model.exceptions.MissSortWithSearchAfterException;
 import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
 import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
@@ -50,6 +51,7 @@ public class ProductsController implements ProductsApi {
   private final RegistrySearchRequestBuilder registrySearchRequestBuilder;
   private final ErrorMessageFactory errorMessageFactory;
   private final ObjectMapper objectMapper;
+  private OpenSearchClient openSearchClient;
   private SearchRequest presetSearchRequest;
 
   // TODO move that at a better place, it is not specific to this controller
@@ -59,6 +61,8 @@ public class ProductsController implements ProductsApi {
   static Map<String, Class<? extends ProductBusinessLogic>> getFormatters() {
     return formatters;
   }
+
+  static Integer DEFAULT_LIMIT = 100;
 
   static {
     // TODO move that at a better place, it is not specific to this controller
@@ -90,6 +94,7 @@ public class ProductsController implements ProductsApi {
     this.registrySearchRequestBuilder = new RegistrySearchRequestBuilder(connectionContext);
 
 
+    this.openSearchClient = this.connectionContext.getOpenSearchClient();
 
   }
 
@@ -135,7 +140,7 @@ public class ProductsController implements ProductsApi {
 
     if (!ProductsController.formatters.containsKey(acceptHeaderValue)) {
       throw new AcceptFormatNotSupportedException(
-          "format " + acceptHeaderValue + "is not supported.");
+          "format " + acceptHeaderValue + " is not supported.");
     }
 
     Class<? extends ProductBusinessLogic> formatterClass =
@@ -213,8 +218,8 @@ public class ProductsController implements ProductsApi {
 
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, List<String> fields,
-      Integer limit, List<String> sort, List<String> searchAfter)
-      throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
+      Integer limit, List<String> sort, List<String> searchAfter) throws UnhandledException,
+      NotFoundException, AcceptFormatNotSupportedException, MissSortWithSearchAfterException {
 
     RawMultipleProductResponse response;
 
@@ -225,6 +230,7 @@ public class ProductsController implements ProductsApi {
         response = new RawMultipleProductResponse(this.getLidVid(pdsIdentifier, fields));
 
       } else {
+        limit = (limit == null) ? DEFAULT_LIMIT : limit;
         response = this.getAllLidVid(pdsIdentifier, fields, limit, sort, searchAfter);
       }
 
@@ -250,13 +256,11 @@ public class ProductsController implements ProductsApi {
 
     SearchRequest searchRequest = registrySearchRequestBuilder.addLidvidMatch(identifier).build();
 
-
-    OpenSearchClient client = this.connectionContext.getOpenSearchClient();
-
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
     // https://stackoverflow.com/questions/2390662/java-how-do-i-get-a-class-literal-from-a-generic-type
-    SearchResponse<HashMap> searchResponse = client.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier.toString());
     }
@@ -267,6 +271,7 @@ public class ProductsController implements ProductsApi {
   }
 
 
+  @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLatestLidVid(PdsProductIdentifier identifier,
       List<String> fields) throws OpenSearchException, IOException, NotFoundException {
 
@@ -276,13 +281,11 @@ public class ProductsController implements ProductsApi {
     SearchRequest searchRequest =
         registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().build();
 
-
-    OpenSearchClient client = this.connectionContext.getOpenSearchClient();
-
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
     // https://stackoverflow.com/questions/2390662/java-how-do-i-get-a-class-literal-from-a-generic-type
-    SearchResponse<HashMap> searchResponse = client.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier.toString());
@@ -296,20 +299,35 @@ public class ProductsController implements ProductsApi {
 
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-      throws OpenSearchException, IOException, NotFoundException {
+      throws OpenSearchException, IOException, NotFoundException, MissSortWithSearchAfterException {
 
     RegistrySearchRequestBuilder registrySearchRequestBuilder =
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
-    SearchRequest searchRequest = registrySearchRequestBuilder.addLidMatch(identifier).build();
+    registrySearchRequestBuilder = registrySearchRequestBuilder.addLidMatch(identifier);
+
+    if ((sort != null) && (!sort.isEmpty())) {
+      registrySearchRequestBuilder.sort(sort);
+    }
+
+    registrySearchRequestBuilder.size(limit);
+
+    if ((searchAfter != null) && (!searchAfter.isEmpty())) {
+      if ((sort == null) || (sort.isEmpty())) {
+        throw new MissSortWithSearchAfterException();
+      }
+      registrySearchRequestBuilder.searchAfter(searchAfter);
+    }
 
 
-    OpenSearchClient client = this.connectionContext.getOpenSearchClient();
+
+    SearchRequest searchRequest = registrySearchRequestBuilder.build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
     // https://stackoverflow.com/questions/2390662/java-how-do-i-get-a-class-literal-from-a-generic-type
-    SearchResponse<HashMap> searchResponse = client.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier.toString());
