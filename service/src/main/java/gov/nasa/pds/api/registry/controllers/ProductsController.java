@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.FieldValue;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
@@ -41,6 +43,8 @@ import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import gov.nasa.pds.model.Summary;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 
 @Controller
 public class ProductsController implements ProductsApi {
@@ -244,6 +248,30 @@ public class ProductsController implements ProductsApi {
 
 
   }
+
+  @Override
+  public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
+      Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+    RawMultipleProductResponse response;
+
+
+    RegistrySearchRequestBuilder registrySearchRequestBuilder =
+        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
+
+
+    SearchRequest searchRequest =
+        registrySearchRequestBuilder.addQParam(q).addKeywordsParam(keywords).build();
+
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
+
+    RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+    return formatMultipleProducts(products, fields);
+
+
+  }
+
 
 
   @SuppressWarnings("unchecked")
