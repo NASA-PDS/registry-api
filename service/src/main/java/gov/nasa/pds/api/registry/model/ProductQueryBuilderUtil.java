@@ -91,23 +91,5 @@ public class ProductQueryBuilderUtil {
     }
   }
 
-  public static BoolQueryBuilder parseQueryString(String queryString) {
-    CodePointCharStream input = CharStreams.fromString(queryString);
-    SearchLexer lex = new SearchLexer(input);
-    CommonTokenStream tokens = new CommonTokenStream(lex);
-
-    SearchParser par = new SearchParser(tokens);
-    par.setErrorHandler(new BailErrorStrategy());
-    ParseTree tree = par.query();
-
-    log.debug(tree.toStringTree(par));
-
-    // Walk it and attach our listener
-    ParseTreeWalker walker = new ParseTreeWalker();
-    Antlr4SearchListener listener = new Antlr4SearchListener();
-    walker.walk(listener, tree);
-
-    return listener.getBoolQuery();
-  }
 
 }

@@ -23,8 +23,6 @@ class OpenSearchRegistryConnectionImplBuilder {
       LoggerFactory.getLogger(OpenSearchRegistryConnectionImplBuilder.class);
 
   private List<String> hosts;
-
-
   private final String registryIndex;
   private final String registryRefIndex;
   private final int timeOutSeconds;

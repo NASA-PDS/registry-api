@@ -33,6 +33,7 @@ import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.aws.AwsSdk2Transport;
 import org.opensearch.client.transport.aws.AwsSdk2TransportOptions;
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch.generic.OpenSearchGenericClient;
 import org.opensearch.client.opensearch.core.InfoRequest;
 import org.opensearch.client.opensearch.core.InfoResponse;
 import org.slf4j.Logger;
@@ -58,6 +59,14 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
 
   private PoolingAsyncClientConnectionManager connectionManager = null;
   private OpenSearchClient openSearchClient;
+  private OpenSearchGenericClient openSearchGenericClient;
+  private String host;
+
+  public String getHost() {
+    return host;
+  }
+
+
   private List<String> registryIndices = new ArrayList<String>();
   private List<String> registryRefIndices = new ArrayList<String>();
   private int timeOutSeconds;
@@ -177,6 +186,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
       java.security.KeyManagementException {
 
 
+
     List<HttpHost> httpHosts = new ArrayList<HttpHost>();
 
     OpenSearchRegistryConnectionNewImpl.log.info("Connection to open search");
@@ -189,7 +199,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
       // if environment variable does not exist,
       // means we are trying to reach a regular OpenSearch
       for (String host : connectionBuilder.getHosts()) {
-
+        this.host = host;
         List<String> hostAndPort = Splitter.on(':').splitToList(host);
         OpenSearchRegistryConnectionNewImpl.log
             .info("Host " + hostAndPort.get(0) + ":" + hostAndPort.get(1));
@@ -211,6 +221,7 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
 
 
     this.openSearchClient = new OpenSearchClient(transport);
+    this.openSearchGenericClient = new OpenSearchGenericClient(transport);
 
     /*
      * fails with error 404 InfoResponse info = this.openSearchClient.info();
@@ -233,6 +244,10 @@ public class OpenSearchRegistryConnectionNewImpl implements ConnectionContext {
 
   public OpenSearchClient getOpenSearchClient() {
     return this.openSearchClient;
+  }
+
+  public OpenSearchGenericClient getOpenSearchGenericClient() {
+    return this.openSearchGenericClient;
   }
 
   public List<String> getRegistryIndices() {
