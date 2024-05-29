@@ -83,6 +83,7 @@ target/
 lexer/target
 service/target
 model/target
+application-*.properties
 
 # macOS specific stuff
 .DS_Store
