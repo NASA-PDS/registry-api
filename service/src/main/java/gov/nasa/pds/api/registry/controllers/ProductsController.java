@@ -4,18 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
 import java.util.HashMap;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
-import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.OpenSearchException;
-import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.slf4j.Logger;
@@ -24,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -42,9 +36,8 @@ import gov.nasa.pds.api.registry.model.api_responses.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-import gov.nasa.pds.model.Summary;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
+
+
 
 @Controller
 public class ProductsController implements ProductsApi {
@@ -179,7 +172,7 @@ public class ProductsController implements ProductsApi {
   // lidvid, suffix all, we want the exact match with the lidvid (case exact)
 
   @Override
-  public ResponseEntity<Object> selectByLidvid(String identifier, @Valid List<String> fields)
+  public ResponseEntity<Object> selectByLidvid(String identifier, List<String> fields)
       throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
 
     HashMap<String, Object> product;
@@ -258,9 +251,8 @@ public class ProductsController implements ProductsApi {
     RegistrySearchRequestBuilder registrySearchRequestBuilder =
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
-
-    SearchRequest searchRequest =
-        registrySearchRequestBuilder.addQParam(q).addKeywordsParam(keywords).build();
+    SearchRequest searchRequest = registrySearchRequestBuilder.addQParam(q)
+        .addKeywordsParam(keywords).fields(fields).paginates(limit, sort, searchAfter).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -282,7 +274,8 @@ public class ProductsController implements ProductsApi {
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
 
-    SearchRequest searchRequest = registrySearchRequestBuilder.addLidvidMatch(identifier).build();
+    SearchRequest searchRequest =
+        registrySearchRequestBuilder.addLidvidMatch(identifier).fields(fields).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -307,7 +300,7 @@ public class ProductsController implements ProductsApi {
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
     SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().build();
+        registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().fields(fields).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -325,6 +318,7 @@ public class ProductsController implements ProductsApi {
 
   }
 
+
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
       throws OpenSearchException, IOException, NotFoundException, MissSortWithSearchAfterException {
@@ -332,21 +326,10 @@ public class ProductsController implements ProductsApi {
     RegistrySearchRequestBuilder registrySearchRequestBuilder =
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
-    registrySearchRequestBuilder = registrySearchRequestBuilder.addLidMatch(identifier);
+    registrySearchRequestBuilder =
+        registrySearchRequestBuilder.addLidMatch(identifier).fields(fields);
 
-    if ((sort != null) && (!sort.isEmpty())) {
-      registrySearchRequestBuilder.sort(sort);
-    }
-
-    registrySearchRequestBuilder.size(limit);
-
-    if ((searchAfter != null) && (!searchAfter.isEmpty())) {
-      if ((sort == null) || (sort.isEmpty())) {
-        throw new MissSortWithSearchAfterException();
-      }
-      registrySearchRequestBuilder.searchAfter(searchAfter);
-    }
-
+    registrySearchRequestBuilder = registrySearchRequestBuilder.paginates(limit, sort, searchAfter);
 
 
     SearchRequest searchRequest = registrySearchRequestBuilder.build();

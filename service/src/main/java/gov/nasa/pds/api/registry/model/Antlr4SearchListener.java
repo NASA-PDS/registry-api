@@ -8,9 +8,10 @@ import gov.nasa.pds.api.registry.lexer.SearchParser;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch._types.FieldValue;
@@ -18,6 +19,12 @@ import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.RangeQuery;
+import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery;
+import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
+import org.opensearch.client.opensearch._types.query_dsl.TermsQueryField;
+import org.opensearch.client.opensearch._types.query_dsl.TermsSetQuery;
+import org.opensearch.client.opensearch._types.query_dsl.WildcardQuery;
+import org.opensearch.client.opensearch._types.query_dsl.Operator;
 import org.opensearch.index.query.RangeQueryBuilder;
 import org.opensearch.index.query.SimpleQueryStringBuilder;
 import org.opensearch.index.query.TermQueryBuilder;
@@ -35,83 +42,81 @@ public class Antlr4SearchListener extends SearchBaseListener {
   private static final Logger log = LoggerFactory.getLogger(Antlr4SearchListener.class);
 
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
+  private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
-  private conjunctions conjunction = conjunctions.AND;
+  final private Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
   final private Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
-  final private Deque<BoolQuery> stack_queries = new ArrayDeque<BoolQuery>();
-  final private Deque<List<Query>> stack_musts = new ArrayDeque<List<Query>>();
-  final private Deque<List<Query>> stack_nots = new ArrayDeque<List<Query>>();
-  final private Deque<List<Query>> stack_shoulds = new ArrayDeque<List<Query>>();
 
-  int depth = 0;
-  private List<Query> musts = new ArrayList<Query>();
-  private List<Query> nots = new ArrayList<Query>();
-  private List<Query> shoulds = new ArrayList<Query>();
   private operation operator = null;
 
   public Antlr4SearchListener() {
     super();
   }
 
+
   @Override
-  public void exitQuery(SearchParser.QueryContext ctx) {
-    for (Query qb : musts)
-      this.queryBuilder.must(qb);
-    for (Query qb : nots)
-      this.queryBuilder.mustNot(qb);
-    for (Query qb : shoulds)
-      this.queryBuilder.filter(qb);
-  }
+  public void exitQuery(SearchParser.QueryContext ctx) {}
 
   @Override
   public void enterGroup(SearchParser.GroupContext ctx) {
-    /*
-     * this.stack_conjunction.push(this.conjunction); this.stack_musts.push(this.musts);
-     * this.stack_nots.push(this.nots); this.stack_queries.push(this.queryBuilder);
-     * this.stack_shoulds.push(this.shoulds); this.conjunction = conjunctions.AND; this.musts = new
-     * ArrayList<QueryBuilder>(); this.nots = new ArrayList<QueryBuilder>(); this.shoulds = new
-     * ArrayList<QueryBuilder>();
-     * 
-     * if (0 < this.depth) { this.queryBuilder = new BoolQueryBuilder(); }
-     * 
-     * this.depth++;
-     */
+    log.debug("Enter Group");
+
+    this.stack_conjunction.push(this.conjunction);
+    this.conjunction = conjunctions.AND; // DEFAULT
+
+    this.stackQueryBuilders.push(this.queryBuilder);
+    this.queryBuilder = new BoolQuery.Builder();
+
   }
 
   @Override
   public void exitGroup(SearchParser.GroupContext ctx) {
-    /*
-     * BoolQueryBuilder group = this.queryBuilder; List<QueryBuilder> musts = this.musts;
-     * List<QueryBuilder> nots = this.nots; List<QueryBuilder> shoulds = this.shoulds;
-     * 
-     * this.conjunction = this.stack_conjunction.pop(); this.depth--; this.musts =
-     * this.stack_musts.pop(); this.nots = this.stack_nots.pop(); this.queryBuilder =
-     * this.stack_queries.pop(); this.shoulds = this.stack_shoulds.pop();
-     * 
-     * for (QueryBuilder qb : musts) group.must(qb); for (QueryBuilder qb : nots) group.mustNot(qb);
-     * for (QueryBuilder qb : shoulds) group.filter(qb);
-     * 
-     * if (0 < depth) { if (ctx.NOT() != null) this.nots.add(group); else if (this.conjunction ==
-     * conjunctions.AND) this.musts.add(group); else this.shoulds.add(group); } else if (ctx.NOT()
-     * != null) { this.queryBuilder = new BoolQueryBuilder(); this.nots.add(group); }
-     */
+
+    log.debug("Exit Group");
+
+    BoolQuery.Builder upperBoolQueryBuilder = this.stackQueryBuilders.pop();
+    this.conjunction = this.stack_conjunction.pop();
+
+    Query innerQuery = this.queryBuilder.build().toQuery();
+    if (ctx.NOT() != null) {
+      upperBoolQueryBuilder.mustNot(innerQuery);
+    } else {
+      if (this.conjunction == conjunctions.AND) {
+        upperBoolQueryBuilder.must(innerQuery);
+      } else {
+        upperBoolQueryBuilder.should(innerQuery);
+      }
+    }
+
+    this.queryBuilder = upperBoolQueryBuilder;
+
   }
 
   @Override
   public void enterAndStatement(SearchParser.AndStatementContext ctx) {
+    log.debug("Enter AndStatement");
     this.conjunction = conjunctions.AND;
   }
 
   @Override
   public void enterOrStatement(SearchParser.OrStatementContext ctx) {
+    log.debug("Enter OrStatement");
     this.conjunction = conjunctions.OR;
   }
+
+  @Override
+  public void exitOrStatement(SearchParser.OrStatementContext ctx) {
+    log.debug("Exit OrStatement");
+    this.queryBuilder.minimumShouldMatch("1");
+  }
+
 
   @Override
   public void enterComparison(SearchParser.ComparisonContext ctx) {}
 
   @Override
   public void exitComparison(SearchParser.ComparisonContext ctx) {
+    log.debug("Exit comparison");
     final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
 
     String right;
@@ -122,7 +127,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
       right = ctx.NUMBER().getSymbol().getText();
     } else if (ctx.STRINGVAL() != null) {
       right = ctx.STRINGVAL().getSymbol().getText();
-      right = right.substring(1, right.length() - 1);
+      right = right.replaceAll("^\"|\"$", "");
     } else {
       throw new ParseCancellationException(
           "A right component (literal) of a comparison is neither a number or a string. Number and String are the only types supported for literals.");
@@ -136,6 +141,11 @@ public class Antlr4SearchListener extends SearchBaseListener {
       MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
 
       comparatorQuery = matchQueryBuilder.toQuery();
+
+      if (this.operator == operation.ne) {
+        comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
+      }
+
 
 
     } else {
@@ -160,14 +170,12 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
     }
 
-
-    if (this.operator == operation.ne) {
-      this.nots.add(comparatorQuery);
-    } else if (this.conjunction == conjunctions.AND) {
-      this.musts.add(comparatorQuery);
+    if (this.conjunction == conjunctions.AND) {
+      this.queryBuilder.must(comparatorQuery);
     } else {
-      this.shoulds.add(comparatorQuery);
+      this.queryBuilder.should(comparatorQuery);
     }
+
   }
 
   @Override
@@ -175,17 +183,25 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   @Override
   public void exitLikeComparison(SearchParser.LikeComparisonContext ctx) {
-    /*
-     * final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getText());
-     * 
-     * String right = ctx.STRINGVAL().getText(); right = right.substring(1, right.length() - 1);
-     * QueryBuilder comparator = new
-     * SimpleQueryStringBuilder(right).field(left).fuzzyMaxExpansions(0);
-     * 
-     * if ("not".equalsIgnoreCase(ctx.getChild(1).getText())) { this.nots.add(comparator); } else if
-     * (this.conjunction == conjunctions.AND) { this.musts.add(comparator); } else {
-     * this.shoulds.add(comparator); }
-     */
+    log.debug("Exit likeComparison");
+    final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
+
+    String right = ctx.STRINGVAL().getText();
+    // remove quotes
+    right = right.replaceAll("^\"|\"$", "");
+
+    SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
+        .query(right).fuzzyMaxExpansions(0).build();
+
+    Query query = simpleQueryString.toQuery();
+    log.debug("Exit Like comparison: left member is " + left + " right member is " + right);
+
+    if (this.conjunction == conjunctions.AND) {
+      this.queryBuilder.must(query);
+    } else {
+      this.queryBuilder.should(query);
+    }
+
   }
 
   @Override
@@ -209,6 +225,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
   }
 
   public BoolQuery getBoolQuery() {
+    log.debug("Get boolQuery");
     return this.queryBuilder.build();
   }
 }

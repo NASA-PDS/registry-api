@@ -7,7 +7,7 @@ expression : andStatement | orStatement | queryTerm ;
 andStatement : queryTerm (AND queryTerm)+ ;
 orStatement : queryTerm (OR queryTerm)+ ;
 comparison : FIELD operator ( NUMBER | STRINGVAL ) ;
-likeComparison : FIELD NOT? LIKE STRINGVAL ;
+likeComparison : FIELD LIKE STRINGVAL ;
 operator : EQ | NE | GT | GE | LT | LE ;
 
 NOT : 'not' ;
