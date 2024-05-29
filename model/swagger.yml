@@ -20,8 +20,8 @@ tags:
     description: search by class of product, bundles, collections, ...
   - name: 4. healthcheck
     description: end-point for evaluating system health
-  - name: 5. deprecated
-    description: end-points which should not be used anymore
+  - name: 5. all docs
+    description: access to opensearch API, for experts only
 
 
 externalDocs:
@@ -852,6 +852,7 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
+      xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
     pdsProducts:

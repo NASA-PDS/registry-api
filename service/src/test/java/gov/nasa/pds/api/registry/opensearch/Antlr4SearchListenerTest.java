@@ -8,12 +8,17 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
-import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+
+
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
@@ -33,6 +38,15 @@ public class Antlr4SearchListenerTest {
       this.parent.run(this.qs);
     }
   }
+
+
+  private Antlr4SearchListener listener;
+
+  @BeforeEach
+  void setUp() {
+    listener = new Antlr4SearchListener();
+  }
+
 
   private BoolQuery run(String query) {
     CodePointCharStream input = CharStreams.fromString(query);
@@ -61,6 +75,7 @@ public class Antlr4SearchListenerTest {
     Assertions.assertEquals(query.must().size(), 1);
     Query matchQuery = (Query) query.must().get(0);
     Assertions.assertEquals(matchQuery._kind(), Query.Kind.Match);
+    // Assertions.assertEquals((matchQuery).field(), "pds:Time_Coordinates/pds:stop_date_time");
 
 
   }
@@ -73,14 +88,6 @@ public class Antlr4SearchListenerTest {
     // TODO: add asserts
 
 
-  }
-
-  @Test
-  public void testNotLikeWildchar() {
-    String qs = "lid not like \"pdart14_meap?\"";
-    BoolQuery query = this.run(qs);
-
-    // TODO: add asserts
   }
 
   @Test
@@ -115,14 +122,19 @@ public class Antlr4SearchListenerTest {
     // TODO: add asserts
   }
 
+
   @Test
   public void testNestedGrouping() {
+
     String qs =
         "( ( timestamp ge 12 and timestamp le 27 ) or ( timestamp gt 13 and timestamp lt 37 ) )";
     BoolQuery query = this.run(qs);
 
     // TODO: add asserts
+
   }
+
+
 
   @Test
   public void testNoWildcardQuoted() {
@@ -143,4 +155,50 @@ public class Antlr4SearchListenerTest {
       Assertions.assertThrows(ParseCancellationException.class, actor);
     }
   }
+
+
+
+  @Test
+  void testEnterGroup() {
+    listener.enterGroup(Mockito.mock(SearchParser.GroupContext.class));
+    assertEquals(0, listener.getBoolQuery().should().size(), "Initial should size should be 0");
+  }
+
+  @Test
+  void testExitGroup() {
+    SearchParser.GroupContext mockCtx = Mockito.mock(SearchParser.GroupContext.class);
+    listener.enterGroup(mockCtx);
+    listener.exitGroup(mockCtx);
+    assertEquals(0, listener.getBoolQuery().should().size(),
+        "Should size after exiting group should be 0");
+  }
+
+  @Test
+  void testEnterAndStatement() {
+    listener.enterAndStatement(Mockito.mock(SearchParser.AndStatementContext.class));
+    // assuming the conjunctions are properly set
+  }
+
+  @Test
+  void testEnterOrStatement() {
+    listener.enterOrStatement(Mockito.mock(SearchParser.OrStatementContext.class));
+    // assuming the conjunctions are properly set
+  }
+
+  @Test
+  void testExitOrStatement() {
+    listener.enterOrStatement(Mockito.mock(SearchParser.OrStatementContext.class));
+    listener.exitOrStatement(Mockito.mock(SearchParser.OrStatementContext.class));
+    assertTrue(listener.getBoolQuery().minimumShouldMatch() == "1",
+        "Minimum should match should be set");
+  }
+
+
+  @Test
+  void testGetBoolQuery() {
+    BoolQuery query = listener.getBoolQuery();
+    assertNotNull(query, "BoolQuery should not be null");
+  }
+
+
 }

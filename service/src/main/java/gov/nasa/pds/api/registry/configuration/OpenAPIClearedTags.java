@@ -19,7 +19,8 @@ import io.swagger.v3.oas.models.tags.Tag;
 public class OpenAPIClearedTags implements OpenApiCustomizer {
   protected static final Logger log = LoggerFactory.getLogger(OpenAPIClearedTags.class);
 
-  private static final String FILTERED_TAGS = "collections|bundles|products|classes|healthcheck|properties";
+  private static final String FILTERED_TAGS =
+      "collections|bundles|products|classes|healthcheck|properties|docs";
 
   @Override
   public void customise(OpenAPI openApi) {
@@ -53,6 +54,7 @@ public class OpenAPIClearedTags implements OpenApiCustomizer {
       }
 
     }
+
   }
 
 

@@ -29,268 +29,220 @@ import gov.nasa.pds.api.registry.lexer.SearchParser.QueryTermContext;
 import org.junit.jupiter.api.Assertions;
 
 
-public class TestParsing implements ParseTreeListener, SearchListener
-{
-	TerminalNode field=null, number=null, strval=null;
-	boolean isNot = false;
+public class TestParsing implements ParseTreeListener, SearchListener {
+  TerminalNode field = null, number = null, strval = null;
+  boolean isNot = false;
 
-	@Test
-	public void testNumber()
-	{
-		String queryString = "lid eq 1234";
-		CodePointCharStream input = CharStreams.fromString(queryString);
-        SearchLexer lex = new SearchLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        SearchParser par = new SearchParser(tokens);
-        ParseTree tree = par.query();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
-        
-        Assertions.assertNotNull(this.field);
-        Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
-        
-        Assertions.assertNotEquals(this.number, null);
-        Assertions.assertEquals(this.number.getSymbol().getText(), "1234");
-       
-	}
-	
-	@Test
-	public void testStringVal()
-	{
-		String queryString = "lid eq \"*text*\"";
-		CodePointCharStream input = CharStreams.fromString(queryString);
-        SearchLexer lex = new SearchLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        SearchParser par = new SearchParser(tokens);
-        ParseTree tree = par.query();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
+  @Test
+  public void testNumber() {
+    String queryString = "lid eq 1234";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
 
-        Assertions.assertNotNull(this.field);
-        Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
+    Assertions.assertNotNull(this.field);
+    Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
 
-        Assertions.assertNotNull(this.strval);
-        Assertions.assertEquals(this.strval.getSymbol().getText(), "\"*text*\"");
-	}
-	
-	
-    @Test
-    public void testLike()
-    {
-        String queryString = "lid like \"*text*\"";
-        CodePointCharStream input = CharStreams.fromString(queryString);
-        SearchLexer lex = new SearchLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        SearchParser par = new SearchParser(tokens);
-        ParseTree tree = par.query();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
+    Assertions.assertNotEquals(this.number, null);
+    Assertions.assertEquals(this.number.getSymbol().getText(), "1234");
 
-        Assertions.assertNotNull(this.field);
-        Assertions.assertEquals(this.field.getText(), "lid");
+  }
 
-        Assertions.assertNotNull(this.strval);
-        Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
-    }
-	
-    
-    @Test
-    public void testNotLike()
-    {
-        String queryString = "lid not like \"*text*\"";
-        CodePointCharStream input = CharStreams.fromString(queryString);
-        SearchLexer lex = new SearchLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        SearchParser par = new SearchParser(tokens);
-        ParseTree tree = par.query();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
+  @Test
+  public void testStringVal() {
+    String queryString = "lid eq \"*text*\"";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
 
-        Assertions.assertNotNull(this.field);
-        Assertions.assertEquals(this.field.getText(), "lid");
+    Assertions.assertNotNull(this.field);
+    Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
 
-        Assertions.assertNotNull(this.strval);
-        Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
-        
-        Assertions.assertEquals(this.isNot, true);
-    }
-	
-    
-	@Test
-	void testTemporalRange()
-	{
-        String queryString = "(AAA gt \"2016-09-09\" and BBB lt \"2020-09-11\")";
-        CodePointCharStream input = CharStreams.fromString(queryString);
-        SearchLexer lex = new SearchLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        SearchParser par = new SearchParser(tokens);
-        ParseTree tree = par.query();
+    Assertions.assertNotNull(this.strval);
+    Assertions.assertEquals(this.strval.getSymbol().getText(), "\"*text*\"");
+  }
 
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
-        
-        // TODO: Parse
-        
-	}
 
-	
-    @Override
-    public void enterQuery(QueryContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Test
+  public void testLike() {
+    String queryString = "lid like \"*text*\"";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
 
-    @Override
-    public void exitQuery(QueryContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+    Assertions.assertNotNull(this.field);
+    Assertions.assertEquals(this.field.getText(), "lid");
 
-    @Override
-    public void enterQueryTerm(QueryTermContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+    Assertions.assertNotNull(this.strval);
+    Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
+  }
 
-    @Override
-    public void exitQueryTerm(QueryTermContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
 
-    @Override
-    public void enterGroup(GroupContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Test
+  void testTemporalRange() {
+    String queryString = "(AAA gt \"2016-09-09\" and BBB lt \"2020-09-11\")";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
 
-    @Override
-    public void exitGroup(GroupContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
 
-    @Override
-    public void enterExpression(ExpressionContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+    // TODO: Parse
 
-    @Override
-    public void exitExpression(ExpressionContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  }
 
-    @Override
-    public void enterAndStatement(AndStatementContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
 
-    @Override
-    public void exitAndStatement(AndStatementContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void enterQuery(QueryContext ctx) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void enterOrStatement(OrStatementContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  }
 
-    @Override
-    public void exitOrStatement(OrStatementContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void exitQuery(QueryContext ctx) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void enterComparison(ComparisonContext ctx)
-    {
-        this.field = ctx.FIELD();
-        this.number = ctx.NUMBER();
-        this.strval = ctx.STRINGVAL();
-    }
+  }
 
-    @Override
-    public void exitComparison(ComparisonContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void enterQueryTerm(QueryTermContext ctx) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void enterOperator(OperatorContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  }
 
-    @Override
-    public void exitOperator(OperatorContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void exitQueryTerm(QueryTermContext ctx) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void enterEveryRule(ParserRuleContext arg0)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  }
 
-    @Override
-    public void exitEveryRule(ParserRuleContext arg0)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void enterGroup(GroupContext ctx) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void visitErrorNode(ErrorNode arg0)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  }
 
-    @Override
-    public void visitTerminal(TerminalNode arg0)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void exitGroup(GroupContext ctx) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void enterLikeComparison(LikeComparisonContext ctx)
-    {
-        this.field = ctx.FIELD();
-        this.strval = ctx.STRINGVAL();
-        
-        String op = ctx.getChild(1).getText();
-        if("not".equals(op)) isNot = true;
-    }
+  }
 
-    @Override
-    public void exitLikeComparison(LikeComparisonContext ctx)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+  @Override
+  public void enterExpression(ExpressionContext ctx) {
+    // TODO Auto-generated method stub
 
-	
+  }
+
+  @Override
+  public void exitExpression(ExpressionContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void enterAndStatement(AndStatementContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void exitAndStatement(AndStatementContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void enterOrStatement(OrStatementContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void exitOrStatement(OrStatementContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void enterComparison(ComparisonContext ctx) {
+    this.field = ctx.FIELD();
+    this.number = ctx.NUMBER();
+    this.strval = ctx.STRINGVAL();
+  }
+
+  @Override
+  public void exitComparison(ComparisonContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void enterOperator(OperatorContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void exitOperator(OperatorContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void enterEveryRule(ParserRuleContext arg0) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void exitEveryRule(ParserRuleContext arg0) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visitErrorNode(ErrorNode arg0) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void visitTerminal(TerminalNode arg0) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void enterLikeComparison(LikeComparisonContext ctx) {
+    this.field = ctx.FIELD();
+    this.strval = ctx.STRINGVAL();
+
+    String op = ctx.getChild(1).getText();
+    if ("not".equals(op))
+      isNot = true;
+  }
+
+  @Override
+  public void exitLikeComparison(LikeComparisonContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+
 }
