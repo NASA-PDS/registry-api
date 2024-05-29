@@ -2,8 +2,6 @@
 
 There's one Dockerfile here that can be used to make images for development and production.
 
-👉 **Note:** It's a security risk to include private keys in images. As a result, we've removed the old `Dockerfile.https` and `Dockerfile.https.dev`. We've also removed all the other `Dockerfile.*` files to eliminate confusion, except for `Dockerfile.local`; see below.
-
 
 ## Build the image 
 

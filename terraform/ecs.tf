@@ -85,18 +85,17 @@ resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
         "interval": 60,
         "startPeriod": 300
       },
-      "secrets": [
-        {"name": "ES_CREDENTIALS", "valueFrom": "${aws_secretsmanager_secret.es_login_secret.arn}"},
-        {"name": "ES_HOSTS", "valueFrom": "${aws_ssm_parameter.es_hosts_parameter.name}"},
-        {"name": "NODE_NAME", "valueFrom": "${aws_ssm_parameter.node_name_parameter.name}"}
+      "environment": [
+        {"name": "SERVER_PORT", "value": "80"},
+        {"name": "SPRING_BOOT_APP_ARGS": "--openSearch.host=p5qmxrldysl1gy759hqf.us-west-2.aoss.amazonaws.com --openSearch.CCSEnabled=true --openSearch.username="" --openSearch.disciplineNodes=atm-delta --registry.service.version=1.5.0-SNAPSHOT"}
       ]
     }
   ]
 
 EOF
 
-  execution_role_arn = data.aws_iam_role.pds-task-execution-role.arn
-  task_role_arn      = data.aws_iam_role.pds-task-execution-role.arn
+  execution_role_arn = var.ecs_task_execution_role
+  task_role_arn      = var.ecs_task_role
 
   # These are the minimum values for Fargate containers.
   cpu                      = 256
