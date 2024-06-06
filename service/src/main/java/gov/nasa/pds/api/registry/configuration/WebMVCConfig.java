@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.configuration;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -38,16 +39,22 @@ import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
 public class WebMVCConfig implements WebMvcConfigurer {
   private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
 
+  @Value("${server.contextPath}")
+  private String contextPath;
+
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/webjars/**")
+    String contextPath = this.contextPath.endsWith("/") ? this.contextPath : this.contextPath + "/";
+
+    registry.addResourceHandler(contextPath + "webjars/**")
         .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    registry.addResourceHandler(contextPath + "static/**")
+        .addResourceLocations("classpath:/static/");
 
 
-
-    registry.addResourceHandler("/swagger-ui/pds.*").addResourceLocations("classpath:/swagger-ui/");
-    registry.addResourceHandler("/swagger-ui/index.htm*")
+    registry.addResourceHandler(contextPath + "swagger-ui/pds.*")
+        .addResourceLocations("classpath:/swagger-ui/");
+    registry.addResourceHandler(contextPath + "swagger-ui/index.htm*")
         .addResourceLocations("classpath:/swagger-ui/");
 
 
@@ -69,8 +76,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    WebMVCConfig.log.info("Number of converters available at start " + Integer.toString(converters.size()));
-    
+    WebMVCConfig.log
+        .info("Number of converters available at start " + Integer.toString(converters.size()));
+
     // csv converters
     converters.add(new CsvErrorMessageSerializer());
     converters.add(new CsvPluralSerializer());
@@ -109,6 +117,7 @@ public class WebMVCConfig implements WebMvcConfigurer {
     converters.add(new JsonErrorMessageSerializer());
     converters.add(new JsonProductSerializer()); // this one must be last because it contains */*
 
-    WebMVCConfig.log.info("Number of converters available after adding locals " + Integer.toString(converters.size()));
+    WebMVCConfig.log.info("Number of converters available after adding locals "
+        + Integer.toString(converters.size()));
   }
 }

@@ -13,7 +13,7 @@ terraform {
   # See https://stackoverflow.com/questions/63048738/how-to-declare-variables-for-s3-backend-in-terraform
   #
   backend "s3" {
-    bucket = "pds-state"
+    bucket = "pds-infra"
     # key = "project-services/${var.node_name_abbr}/${var.venue}/ecs.tfstate"
     # region = var.aws_region
   }
