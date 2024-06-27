@@ -4,12 +4,12 @@ info:
     Registry API enabling advanced search on PDS data and metadata. The API provides end-points to search for bundles, collections and any PDS products with advanced search queries. It also enables to browse the archive hierarchically downward (e.g. collection/s products) or upward (e.g. bundles containing a product).
   version: 1.3.0
   title: PDS Registry Search API
-  termsOfService: 'http://pds.nasa.gov'
+  termsOfService: "http://pds.nasa.gov"
   contact:
     email: pds-operator@jpl.nasa.gov
   license:
     name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 
 tags:
   - name: 1. all products
@@ -23,10 +23,9 @@ tags:
   - name: 5. all docs
     description: access to opensearch API, for experts only
 
-
 externalDocs:
-    description: User's Guide
-    url: https://nasa-pds.github.io/pds-api/guides/search.html
+  description: User's Guide
+  url: https://nasa-pds.github.io/pds-api/guides/search.html
 
 servers:
   - url: https://pds.nasa.gov/api/registry/1
@@ -41,27 +40,27 @@ paths:
         returns payload of system health information. Detection of any fatal issues results in a non-200 response. The primary intention of this endpoint is to provide an accurate assessment of the service to determine if ECS/Fargate should instantiate a new instance of the task.
       operationId: healthcheck
       responses:
-        '200':
+        "200":
           description: The system checked out as healthy, returning a JSON payload of results
           content:
             "*":
               schema:
                 type: object
                 additionalProperties: true
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '418':
+        "418":
           description: The system did not check out as healthy, returning a JSON payload of results, including error messages indicating the source(s) of the failure(s)
           content:
             "*":
               schema:
                 type: object
                 additionalProperties: true
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
   /classes:
     get:
@@ -71,7 +70,7 @@ paths:
         returns a list of the available PDS product class at this API. This is not all of the PDS product class available in the database, but simply the names that can be used in the /classes/{class} endpoints.
       operationId: classes
       responses:
-        '200':
+        "200":
           description: Successful response is always a JSON list of the available class names
           content:
             "*":
@@ -79,31 +78,31 @@ paths:
                 type: array
                 items:
                   type: string
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
   /classes/{class}:
     get:
       tags:
-        -  3. by product classes
+        - 3. by product classes
       summary: |
         returns all PDS products of the given PDS product class that meet all given constraints.
       operationId: class-list
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
       parameters:
         - $ref: "#/components/parameters/Fields"
@@ -129,7 +128,7 @@ paths:
             schema:
               type: string
       responses:
-        '200':
+        "200":
           description: Successful request
           content:
             "*":
@@ -137,7 +136,7 @@ paths:
                 type: object
     parameters:
       - $ref: "#/components/parameters/Indices"
-  /products:   
+  /products:
     get:
       tags:
         - 1. all products
@@ -145,15 +144,15 @@ paths:
         search on all PDS data products, including bundles, collections, documentation, context and observational products.
       operationId: product-list
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -171,15 +170,15 @@ paths:
         returns one PDS Product with the identifier selected from all PDS Products, including bundles, collections, data, documentation, context and observational products. See identifier for details on how it determines what is returned.
       operationId: select-by-lidvid
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Singular"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -193,15 +192,15 @@ paths:
         returns one PDS Product with the identifier selected from all PDS Products. See identifier for details on how it determines what is returned.
       operationId: select-by-lidvid-latest
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Singular"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -217,15 +216,15 @@ paths:
         note: if given a lidvid, it will be translated to a lid
       operationId: select-by-lidvid-all
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -234,6 +233,26 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
 
+  /products/{identifier}/tools:
+    get:
+      tags:
+        - 1. all products
+      summary: |
+        for the given product, returns deep links to all tools that support the display of that product
+      operationId: product-cross-links
+      responses:
+        "200":
+          $ref: "#/components/responses/Singular"
+        "400":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
+        "501":
+          $ref: "#/components/responses/Error"
+    parameters:
+      - $ref: "#/components/parameters/Identifier"
 
   /properties:
     get:
@@ -243,18 +262,17 @@ paths:
         return a list of all possible searchable metadata fields for products published in the registry
       operationId: product-properties-list
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/PropertiesList"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters: []
-
 
   /products/{identifier}/members:
     get:
@@ -264,15 +282,15 @@ paths:
         returns all of the members of the given lid/lidvid
       operationId: product-members
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -288,15 +306,15 @@ paths:
         returns all of the members of the given lid/lidvid
       operationId: product-members-vers
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -313,15 +331,15 @@ paths:
         returns all of the members of the members of the given lid/lidvid
       operationId: product-members-members
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -337,15 +355,15 @@ paths:
         returns all of the members of the members of the given lid/lidvid
       operationId: product-members-members-vers
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -362,15 +380,15 @@ paths:
         returns one or more PDS Products that have the given PDS lid/lidvid as a member.
       operationId: product-member-of
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -386,15 +404,15 @@ paths:
         returns one or more PDS Products that have the given PDS lid/lidvid as a member.
       operationId: product-member-of-vers
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -411,15 +429,15 @@ paths:
         returns one or more PDS Products that have the given PDS lid/lidvid as a member of its members.
       operationId: product-member-of-of
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -435,15 +453,15 @@ paths:
         returns one or more PDS Products that have the given PDS lid/lidvid as a member of its members.
       operationId: product-member-of-of-vers
       responses:
-        '200':
+        "200":
           $ref: "#/components/responses/Plural"
-        '400':
+        "400":
           $ref: "#/components/responses/Error"
-        '404':
+        "404":
           $ref: "#/components/responses/Error"
-        '500':
+        "500":
           $ref: "#/components/responses/Error"
-        '501':
+        "501":
           $ref: "#/components/responses/Error"
     parameters:
       - $ref: "#/components/parameters/Fields"
@@ -452,7 +470,6 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
-
 
 components:
   parameters:
@@ -480,7 +497,7 @@ components:
       required: true
       schema:
         type: string
-        enum: [any,bundles,collections,documents,observationals]
+        enum: [any, bundles, collections, documents, observationals]
     Indices:
       name: indices
       in: query
@@ -581,7 +598,7 @@ components:
       required: true
       schema:
         type: string
-        enum: [all,latest]
+        enum: [all, latest]
   responses:
     Error:
       description: Unsuccessful request
@@ -591,34 +608,34 @@ components:
             type: object
         "*/*":
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         application/csv:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         application/json:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         application/kvp+json:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         application/vnd.nasa.pds.pds4+json:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         application/vnd.nasa.pds.pds4+xml:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         application/xml:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         text/csv:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         text/html:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
         text/xml:
           schema:
-            $ref: '#/components/schemas/errorMessage'
+            $ref: "#/components/schemas/errorMessage"
     Plural:
       description: Successful request
       content:
@@ -627,34 +644,34 @@ components:
             type: object
         "*/*":
           schema:
-            $ref: '#/components/schemas/pdsProducts'
+            $ref: "#/components/schemas/pdsProducts"
         application/csv:
           schema:
-            $ref: '#/components/schemas/wyriwygProducts'
+            $ref: "#/components/schemas/wyriwygProducts"
         application/json:
           schema:
-            $ref: '#/components/schemas/pdsProducts'
+            $ref: "#/components/schemas/pdsProducts"
         application/kvp+json:
           schema:
-            $ref: '#/components/schemas/wyriwygProducts'
+            $ref: "#/components/schemas/wyriwygProducts"
         application/vnd.nasa.pds.pds4+json:
           schema:
-            $ref: '#/components/schemas/pds4Products'
+            $ref: "#/components/schemas/pds4Products"
         application/vnd.nasa.pds.pds4+xml:
           schema:
-            $ref: '#/components/schemas/pds4Products'
+            $ref: "#/components/schemas/pds4Products"
         application/xml:
           schema:
-            $ref: '#/components/schemas/pdsProducts'
+            $ref: "#/components/schemas/pdsProducts"
         text/csv:
           schema:
-            $ref: '#/components/schemas/wyriwygProducts'
+            $ref: "#/components/schemas/wyriwygProducts"
         text/html:
           schema:
-            $ref: '#/components/schemas/pdsProducts'
+            $ref: "#/components/schemas/pdsProducts"
         text/xml:
           schema:
-            $ref: '#/components/schemas/pdsProducts'
+            $ref: "#/components/schemas/pdsProducts"
     PropertiesList:
       description: An array of all searchable properties of products in the registry.
       content:
@@ -663,19 +680,19 @@ components:
             type: object
         "*/*":
           schema:
-            $ref: '#/components/schemas/propertiesList'
+            $ref: "#/components/schemas/propertiesList"
         application/json:
           schema:
-            $ref: '#/components/schemas/propertiesList'
+            $ref: "#/components/schemas/propertiesList"
         application/xml:
           schema:
-            $ref: '#/components/schemas/propertiesList'
+            $ref: "#/components/schemas/propertiesList"
         text/html:
           schema:
-            $ref: '#/components/schemas/propertiesList'
+            $ref: "#/components/schemas/propertiesList"
         text/xml:
           schema:
-            $ref: '#/components/schemas/propertiesList'
+            $ref: "#/components/schemas/propertiesList"
     Singular:
       description: Successful request
       content:
@@ -684,34 +701,34 @@ components:
             type: object
         "*/*":
           schema:
-            $ref: '#/components/schemas/pdsProduct'
+            $ref: "#/components/schemas/pdsProduct"
         application/csv:
           schema:
-            $ref: '#/components/schemas/wyriwygProduct'
+            $ref: "#/components/schemas/wyriwygProduct"
         application/json:
           schema:
-            $ref: '#/components/schemas/pdsProduct'
+            $ref: "#/components/schemas/pdsProduct"
         application/kvp+json:
           schema:
-            $ref: '#/components/schemas/wyriwygProduct'
+            $ref: "#/components/schemas/wyriwygProduct"
         application/vnd.nasa.pds.pds4+json:
           schema:
-            $ref: '#/components/schemas/pds4Product'
+            $ref: "#/components/schemas/pds4Product"
         application/vnd.nasa.pds.pds4+xml:
           schema:
-            $ref: '#/components/schemas/pds4Product'
+            $ref: "#/components/schemas/pds4Product"
         application/xml:
           schema:
-            $ref: '#/components/schemas/pdsProduct'
+            $ref: "#/components/schemas/pdsProduct"
         text/csv:
-           schema:
-            $ref: '#/components/schemas/wyriwygProduct'
+          schema:
+            $ref: "#/components/schemas/wyriwygProduct"
         text/html:
-           schema:
-            $ref: '#/components/schemas/pdsProduct'
+          schema:
+            $ref: "#/components/schemas/pdsProduct"
         text/xml:
           schema:
-            $ref: '#/components/schemas/pdsProduct'
+            $ref: "#/components/schemas/pdsProduct"
   schemas:
     propertiesList:
       type: array
@@ -735,126 +752,126 @@ components:
         q:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         hits:
           description: total number of matching results. -1 indicates an excessive amount of resource required to compute it
           type: integer
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         took:
           description: Number of milliseconds it "took" to do request
           type: integer
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         search_after:
           type: array
           items:
             type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         limit:
           type: integer
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         sort:
           type: array
           items:
             type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         properties:
           type: array
           items:
             type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+        prefix: "pds_api"
+        namespace: "http://pds.nasa.gov/api"
     pdsProduct:
       type: object
       description: default PDS product description format for the API.
       required:
-       - id
-       - metadata
+        - id
+        - metadata
       properties:
         id:
           type: string
           description: identifier lidvid of the collection
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         type:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         title:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         description:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         start_date_time:
           type: string
           description: start date time of the observations in ISO8601
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         stop_date_time:
           type: string
           description: stop date time of the observations in ISO8601
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         investigations:
           type: array
           description: list of missions or observing campaigns which produced the data
           items:
-            $ref: '#/components/schemas/reference'
+            $ref: "#/components/schemas/reference"
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         observing_system_components:
           type: array
           description: list of instruments or platforms generating the data
           items:
-            $ref: '#/components/schemas/reference'
+            $ref: "#/components/schemas/reference"
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         targets:
           type: array
           description: list of targets or feature of interest the observation.
           items:
-            $ref: '#/components/schemas/reference'
+            $ref: "#/components/schemas/reference"
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         metadata:
-          $ref: '#/components/schemas/metadata'
+          $ref: "#/components/schemas/metadata"
         properties:
           type: object
           description: propertie's values extracted from pds4 model, as a dictionnary, syntax for property name is {namespace}:{property}[{namespace}:{property}]*
           additionalProperties:
-            $ref: '#/components/schemas/propertyArrayValues'
+            $ref: "#/components/schemas/propertyArrayValues"
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+        prefix: "pds_api"
+        namespace: "http://pds.nasa.gov/api"
     pdsProducts:
       type: object
       required:
@@ -862,10 +879,10 @@ components:
         - data
       properties:
         summary:
-          $ref: '#/components/schemas/summary'
+          $ref: "#/components/schemas/summary"
         data:
           items:
-            $ref: '#/components/schemas/pdsProduct'
+            $ref: "#/components/schemas/pdsProduct"
     wyriwygProduct:
       type: object
       description: minimalistic description of a pds product with only the key value pairs requested by the user (what you request is what you get)
@@ -889,56 +906,56 @@ components:
         - data
       properties:
         summary:
-          $ref: '#/components/schemas/summary'
+          $ref: "#/components/schemas/summary"
         data:
           items:
-            $ref: '#/components/schemas/wyriwygProduct'
+            $ref: "#/components/schemas/wyriwygProduct"
     propertyArrayValues:
       type: array
       items:
         type: string
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+        prefix: "pds_api"
+        namespace: "http://pds.nasa.gov/api"
     reference:
       type: object
       description: object describing a reference to a different product. TODO The properties should be defined by a standard (xlink, json-ld) to be chosen
       required:
-          - id
+        - id
       properties:
         title:
           type: string
           description: name to display for the external reference
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         id:
           type: string
           description: external reference, here lidvid urn
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         href:
           type: string
           description: external reference url of the current reference resolvable by the current API server, http://pds.nasa.gov/api/products/urn:nasa...
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         type:
           type: string
           description: type of the external reference, can be displayed as an icon for example
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         description:
           type: string
           description: longer description for the external reference, can be displayed in a tooltip
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+        prefix: "pds_api"
+        namespace: "http://pds.nasa.gov/api"
     metadata:
       type: object
       required:
@@ -947,31 +964,31 @@ components:
         archive_status:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         creation_date_time:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         label_url:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         update_date_time:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         version:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+        prefix: "pds_api"
+        namespace: "http://pds.nasa.gov/api"
     errorMessage:
       type: object
       required:
@@ -981,20 +998,20 @@ components:
         request:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
         message:
           type: string
           xml:
-            prefix: 'pds_api'
-            namespace: 'http://pds.nasa.gov/api'
+            prefix: "pds_api"
+            namespace: "http://pds.nasa.gov/api"
       xml:
-        prefix: 'pds_api'
-        namespace: 'http://pds.nasa.gov/api'
+        prefix: "pds_api"
+        namespace: "http://pds.nasa.gov/api"
       example:
         {
-          request: 'https://pds.nasa.gov/api/1.0/collections?q=mission qt 12',
-          message: 'query operator gt not supported on field mission'
+          request: "https://pds.nasa.gov/api/1.0/collections?q=mission qt 12",
+          message: "query operator gt not supported on field mission",
         }
     pds4Product:
       type: object
@@ -1006,7 +1023,7 @@ components:
           type: string
           description: LIDVID
         metadata:
-          $ref: '#/components/schemas/pds4Metadata'
+          $ref: "#/components/schemas/pds4Metadata"
         pds4:
           type: object
           description: PDS4 JSON
@@ -1017,10 +1034,10 @@ components:
         - data
       properties:
         summary:
-          $ref: '#/components/schemas/summary'
+          $ref: "#/components/schemas/summary"
         data:
           items:
-            $ref: '#/components/schemas/pds4Product'
+            $ref: "#/components/schemas/pds4Product"
     pds4Metadata:
       type: object
       properties:

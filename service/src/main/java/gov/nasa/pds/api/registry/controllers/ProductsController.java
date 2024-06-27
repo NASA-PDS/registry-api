@@ -2,6 +2,7 @@ package gov.nasa.pds.api.registry.controllers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +37,9 @@ import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogicImpl;
 import gov.nasa.pds.api.registry.model.api_responses.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
+import gov.nasa.pds.api.registry.model.tools.CrossLinksLoader;
+import gov.nasa.pds.api.registry.model.tools.CrossLinks;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
-
 
 
 @Controller
@@ -50,6 +53,8 @@ public class ProductsController implements ProductsApi {
   private final ObjectMapper objectMapper;
   private OpenSearchClient openSearchClient;
   private SearchRequest presetSearchRequest;
+  private CrossLinksLoader crossLinksLoader;
+  private CrossLinks crossLinks;
 
   // TODO move that at a better place, it is not specific to this controller
   private static Map<String, Class<? extends ProductBusinessLogic>> formatters =
@@ -93,6 +98,8 @@ public class ProductsController implements ProductsApi {
 
     this.openSearchClient = this.connectionContext.getOpenSearchClient();
 
+    this.crossLinksLoader = new CrossLinksLoader();
+    this.crossLinks = this.crossLinksLoader.loadConfiguration();
   }
 
   private ResponseEntity<Object> formatSingleProduct(HashMap<String, Object> product,
@@ -195,7 +202,6 @@ public class ProductsController implements ProductsApi {
 
   }
 
-
   @Override
   public ResponseEntity<Object> selectByLidvidLatest(String identifier, List<String> fields)
       throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
@@ -211,6 +217,34 @@ public class ProductsController implements ProductsApi {
 
     return formatSingleProduct(product, fields);
 
+  }
+
+  @Override
+  public ResponseEntity<Object> productCrossLinks(String identifier)
+      throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
+
+    // Get product metadata that we're cross-linking between services
+    
+    HashMap<String, Object> product = new HashMap<>();
+
+    /*
+    List<String> fields = new ArrayList<>();
+
+    try {
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+
+      if (pdsIdentifier.isLidvid()) {
+        product = this.getLidVid(pdsIdentifier, fields);
+      } else {
+        product = this.getLatestLidVid(pdsIdentifier, fields);
+      }
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+    */
+
+
+    return new ResponseEntity<Object>(this.crossLinks.getLinks(product), new HttpHeaders(), HttpStatus.OK);
   }
 
   @Override
@@ -347,7 +381,5 @@ public class ProductsController implements ProductsApi {
     return new RawMultipleProductResponse(searchResponse);
 
   }
-
-
 
 }

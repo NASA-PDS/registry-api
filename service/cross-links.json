@@ -1,0 +1,21 @@
+{
+  "tools": [
+    {
+      "name": "analysts_notebook",
+      "base": "https://an.rsl.wustl.edu/{mission}/AN/an3.aspx?it=B1&ii={filenameWithoutFileExtension}",
+      "description": "description",
+      "supportsLinksFrom": ["atlas", "astria"],
+      "aliases": [
+        {
+          "field": "mission",
+          "alias": "m20",
+          "from": ["mars_2020", "m2020", "mars2020", "Mars2020"]
+        }
+      ],
+      "reject": [
+        { "field": "uri", "match": "/*mars2020_helicam*/" },
+        { "field": "uri", "match": "/*mars2020_imgops*/" }
+      ]
+    }
+  ]
+}

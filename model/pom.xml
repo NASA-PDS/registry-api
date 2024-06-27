@@ -30,7 +30,9 @@
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>gov.nasa.pds</groupId>
@@ -51,37 +53,37 @@
 
   <build>
     <plugins>
-    <plugin>
-    <groupId>org.openapitools</groupId>
-    <artifactId>openapi-generator-maven-plugin</artifactId>
-    <!-- RELEASE_VERSION -->
-    <version>6.3.0</version>
-	<executions>
-	  <execution>
-	    <goals>
-	      <goal>generate</goal>
-	    </goals>
-	    	<configuration>
-	      <inputSpec>${project.basedir}/swagger.yml</inputSpec>
-	      <generatorName>spring</generatorName>
-	      <withXml>true</withXml>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <!-- RELEASE_VERSION -->
+        <version>6.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/swagger.yml</inputSpec>
+              <generatorName>spring</generatorName>
+              <withXml>true</withXml>
               <skipValidateSpec>true</skipValidateSpec>
-	      <configOptions>
-			<sourceFolder>src/main/java</sourceFolder>
-			<dateLibrary>joda</dateLibrary>
-			<documentationProvider>springdoc</documentationProvider>
-			<licenseName>apache-2</licenseName>
-			<modelPackage>gov.nasa.pds.model</modelPackage>
-			<apiPackage>gov.nasa.pds.api.base</apiPackage>
-			<generateSupportingFiles>false</generateSupportingFiles>
-			<interfaceOnly>false</interfaceOnly>
-			<useSpringBoot3>true</useSpringBoot3>
-			<unhandledException>true</unhandledException>
-	      </configOptions>
+              <configOptions>
+                <sourceFolder>src/main/java</sourceFolder>
+                <dateLibrary>joda</dateLibrary>
+                <documentationProvider>springdoc</documentationProvider>
+                <licenseName>apache-2</licenseName>
+                <modelPackage>gov.nasa.pds.model</modelPackage>
+                <apiPackage>gov.nasa.pds.api.base</apiPackage>
+                <generateSupportingFiles>false</generateSupportingFiles>
+                <interfaceOnly>false</interfaceOnly>
+                <useSpringBoot3>true</useSpringBoot3>
+                <unhandledException>true</unhandledException>
+              </configOptions>
 
-	</configuration>
-	  </execution>
-	</executions>
+            </configuration>
+          </execution>
+        </executions>
 
       </plugin>
       <plugin>
@@ -101,17 +103,17 @@
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
-         </plugins>
+    </plugins>
   </build>
-  
-  <dependencies>  
-	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency> 
-	  
-    
+    </dependency>
+
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -121,40 +123,40 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
     </dependency>
-  
+
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
     </dependency>
-    
+
     <!-- https://mvnrepository.com/artifact/junit/junit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
 
-	<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
-	<dependency>
-	    <groupId>jakarta.servlet</groupId>
-	    <artifactId>jakarta.servlet-api</artifactId>
-	    <version>6.0.0</version>
-	    <scope>provided</scope>
-	</dependency>
+    <!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>provided</scope>
+    </dependency>
 
-	<!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
-	<dependency>
-	    <groupId>jakarta.annotation</groupId>
-	    <artifactId>jakarta.annotation-api</artifactId>
-	    <version>2.1.1</version>
-	</dependency>
+    <!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>2.1.1</version>
+    </dependency>
 
-	<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-	<dependency>
-	    <groupId>jakarta.validation</groupId>
-	    <artifactId>jakarta.validation-api</artifactId>
-	    <version>3.0.2</version>
-	</dependency>
+    <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>3.0.2</version>
+    </dependency>
 
 
     <dependency>
@@ -191,10 +193,10 @@
     </dependency>
 
     <dependency>
-    <groupId>org.openapitools</groupId>
-    <artifactId>jackson-databind-nullable</artifactId>
-    <version>0.2.4</version>
-</dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.4</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
     <dependency>
@@ -202,7 +204,6 @@
       <artifactId>joda-time</artifactId>
       <version>2.10.6</version>
     </dependency>
-
 
 
     <!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
@@ -213,18 +214,18 @@
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
-	<dependency>
-	    <groupId>io.swagger.core.v3</groupId>
-	    <artifactId>swagger-annotations</artifactId>
-	    <version>2.2.8</version>
-	</dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.8</version>
+    </dependency>
 
-	<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
-	<dependency>
-	    <groupId>io.swagger.core.v3</groupId>
-	    <artifactId>swagger-models</artifactId>
-	    <version>2.2.8</version>
-	</dependency>
+    <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-models</artifactId>
+      <version>2.2.8</version>
+    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -232,17 +233,17 @@
     </dependency>
   </dependencies>
 
- <dependencyManagement>
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <!-- Import dependency management from Spring Boot -->
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>3.0.4</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>3.0.4</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
-</dependencyManagement>
+  </dependencyManagement>
 
 </project>
