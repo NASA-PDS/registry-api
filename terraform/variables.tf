@@ -48,8 +48,8 @@ variable "aws_fg_image" {
   description = "AWS image name for Fargate"
 }
 
-variable "aws_lb_listener_arn" {
-  description = "ARN of the AWS LB listener to associated with the service target group"
+variable "aws_s3_bucket_logs_id" {
+  description = "AWS S3 bucket with the logs"
 }
 
 variable "aws_fg_cpu_units" {
