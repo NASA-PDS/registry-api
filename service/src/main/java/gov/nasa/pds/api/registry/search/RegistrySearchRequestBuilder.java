@@ -163,8 +163,10 @@ public class RegistrySearchRequestBuilder {
     this.size(limit);
 
     if ((searchAfter != null) && (!searchAfter.isEmpty())) {
-      if ((sort == null) || (sort.isEmpty())) {
+      if (sort == null) {
         throw new SortSearchAfterMismatchException("sort argument must be provided if searchAfter argument is provided");
+      } else if (searchAfter.size() != sort.size()) {
+        throw new SortSearchAfterMismatchException("sort and searchAfter arguments must be of equal length if provided");
       }
       this.searchAfter(searchAfter);
     }
