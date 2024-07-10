@@ -142,7 +142,7 @@ paths:
       tags:
         - 1. all products
       summary: |
-        search on all PDS data products, including bundles, collections, documentation, context and observational products.
+        search the latest-versioned instances of all PDS data products, including bundles, collections, documentation, context and observational products.
       operationId: product-list
       responses:
         '200':
