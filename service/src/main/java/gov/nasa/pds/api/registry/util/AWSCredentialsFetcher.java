@@ -8,8 +8,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Scheduled;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +54,7 @@ class AWSCredentials {
 }
 
 
-@Configuration
-@EnableScheduling
+@Component
 public class AWSCredentialsFetcher {
 
   private static final Logger log = LoggerFactory.getLogger(AWSCredentialsFetcher.class);
@@ -86,6 +84,7 @@ public class AWSCredentialsFetcher {
         awsCredProperties.setProperty("aws.secretAccessKey", awsCredentials.getSecretAccessKey());
         awsCredProperties.setProperty("aws.sessionToken", awsCredentials.getToken());
         System.setProperties(awsCredProperties);
+        log.info("Expiration of the AWS token is scheduled in " + awsCredentials.expiration);
       } catch (IOException e) {
         log.error("Unable to get or renew AWS Credentials", e);
       }

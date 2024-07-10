@@ -116,12 +116,12 @@ EOF
 
 resource "aws_lb" "registry-api-lb" {
   name               = "registry-api-lb-new"
-  internal           = true
+  internal           = false
   load_balancer_type = "application"
   security_groups    = var.aws_fg_security_groups
   subnets            = var.aws_fg_subnets
 
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   access_logs {
     bucket  = var.aws_s3_bucket_logs_id
