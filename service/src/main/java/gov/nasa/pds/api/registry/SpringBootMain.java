@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 
 @SpringBootApplication
 @OpenAPIDefinition
+@EnableScheduling
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration",
     "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.model",
     "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
