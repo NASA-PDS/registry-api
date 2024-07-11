@@ -125,32 +125,35 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   }
 
-
-  public RegistrySearchRequestBuilder addLidvidMatch(PdsProductIdentifier identifier) {
-    // lidvid match
-    FieldValue lidvidFieldValue =
-        new FieldValue.Builder().stringValue(identifier.toString()).build();
-
-    MatchQuery lidvidMatch = new MatchQuery.Builder().field("_id").query(lidvidFieldValue).build();
+  /**
+   * Add a constraint that a given field name must match the given field value
+   * @param fieldName the name of the field in OpenSearch format
+   * @param value the value which must be present in the given field
+   */
+  public RegistrySearchRequestBuilder mustMatch(String fieldName, String value) {
+    FieldValue fieldValue = new FieldValue.Builder().stringValue(value).build();
+    MatchQuery lidvidMatch = new MatchQuery.Builder().field(fieldName).query(fieldValue).build();
 
     this.must.add(lidvidMatch.toQuery());
 
     return this;
 
   }
+  /**
+   * Add a constraint that a given field name must match the given field value
+   * @param fieldName the name of the field in OpenSearch format
+   * @param identifier the PDS identifier whose string representation must be present in the given field
+   */
+  public RegistrySearchRequestBuilder mustMatch(String fieldName, PdsProductIdentifier identifier) {
+    return this.mustMatch(fieldName, identifier.toString());
+  }
 
+  public RegistrySearchRequestBuilder matchLidvid(PdsProductIdentifier identifier) {
+    return this.mustMatch("_id", identifier);
+  }
 
-  public RegistrySearchRequestBuilder addLidMatch(PdsProductIdentifier identifier) {
-    // lid match
-    FieldValue lidvidFieldValue =
-        new FieldValue.Builder().stringValue(identifier.getLid().toString()).build();
-
-    MatchQuery lidMatch = new MatchQuery.Builder().field("lid").query(lidvidFieldValue).build();
-
-    this.must.add(lidMatch.toQuery());
-
-    return this;
-
+  public RegistrySearchRequestBuilder matchLid(PdsProductIdentifier identifier) {
+    return this.mustMatch("lid", identifier);
   }
 
   public RegistrySearchRequestBuilder paginates(Integer pageSize, List<String> sortFieldNames,
