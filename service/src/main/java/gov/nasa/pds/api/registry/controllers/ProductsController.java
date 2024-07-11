@@ -249,7 +249,7 @@ public class ProductsController implements ProductsApi {
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
     SearchRequest searchRequest = registrySearchRequestBuilder.addQParam(q)
-        .addKeywordsParam(keywords).fields(fields).paginates(limit, sort, searchAfter).onlyLatest().build();
+        .addKeywordsParam(keywords).fieldsFromStrings(fields).paginates(limit, sort, searchAfter).onlyLatest().build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -272,7 +272,7 @@ public class ProductsController implements ProductsApi {
 
 
     SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidvidMatch(identifier).fields(fields).build();
+        registrySearchRequestBuilder.addLidvidMatch(identifier).fieldsFromStrings(fields).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -297,7 +297,7 @@ public class ProductsController implements ProductsApi {
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
     SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().fields(fields).build();
+        registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().fieldsFromStrings(fields).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -324,7 +324,7 @@ public class ProductsController implements ProductsApi {
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
     registrySearchRequestBuilder =
-        registrySearchRequestBuilder.addLidMatch(identifier).fields(fields);
+        registrySearchRequestBuilder.addLidMatch(identifier).fieldsFromStrings(fields);
 
     registrySearchRequestBuilder = registrySearchRequestBuilder.paginates(limit, sort, searchAfter);
 

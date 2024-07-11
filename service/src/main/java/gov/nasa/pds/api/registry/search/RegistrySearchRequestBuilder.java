@@ -26,7 +26,6 @@ import org.opensearch.client.opensearch._types.query_dsl.TermsQueryField;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.search.SourceConfig;
 import org.opensearch.client.opensearch.core.search.SourceFilter;
-import org.opensearch.client.opensearch.core.search.TrackHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.ConnectionContext;
@@ -40,7 +39,7 @@ import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 
 
-public class RegistrySearchRequestBuilder {
+public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
 
@@ -67,14 +66,14 @@ public class RegistrySearchRequestBuilder {
 
 
   public RegistrySearchRequestBuilder(ConnectionContext connectionContext) {
+//    edunn TODO: Evaluate what can be taken out of the constructor
 
     this.connectionContext = connectionContext;
 
     this.registryIndices = this.connectionContext.getRegistryIndices();
     log.info("Use indices: " + String.join(",", registryIndices) + "End indices");
 
-    // add index list
-    this.searchRequestBuilder = new SearchRequest.Builder().index(registryIndices);
+    this.index(registryIndices);
 
     // add archive status filter
     List<String> archiveStatus = this.connectionContext.getArchiveStatus();
@@ -106,7 +105,7 @@ public class RegistrySearchRequestBuilder {
     this.connectionContext = registrySearchRequestBuilder.getConnectionContext();
     this.registryIndices = registrySearchRequestBuilder.getRegistryIndices();
 
-    this.searchRequestBuilder = new SearchRequest.Builder().index(registryIndices);
+    this.index(registryIndices);
 
     this.must = new ArrayList<Query>(registrySearchRequestBuilder.getMust());
     this.mustNot = new ArrayList<Query>(registrySearchRequestBuilder.getMustNot());
@@ -154,66 +153,65 @@ public class RegistrySearchRequestBuilder {
 
   }
 
-  public RegistrySearchRequestBuilder paginates(Integer limit, List<String> sort,
-      List<String> searchAfter) throws SortSearchAfterMismatchException {
-
-    if ((sort != null) && (!sort.isEmpty())) {
-      this.sort(sort);
+  public RegistrySearchRequestBuilder paginates(Integer pageSize, List<String> sortFieldNames,
+      List<String> searchAfterFieldValues) throws SortSearchAfterMismatchException {
+    if ((sortFieldNames != null) && (!sortFieldNames.isEmpty())) {
+      this.sortFromStrings(sortFieldNames);
     }
 
-    this.size(limit);
+    this.size(pageSize);
 
-    if ((searchAfter != null) && (!searchAfter.isEmpty())) {
-      if (sort == null) {
+    if ((searchAfterFieldValues != null) && (!searchAfterFieldValues.isEmpty())) {
+      if (sortFieldNames == null) {
         throw new SortSearchAfterMismatchException("sort argument must be provided if searchAfter argument is provided");
-      } else if (searchAfter.size() != sort.size()) {
+      } else if (searchAfterFieldValues.size() != sortFieldNames.size()) {
         throw new SortSearchAfterMismatchException("sort and searchAfter arguments must be of equal length if provided");
       }
-      this.searchAfter(searchAfter);
+      this.searchAfterFromStrings(searchAfterFieldValues);
     }
 
     return this;
 
   }
 
-  public RegistrySearchRequestBuilder sort(List<String> sort) {
+  /**
+   * Implements an alternative to .sort() that accepts strings in API property format.
+   * Currently hardcoded to sort in ascending order only.
+   * @param sortFieldNames
+   */
+  public RegistrySearchRequestBuilder sortFromStrings(List<String> sortFieldNames) {
 
     String openSearchField;
 
     List<SortOptions> sortOptionsList = new ArrayList<SortOptions>();
-    for (String field : sort) {
+    for (String field : sortFieldNames) {
       openSearchField = SearchUtil.jsonPropertyToOpenProperty(field);
       FieldSort fieldSort =
           new FieldSort.Builder().field(openSearchField).order(SortOrder.Asc).build();
       sortOptionsList.add(new SortOptions.Builder().field(fieldSort).build());
     }
 
-    this.searchRequestBuilder.sort(sortOptionsList);
+    this.sort(sortOptionsList);
 
     return this;
 
   }
 
-  public RegistrySearchRequestBuilder size(Integer size) {
-    this.searchRequestBuilder.size(size);
-    return this;
-  }
-
-  public RegistrySearchRequestBuilder searchAfter(List<String> searchAfter) {
-    // TODO check if the number value need to be handled specfically.
-
-
+  /**
+   * Implements an alternative to .searchAfter() that accepts values as strings.
+   * No-op in current version of OpenSearch client, but a later version will require the commented-out
+   * implementation to convert the Strings to FieldValues
+   * @param searchAfterValues
+   */
+  public RegistrySearchRequestBuilder searchAfterFromStrings(List<String> searchAfterValues) {
     /*
-     * This code is useless with the version of opensearch client we are using From the source code
-     * of the opensearch client in a later version, that is what will need to be used. I am keeping
-     * it here as a comment.
-     * 
      * List<FieldValue> fieldValues = new ArrayList<FieldValue>();
      * 
      * for (String fieldValue : searchAfter) { fieldValues.add(new
+    // TODO check if the number value need to be handled specfically. Method stringValue() implies yes
      * FieldValue.Builder().stringValue(fieldValue).build()); }
      */
-    this.searchRequestBuilder.searchAfter(searchAfter);
+    this.searchAfter(searchAfterValues);
 
 
     return this;
@@ -246,14 +244,14 @@ public class RegistrySearchRequestBuilder {
 
 
   public SearchRequest build() {
-
+// edunn TODO: this override will probably go away once the rework is ironed out - everything necessary should have been
+//        applied prior to calling build(), and universal stuff like trackTotalHits() should be moved to the constructor
     BoolQuery boolQuery = new BoolQuery.Builder().must(this.must).mustNot(this.mustNot).build();
 
-    this.searchRequestBuilder = this.searchRequestBuilder
-            .query(q -> q.bool(boolQuery))
-            .trackTotalHits(t -> t.enabled(true));
+    this.query(q -> q.bool(boolQuery))
+        .trackTotalHits(t -> t.enabled(true));
 
-    return this.searchRequestBuilder.build();
+    return super.build();
 
   }
 
@@ -290,23 +288,27 @@ public class RegistrySearchRequestBuilder {
     return listener.getBoolQuery();
   }
 
-  public RegistrySearchRequestBuilder fields(List<String> fields) {
+  /**
+   * Implements an alternative to .fields() that accepts values as strings.
+   * @param fieldNames
+   */
+  public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
 
-    if ((fields == null) || (fields.isEmpty())) {
+    if ((fieldNames == null) || (fieldNames.isEmpty())) {
       return this;
     } else {
       log.info("restricting list of fields requested from OpenSearch.");
       // TODO refine to only pull the static field when the output response requires it.
       List<String> openSearchField =
           new ArrayList<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
-      for (String field : fields) {
+      for (String field : fieldNames) {
         openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
       }
 
       SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
       SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
 
-      this.searchRequestBuilder.source(limitedSourceCfg);
+      this.source(limitedSourceCfg);
 
       return this;
     }
