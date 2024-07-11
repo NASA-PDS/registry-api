@@ -100,20 +100,6 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return mustNot;
   }
 
-  public RegistrySearchRequestBuilder(RegistrySearchRequestBuilder registrySearchRequestBuilder) {
-
-    this.connectionContext = registrySearchRequestBuilder.getConnectionContext();
-    this.registryIndices = registrySearchRequestBuilder.getRegistryIndices();
-
-    this.index(registryIndices);
-
-    this.must = new ArrayList<Query>(registrySearchRequestBuilder.getMust());
-    this.mustNot = new ArrayList<Query>(registrySearchRequestBuilder.getMustNot());
-
-  }
-
-
-
   public RegistrySearchRequestBuilder onlyLatest() {
 
     ExistsQuery supersededByExists =
