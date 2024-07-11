@@ -52,7 +52,6 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
         }
       };
 
-
   private ConnectionContext connectionContext;
   private List<String> registryIndices;
   private BoolQuery.Builder queryBuilder;
@@ -105,15 +104,12 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.queryBuilder;
   }
 
-  public RegistrySearchRequestBuilder onlyLatest() {
-
-    ExistsQuery supersededByExists = new ExistsQuery.Builder()
-            .field("ops:Provenance/ops:superseded_by")
+  public SearchRequest build() {
+    Query query = this.queryBuilder.build().toQuery();
+    return super
+            .query(query)
+            .trackTotalHits(t -> t.enabled(true))
             .build();
-
-    this.queryBuilder.mustNot(supersededByExists.toQuery());
-
-    return this;
   }
 
   /**
@@ -213,6 +209,52 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
 
   /**
+   * Implements an alternative to .fields() that accepts values as strings.
+   * @param fieldNames
+   */
+  public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
+
+    if ((fieldNames == null) || (fieldNames.isEmpty())) {
+      return this;
+    } else {
+      log.info("restricting list of fields requested from OpenSearch.");
+      // TODO refine to only pull the static field when the output response requires it.
+      List<String> openSearchField =
+              new ArrayList<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
+      for (String field : fieldNames) {
+        openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
+      }
+
+      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
+      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
+
+      this.source(limitedSourceCfg);
+
+      return this;
+    }
+
+  }
+
+  private static BoolQuery parseQueryString(String queryString) {
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+
+    SearchParser par = new SearchParser(tokens);
+    par.setErrorHandler(new BailErrorStrategy());
+    ParseTree tree = par.query();
+
+    log.debug(tree.toStringTree(par));
+
+    // Walk it and attach our listener
+    ParseTreeWalker walker = new ParseTreeWalker();
+    Antlr4SearchListener listener = new Antlr4SearchListener();
+    walker.walk(listener, tree);
+
+    return listener.getBoolQuery();
+  }
+
+  /**
    * Constrain results with a query-string in PDS API Search Query syntax
    * @param q a PDS API Search Query string
    * @throws UnparsableQParamException if the string is not parseable
@@ -240,63 +282,16 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this;
   }
 
+  public RegistrySearchRequestBuilder onlyLatest() {
 
-
-  public SearchRequest build() {
-    Query query = this.queryBuilder.build().toQuery();
-    return super
-            .query(query)
-            .trackTotalHits(t -> t.enabled(true))
+    ExistsQuery supersededByExists = new ExistsQuery.Builder()
+            .field("ops:Provenance/ops:superseded_by")
             .build();
+
+    this.queryBuilder.mustNot(supersededByExists.toQuery());
+
+    return this;
   }
-
-  private static BoolQuery parseQueryString(String queryString) {
-    CodePointCharStream input = CharStreams.fromString(queryString);
-    SearchLexer lex = new SearchLexer(input);
-    CommonTokenStream tokens = new CommonTokenStream(lex);
-
-    SearchParser par = new SearchParser(tokens);
-    par.setErrorHandler(new BailErrorStrategy());
-    ParseTree tree = par.query();
-
-    log.debug(tree.toStringTree(par));
-
-    // Walk it and attach our listener
-    ParseTreeWalker walker = new ParseTreeWalker();
-    Antlr4SearchListener listener = new Antlr4SearchListener();
-    walker.walk(listener, tree);
-
-    return listener.getBoolQuery();
-  }
-
-  /**
-   * Implements an alternative to .fields() that accepts values as strings.
-   * @param fieldNames
-   */
-  public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
-
-    if ((fieldNames == null) || (fieldNames.isEmpty())) {
-      return this;
-    } else {
-      log.info("restricting list of fields requested from OpenSearch.");
-      // TODO refine to only pull the static field when the output response requires it.
-      List<String> openSearchField =
-          new ArrayList<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
-      for (String field : fieldNames) {
-        openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
-      }
-
-      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
-      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
-
-      this.source(limitedSourceCfg);
-
-      return this;
-    }
-
-  }
-
-
 
 }
 
