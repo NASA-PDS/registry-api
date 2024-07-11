@@ -3,7 +3,7 @@ package gov.nasa.pds.api.registry.search;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -35,7 +35,7 @@ import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
 import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
-import gov.nasa.pds.api.registry.model.exceptions.MissSortWithSearchAfterException;
+import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 
@@ -155,7 +155,7 @@ public class RegistrySearchRequestBuilder {
   }
 
   public RegistrySearchRequestBuilder paginates(Integer limit, List<String> sort,
-      List<String> searchAfter) throws MissSortWithSearchAfterException {
+      List<String> searchAfter) throws SortSearchAfterMismatchException {
 
     if ((sort != null) && (!sort.isEmpty())) {
       this.sort(sort);
@@ -164,8 +164,10 @@ public class RegistrySearchRequestBuilder {
     this.size(limit);
 
     if ((searchAfter != null) && (!searchAfter.isEmpty())) {
-      if ((sort == null) || (sort.isEmpty())) {
-        throw new MissSortWithSearchAfterException();
+      if (sort == null) {
+        throw new SortSearchAfterMismatchException("sort argument must be provided if searchAfter argument is provided");
+      } else if (searchAfter.size() != sort.size()) {
+        throw new SortSearchAfterMismatchException("sort and searchAfter arguments must be of equal length if provided");
       }
       this.searchAfter(searchAfter);
     }

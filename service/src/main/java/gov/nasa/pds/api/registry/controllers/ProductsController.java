@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.OpenSearchException;
@@ -18,15 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
-import gov.nasa.pds.api.registry.model.exceptions.MissSortWithSearchAfterException;
+import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
 import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
@@ -216,7 +213,7 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, List<String> fields,
       Integer limit, List<String> sort, List<String> searchAfter) throws UnhandledException,
-      NotFoundException, AcceptFormatNotSupportedException, MissSortWithSearchAfterException {
+      NotFoundException, AcceptFormatNotSupportedException, SortSearchAfterMismatchException {
 
     RawMultipleProductResponse response;
 
@@ -321,7 +318,7 @@ public class ProductsController implements ProductsApi {
 
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-      throws OpenSearchException, IOException, NotFoundException, MissSortWithSearchAfterException {
+      throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException {
 
     RegistrySearchRequestBuilder registrySearchRequestBuilder =
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
