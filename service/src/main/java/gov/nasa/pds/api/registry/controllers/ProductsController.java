@@ -248,7 +248,7 @@ public class ProductsController implements ProductsApi {
     RegistrySearchRequestBuilder registrySearchRequestBuilder =
         new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
 
-    SearchRequest searchRequest = registrySearchRequestBuilder.addQParam(q)
+    SearchRequest searchRequest = registrySearchRequestBuilder.constrainByQueryString(q)
         .addKeywordsParam(keywords).fieldsFromStrings(fields).paginates(limit, sort, searchAfter).onlyLatest().build();
 
     SearchResponse<HashMap> searchResponse =

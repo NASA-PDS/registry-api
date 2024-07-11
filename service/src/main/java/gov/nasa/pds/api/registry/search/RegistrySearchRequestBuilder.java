@@ -221,7 +221,12 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
 
-  public RegistrySearchRequestBuilder addQParam(String q) throws UnparsableQParamException {
+  /**
+   * Constrain results with a query-string in PDS API Search Query syntax
+   * @param q a PDS API Search Query string
+   * @throws UnparsableQParamException if the string is not parseable
+   */
+  public RegistrySearchRequestBuilder constrainByQueryString(String q) throws UnparsableQParamException {
 
     try {
       if ((q != null) && (q.length() > 0)) {
