@@ -55,12 +55,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   private ConnectionContext connectionContext;
   private List<String> registryIndices;
-  // we would prefer to only use the BoolQuery.Builder as a private attribute
-  // but we are missing a copy method on the BoolQuery.Builder,
-  // so we use the inner properties of the BoolQuery.Builder to keep its state and copy it when
-  // needed, for each user request.
-  List<Query> must = new ArrayList<Query>();
-  List<Query> mustNot = new ArrayList<Query>();
+  private BoolQuery.Builder queryBuilder;
 
   public RegistrySearchRequestBuilder(ConnectionContext connectionContext) {
 //    edunn TODO: Evaluate what can be taken out of the constructor
@@ -72,40 +67,53 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
     this.index(registryIndices);
 
-    // add archive status filter
-    List<String> archiveStatus = this.connectionContext.getArchiveStatus();
+    Query baseQuery = getMandatoryBaselineQuery(connectionContext);
+    this.queryBuilder = new BoolQuery.Builder()
+            .must(baseQuery);
+  }
+
+  /**
+   * Return a baseline, non-configurable query which applies to all search requests.  Currently, this is just archive
+   * status, but this will likely be subject to extensive revision (may balloon, or disappear entirely)
+   * @param connectionContext
+   * @return the minimal match constraints applicable to all search requests
+   */
+  private static Query getMandatoryBaselineQuery(ConnectionContext connectionContext) {
+    List<String> archiveStatus = connectionContext.getArchiveStatus();
     List<FieldValue> archiveStatusFieldValues = archiveStatus.stream().map(FieldValue::of).toList();
     log.info("Only publishes archiveStatus: " + String.join(",", archiveStatus));
-    TermsQueryField archiveStatusTerms =
-        new TermsQueryField.Builder().value(archiveStatusFieldValues).build();
-
+    TermsQueryField archiveStatusTerms = new TermsQueryField.Builder()
+            .value(archiveStatusFieldValues)
+            .build();
 
     TermsQuery archiveStatusQuery = new TermsQuery.Builder()
-        .field("ops:Tracking_Meta/ops:archive_status").terms(archiveStatusTerms).build();
+            .field("ops:Tracking_Meta/ops:archive_status")
+            .terms(archiveStatusTerms)
+            .build();
 
-    this.must.add(archiveStatusQuery.toQuery());
-
-
-
+    return archiveStatusQuery.toQuery();
   }
 
-  public List<Query> getMust() {
-    return must;
-  }
-
-  public List<Query> getMustNot() {
-    return mustNot;
+  /**
+   * Access the internal BoolQuery.Builder instance which is used to build a query during
+   * RegistrySearchRequestBuilder.build()
+   * Before accessing the query builder directly, consider whether the behaviour is common enough that it should be
+   * abstracted as a method of RegistrySearchRequestBuilder.
+   * @return the query builder instance for this search-request builder
+   */
+  public BoolQuery.Builder getQueryBuilder() {
+    return this.queryBuilder;
   }
 
   public RegistrySearchRequestBuilder onlyLatest() {
 
-    ExistsQuery supersededByExists =
-        new ExistsQuery.Builder().field("ops:Provenance/ops:superseded_by").build();
+    ExistsQuery supersededByExists = new ExistsQuery.Builder()
+            .field("ops:Provenance/ops:superseded_by")
+            .build();
 
-    this.mustNot.add(supersededByExists.toQuery());
+    this.queryBuilder.mustNot(supersededByExists.toQuery());
 
     return this;
-
   }
 
   /**
@@ -117,11 +125,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     FieldValue fieldValue = new FieldValue.Builder().stringValue(value).build();
     MatchQuery lidvidMatch = new MatchQuery.Builder().field(fieldName).query(fieldValue).build();
 
-    this.must.add(lidvidMatch.toQuery());
+    this.queryBuilder.must(lidvidMatch.toQuery());
 
     return this;
-
   }
+
   /**
    * Add a constraint that a given field name must match the given field value
    * @param fieldName the name of the field in OpenSearch format
@@ -214,7 +222,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     try {
       if ((q != null) && (q.length() > 0)) {
         BoolQuery qBoolQuery = RegistrySearchRequestBuilder.parseQueryString(q);
-        this.must.add(qBoolQuery.toQuery());
+        this.queryBuilder.must(qBoolQuery.toQuery());
       }
       return this;
     } catch (RecognitionException | ParseCancellationException e) {
@@ -235,15 +243,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
 
   public SearchRequest build() {
-// edunn TODO: this override will probably go away once the rework is ironed out - everything necessary should have been
-//        applied prior to calling build(), and universal stuff like trackTotalHits() should be moved to the constructor
-    BoolQuery boolQuery = new BoolQuery.Builder().must(this.must).mustNot(this.mustNot).build();
-
-    this.query(q -> q.bool(boolQuery))
-        .trackTotalHits(t -> t.enabled(true));
-
-    return super.build();
-
+    Query query = this.queryBuilder.build().toQuery();
+    return super
+            .query(query)
+            .trackTotalHits(t -> t.enabled(true))
+            .build();
   }
 
 
