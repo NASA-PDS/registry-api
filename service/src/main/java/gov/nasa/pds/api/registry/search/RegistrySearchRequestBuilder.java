@@ -105,11 +105,10 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   public SearchRequest build() {
-    Query query = this.queryBuilder.build().toQuery();
-    return super
-            .query(query)
-            .trackTotalHits(t -> t.enabled(true))
-            .build();
+    this.query(this.queryBuilder.build().toQuery());
+    this.trackTotalHits(t -> t.enabled(true));
+
+    return super.build();
   }
 
   /**
