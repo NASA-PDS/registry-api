@@ -241,7 +241,7 @@ public class ProductsController implements ProductsApi {
             .constrainByQueryString(q)
             .addKeywordsParam(keywords)
             .fieldsFromStrings(fields)
-            .paginates(limit, sort, searchAfter)
+            .paginate(limit, sort, searchAfter)
             .onlyLatest()
             .build();
 
@@ -314,7 +314,7 @@ public class ProductsController implements ProductsApi {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
             .matchLid(identifier).fieldsFromStrings(fields)
-            .paginates(limit, sort, searchAfter)
+            .paginate(limit, sort, searchAfter)
             .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>

@@ -121,7 +121,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * @param fieldName the name of the field in OpenSearch format
    * @param value the value which must be present in the given field
    */
-  public RegistrySearchRequestBuilder mustMatch(String fieldName, String value) {
+  public RegistrySearchRequestBuilder matchField(String fieldName, String value) {
     FieldValue fieldValue = new FieldValue.Builder().stringValue(value).build();
     MatchQuery lidvidMatch = new MatchQuery.Builder().field(fieldName).query(fieldValue).build();
 
@@ -135,19 +135,19 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * @param fieldName the name of the field in OpenSearch format
    * @param identifier the PDS identifier whose string representation must be present in the given field
    */
-  public RegistrySearchRequestBuilder mustMatch(String fieldName, PdsProductIdentifier identifier) {
-    return this.mustMatch(fieldName, identifier.toString());
+  public RegistrySearchRequestBuilder matchField(String fieldName, PdsProductIdentifier identifier) {
+    return this.matchField(fieldName, identifier.toString());
   }
 
   public RegistrySearchRequestBuilder matchLidvid(PdsProductIdentifier identifier) {
-    return this.mustMatch("_id", identifier);
+    return this.matchField("_id", identifier);
   }
 
   public RegistrySearchRequestBuilder matchLid(PdsProductIdentifier identifier) {
-    return this.mustMatch("lid", identifier);
+    return this.matchField("lid", identifier);
   }
 
-  public RegistrySearchRequestBuilder paginates(Integer pageSize, List<String> sortFieldNames,
+  public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
       List<String> searchAfterFieldValues) throws SortSearchAfterMismatchException {
     if ((sortFieldNames != null) && (!sortFieldNames.isEmpty())) {
       this.sortFromStrings(sortFieldNames);
