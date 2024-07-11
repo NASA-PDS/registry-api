@@ -62,9 +62,6 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   List<Query> must = new ArrayList<Query>();
   List<Query> mustNot = new ArrayList<Query>();
 
-  SearchRequest.Builder searchRequestBuilder = null;
-
-
   public RegistrySearchRequestBuilder(ConnectionContext connectionContext) {
 //    edunn TODO: Evaluate what can be taken out of the constructor
 
@@ -257,10 +254,6 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   public List<String> getRegistryIndices() {
     return registryIndices;
-  }
-
-  public SearchRequest.Builder getSearchRequestBuilder() {
-    return searchRequestBuilder;
   }
 
   private static BoolQuery parseQueryString(String queryString) {
