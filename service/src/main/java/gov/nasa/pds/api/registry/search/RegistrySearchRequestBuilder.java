@@ -250,16 +250,6 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
             .build();
   }
 
-
-
-  public ConnectionContext getConnectionContext() {
-    return connectionContext;
-  }
-
-  public List<String> getRegistryIndices() {
-    return registryIndices;
-  }
-
   private static BoolQuery parseQueryString(String queryString) {
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
