@@ -26,6 +26,7 @@ import org.opensearch.client.opensearch._types.query_dsl.TermsQueryField;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.search.SourceConfig;
 import org.opensearch.client.opensearch.core.search.SourceFilter;
+import org.opensearch.client.opensearch.core.search.TrackHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.ConnectionContext;
@@ -246,7 +247,9 @@ public class RegistrySearchRequestBuilder {
 
     BoolQuery boolQuery = new BoolQuery.Builder().must(this.must).mustNot(this.mustNot).build();
 
-    this.searchRequestBuilder = this.searchRequestBuilder.query(q -> q.bool(boolQuery));
+    this.searchRequestBuilder = this.searchRequestBuilder
+            .query(q -> q.bool(boolQuery))
+            .trackTotalHits(t -> t.enabled(true));
 
     return this.searchRequestBuilder.build();
 
