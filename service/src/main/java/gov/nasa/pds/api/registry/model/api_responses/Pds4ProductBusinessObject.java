@@ -95,6 +95,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
     Set<String> uniqueProperties = new TreeSet<String>();
 
     for (Map<String, Object> kvp : hits) {
+
       uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
 
       try {
