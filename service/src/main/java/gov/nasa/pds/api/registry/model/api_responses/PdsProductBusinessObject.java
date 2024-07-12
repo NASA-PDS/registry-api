@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.registry.model.api_responses;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +57,9 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
     // TODO: findout why the getFilteredProperties method is used here. Should we add fields as a
     // second argument instead of null ?
-    product.setProperties((Map<String, List<String>>) getFilteredProperties(kvp, null, null));
+
+    product.setProperties(
+        (Map<String, List<String>>) getFilteredProperties(kvp, fields, excludedProperties));
     this.product = product;
   }
 
@@ -79,12 +82,13 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
     for (Map<String, Object> kvp : hits) {
       try {
-        uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
+        uniqueProperties.addAll(getFilteredProperties(kvp, fields, excludedProperties).keySet());
 
         products.addDataItem(SearchUtil.entityProductToAPIProduct(
             objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-        products.getData().get(products.getData().size() - 1).setProperties(
-            (Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp, null, null));
+        products.getData().get(products.getData().size() - 1)
+            .setProperties((Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp,
+                fields, excludedProperties));
       } catch (Throwable t) {
         String lidvid = "unknown";
         if (kvp.containsKey("lidvid")) {
@@ -111,12 +115,13 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
     for (Map<String, Object> kvp : hits) {
       try {
-        uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
+        uniqueProperties.addAll(getFilteredProperties(kvp, fields, excludedProperties).keySet());
 
         products.addDataItem(SearchUtil.entityProductToAPIProduct(
             objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-        products.getData().get(products.getData().size() - 1).setProperties(
-            (Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp, null, null));
+        products.getData().get(products.getData().size() - 1)
+            .setProperties((Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp,
+                fields, excludedProperties));
       } catch (Throwable t) {
         String lidvid = "unknown";
         if (kvp.containsKey("lidvid")) {
@@ -144,14 +149,15 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
     for (SearchHit hit : hits) {
       try {
         kvp = hit.getSourceAsMap();
-        uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
+        uniqueProperties.addAll(getFilteredProperties(kvp, fields, excludedProperties).keySet());
 
         products.addDataItem(SearchUtil.entityProductToAPIProduct(
             objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
         // TODO: understand why the getFilteredProperties method is called with null arguments,
         // should we add fields or not call the method at all ?
-        products.getData().get(products.getData().size() - 1).setProperties(
-            (Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp, null, null));
+        products.getData().get(products.getData().size() - 1)
+            .setProperties((Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp,
+                null, excludedProperties));
       } catch (Throwable t) {
         log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: "
             + hit.getId(), t);
