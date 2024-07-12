@@ -42,7 +42,6 @@ public class ProductsController implements ProductsApi {
   private static final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
   private final ConnectionContext connectionContext;
-  private final RegistrySearchRequestBuilder registrySearchRequestBuilder;
   private final ErrorMessageFactory errorMessageFactory;
   private final ObjectMapper objectMapper;
   private OpenSearchClient openSearchClient;
@@ -80,14 +79,9 @@ public class ProductsController implements ProductsApi {
   public ProductsController(ConnectionContext connectionContext,
       ErrorMessageFactory errorMessageFactory, ObjectMapper objectMapper) {
 
-    this.connectionContext = connectionContext;
     this.errorMessageFactory = errorMessageFactory;
     this.objectMapper = objectMapper;
-
-
-    this.registrySearchRequestBuilder = new RegistrySearchRequestBuilder(connectionContext);
-
-
+    this.connectionContext = connectionContext;
     this.openSearchClient = this.connectionContext.getOpenSearchClient();
 
   }
@@ -242,14 +236,14 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
-    RawMultipleProductResponse response;
 
-
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-    SearchRequest searchRequest = registrySearchRequestBuilder.addQParam(q)
-        .addKeywordsParam(keywords).fields(fields).paginates(limit, sort, searchAfter).onlyLatest().build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .constrainByQueryString(q)
+            .addKeywordsParam(keywords)
+            .fieldsFromStrings(fields)
+            .paginate(limit, sort, searchAfter)
+            .onlyLatest()
+            .build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -267,12 +261,10 @@ public class ProductsController implements ProductsApi {
   private HashMap<String, Object> getLidVid(PdsProductIdentifier identifier, List<String> fields)
       throws OpenSearchException, IOException, NotFoundException {
 
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-
-    SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidvidMatch(identifier).fields(fields).build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLidvid(identifier)
+            .fieldsFromStrings(fields)
+            .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -293,11 +285,11 @@ public class ProductsController implements ProductsApi {
   private HashMap<String, Object> getLatestLidVid(PdsProductIdentifier identifier,
       List<String> fields) throws OpenSearchException, IOException, NotFoundException {
 
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-    SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().fields(fields).build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier)
+            .fieldsFromStrings(fields)
+            .onlyLatest()
+            .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -320,16 +312,10 @@ public class ProductsController implements ProductsApi {
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
       throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException {
 
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-    registrySearchRequestBuilder =
-        registrySearchRequestBuilder.addLidMatch(identifier).fields(fields);
-
-    registrySearchRequestBuilder = registrySearchRequestBuilder.paginates(limit, sort, searchAfter);
-
-
-    SearchRequest searchRequest = registrySearchRequestBuilder.build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier).fieldsFromStrings(fields)
+            .paginate(limit, sort, searchAfter)
+            .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
