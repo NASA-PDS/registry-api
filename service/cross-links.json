@@ -1,21 +1,52 @@
 {
+  "injectableParams": [
+    "vid",
+    "lid",
+    "lidvid",
+    "mission",
+    "spacecraft",
+    "bundle",
+    "collection",
+    "target",
+    "filename",
+    "filenameWithoutFileExtension",
+    "fileExtension",
+    "fileRef",
+    "productClass",
+    "productType",
+    "nodeName"
+  ],
   "tools": [
     {
       "name": "analysts_notebook",
       "base": "https://an.rsl.wustl.edu/{mission}/AN/an3.aspx?it=B1&ii={filenameWithoutFileExtension}",
-      "description": "description",
-      "supportsLinksFrom": ["atlas", "astria"],
+      "description": "A tool for accessing the science data archives from NASA landed Mars and lunar missions.",
       "aliases": [
         {
           "field": "mission",
           "alias": "m20",
           "from": ["mars_2020", "m2020", "mars2020", "Mars2020"]
+        },
+        {
+          "field": "mission",
+          "alias": "ins",
+          "from": ["InSight"]
         }
       ],
-      "reject": [
-        { "field": "uri", "match": "/*mars2020_helicam*/" },
-        { "field": "uri", "match": "/*mars2020_imgops*/" }
-      ]
+      "acceptOnly": [
+        { "field": "mission", "match": "m20" },
+        { "field": "mission", "match": "ins" },
+        { "field": "fileExtension", "match": "\\.IMG" }
+      ],
+      "reject": [{ "field": "uri", "match": ".*mars2020_helicam.*" }]
+    },
+    {
+      "name": "atlas4",
+      "base": "https://pds-imaging.jpl.nasa.gov/beta/record?lidvid={lidvid}",
+      "description": "The Official Image Search of the PDS Cartography and Imaging Sciences Node (PDSIMG)",
+      "aliases": [],
+      "acceptOnly": [],
+      "reject": []
     }
   ]
 }

@@ -11,6 +11,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class CrossLinks {
+    private String[] injectableParams;
+    public void setInjectableParams(String[] i) {
+        this.injectableParams = i;
+    }
+    public String[] getInjectableParams() {
+        return injectableParams;
+    }
+
     private List<Tool> tools;
     public void setTools(List<Tool> t) {
         this.tools = t;
@@ -35,9 +43,16 @@ public class CrossLinks {
         Map<String, Object> values = new HashMap<>();
         String lidvid = this.get(product, "lidvid");
         String filename = this.get(product, "pds:File/pds:file_name");
-        int filenameLastIndexOf = filename.lastIndexOf('.');
-        String filenameWithoutFileExtension = filename.substring(0, filenameLastIndexOf);
-        String fileExtension = filename.substring(filenameLastIndexOf + 1);
+        int filenameLastIndexOf = -1;
+        String filenameWithoutFileExtension = "";
+        String fileExtension = "";
+        if( filename != null ) {
+            filenameLastIndexOf = filename.lastIndexOf('.');
+            if( filenameLastIndexOf > -1 ) {
+                filenameWithoutFileExtension = filename.substring(0, filenameLastIndexOf);
+                fileExtension = filename.substring(filenameLastIndexOf + 1);
+            }
+        }
 
         values.put("vid", this.get(product, "vid"));
         values.put("lid", this.get(product, "lid"));
@@ -58,7 +73,10 @@ public class CrossLinks {
         List<Map<String, Object>> response = new ArrayList<>();
 
         for (Tool t : getTools()) {
-            response.add(formToolLink(t, values, product));
+            Map<String, Object> linkObj = formToolLink(t, values, product);
+            if( linkObj != null ) {
+                response.add(linkObj);
+            }
         }
         return response;
     }
@@ -71,25 +89,54 @@ public class CrossLinks {
 
         String link = t.getBase();
 
+        boolean accept = false;
+        boolean reject = false;
+
         for (String field : values.keySet()) {
             String value = (String) values.get(field);
 
+            // Aliases
             for( Alias a : t.getAliases()) {
                 if( a.getField().equals(field) ) {
-                    System.out.println(a.getFrom());
                     if( a.getFrom().contains(value) ) {
                         value = a.getAlias();
                         break;
                     }
                 }
             }
+
+            // Accept
+            for( Accept a : t.getAcceptOnly()) {
+                if( a.getField().equals(field) ) {
+                    if( value.matches(a.getMatch()) ) {
+                        accept = true;
+                    }
+                }
+            }
+            if( t.getAcceptOnly().size() == 0 ) {
+                accept = true;
+            }
+
+            // Reject
+            for( Reject a : t.getReject()) {
+                if( a.getField().equals(field) ) {
+                    if( value.matches(a.getMatch()) ) {
+                        reject = false;
+                    }
+                }
+            }
+
             link = link.replaceAll("\\{" + field + "\\}", value);
             
         }
-
+        
         l.put("link", link);
 
-        return l;
+        if( accept == true && reject == false ) {
+            return l;
+        }
+        return null;
+
     }
     
     private static class Tool {
@@ -116,13 +163,6 @@ public class CrossLinks {
         public String getDescription() {
             return description;
         }
-        private List<String> supportsLinksFrom;
-        public void setSupportsLinksFrom(List<String> s) {
-            this.supportsLinksFrom = s;
-        }
-        public List<String> getSupportsLinksFrom() {
-            return supportsLinksFrom;
-        }
 
         private List<Alias> aliases;
         public void setAliases(List<Alias> a) {
@@ -130,6 +170,15 @@ public class CrossLinks {
         }
         public List<Alias> getAliases() {
             return aliases;
+        }
+
+
+        private List<Accept> acceptOnly;
+        public void setAcceptOnly(List<Accept> a) {
+            this.acceptOnly = a;
+        }
+        public List<Accept> getAcceptOnly() {
+            return acceptOnly;
         }
 
         private List<Reject> reject;
@@ -164,6 +213,25 @@ public class CrossLinks {
         }
         public List<String> getFrom() {
             return from;
+        }
+
+    }
+
+    private static class Accept {
+        private String field;
+        public void setField(String f) {
+            this.field = f;
+        }
+        public String getField() {
+            return field;
+        }
+
+        private String match;
+        public void setMatch(String m) {
+            this.match = m;
+        }
+        public String getMatch() {
+            return match;
         }
 
     }

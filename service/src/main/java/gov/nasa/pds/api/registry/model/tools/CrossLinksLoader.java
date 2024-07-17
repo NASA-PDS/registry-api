@@ -18,7 +18,6 @@ public class CrossLinksLoader {
     private CrossLinks config;
 
     public CrossLinks loadConfiguration() {
-        System.out.println("==================================================================================================================");
         if (config == null) {
             ObjectMapper mapper = new ObjectMapper();
             try {
