@@ -112,20 +112,20 @@ public class EntityProduct {
     return ref_lid_target;
   }
 
-  private static String getFirstElmentOrNull(List<String> l) {
+  private static String getFirstElementOrNull(List<String> l) {
     return l != null ? l.get(0) : null;
   }
 
   public String getPDS4FileRef() {
-    return EntityProduct.getFirstElmentOrNull(this.pds4FileReference);
+    return EntityProduct.getFirstElementOrNull(this.pds4FileReference);
   }
 
   public String getStartDateTime() {
-    return EntityProduct.getFirstElmentOrNull(this.start_date_time);
+    return EntityProduct.getFirstElementOrNull(this.start_date_time);
   }
 
   public String getStopDateTime() {
-    return EntityProduct.getFirstElmentOrNull(this.stop_date_time);
+    return EntityProduct.getFirstElementOrNull(this.stop_date_time);
   }
 
   public List<String> getModificationDate() {

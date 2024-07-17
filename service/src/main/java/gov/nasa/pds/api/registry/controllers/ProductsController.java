@@ -226,8 +226,7 @@ public class ProductsController implements ProductsApi {
     // Get product metadata that we're cross-linking between services
     
     HashMap<String, Object> product = new HashMap<>();
-
-    /*
+    
     List<String> fields = new ArrayList<>();
 
     try {
@@ -241,8 +240,6 @@ public class ProductsController implements ProductsApi {
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
     }
-    */
-
 
     return new ResponseEntity<Object>(this.crossLinks.getLinks(product), new HttpHeaders(), HttpStatus.OK);
   }
@@ -310,12 +307,12 @@ public class ProductsController implements ProductsApi {
 
     SearchRequest searchRequest =
         registrySearchRequestBuilder.addLidvidMatch(identifier).fields(fields).build();
-
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
     // https://stackoverflow.com/questions/2390662/java-how-do-i-get-a-class-literal-from-a-generic-type
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
+
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier.toString());
     }

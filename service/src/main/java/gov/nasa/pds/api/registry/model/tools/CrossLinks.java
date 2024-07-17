@@ -19,31 +19,41 @@ public class CrossLinks {
         return tools;
     }
 
+    public String get(HashMap<String, Object> product, String str) {
+        Object obj = product.get(str);
+        String value = obj != null ? obj.toString() : null;
+        if( value != null ) {
+            String array[] = value.replace("[", "").replace("]", "").split(",");
+            return array[0];
+        }
+        return "";
+    }
+
     public Object getLinks(HashMap<String, Object> product) {
         // first pull out all the supported metadata from the product
-        //String lid = product.get("lid");
+
         Map<String, Object> values = new HashMap<>();
-        String lidvid = "urn:nasa:pds:mars2020_mastcamz_ops_calibrated:data:zlf_1019_0757408892_144ras_n0490000zcam07114_1100lmj::2.0";
-        String filename = "NLF_1019_0757408223_941RAD_N0490000NCAM02019_0A0195J01.IMG";
+        String lidvid = this.get(product, "lidvid");
+        String filename = this.get(product, "pds:File/pds:file_name");
         int filenameLastIndexOf = filename.lastIndexOf('.');
         String filenameWithoutFileExtension = filename.substring(0, filenameLastIndexOf);
         String fileExtension = filename.substring(filenameLastIndexOf + 1);
 
-        values.put("vid", "2.0");
-        values.put("lid", "urn:nasa:pds:mars2020_mastcamz_ops_calibrated:data:zlf_1019_0757408892_144ras_n0490000zcam07114_1100lmj");
+        values.put("vid", this.get(product, "vid"));
+        values.put("lid", this.get(product, "lid"));
         values.put("lidvid", lidvid);
-        values.put("mission", "Mars2020");
-        values.put("spacecraft", "");
+        values.put("mission", this.get(product, "pds:Investigation_Area/pds:name"));
+        values.put("spacecraft", this.get(product, "pds:Observing_System/pds:name"));
         values.put("bundle", lidvid.split(":")[3]);
         values.put("collection", lidvid.split(":")[4]);
-        values.put("target", "Mars");
+        values.put("target", this.get(product, "pds:Target_Identification/pds:name"));
         values.put("filename", filename);
         values.put("filenameWithoutFileExtension", filenameWithoutFileExtension);
         values.put("fileExtension", fileExtension);
-        values.put("fileRef", "/mars2020_mastcamz_ops_calibrated/data/sol/01019/ids/rdr/zcam/ZLF_1019_0757408892_144RAS_N0490000ZCAM07114_1100LMJ02.xml");
-        values.put("productClass", "Product_Observational");
-        values.put("productType", "RAS");
-        values.put("nodeName", "PDS_IMG");
+        values.put("fileRef", this.get(product, "ops:Data_File_Info/ops:file_ref"));
+        values.put("productClass", this.get(product, "product_class"));
+        values.put("productType", this.get(product, "msn:Mission_Information/msn:product_type_name"));
+        values.put("nodeName", this.get(product, "ops:Harvest_Info/ops:node_name"));
 
         List<Map<String, Object>> response = new ArrayList<>();
 
@@ -51,23 +61,6 @@ public class CrossLinks {
             response.add(formToolLink(t, values, product));
         }
         return response;
-
-        //return product;//"lid";
-        /*
-        vid: properties.vid
-        lidvid: properties.lidvid
-        mission:  properties.pds:Investigation_Area.pds:name
-        spacecraft:
-        bundleId:
-        target:  properties.pds:Target_Identification.pds:name
-        filename:  properties.ops:Data_File_Info.ops:file_name
-        filenameWithoutFileExtension
-        fileExtension
-        fileRef:  properties.ops:Data_File_Info.ops:file_ref
-        productClass: properties.productClass
-        productType: properties.mgn:Magellan_Parameters.mgn:product_type
-        nodeName: properties.ops:Harvest_Info.ops:node_name
-        */
     }
 
     private Map<String, Object> formToolLink(Tool t, Map<String, Object> values, HashMap<String, Object> product) {
