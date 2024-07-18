@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -168,11 +169,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.matchField("lid", identifier.getLid());
   }
 
-  public RegistrySearchRequestBuilder matchMembersOfBundle(PdsProductIdentifier identifier) {
+  public RegistrySearchRequestBuilder matchMembersOfBundle(PdsLidVid identifier) {
     return this.matchField("ops:Provenance/ops:parent_bundle_identifier", identifier);
   }
 
-  public RegistrySearchRequestBuilder matchMembersOfCollection(PdsProductIdentifier identifier) {
+  public RegistrySearchRequestBuilder matchMembersOfCollection(PdsLidVid identifier) {
     return this.matchField("ops:Provenance/ops:parent_collection_identifier", identifier);
   }
 
@@ -315,6 +316,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this;
   }
 
+  /**
+   * Limit results to the latest version of each LID in the result-set.
+   * N.B. this does *not* mean the latest version which satisfies other constraints, so application of this constraint
+   * can result in no hits being returned despite valid results existing.
+   */
   public RegistrySearchRequestBuilder onlyLatest() {
 
     ExistsQuery supersededByExists = new ExistsQuery.Builder()

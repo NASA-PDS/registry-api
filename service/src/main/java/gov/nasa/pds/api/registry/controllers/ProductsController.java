@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
@@ -335,10 +336,9 @@ public class ProductsController implements ProductsApi {
 
   private PdsProductClasses resolveProductClass(PdsProductIdentifier identifier)
   throws OpenSearchException, IOException, NotFoundException{
-    String productClassKey = "product_class";
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
             .matchLid(identifier)
-            .fieldsFromStrings(List.of(productClassKey))
+            .fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
             .onlyLatest()
             .build();
 
@@ -348,7 +348,7 @@ public class ProductsController implements ProductsApi {
       throw new NotFoundException("No product found with identifier " + identifier.toString());
     }
 
-    String productClassStr = searchResponse.hits().hits().get(0).source().get(productClassKey).toString();
+    String productClassStr = searchResponse.hits().hits().get(0).source().get(PdsProductClasses.getPropertyName()).toString();
     return PdsProductClasses.valueOf(productClassStr);
   }
 
@@ -393,6 +393,16 @@ public class ProductsController implements ProductsApi {
     return searchResponse.hits().hits().stream().map(hit -> hit.source().get(lidvidKey).toString()).map(PdsLidVid::fromString).toList();
   }
 
+  /**
+   * Resolve a PdsProductIdentifier to a PdsLidVid according to the common rules of the API.
+   * The rules are currently trivial, but may incorporate additional behaviour later
+   * @param identifier a LID or LIDVID
+   * @return a LIDVID
+   */
+  private PdsLidVid resolveIdentifierToLidvid(PdsProductIdentifier identifier) throws NotFoundException, IOException {
+    return identifier.isLidvid() ? (PdsLidVid) identifier : resolveLatestLidvid(identifier);
+  }
+
   @Override
   public ResponseEntity<Object> productMembers(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
@@ -402,15 +412,16 @@ public class ProductsController implements ProductsApi {
     try{
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
-
-
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
       RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembersOfBundle(pdsIdentifier);
+        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.onlyCollections();
       } else if (productClass.isCollection()) {
-        searchRequestBuilder.matchMembersOfCollection(pdsIdentifier);
+        searchRequestBuilder.matchMembersOfCollection(lidvid);
+        searchRequestBuilder.onlyBasicProducts();
       } else {
         throw new MiscellaneousBadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection +
@@ -420,6 +431,7 @@ public class ProductsController implements ProductsApi {
       SearchRequest searchRequest = searchRequestBuilder
               .fieldsFromStrings(fields)
               .paginate(limit, sort, searchAfter)
+              .onlyLatest()
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -443,11 +455,13 @@ public class ProductsController implements ProductsApi {
     try{
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
       RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembersOfBundle(pdsIdentifier);
+        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.onlyBasicProducts();
       } else {
         throw new MiscellaneousBadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
@@ -456,6 +470,7 @@ public class ProductsController implements ProductsApi {
       SearchRequest searchRequest = searchRequestBuilder
               .fieldsFromStrings(fields)
               .paginate(limit, sort, searchAfter)
+              .onlyLatest()
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -494,7 +509,6 @@ public class ProductsController implements ProductsApi {
     SearchRequest searchRequest = searchRequestBuilder
             .matchLid(identifier)
             .fieldsFromStrings(List.of(fieldName))
-            .onlyLatest()
             .build();
 
     SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
@@ -503,11 +517,7 @@ public class ProductsController implements ProductsApi {
       throw new NotFoundException("No product found with identifier " + identifier);
     }
 
-//    TODO: Remove these debug lines, and test this function
-    List<List<String>> fieldListsFromDocs = searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).toList();
-    List<PdsLidVid> flatList = searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();;
-
-    return searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
+    return searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).filter(Objects::nonNull).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
   }
 
 
@@ -520,12 +530,13 @@ public class ProductsController implements ProductsApi {
     try{
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
       List<PdsLidVid> parentIds;
       if (productClass.isCollection()) {
-        parentIds = resolveLidVidsFromProductField(pdsIdentifier, "ops:Provenance/ops:parent_bundle_identifier");
+        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
       } else if (productClass.isBasicProduct()) {
-        parentIds = resolveLidVidsFromProductField(pdsIdentifier, "ops:Provenance/ops:parent_collection_identifier");
+        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_collection_identifier");
       } else {
         throw new MiscellaneousBadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
@@ -535,6 +546,46 @@ public class ProductsController implements ProductsApi {
               .matchFieldAnyOfIdentifiers("_id", parentIds)
               .fieldsFromStrings(fields)
               .paginate(limit, sort, searchAfter)
+              .onlyLatest()
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> productMemberOfOf(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
+
+      List<PdsLidVid> parentIds;
+      if (productClass.isBasicProduct()) {
+        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+      } else {
+//        TODO: replace with enumeration of acceptable values later
+        throw new MiscellaneousBadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection + "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+              .matchFieldAnyOfIdentifiers("_id", parentIds)
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .onlyLatest()
               .build();
 
       SearchResponse<HashMap> searchResponse =
