@@ -866,6 +866,7 @@ components:
           $ref: '#/components/schemas/metadata'
         properties:
           type: object
+          description: properties' values extracted from pds4 model, as a dictionary, syntax for property name is {namespace}:{property}[{namespace}:{property}]*
           additionalProperties:
             $ref: '#/components/schemas/propertyArrayValues'
           xml:
