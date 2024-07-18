@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import gov.nasa.pds.api.registry.model.exceptions.*;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -349,6 +350,26 @@ public class ProductsController implements ProductsApi {
 
     String productClassStr = searchResponse.hits().hits().get(0).source().get(productClassKey).toString();
     return PdsProductClasses.valueOf(productClassStr);
+  }
+
+
+  private List<PdsLidVid> resolveExtantLidvids(PdsLid lid)
+          throws OpenSearchException, IOException, NotFoundException{
+
+    String lidvidKey = "_id";
+
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(lid)
+            .fieldsFromStrings(List.of(lidvidKey))
+            .build();
+
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No lidvids found with lid " + lid.toString());
+    }
+
+    return searchResponse.hits().hits().stream().map(hit -> hit.source().get(lidvidKey).toString()).map(PdsLidVid::fromString).toList();
   }
 
   @Override
