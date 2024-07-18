@@ -353,6 +353,27 @@ public class ProductsController implements ProductsApi {
   }
 
 
+  private PdsLidVid resolveLatestLidvid(PdsProductIdentifier identifier)
+          throws OpenSearchException, IOException, NotFoundException {
+
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier.getLid())
+            .fieldsFromStrings(List.of())
+            .onlyLatest()
+            .build();
+
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No lidvids found with lid " + identifier.getLid().toString());
+    }
+
+    // TODO: Determine how to handle multiple hits due to sweepers lag
+
+    return PdsLidVid.fromString(searchResponse.hits().hits().get(0).id());
+  }
+
+
   private List<PdsLidVid> resolveExtantLidvids(PdsLid lid)
           throws OpenSearchException, IOException, NotFoundException{
 
@@ -381,6 +402,8 @@ public class ProductsController implements ProductsApi {
     try{
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+
+
 
       RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
 
