@@ -165,7 +165,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   public RegistrySearchRequestBuilder matchLid(PdsProductIdentifier identifier) {
-    return this.matchField("lid", identifier);
+    return this.matchField("lid", identifier.getLid());
   }
 
   public RegistrySearchRequestBuilder matchMembersOfBundle(PdsProductIdentifier identifier) {
