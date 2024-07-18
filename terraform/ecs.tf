@@ -36,7 +36,7 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
   desired_count = 1
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.pds-registry-target-group.arn
+    target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
     container_name   = "pds-${var.venue}-reg-container"
     container_port   = "80"
   }
@@ -114,7 +114,29 @@ EOF
 }
 
 
-resource "aws_lb_target_group" "pds-registry-target-group" {
+resource "aws_lb" "registry-api-lb" {
+  name               = "registry-api-lb-new"
+  internal           = true
+  load_balancer_type = "application"
+  security_groups    = var.aws_fg_security_groups
+  subnets            = var.aws_fg_subnets
+
+  enable_deletion_protection = true
+
+  access_logs {
+    bucket  = var.aws_s3_bucket_logs_id
+    prefix  = "registry-api-lb"
+    enabled = true
+  }
+
+  tags = {
+    Alfa = var.node_name_abbr
+    Bravo = var.venue
+    Charlie = "registry"
+  }
+}
+
+resource "aws_lb_target_group" "pds-registry-api-target-group" {
   name        = "pds-${var.venue}-registry-tgt"
   port        = 80
   protocol    = "HTTP"
@@ -129,12 +151,22 @@ resource "aws_lb_target_group" "pds-registry-target-group" {
   }
 }
 
+resource "aws_lb_listener" "registry-api-ld-listener" {
+  load_balancer_arn = aws_lb.registry-api-lb.arn
+  port              = 80
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
+  }
+}
+
 resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
-  listener_arn = var.aws_lb_listener_arn
+  listener_arn = aws_lb_listener.registry-api-ld-listener.arn
 
   action {
     type             = "forward"
-    target_group_arn =  aws_lb_target_group.pds-registry-target-group.arn
+    target_group_arn =  aws_lb_target_group.pds-registry-api-target-group.arn
   }
 
   # no condition for now

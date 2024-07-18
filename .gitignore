@@ -82,6 +82,7 @@ pom.xml.versionsBackup
 target/
 lexer/target
 service/target
+service/unittests.txt
 model/target
 application-*.properties
 

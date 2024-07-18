@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
-import gov.nasa.pds.api.registry.model.exceptions.MissSortWithSearchAfterException;
+import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
 import gov.nasa.pds.api.registry.model.exceptions.RegistryApiException;
 import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
@@ -66,9 +66,9 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
 
   }
 
-  @ExceptionHandler(value = {MissSortWithSearchAfterException.class})
-  protected ResponseEntity<Object> missSort(MissSortWithSearchAfterException ex,
-      WebRequest request) {
+  @ExceptionHandler(value = {SortSearchAfterMismatchException.class})
+  protected ResponseEntity<Object> missSort(SortSearchAfterMismatchException ex,
+                                            WebRequest request) {
     return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
   }
 

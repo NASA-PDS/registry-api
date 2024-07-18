@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.OpenSearchException;
@@ -20,15 +19,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
-import gov.nasa.pds.api.registry.model.exceptions.MissSortWithSearchAfterException;
+import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
 import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
@@ -48,7 +45,6 @@ public class ProductsController implements ProductsApi {
   private static final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
   private final ConnectionContext connectionContext;
-  private final RegistrySearchRequestBuilder registrySearchRequestBuilder;
   private final ErrorMessageFactory errorMessageFactory;
   private final ObjectMapper objectMapper;
   private OpenSearchClient openSearchClient;
@@ -88,16 +84,14 @@ public class ProductsController implements ProductsApi {
   public ProductsController(ConnectionContext connectionContext,
       ErrorMessageFactory errorMessageFactory, ObjectMapper objectMapper) {
 
-    this.connectionContext = connectionContext;
     this.errorMessageFactory = errorMessageFactory;
     this.objectMapper = objectMapper;
-
-
-    this.registrySearchRequestBuilder = new RegistrySearchRequestBuilder(connectionContext);
-
-
+    this.connectionContext = connectionContext;
     this.openSearchClient = this.connectionContext.getOpenSearchClient();
 
+    /**
+     * Initialize CrossLinksLoader for it to load the cross-links configuration on-load
+     */
     this.crossLinksLoader = new CrossLinksLoader();
     this.crossLinks = this.crossLinksLoader.loadConfiguration();
   }
@@ -224,7 +218,6 @@ public class ProductsController implements ProductsApi {
       throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
 
     // Get product metadata that we're cross-linking between services
-    
     HashMap<String, Object> product = new HashMap<>();
     
     List<String> fields = new ArrayList<>();
@@ -241,13 +234,14 @@ public class ProductsController implements ProductsApi {
       throw new UnhandledException(e);
     }
 
+    // Return all the crossLinks for it
     return new ResponseEntity<Object>(this.crossLinks.getLinks(product), new HttpHeaders(), HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, List<String> fields,
       Integer limit, List<String> sort, List<String> searchAfter) throws UnhandledException,
-      NotFoundException, AcceptFormatNotSupportedException, MissSortWithSearchAfterException {
+      NotFoundException, AcceptFormatNotSupportedException, SortSearchAfterMismatchException {
 
     RawMultipleProductResponse response;
 
@@ -276,14 +270,14 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
-    RawMultipleProductResponse response;
 
-
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-    SearchRequest searchRequest = registrySearchRequestBuilder.addQParam(q)
-        .addKeywordsParam(keywords).fields(fields).paginates(limit, sort, searchAfter).build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .constrainByQueryString(q)
+            .addKeywordsParam(keywords)
+            .fieldsFromStrings(fields)
+            .paginate(limit, sort, searchAfter)
+            .onlyLatest()
+            .build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -301,12 +295,11 @@ public class ProductsController implements ProductsApi {
   private HashMap<String, Object> getLidVid(PdsProductIdentifier identifier, List<String> fields)
       throws OpenSearchException, IOException, NotFoundException {
 
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLidvid(identifier)
+            .fieldsFromStrings(fields)
+            .build();
 
-
-    SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidvidMatch(identifier).fields(fields).build();
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
     // https://stackoverflow.com/questions/2390662/java-how-do-i-get-a-class-literal-from-a-generic-type
@@ -327,11 +320,11 @@ public class ProductsController implements ProductsApi {
   private HashMap<String, Object> getLatestLidVid(PdsProductIdentifier identifier,
       List<String> fields) throws OpenSearchException, IOException, NotFoundException {
 
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-    SearchRequest searchRequest =
-        registrySearchRequestBuilder.addLidMatch(identifier).onlyLatest().fields(fields).build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier)
+            .fieldsFromStrings(fields)
+            .onlyLatest()
+            .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -352,18 +345,12 @@ public class ProductsController implements ProductsApi {
 
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-      throws OpenSearchException, IOException, NotFoundException, MissSortWithSearchAfterException {
+      throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException {
 
-    RegistrySearchRequestBuilder registrySearchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.registrySearchRequestBuilder);
-
-    registrySearchRequestBuilder =
-        registrySearchRequestBuilder.addLidMatch(identifier).fields(fields);
-
-    registrySearchRequestBuilder = registrySearchRequestBuilder.paginates(limit, sort, searchAfter);
-
-
-    SearchRequest searchRequest = registrySearchRequestBuilder.build();
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier).fieldsFromStrings(fields)
+            .paginate(limit, sort, searchAfter)
+            .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see

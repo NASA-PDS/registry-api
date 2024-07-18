@@ -13,7 +13,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-// So that we don't have to load the json multiple times
+/**
+ * This is a wrapper class for ./CrossLinks.java. Use this loader to do a
+ * one-time pull of CrossLink's cross-links.json configuration file.
+ * 
+ * Use like:
+ *   this.crossLinksLoader = new CrossLinksLoader();
+ *   this.crossLinks = this.crossLinksLoader.loadConfiguration();
+ * 
+ * @see gov.nasa.pds.api.registry.controllers.ProductsController#Constructor(ConnectionContext connectionContext, ErrorMessageFactory errorMessageFactory, ObjectMapper objectMapper)
+ * @see gov.nasa.pds.api.registry.controllers.ProductsController#productCrossLinks(String identifier)
+ * @see gov.nasa.pds.api.registry.model.tools.CrossLinks
+ * @author tariqksoliman
+ */
 public class CrossLinksLoader {
     private CrossLinks config;
 

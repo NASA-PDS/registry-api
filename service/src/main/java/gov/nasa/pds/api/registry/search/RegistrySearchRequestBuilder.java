@@ -3,7 +3,7 @@ package gov.nasa.pds.api.registry.search;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -34,12 +34,12 @@ import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
 import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
-import gov.nasa.pds.api.registry.model.exceptions.MissSortWithSearchAfterException;
+import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 
 
-public class RegistrySearchRequestBuilder {
+public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
 
@@ -52,218 +52,186 @@ public class RegistrySearchRequestBuilder {
         }
       };
 
-
   private ConnectionContext connectionContext;
   private List<String> registryIndices;
-  // we would prefer to only use the BoolQuery.Builder as a private attribute
-  // but we are missing a copy method on the BoolQuery.Builder,
-  // so we use the inner properties of the BoolQuery.Builder to keep its state and copy it when
-  // needed, for each user request.
-  List<Query> must = new ArrayList<Query>();
-  List<Query> mustNot = new ArrayList<Query>();
-
-  SearchRequest.Builder searchRequestBuilder = null;
-
+  private BoolQuery.Builder queryBuilder;
 
   public RegistrySearchRequestBuilder(ConnectionContext connectionContext) {
+//    edunn TODO: Evaluate what can be taken out of the constructor
 
     this.connectionContext = connectionContext;
 
     this.registryIndices = this.connectionContext.getRegistryIndices();
     log.info("Use indices: " + String.join(",", registryIndices) + "End indices");
 
-    // add index list
-    this.searchRequestBuilder = new SearchRequest.Builder().index(registryIndices);
+    this.index(registryIndices);
 
-    // add archive status filter
-    List<String> archiveStatus = this.connectionContext.getArchiveStatus();
+    Query baseQuery = getMandatoryBaselineQuery(connectionContext);
+    this.queryBuilder = new BoolQuery.Builder()
+            .must(baseQuery);
+  }
+
+  /**
+   * Return a baseline, non-configurable query which applies to all search requests.  Currently, this is just archive
+   * status, but this will likely be subject to extensive revision (may balloon, or disappear entirely)
+   * @param connectionContext
+   * @return the minimal match constraints applicable to all search requests
+   */
+  private static Query getMandatoryBaselineQuery(ConnectionContext connectionContext) {
+    List<String> archiveStatus = connectionContext.getArchiveStatus();
     List<FieldValue> archiveStatusFieldValues = archiveStatus.stream().map(FieldValue::of).toList();
     log.info("Only publishes archiveStatus: " + String.join(",", archiveStatus));
-    TermsQueryField archiveStatusTerms =
-        new TermsQueryField.Builder().value(archiveStatusFieldValues).build();
-
+    TermsQueryField archiveStatusTerms = new TermsQueryField.Builder()
+            .value(archiveStatusFieldValues)
+            .build();
 
     TermsQuery archiveStatusQuery = new TermsQuery.Builder()
-        .field("ops:Tracking_Meta/ops:archive_status").terms(archiveStatusTerms).build();
+            .field("ops:Tracking_Meta/ops:archive_status")
+            .terms(archiveStatusTerms)
+            .build();
 
-    this.must.add(archiveStatusQuery.toQuery());
-
-
-
+    return archiveStatusQuery.toQuery();
   }
 
-  public List<Query> getMust() {
-    return must;
+  /**
+   * Access the internal BoolQuery.Builder instance which is used to build a query during
+   * RegistrySearchRequestBuilder.build()
+   * Before accessing the query builder directly, consider whether the behaviour is common enough that it should be
+   * abstracted as a method of RegistrySearchRequestBuilder.
+   * @return the query builder instance for this search-request builder
+   */
+  public BoolQuery.Builder getQueryBuilder() {
+    return this.queryBuilder;
   }
 
-  public List<Query> getMustNot() {
-    return mustNot;
+  public SearchRequest build() {
+    this.query(this.queryBuilder.build().toQuery());
+    this.trackTotalHits(t -> t.enabled(true));
+
+    return super.build();
   }
 
-  public RegistrySearchRequestBuilder(RegistrySearchRequestBuilder registrySearchRequestBuilder) {
+  /**
+   * Add a constraint that a given field name must match the given field value
+   * @param fieldName the name of the field in OpenSearch format
+   * @param value the value which must be present in the given field
+   */
+  public RegistrySearchRequestBuilder matchField(String fieldName, String value) {
+    FieldValue fieldValue = new FieldValue.Builder().stringValue(value).build();
+    MatchQuery lidvidMatch = new MatchQuery.Builder().field(fieldName).query(fieldValue).build();
 
-    this.connectionContext = registrySearchRequestBuilder.getConnectionContext();
-    this.registryIndices = registrySearchRequestBuilder.getRegistryIndices();
-
-    this.searchRequestBuilder = new SearchRequest.Builder().index(registryIndices);
-
-    this.must = new ArrayList<Query>(registrySearchRequestBuilder.getMust());
-    this.mustNot = new ArrayList<Query>(registrySearchRequestBuilder.getMustNot());
-
-  }
-
-
-
-  public RegistrySearchRequestBuilder onlyLatest() {
-
-    ExistsQuery supersededByExists =
-        new ExistsQuery.Builder().field("ops:Provenance/ops:superseded_by").build();
-
-    this.mustNot.add(supersededByExists.toQuery());
+    this.queryBuilder.must(lidvidMatch.toQuery());
 
     return this;
-
   }
 
-
-  public RegistrySearchRequestBuilder addLidvidMatch(PdsProductIdentifier identifier) {
-    // lidvid match
-    FieldValue lidvidFieldValue =
-        new FieldValue.Builder().stringValue(identifier.toString()).build();
-
-    MatchQuery lidvidMatch = new MatchQuery.Builder().field("_id").query(lidvidFieldValue).build();
-
-    this.must.add(lidvidMatch.toQuery());
-
-    return this;
-
+  /**
+   * Add a constraint that a given field name must match the given field value
+   * @param fieldName the name of the field in OpenSearch format
+   * @param identifier the PDS identifier whose string representation must be present in the given field
+   */
+  public RegistrySearchRequestBuilder matchField(String fieldName, PdsProductIdentifier identifier) {
+    return this.matchField(fieldName, identifier.toString());
   }
 
-
-  public RegistrySearchRequestBuilder addLidMatch(PdsProductIdentifier identifier) {
-    // lid match
-    FieldValue lidvidFieldValue =
-        new FieldValue.Builder().stringValue(identifier.getLid().toString()).build();
-
-    MatchQuery lidMatch = new MatchQuery.Builder().field("lid").query(lidvidFieldValue).build();
-
-    this.must.add(lidMatch.toQuery());
-
-    return this;
-
+  public RegistrySearchRequestBuilder matchLidvid(PdsProductIdentifier identifier) {
+    return this.matchField("_id", identifier);
   }
 
-  public RegistrySearchRequestBuilder paginates(Integer limit, List<String> sort,
-      List<String> searchAfter) throws MissSortWithSearchAfterException {
+  public RegistrySearchRequestBuilder matchLid(PdsProductIdentifier identifier) {
+    return this.matchField("lid", identifier);
+  }
 
-    if ((sort != null) && (!sort.isEmpty())) {
-      this.sort(sort);
+  public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
+      List<String> searchAfterFieldValues) throws SortSearchAfterMismatchException {
+    if ((sortFieldNames != null) && (!sortFieldNames.isEmpty())) {
+      this.sortFromStrings(sortFieldNames);
     }
 
-    this.size(limit);
+    this.size(pageSize);
 
-    if ((searchAfter != null) && (!searchAfter.isEmpty())) {
-      if ((sort == null) || (sort.isEmpty())) {
-        throw new MissSortWithSearchAfterException();
+    if ((searchAfterFieldValues != null) && (!searchAfterFieldValues.isEmpty())) {
+      if (sortFieldNames == null) {
+        throw new SortSearchAfterMismatchException("sort argument must be provided if searchAfter argument is provided");
+      } else if (searchAfterFieldValues.size() != sortFieldNames.size()) {
+        throw new SortSearchAfterMismatchException("sort and searchAfter arguments must be of equal length if provided");
       }
-      this.searchAfter(searchAfter);
+      this.searchAfterFromStrings(searchAfterFieldValues);
     }
 
     return this;
 
   }
 
-  public RegistrySearchRequestBuilder sort(List<String> sort) {
+  /**
+   * Implements an alternative to .sort() that accepts strings in API property format.
+   * Currently hardcoded to sort in ascending order only.
+   * @param sortFieldNames
+   */
+  public RegistrySearchRequestBuilder sortFromStrings(List<String> sortFieldNames) {
 
     String openSearchField;
 
     List<SortOptions> sortOptionsList = new ArrayList<SortOptions>();
-    for (String field : sort) {
+    for (String field : sortFieldNames) {
       openSearchField = SearchUtil.jsonPropertyToOpenProperty(field);
       FieldSort fieldSort =
           new FieldSort.Builder().field(openSearchField).order(SortOrder.Asc).build();
       sortOptionsList.add(new SortOptions.Builder().field(fieldSort).build());
     }
 
-    this.searchRequestBuilder.sort(sortOptionsList);
+    this.sort(sortOptionsList);
 
     return this;
 
   }
 
-  public RegistrySearchRequestBuilder size(Integer size) {
-    this.searchRequestBuilder.size(size);
-    return this;
-  }
-
-  public RegistrySearchRequestBuilder searchAfter(List<String> searchAfter) {
-    // TODO check if the number value need to be handled specfically.
-
-
+  /**
+   * Implements an alternative to .searchAfter() that accepts values as strings.
+   * No-op in current version of OpenSearch client, but a later version will require the commented-out
+   * implementation to convert the Strings to FieldValues
+   * @param searchAfterValues
+   */
+  public RegistrySearchRequestBuilder searchAfterFromStrings(List<String> searchAfterValues) {
     /*
-     * This code is useless with the version of opensearch client we are using From the source code
-     * of the opensearch client in a later version, that is what will need to be used. I am keeping
-     * it here as a comment.
-     * 
      * List<FieldValue> fieldValues = new ArrayList<FieldValue>();
      * 
      * for (String fieldValue : searchAfter) { fieldValues.add(new
+    // TODO check if the number value need to be handled specfically. Method stringValue() implies yes
      * FieldValue.Builder().stringValue(fieldValue).build()); }
      */
-    this.searchRequestBuilder.searchAfter(searchAfter);
+    this.searchAfter(searchAfterValues);
 
 
     return this;
   }
 
 
-  public RegistrySearchRequestBuilder addQParam(String q) throws UnparsableQParamException {
+  /**
+   * Implements an alternative to .fields() that accepts values as strings.
+   * @param fieldNames
+   */
+  public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
 
-    try {
-      if ((q != null) && (q.length() > 0)) {
-        BoolQuery qBoolQuery = RegistrySearchRequestBuilder.parseQueryString(q);
-        this.must.add(qBoolQuery.toQuery());
-      }
+    if ((fieldNames == null) || (fieldNames.isEmpty())) {
       return this;
-    } catch (RecognitionException | ParseCancellationException e) {
-      log.info("Unable to parse q " + q + "error message is " + e);
-      throw new UnparsableQParamException(
-          "q string value:" + q + " Error message " + e.getMessage());
+    } else {
+      log.info("restricting list of fields requested from OpenSearch.");
+      // TODO refine to only pull the static field when the output response requires it.
+      List<String> openSearchField =
+              new ArrayList<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
+      for (String field : fieldNames) {
+        openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
+      }
+
+      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
+      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
+
+      this.source(limitedSourceCfg);
+
+      return this;
     }
 
-
-  }
-
-  public RegistrySearchRequestBuilder addKeywordsParam(List<String> keywords) {
-
-    // TODO implement
-    return this;
-  }
-
-
-
-  public SearchRequest build() {
-
-    BoolQuery boolQuery = new BoolQuery.Builder().must(this.must).mustNot(this.mustNot).build();
-
-    this.searchRequestBuilder = this.searchRequestBuilder.query(q -> q.bool(boolQuery));
-
-    return this.searchRequestBuilder.build();
-
-  }
-
-
-
-  public ConnectionContext getConnectionContext() {
-    return connectionContext;
-  }
-
-  public List<String> getRegistryIndices() {
-    return registryIndices;
-  }
-
-  public SearchRequest.Builder getSearchRequestBuilder() {
-    return searchRequestBuilder;
   }
 
   private static BoolQuery parseQueryString(String queryString) {
@@ -285,30 +253,44 @@ public class RegistrySearchRequestBuilder {
     return listener.getBoolQuery();
   }
 
-  public RegistrySearchRequestBuilder fields(List<String> fields) {
+  /**
+   * Constrain results with a query-string in PDS API Search Query syntax
+   * @param q a PDS API Search Query string
+   * @throws UnparsableQParamException if the string is not parseable
+   */
+  public RegistrySearchRequestBuilder constrainByQueryString(String q) throws UnparsableQParamException {
 
-    if ((fields == null) || (fields.isEmpty())) {
-      return this;
-    } else {
-      log.info("restricting list of fields requested from OpenSearch.");
-      // TODO refine to only pull the static field when the output response requires it.
-      List<String> openSearchField =
-          new ArrayList<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
-      for (String field : fields) {
-        openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
+    try {
+      if ((q != null) && (q.length() > 0)) {
+        BoolQuery qBoolQuery = RegistrySearchRequestBuilder.parseQueryString(q);
+        this.queryBuilder.must(qBoolQuery.toQuery());
       }
-
-      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
-      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
-
-      this.searchRequestBuilder.source(limitedSourceCfg);
-
       return this;
+    } catch (RecognitionException | ParseCancellationException e) {
+      log.info("Unable to parse q " + q + "error message is " + e);
+      throw new UnparsableQParamException(
+          "q string value:" + q + " Error message " + e.getMessage());
     }
+
 
   }
 
+  public RegistrySearchRequestBuilder addKeywordsParam(List<String> keywords) {
 
+    // TODO implement
+    return this;
+  }
+
+  public RegistrySearchRequestBuilder onlyLatest() {
+
+    ExistsQuery supersededByExists = new ExistsQuery.Builder()
+            .field("ops:Provenance/ops:superseded_by")
+            .build();
+
+    this.queryBuilder.mustNot(supersededByExists.toQuery());
+
+    return this;
+  }
 
 }
 
