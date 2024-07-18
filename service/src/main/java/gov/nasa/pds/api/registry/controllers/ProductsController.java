@@ -2,11 +2,13 @@ package gov.nasa.pds.api.registry.controllers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 import gov.nasa.pds.api.registry.model.exceptions.*;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +16,6 @@ import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
-import org.opensearch.http.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -409,6 +410,85 @@ public class ProductsController implements ProductsApi {
       }
 
       SearchRequest searchRequest = searchRequestBuilder
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
+
+  /**
+   * Given a PdsProductIdentifier and the name of a document field which is expected to contain an array of LIDVID
+   * strings, return the chained contents of that field from all documents matching the identifier (multiple docs are
+   * possible if the identifier is a LID).
+   * @param identifier the LID/LIDVID for which to retrieve documents
+   * @param fieldName the name of the document _source property/field from which to extract results
+   * @return a deduplicated list of the aggregated property/field contents, converted to PdsProductLidvids
+   */
+  private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier, String fieldName)
+          throws OpenSearchException, IOException, NotFoundException, UnhandledException {
+
+    RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+
+    if (identifier.isLid()) {
+      searchRequestBuilder.matchLid(identifier);
+    } else if (identifier.isLidvid()) {
+      searchRequestBuilder.matchLidvid(identifier);
+    } else {
+      throw new UnhandledException("PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
+    }
+
+    SearchRequest searchRequest = searchRequestBuilder
+            .matchLid(identifier)
+            .fieldsFromStrings(List.of(fieldName))
+            .onlyLatest()
+            .build();
+
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No product found with identifier " + identifier);
+    }
+
+//    TODO: Remove these debug lines, and test this function
+    List<List<String>> fieldListsFromDocs = searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).toList();
+    List<PdsLidVid> flatList = searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();;
+
+    return searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
+  }
+
+
+  @Override
+  public ResponseEntity<Object> productMemberOf(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+
+      List<PdsLidVid> parentIds;
+      if (productClass.isCollection()) {
+        parentIds = resolveLidVidsFromProductField(pdsIdentifier, "ops:Provenance/ops:parent_bundle_identifier");
+      } else if (productClass.isBasicProduct()) {
+        parentIds = resolveLidVidsFromProductField(pdsIdentifier, "ops:Provenance/ops:parent_collection_identifier");
+      } else {
+        throw new MiscellaneousBadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+              .matchFieldAnyOfIdentifiers("_id", parentIds)
               .fieldsFromStrings(fields)
               .paginate(limit, sort, searchAfter)
               .build();

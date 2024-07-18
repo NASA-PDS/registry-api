@@ -135,6 +135,31 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.matchField(fieldName, identifier.toString());
   }
 
+
+  /**
+   * Add a constraint that a given field name must match at least one of the given field values
+   * @param fieldName the name of the field in OpenSearch format
+   * @param values the values, one of which must be present in the given field
+   */
+  public RegistrySearchRequestBuilder matchFieldAnyOf(String fieldName, List<String> values) {
+    List<FieldValue> fieldValues = values.stream().map(value -> new FieldValue.Builder().stringValue(value).build()).toList();
+    TermsQueryField termsQueryField = new TermsQueryField.Builder().value(fieldValues).build();
+    TermsQuery query = new TermsQuery.Builder().field(fieldName).terms(termsQueryField).build();
+
+    this.queryBuilder.must(query.toQuery());
+
+    return this;
+  }
+
+  /**
+   * Add a constraint that a given field name must match at least one of the given field values
+   * @param fieldName the name of the field in OpenSearch format
+   * @param identifiers the PDS identifiers, one of whose string representation must be present in the given field
+   */
+  public RegistrySearchRequestBuilder matchFieldAnyOfIdentifiers(String fieldName, List<? extends PdsProductIdentifier> identifiers) {
+    return this.matchFieldAnyOf(fieldName, identifiers.stream().map(PdsProductIdentifier::toString).toList());
+  }
+
   public RegistrySearchRequestBuilder matchLidvid(PdsProductIdentifier identifier) {
     return this.matchField("_id", identifier);
   }
