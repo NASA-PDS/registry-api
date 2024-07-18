@@ -142,6 +142,14 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.matchField("lid", identifier);
   }
 
+  public RegistrySearchRequestBuilder matchMembersOfBundle(PdsProductIdentifier identifier) {
+    return this.matchField("ops:Provenance/ops:parent_bundle_identifier", identifier);
+  }
+
+  public RegistrySearchRequestBuilder matchMembersOfCollection(PdsProductIdentifier identifier) {
+    return this.matchField("ops:Provenance/ops:parent_collection_identifier", identifier);
+  }
+
   public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
       List<String> searchAfterFieldValues) throws SortSearchAfterMismatchException {
     if ((sortFieldNames != null) && (!sortFieldNames.isEmpty())) {

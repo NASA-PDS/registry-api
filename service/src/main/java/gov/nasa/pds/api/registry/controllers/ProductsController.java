@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+
+import gov.nasa.pds.api.registry.model.exceptions.*;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
+import org.opensearch.http.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +26,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
-import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
-import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
-import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
-import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogicImpl;
@@ -331,6 +331,98 @@ public class ProductsController implements ProductsApi {
 
   }
 
+  private PdsProductClasses resolveProductClass(PdsProductIdentifier identifier)
+  throws OpenSearchException, IOException, NotFoundException{
+    String productClassKey = "product_class";
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier)
+            .fieldsFromStrings(List.of(productClassKey))
+            .onlyLatest()
+            .build();
 
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No product found with identifier " + identifier.toString());
+    }
+
+    String productClassStr = searchResponse.hits().hits().get(0).source().get(productClassKey).toString();
+    return PdsProductClasses.valueOf(productClassStr);
+  }
+
+  @Override
+  public ResponseEntity<Object> productMembers(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+
+      RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+
+      if (productClass.isBundle()) {
+        searchRequestBuilder.matchMembersOfBundle(pdsIdentifier);
+      } else if (productClass.isCollection()) {
+        searchRequestBuilder.matchMembersOfCollection(pdsIdentifier);
+      } else {
+        throw new MiscellaneousBadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection +
+                "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = searchRequestBuilder
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> productMembersMembers(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+
+      RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+
+      if (productClass.isBundle()) {
+        searchRequestBuilder.matchMembersOfBundle(pdsIdentifier);
+      } else {
+        throw new MiscellaneousBadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = searchRequestBuilder
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
 
 }
