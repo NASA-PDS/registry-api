@@ -406,7 +406,7 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> productMembers(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException{
 
     try{
@@ -423,7 +423,7 @@ public class ProductsController implements ProductsApi {
         searchRequestBuilder.matchMembersOfCollection(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
-        throw new MiscellaneousBadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
+        throw new BadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection +
                 "' (got '" + productClass + "')");
       }
@@ -449,7 +449,7 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> productMembersMembers(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException{
 
     try{
@@ -463,7 +463,7 @@ public class ProductsController implements ProductsApi {
         searchRequestBuilder.matchMembersOfBundle(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
-        throw new MiscellaneousBadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
+        throw new BadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
@@ -524,7 +524,7 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> productMemberOf(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException{
 
     try{
@@ -538,7 +538,7 @@ public class ProductsController implements ProductsApi {
       } else if (productClass.isBasicProduct()) {
         parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_collection_identifier");
       } else {
-        throw new MiscellaneousBadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
+        throw new BadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
@@ -564,7 +564,7 @@ public class ProductsController implements ProductsApi {
   @Override
   public ResponseEntity<Object> productMemberOfOf(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, MiscellaneousBadRequestException,
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException{
 
     try{
@@ -577,7 +577,7 @@ public class ProductsController implements ProductsApi {
         parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
       } else {
 //        TODO: replace with enumeration of acceptable values later
-        throw new MiscellaneousBadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
+        throw new BadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
                 PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection + "' (got '" + productClass + "')");
       }
 
