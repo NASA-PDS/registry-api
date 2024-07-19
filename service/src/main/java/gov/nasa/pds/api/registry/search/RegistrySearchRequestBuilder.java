@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -297,6 +298,35 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
     this.queryBuilder.mustNot(supersededByExists.toQuery());
 
+    return this;
+  }
+
+  /**
+   * Limit results to bundle products
+   */
+  public RegistrySearchRequestBuilder onlyBundles() {
+    return this.matchField(PdsProductClasses.getPropertyName(), PdsProductClasses.Product_Bundle.toString());
+  }
+
+
+  /**
+   * Limit results to collection products
+   */public RegistrySearchRequestBuilder onlyCollections() {
+    return this.matchField(PdsProductClasses.getPropertyName(), PdsProductClasses.Product_Collection.toString());
+  }
+
+
+  /**
+   * Limit results to basic (non-aggregate) products, i.e. exclude bundles/collections
+   */
+  public RegistrySearchRequestBuilder onlyBasicProducts() {
+    List<FieldValue> excludeValues = Arrays.stream(PdsProductClasses.values())
+            .filter(cls -> !cls.isBasicProduct())
+            .map(value -> new FieldValue.Builder().stringValue(value.toString()).build()).toList();
+    TermsQueryField termsQueryField = new TermsQueryField.Builder().value(excludeValues).build();
+    TermsQuery query = new TermsQuery.Builder().field(PdsProductClasses.getPropertyName()).terms(termsQueryField).build();
+
+    this.queryBuilder.mustNot(query.toQuery());
     return this;
   }
 
