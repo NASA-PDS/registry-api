@@ -2,12 +2,9 @@ package gov.nasa.pds.api.registry.controllers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
+import gov.nasa.pds.api.base.ClassesApi;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
@@ -24,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
@@ -40,7 +38,16 @@ import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 
 
 @Controller
-public class ProductsController implements ProductsApi {
+// TODO: Refactor common controller code out of ProductsController and split the additional API implementations out into
+//  corresponding controllers
+public class ProductsController implements ProductsApi, ClassesApi {
+
+  @Override
+  // TODO: Remove this when the common controller code is refactored out - it is only necessary because additional
+  // interfaces have been implemented as a stopgap
+  public Optional<NativeWebRequest> getRequest() {
+    return ProductsApi.super.getRequest();
+  }
 
   private static final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
@@ -600,4 +607,15 @@ public class ProductsController implements ProductsApi {
     }
   }
 
+  @Override
+  // TODO: Relocate this to ClassesController once common controller code has been extracted/refactored
+  public ResponseEntity<Object> classList(String propertyClass, List<String> fields, List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+    return ClassesApi.super.classList(propertyClass, fields, keywords, limit, q, sort, searchAfter);
+  }
+
+  @Override
+  // TODO: Relocate this to ClassesController once common controller code has been extracted/refactored
+  public ResponseEntity<List<String>> classes() throws Exception {
+    return ClassesApi.super.classes();
+  }
 }
