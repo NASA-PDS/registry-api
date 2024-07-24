@@ -3,6 +3,7 @@ package gov.nasa.pds.api.registry.model.api_responses;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
+import gov.nasa.pds.api.registry.model.BlobUtil;
 import gov.nasa.pds.api.registry.model.SearchUtil;
 
 @Component
@@ -25,6 +27,19 @@ public abstract class ProductBusinessLogicImpl implements ProductBusinessLogic {
 
   protected URL baseURL;
 
+  protected List<String> excludedProperties = getExcludedProperties();
+
+  private static List<String> getExcludedProperties() {
+    List<String> excludedProperties = new ArrayList<String>();
+    try {
+      excludedProperties.add(SearchUtil.openPropertyToJsonProperty(BlobUtil.JSON_BLOB_PROPERTY));
+      excludedProperties.add(SearchUtil.openPropertyToJsonProperty(BlobUtil.XML_BLOB_PROPERTY));
+    } catch (UnsupportedSearchProperty e) {
+      log.error("That should not happen, unless there is an error in the code");
+    }
+    log.info("The following properties will not be sent in the API response " + excludedProperties);
+    return excludedProperties;
+  }
 
 
   public ProductBusinessLogicImpl() {
@@ -93,11 +108,13 @@ public abstract class ProductBusinessLogicImpl implements ProductBusinessLogic {
 
     if ((included_fields == null) || (included_fields.size() == 0)) {
       String apiProperty;
+      log.debug("Excluded fields are " + excluded_fields);
       for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
         try {
           apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
-          if ((excluded_fields == null) || !excluded_fields.contains(apiProperty))
+          if ((excluded_fields == null) || !excluded_fields.contains(apiProperty)) {
             filteredMapJsonProperties.put(apiProperty, object2PropertyValue(entry.getValue()));
+          }
         } catch (UnsupportedSearchProperty e) {
           log.warn("openSearch property " + entry.getKey() + " is not supported, ignored");
         }
