@@ -169,6 +169,10 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.matchField("lid", identifier.getLid());
   }
 
+  public RegistrySearchRequestBuilder matchProductClass(PdsProductClasses productClass) {
+    return this.matchField(PdsProductClasses.getPropertyName(), productClass.getValue());
+  }
+
   public RegistrySearchRequestBuilder matchMembersOfBundle(PdsLidVid identifier) {
     return this.matchField("ops:Provenance/ops:parent_bundle_identifier", identifier);
   }
