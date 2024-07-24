@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -610,12 +611,33 @@ public class ProductsController implements ProductsApi, ClassesApi {
   @Override
   // TODO: Relocate this to ClassesController once common controller code has been extracted/refactored
   public ResponseEntity<Object> classList(String propertyClass, List<String> fields, List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
-    return ClassesApi.super.classList(propertyClass, fields, keywords, limit, q, sort, searchAfter);
+    PdsProductClasses pdsProductClass;
+    try {
+       pdsProductClass = PdsProductClasses.fromSwaggerName(propertyClass);
+    } catch (IllegalArgumentException err) {
+      throw new BadRequestException(err.getMessage());
+    }
+
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchProductClass(pdsProductClass)
+            .constrainByQueryString(q)
+            .addKeywordsParam(keywords)
+            .fieldsFromStrings(fields)
+            .paginate(limit, sort, searchAfter)
+            .onlyLatest()
+            .build();
+
+    SearchResponse<HashMap> searchResponse =
+            this.openSearchClient.search(searchRequest, HashMap.class);
+
+    RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+    return formatMultipleProducts(products, fields);
   }
 
   @Override
   // TODO: Relocate this to ClassesController once common controller code has been extracted/refactored
   public ResponseEntity<List<String>> classes() throws Exception {
-    return ClassesApi.super.classes();
+    return new ResponseEntity<>(Arrays.stream(PdsProductClasses.values()).map(PdsProductClasses::getSwaggerName).toList(), HttpStatusCode.valueOf(200));
   }
 }
