@@ -108,6 +108,7 @@ public abstract class ProductBusinessLogicImpl implements ProductBusinessLogic {
 
     if ((included_fields == null) || (included_fields.size() == 0)) {
       String apiProperty;
+      log.debug("Excluded fields are " + excluded_fields);
       for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
         try {
           apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
