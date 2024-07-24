@@ -150,14 +150,11 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
     for (Entry<String, Object> pair : hit.entrySet()) {
       WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       try {
-        log.debug(
-            "opensearch property " + pair.getKey() + " being added to response, if relevant ");
         jsonProperty = SearchUtil.openPropertyToJsonProperty(pair.getKey());
         if (!excludedProperties.contains(jsonProperty)) {
           kvp.setKey(jsonProperty);
           kvp.setValue(getStringValueOf(pair.getValue()));
           product.addKeyValuePairsItem(kvp);
-          log.debug("json property " + jsonProperty + " added");
         }
       } catch (UnsupportedSearchProperty e) {
         log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
