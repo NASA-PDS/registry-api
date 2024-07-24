@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -134,12 +136,45 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.matchField(fieldName, identifier.toString());
   }
 
+
+  /**
+   * Add a constraint that a given field name must match at least one of the given field values
+   * @param fieldName the name of the field in OpenSearch format
+   * @param values the values, one of which must be present in the given field
+   */
+  public RegistrySearchRequestBuilder matchFieldAnyOf(String fieldName, List<String> values) {
+    List<FieldValue> fieldValues = values.stream().map(value -> new FieldValue.Builder().stringValue(value).build()).toList();
+    TermsQueryField termsQueryField = new TermsQueryField.Builder().value(fieldValues).build();
+    TermsQuery query = new TermsQuery.Builder().field(fieldName).terms(termsQueryField).build();
+
+    this.queryBuilder.must(query.toQuery());
+
+    return this;
+  }
+
+  /**
+   * Add a constraint that a given field name must match at least one of the given field values
+   * @param fieldName the name of the field in OpenSearch format
+   * @param identifiers the PDS identifiers, one of whose string representation must be present in the given field
+   */
+  public RegistrySearchRequestBuilder matchFieldAnyOfIdentifiers(String fieldName, List<? extends PdsProductIdentifier> identifiers) {
+    return this.matchFieldAnyOf(fieldName, identifiers.stream().map(PdsProductIdentifier::toString).toList());
+  }
+
   public RegistrySearchRequestBuilder matchLidvid(PdsProductIdentifier identifier) {
     return this.matchField("_id", identifier);
   }
 
   public RegistrySearchRequestBuilder matchLid(PdsProductIdentifier identifier) {
-    return this.matchField("lid", identifier);
+    return this.matchField("lid", identifier.getLid());
+  }
+
+  public RegistrySearchRequestBuilder matchMembersOfBundle(PdsLidVid identifier) {
+    return this.matchField("ops:Provenance/ops:parent_bundle_identifier", identifier);
+  }
+
+  public RegistrySearchRequestBuilder matchMembersOfCollection(PdsLidVid identifier) {
+    return this.matchField("ops:Provenance/ops:parent_collection_identifier", identifier);
   }
 
   public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
@@ -281,6 +316,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this;
   }
 
+  /**
+   * Limit results to the latest version of each LID in the result-set.
+   * N.B. this does *not* mean the latest version which satisfies other constraints, so application of this constraint
+   * can result in no hits being returned despite valid results existing.
+   */
   public RegistrySearchRequestBuilder onlyLatest() {
 
     ExistsQuery supersededByExists = new ExistsQuery.Builder()
@@ -289,6 +329,35 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
     this.queryBuilder.mustNot(supersededByExists.toQuery());
 
+    return this;
+  }
+
+  /**
+   * Limit results to bundle products
+   */
+  public RegistrySearchRequestBuilder onlyBundles() {
+    return this.matchField(PdsProductClasses.getPropertyName(), PdsProductClasses.Product_Bundle.toString());
+  }
+
+
+  /**
+   * Limit results to collection products
+   */public RegistrySearchRequestBuilder onlyCollections() {
+    return this.matchField(PdsProductClasses.getPropertyName(), PdsProductClasses.Product_Collection.toString());
+  }
+
+
+  /**
+   * Limit results to basic (non-aggregate) products, i.e. exclude bundles/collections
+   */
+  public RegistrySearchRequestBuilder onlyBasicProducts() {
+    List<FieldValue> excludeValues = Arrays.stream(PdsProductClasses.values())
+            .filter(cls -> !cls.isBasicProduct())
+            .map(value -> new FieldValue.Builder().stringValue(value.toString()).build()).toList();
+    TermsQueryField termsQueryField = new TermsQueryField.Builder().value(excludeValues).build();
+    TermsQuery query = new TermsQuery.Builder().field(PdsProductClasses.getPropertyName()).terms(termsQueryField).build();
+
+    this.queryBuilder.mustNot(query.toQuery());
     return this;
   }
 

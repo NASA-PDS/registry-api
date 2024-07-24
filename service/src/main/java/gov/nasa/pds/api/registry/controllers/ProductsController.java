@@ -2,9 +2,16 @@ package gov.nasa.pds.api.registry.controllers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
+
+import gov.nasa.pds.api.registry.model.exceptions.*;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
+import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -22,10 +29,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
-import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
-import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
-import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
-import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogicImpl;
@@ -331,6 +334,270 @@ public class ProductsController implements ProductsApi {
 
   }
 
+  private PdsProductClasses resolveProductClass(PdsProductIdentifier identifier)
+  throws OpenSearchException, IOException, NotFoundException{
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier)
+            .fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
+            .onlyLatest()
+            .build();
 
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No product found with identifier " + identifier.toString());
+    }
+
+    String productClassStr = searchResponse.hits().hits().get(0).source().get(PdsProductClasses.getPropertyName()).toString();
+    return PdsProductClasses.valueOf(productClassStr);
+  }
+
+
+  private PdsLidVid resolveLatestLidvid(PdsProductIdentifier identifier)
+          throws OpenSearchException, IOException, NotFoundException {
+
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(identifier.getLid())
+            .fieldsFromStrings(List.of())
+            .onlyLatest()
+            .build();
+
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No lidvids found with lid " + identifier.getLid().toString());
+    }
+
+    // TODO: Determine how to handle multiple hits due to sweepers lag
+
+    return PdsLidVid.fromString(searchResponse.hits().hits().get(0).id());
+  }
+
+
+  private List<PdsLidVid> resolveExtantLidvids(PdsLid lid)
+          throws OpenSearchException, IOException, NotFoundException{
+
+    String lidvidKey = "_id";
+
+    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .matchLid(lid)
+            .fieldsFromStrings(List.of(lidvidKey))
+            .build();
+
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No lidvids found with lid " + lid.toString());
+    }
+
+    return searchResponse.hits().hits().stream().map(hit -> hit.source().get(lidvidKey).toString()).map(PdsLidVid::fromString).toList();
+  }
+
+  /**
+   * Resolve a PdsProductIdentifier to a PdsLidVid according to the common rules of the API.
+   * The rules are currently trivial, but may incorporate additional behaviour later
+   * @param identifier a LID or LIDVID
+   * @return a LIDVID
+   */
+  private PdsLidVid resolveIdentifierToLidvid(PdsProductIdentifier identifier) throws NotFoundException, IOException {
+    return identifier.isLidvid() ? (PdsLidVid) identifier : resolveLatestLidvid(identifier);
+  }
+
+  @Override
+  public ResponseEntity<Object> productMembers(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
+
+      RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+
+      if (productClass.isBundle()) {
+        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.onlyCollections();
+      } else if (productClass.isCollection()) {
+        searchRequestBuilder.matchMembersOfCollection(lidvid);
+        searchRequestBuilder.onlyBasicProducts();
+      } else {
+        throw new BadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection +
+                "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = searchRequestBuilder
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .onlyLatest()
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> productMembersMembers(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
+
+      RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+
+      if (productClass.isBundle()) {
+        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.onlyBasicProducts();
+      } else {
+        throw new BadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = searchRequestBuilder
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .onlyLatest()
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
+
+  /**
+   * Given a PdsProductIdentifier and the name of a document field which is expected to contain an array of LIDVID
+   * strings, return the chained contents of that field from all documents matching the identifier (multiple docs are
+   * possible if the identifier is a LID).
+   * @param identifier the LID/LIDVID for which to retrieve documents
+   * @param fieldName the name of the document _source property/field from which to extract results
+   * @return a deduplicated list of the aggregated property/field contents, converted to PdsProductLidvids
+   */
+  private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier, String fieldName)
+          throws OpenSearchException, IOException, NotFoundException, UnhandledException {
+
+    RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+
+    if (identifier.isLid()) {
+      searchRequestBuilder.matchLid(identifier);
+    } else if (identifier.isLidvid()) {
+      searchRequestBuilder.matchLidvid(identifier);
+    } else {
+      throw new UnhandledException("PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
+    }
+
+    SearchRequest searchRequest = searchRequestBuilder
+            .matchLid(identifier)
+            .fieldsFromStrings(List.of(fieldName))
+            .build();
+
+    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+
+    if (searchResponse.hits().total().value() == 0) {
+      throw new NotFoundException("No product found with identifier " + identifier);
+    }
+
+    return searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).filter(Objects::nonNull).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
+  }
+
+
+  @Override
+  public ResponseEntity<Object> productMemberOf(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
+
+      List<PdsLidVid> parentIds;
+      if (productClass.isCollection()) {
+        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+      } else if (productClass.isBasicProduct()) {
+        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_collection_identifier");
+      } else {
+        throw new BadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+              .matchFieldAnyOfIdentifiers("_id", parentIds)
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .onlyLatest()
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> productMemberOfOf(
+          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
+          AcceptFormatNotSupportedException{
+
+    try{
+      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
+      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
+      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
+
+      List<PdsLidVid> parentIds;
+      if (productClass.isBasicProduct()) {
+        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+      } else {
+//        TODO: replace with enumeration of acceptable values later
+        throw new BadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
+                PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection + "' (got '" + productClass + "')");
+      }
+
+      SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+              .matchFieldAnyOfIdentifiers("_id", parentIds)
+              .fieldsFromStrings(fields)
+              .paginate(limit, sort, searchAfter)
+              .onlyLatest()
+              .build();
+
+      SearchResponse<HashMap> searchResponse =
+              this.openSearchClient.search(searchRequest, HashMap.class);
+
+      RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+      return formatMultipleProducts(products, fields);
+
+    } catch (IOException | OpenSearchException e) {
+      throw new UnhandledException(e);
+    }
+  }
 
 }

@@ -2,6 +2,8 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import java.util.Set;
+
+import gov.nasa.pds.api.registry.model.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
-import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
-import gov.nasa.pds.api.registry.model.exceptions.NotFoundException;
-import gov.nasa.pds.api.registry.model.exceptions.RegistryApiException;
-import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
-import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
-
 
 
 @ControllerAdvice
@@ -46,6 +41,12 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
   @ExceptionHandler(value = {NotFoundException.class})
   protected ResponseEntity<Object> notFound(NotFoundException ex, WebRequest request) {
     return genericExceptionHandler(ex, request, "", HttpStatus.NOT_FOUND);
+
+  }
+
+  @ExceptionHandler(value = {BadRequestException.class})
+  protected ResponseEntity<Object> badRequest(BadRequestException ex, WebRequest request) {
+    return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
 
   }
 
