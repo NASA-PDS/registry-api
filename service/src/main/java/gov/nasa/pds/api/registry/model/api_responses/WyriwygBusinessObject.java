@@ -55,19 +55,9 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
   @Override
   public void setResponse(Map<String, Object> kvps, List<String> fields) {
     // TODO: to be implemented
-    WyriwygProduct product = new WyriwygProduct();
-    for (Entry<String, Object> pair : kvps.entrySet()) {
-      WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
-      try {
-        kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
-        kvp.setValue(getStringValueOf(pair.getValue()));
-        product.addKeyValuePairsItem(kvp);
-      } catch (UnsupportedSearchProperty e) {
-        log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
-      }
-    }
 
-    this.product = product;
+
+    this.product = generateWyriwygProduct(kvps, fields);
   }
 
   @Override
@@ -142,25 +132,42 @@ public class WyriwygBusinessObject extends ProductBusinessLogicImpl {
 
     for (Map<String, Object> hit : hits) {
 
-      uniqueProperties.addAll(getFilteredProperties(hit, fields, null).keySet());
-
-      WyriwygProduct product = new WyriwygProduct();
-      for (Entry<String, Object> pair : hit.entrySet()) {
-        WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
-        try {
-          kvp.setKey(SearchUtil.openPropertyToJsonProperty(pair.getKey()));
-          kvp.setValue(getStringValueOf(pair.getValue()));
-          product.addKeyValuePairsItem(kvp);
-        } catch (UnsupportedSearchProperty e) {
-          log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
-        }
-      }
+      uniqueProperties.addAll(getFilteredProperties(hit, fields, excludedProperties).keySet());
+      WyriwygProduct product = generateWyriwygProduct(hit, fields);
       products.addDataItem(product);
     }
 
     summary.setProperties(new ArrayList<String>(uniqueProperties));
     products.setSummary(summary);
     this.products = products;
+  }
+
+
+  private WyriwygProduct generateWyriwygProduct(Map<String, Object> hit,
+      List<String> included_fields) {
+    WyriwygProduct product = new WyriwygProduct();
+    String jsonProperty;
+    for (Entry<String, Object> pair : hit.entrySet()) {
+      WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
+      try {
+        log.debug(
+            "opensearch property " + pair.getKey() + " being added to response, if relevant ");
+        jsonProperty = SearchUtil.openPropertyToJsonProperty(pair.getKey());
+        if (!excludedProperties.contains(jsonProperty)) {
+          kvp.setKey(jsonProperty);
+          kvp.setValue(getStringValueOf(pair.getValue()));
+          product.addKeyValuePairsItem(kvp);
+          log.debug("json property " + jsonProperty + " added");
+        }
+      } catch (UnsupportedSearchProperty e) {
+        log.warn("openSearch property " + pair.getKey() + " is not supported, ignored");
+      }
+
+    }
+
+    return product;
+
+
   }
 
 
