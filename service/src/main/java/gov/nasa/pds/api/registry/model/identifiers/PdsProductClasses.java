@@ -1,5 +1,8 @@
 package gov.nasa.pds.api.registry.model.identifiers;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * An enumeration of the valid product_class values from the PDS4 Data Dictionary
  * <a href="https://pds.nasa.gov/datastandards/documents/dd/v1/PDS4_PDS_DD_1M00.html#N-1195656387">...</a>
@@ -52,10 +55,50 @@ public enum PdsProductClasses {
     }
 
     /**
-     * @return The database property/field these string values appear in. Provided for convenience.
+     * @return the database property/field these string values appear in. Provided for convenience.
      */
     public static String getPropertyName() {
         return "product_class";
+    }
+
+    public static List<String> getValidSwaggerNames() {
+        return Arrays.stream(PdsProductClasses.values()).map(PdsProductClasses::getSwaggerName).toList();
+    }
+
+    /**
+     * @return the shorthand name used for convenience in API routes, ex. "Product_Bundle" -> "bundle"
+     */
+    public String getSwaggerName() {
+        List<String> chunks = Arrays.asList(this.value.split("_"));
+
+        if (chunks.size() < 2 || !chunks.get(0).equals("Product")) {
+            throw new IllegalArgumentException("Could not generate swagger name for PDSProductClasses value '" + this.value + "'");
+        }
+
+        List<String> relevantChunks = chunks.subList(1, chunks.size());
+
+        return String.join("-", relevantChunks).toLowerCase();
+    }
+
+    /**
+     * @return the PdsProductClass which is equivalent to a given swagger-formatted product class name
+     */
+    public static PdsProductClasses fromSwaggerName(String swaggerName) {
+        List<PdsProductClasses> matches = Arrays.stream(PdsProductClasses.values())
+                .filter(value -> value.getSwaggerName().equals(swaggerName))
+                .toList();
+
+        if (matches.isEmpty()) {
+            throw new IllegalArgumentException("No PdsProductClass matches swagger name '" + swaggerName + "'"
+                    + "'. Valid names are: " + String.join(", ", getValidSwaggerNames()));
+        }
+
+        if (matches.size() > 1) {
+//            This should never be possible and indicates an error in the enum value definitions
+            throw new IllegalArgumentException("Multiple PdsProductClass matches swagger name '" + swaggerName + "'");
+        }
+
+        return matches.get(0);
     }
 
     public Boolean isBundle() {
