@@ -133,7 +133,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
     if (noSupersededProducts) {
-      this.onlyLatest();
+      this.noSupersededProducts();
     }
 
     return this;
@@ -358,7 +358,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * N.B. this does *not* mean the latest version which satisfies other constraints, so application of this constraint
    * can result in no hits being returned despite valid results existing.
    */
-  public RegistrySearchRequestBuilder onlyLatest() {
+  public RegistrySearchRequestBuilder noSupersededProducts() {
 
     ExistsQuery supersededByExists = new ExistsQuery.Builder()
             .field("ops:Provenance/ops:superseded_by")
