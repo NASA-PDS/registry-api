@@ -249,11 +249,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .constrainByQueryString(q)
-            .addKeywordsParam(keywords)
-            .fieldsFromStrings(fields)
-            .paginate(limit, sort, searchAfter)
-            .onlyLatest()
+            .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
             .build();
 
     SearchResponse<HashMap> searchResponse =
@@ -437,9 +433,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-              .fieldsFromStrings(fields)
-              .paginate(limit, sort, searchAfter)
-              .onlyLatest()
+              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -449,7 +443,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
       return formatMultipleProducts(products, fields);
 
-    } catch (IOException | OpenSearchException e) {
+    } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
     }
   }
@@ -476,9 +470,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-              .fieldsFromStrings(fields)
-              .paginate(limit, sort, searchAfter)
-              .onlyLatest()
+              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -488,7 +480,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
       return formatMultipleProducts(products, fields);
 
-    } catch (IOException | OpenSearchException e) {
+    } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
     }
   }
@@ -533,7 +525,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
   public ResponseEntity<Object> productMemberOf(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
           throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
-          AcceptFormatNotSupportedException{
+          AcceptFormatNotSupportedException, UnparsableQParamException {
 
     try{
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
@@ -551,10 +543,8 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
               .matchFieldAnyOfIdentifiers("_id", parentIds)
-              .fieldsFromStrings(fields)
-              .paginate(limit, sort, searchAfter)
-              .onlyLatest()
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -573,7 +563,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
   public ResponseEntity<Object> productMemberOfOf(
           String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
           throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
-          AcceptFormatNotSupportedException{
+          AcceptFormatNotSupportedException, UnparsableQParamException {
 
     try{
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
@@ -590,10 +580,8 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
               .matchFieldAnyOfIdentifiers("_id", parentIds)
-              .fieldsFromStrings(fields)
-              .paginate(limit, sort, searchAfter)
-              .onlyLatest()
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -619,12 +607,8 @@ public class ProductsController implements ProductsApi, ClassesApi {
     }
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
+            .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
             .matchProductClass(pdsProductClass)
-            .constrainByQueryString(q)
-            .addKeywordsParam(keywords)
-            .fieldsFromStrings(fields)
-            .paginate(limit, sort, searchAfter)
-            .onlyLatest()
             .build();
 
     SearchResponse<HashMap> searchResponse =
