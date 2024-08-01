@@ -115,7 +115,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * @param pageSize - the page size to use for pagination
    * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to lowest priority
    * @param searchAfterFieldValues - the values corresponding to the sort fields, for pagination
-   * @param noSupersededProducts - whether to exclude superseded products from the result set
+   * @param excludeSupersededProducts - whether to exclude superseded products from the result set
    */
   public RegistrySearchRequestBuilder applyMultipleProductsDefaults(
           List<String> includeFieldNames,
@@ -124,7 +124,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
           Integer pageSize,
           List<String> sortFieldNames,
           List<String> searchAfterFieldValues,
-          Boolean noSupersededProducts
+          Boolean excludeSupersededProducts
   ) throws UnparsableQParamException, SortSearchAfterMismatchException {
     this
       .fieldsFromStrings(includeFieldNames)
@@ -132,8 +132,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
       .addKeywordsParam(keywords)
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
-    if (noSupersededProducts) {
-      this.noSupersededProducts();
+    if (excludeSupersededProducts) {
+      this.excludeSupersededProducts();
     }
 
     return this;
@@ -358,7 +358,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * N.B. this does *not* mean the latest version which satisfies other constraints, so application of this constraint
    * can result in no hits being returned despite valid results existing.
    */
-  public RegistrySearchRequestBuilder noSupersededProducts() {
+  public RegistrySearchRequestBuilder excludeSupersededProducts() {
 
     ExistsQuery supersededByExists = new ExistsQuery.Builder()
             .field("ops:Provenance/ops:superseded_by")

@@ -295,7 +295,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
             .matchLid(identifier)
             .fieldsFromStrings(fields)
-            .noSupersededProducts()
+            .excludeSupersededProducts()
             .build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
@@ -343,7 +343,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
             .matchLid(identifier)
             .fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
-            .noSupersededProducts()
+            .excludeSupersededProducts()
             .build();
 
     SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
@@ -363,7 +363,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
             .matchLid(identifier.getLid())
             .fieldsFromStrings(List.of())
-            .noSupersededProducts()
+            .excludeSupersededProducts()
             .build();
 
     SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
