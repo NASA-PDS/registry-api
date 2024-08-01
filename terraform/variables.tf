@@ -36,6 +36,11 @@ variable "aws_fg_subnets" {
   type = list(string)
 }
 
+variable "aws_lb_subnets" {
+  description = "AWS Subnets for the load balancer"
+  type = list(string)
+}
+
 variable "ecs_task_role" {
   description = "ECS task role"
 }
