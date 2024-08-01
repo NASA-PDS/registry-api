@@ -20,6 +20,13 @@ resource "aws_lb" "registry-api-lb" {
   }
 }
 
+resource "aws_ssm_parameter" "load_balancer_domain" {
+  name  = "/pds/registry/load-balancer-domain"
+  type  = "String"
+  overwrite   = true
+  value = aws_lb.registry-api-lb.dns_name
+}
+
 resource "aws_lb_target_group" "pds-registry-api-target-group" {
   name        = "pds-${var.venue}-registry-tgt"
   port        = 80
