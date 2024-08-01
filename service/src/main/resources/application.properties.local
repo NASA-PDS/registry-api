@@ -1,0 +1,20 @@
+springfox.documentation.swagger.v2.path=/api-docs
+server.contextPath=/
+server.port=8080
+#spring.jackson.date-format=io.swagger.RFC3339DateFormat
+spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
+debug=false
+logging.level.root = INFO
+logging.level.gov.nasa.pds.api.registry.opensearch = DEBUG
+
+## note the port is mandatory even when it is default :80 or :443
+openSearch.host=localhost:9200
+openSearch.registryIndex=registry
+openSearch.registryRefIndex=registry-refs
+openSearch.timeOutSeconds=60
+openSearch.username=
+openSearch.password=
+openSearch.ssl=false
+
+# source version from maven
+registry.service.version=${project.version}

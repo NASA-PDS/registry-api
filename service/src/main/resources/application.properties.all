@@ -1,0 +1,34 @@
+springfox.documentation.swagger.v2.path=/api-docs
+server.contextPath=/
+server.port=8080
+server.use-forward-headers=true
+
+#spring.jackson.date-format=io.swagger.RFC3339DateFormat
+spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
+
+debug=true
+logging.level.root = DEBUG
+logging.level.gov.nasa.pds.api.registry.opensearch = DEBUG
+
+server.ssl.enabled=false
+server.ssl.key-alias=registry
+server.ssl.key-store-password=
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-type=PKCS12
+
+# note the port is mandatory even when it is default :80 or :443
+openSearch.host=localhost:9200
+openSearch.registryIndex=registry
+openSearch.registryRefIndex=registry-refs
+openSearch.timeOutSeconds=60
+openSearch.username=admin
+openSearch.password=admin
+openSearch.ssl=true
+# use only for development purpose, left it to true otherwise
+openSearch.sslCertificateCNVerification=false
+
+# Only show products with following archive statuses
+filter.archiveStatus=archived,certified
+
+# source version from maven
+registry.service.version=${project.version}

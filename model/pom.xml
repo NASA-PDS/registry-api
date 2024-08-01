@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Copyright © 2021, California Institute of Technology ("Caltech").
+    U.S. Government sponsorship acknowledged.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    • Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+    • Redistributions must reproduce the above copyright notice, this list of
+    conditions and the following disclaimer in the documentation and/or other
+    materials provided with the distribution.
+    • Neither the name of Caltech nor its operating division, the Jet Propulsion
+    Laboratory, nor the names of its contributors may be used to endorse or
+    promote products derived from this software without specific prior written
+    permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>gov.nasa.pds</groupId>
+    <artifactId>registry-api</artifactId>
+    <version>1.5.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>gov.nasa.pds.registry-api</groupId>
+  <artifactId>registry-api-model</artifactId>
+
+  <name>Registry API Model</name>
+  <description>PDS Registry API Controllers and Responses Models</description>
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+
+  <build>
+    <plugins>
+    <plugin>
+    <groupId>org.openapitools</groupId>
+    <artifactId>openapi-generator-maven-plugin</artifactId>
+    <!-- RELEASE_VERSION -->
+    <version>6.3.0</version>
+	<executions>
+	  <execution>
+	    <goals>
+	      <goal>generate</goal>
+	    </goals>
+	    	<configuration>
+	      <inputSpec>${project.basedir}/swagger.yml</inputSpec>
+	      <generatorName>spring</generatorName>
+	      <withXml>true</withXml>
+              <skipValidateSpec>true</skipValidateSpec>
+	      <configOptions>
+			<sourceFolder>src/main/java</sourceFolder>
+			<dateLibrary>joda</dateLibrary>
+			<documentationProvider>springdoc</documentationProvider>
+			<licenseName>apache-2</licenseName>
+			<modelPackage>gov.nasa.pds.model</modelPackage>
+			<apiPackage>gov.nasa.pds.api.base</apiPackage>
+			<generateSupportingFiles>false</generateSupportingFiles>
+			<interfaceOnly>false</interfaceOnly>
+			<useSpringBoot3>true</useSpringBoot3>
+			<unhandledException>true</unhandledException>
+	      </configOptions>
+
+	</configuration>
+	  </execution>
+	</executions>
+
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <failOnError>false</failOnError>
+          <excludePackageNames>target.generated-sources.swagger.src.gen.java.main.*,io.swagger.*</excludePackageNames>
+        </configuration>
+      </plugin>
+      <!-- Disable Site for now -->
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+         </plugins>
+  </build>
+  
+  <dependencies>  
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency> 
+	  
+    
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-autoconfigure -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+
+	<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+	<dependency>
+	    <groupId>jakarta.servlet</groupId>
+	    <artifactId>jakarta.servlet-api</artifactId>
+	    <version>6.0.0</version>
+	    <scope>provided</scope>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+	<dependency>
+	    <groupId>jakarta.annotation</groupId>
+	    <artifactId>jakarta.annotation-api</artifactId>
+	    <version>2.1.1</version>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+	<dependency>
+	    <groupId>jakarta.validation</groupId>
+	    <artifactId>jakarta.validation-api</artifactId>
+	    <version>3.0.2</version>
+	</dependency>
+
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>2.13.2</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
+    <dependency>
+      <groupId>com.github.joschi.jackson</groupId>
+      <artifactId>jackson-datatype-threetenbp</artifactId>
+      <version>2.12.5</version>
+    </dependency>
+
+    <dependency>
+    <groupId>org.openapitools</groupId>
+    <artifactId>jackson-databind-nullable</artifactId>
+    <version>0.2.4</version>
+</dependency>
+
+    <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.6</version>
+    </dependency>
+
+
+
+    <!-- https://mvnrepository.com/artifact/org.threeten/threetenbp -->
+    <dependency>
+      <groupId>org.threeten</groupId>
+      <artifactId>threetenbp</artifactId>
+      <version>1.4.4</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+	<dependency>
+	    <groupId>io.swagger.core.v3</groupId>
+	    <artifactId>swagger-annotations</artifactId>
+	    <version>2.2.8</version>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
+	<dependency>
+	    <groupId>io.swagger.core.v3</groupId>
+	    <artifactId>swagger-models</artifactId>
+	    <version>2.2.8</version>
+	</dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
+  </dependencies>
+
+ <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <!-- Import dependency management from Spring Boot -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>3.0.4</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+</project>
