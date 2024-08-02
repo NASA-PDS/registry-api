@@ -38,7 +38,7 @@
         { "field": "mission", "match": "ins" },
         { "field": "fileExtension", "match": "\\.IMG" }
       ],
-      "reject": [{ "field": "uri", "match": ".*mars2020_helicam.*" }]
+      "reject": [{ "field": "lidvid", "match": ".*mars2020_helicam.*" }]
     },
     {
       "name": "atlas4",

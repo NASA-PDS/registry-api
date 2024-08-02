@@ -33,7 +33,7 @@ public class CrossLinksLoader {
         if (config == null) {
             ObjectMapper mapper = new ObjectMapper();
             try {
-                config = mapper.readValue(new File("cross-links.json"), CrossLinks.class);
+                config = mapper.readValue(new File("src/main/resources/cross-links.json"), CrossLinks.class);
                 System.out.println(config);
             } catch (IOException e) {
                 // Handle exception
