@@ -106,6 +106,39 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this.queryBuilder;
   }
 
+  /**
+   * Applies a common set of constraints and other build options which generally apply to any endpoint which queries
+   * OpenSearch for a result-set of multiple products.
+   * @param includeFieldNames - which properties to include in the results (JSON format, not OpenSearch format)
+   * @param queryString - a querystring (q=) to constrain the result-set by
+   * @param keywords - a set of keyword matches to <exact behaviour TBD - not implemented yet>
+   * @param pageSize - the page size to use for pagination
+   * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to lowest priority
+   * @param searchAfterFieldValues - the values corresponding to the sort fields, for pagination
+   * @param excludeSupersededProducts - whether to exclude superseded products from the result set
+   */
+  public RegistrySearchRequestBuilder applyMultipleProductsDefaults(
+          List<String> includeFieldNames,
+          String queryString,
+          List<String> keywords,
+          Integer pageSize,
+          List<String> sortFieldNames,
+          List<String> searchAfterFieldValues,
+          Boolean excludeSupersededProducts
+  ) throws UnparsableQParamException, SortSearchAfterMismatchException {
+    this
+      .fieldsFromStrings(includeFieldNames)
+      .constrainByQueryString(queryString)
+      .addKeywordsParam(keywords)
+      .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
+
+    if (excludeSupersededProducts) {
+      this.excludeSupersededProducts();
+    }
+
+    return this;
+  }
+
   public SearchRequest build() {
     this.query(this.queryBuilder.build().toQuery());
     this.trackTotalHits(t -> t.enabled(true));
@@ -325,7 +358,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * N.B. this does *not* mean the latest version which satisfies other constraints, so application of this constraint
    * can result in no hits being returned despite valid results existing.
    */
-  public RegistrySearchRequestBuilder onlyLatest() {
+  public RegistrySearchRequestBuilder excludeSupersededProducts() {
 
     ExistsQuery supersededByExists = new ExistsQuery.Builder()
             .field("ops:Provenance/ops:superseded_by")
