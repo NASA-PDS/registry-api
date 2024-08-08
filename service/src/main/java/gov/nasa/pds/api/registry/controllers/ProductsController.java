@@ -409,7 +409,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
   @Override
   public ResponseEntity<Object> productMembers(
-          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
           throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException{
 
@@ -433,7 +433,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
+              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -450,7 +450,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
   @Override
   public ResponseEntity<Object> productMembersMembers(
-          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
           throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException{
 
@@ -470,7 +470,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
+              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
               .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -523,7 +523,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
   @Override
   public ResponseEntity<Object> productMemberOf(
-          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
           throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException, UnparsableQParamException {
 
@@ -543,7 +543,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
+              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
               .matchFieldAnyOfIdentifiers("_id", parentIds)
               .build();
 
@@ -561,7 +561,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
   @Override
   public ResponseEntity<Object> productMemberOfOf(
-          String identifier, List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
+          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
           throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
           AcceptFormatNotSupportedException, UnparsableQParamException {
 
@@ -580,7 +580,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-              .applyMultipleProductsDefaults(fields, "", List.of(), limit, sort, searchAfter, true)
+              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
               .matchFieldAnyOfIdentifiers("_id", parentIds)
               .build();
 

@@ -278,6 +278,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/members/{versions}:
@@ -302,6 +303,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
@@ -327,6 +329,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/members/members/{versions}:
@@ -351,6 +354,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
@@ -376,6 +380,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/member-of/{versions}:
@@ -400,6 +405,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
@@ -425,6 +431,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
   /products/{identifier}/member-of/member-of/{versions}:
@@ -449,6 +456,7 @@ paths:
       - $ref: "#/components/parameters/Fields"
       - $ref: "#/components/parameters/Identifier"
       - $ref: "#/components/parameters/Limit"
+      - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/Versions"
