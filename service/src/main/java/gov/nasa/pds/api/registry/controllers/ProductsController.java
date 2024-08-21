@@ -3,18 +3,25 @@ package gov.nasa.pds.api.registry.controllers;
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.base.ClassesApi;
+import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
+import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.OpenSearchException;
+import org.opensearch.client.opensearch._types.mapping.Property;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
+import org.opensearch.client.opensearch.indices.GetMappingRequest;
+import org.opensearch.client.opensearch.indices.GetMappingResponse;
+import org.opensearch.client.opensearch.indices.OpenSearchIndicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +43,14 @@ import gov.nasa.pds.api.registry.model.api_responses.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.model.PropertiesListInner;
 
 
 
 @Controller
-// TODO: Refactor common controller code out of ProductsController and split the additional API
-// implementations out into
-// corresponding controllers
-public class ProductsController implements ProductsApi, ClassesApi {
+// TODO: Refactor common controller code out of ProductsController and split the additional API implementations out into
+//  corresponding controllers
+public class ProductsController implements ProductsApi, ClassesApi, PropertiesApi {
 
   @Override
   // TODO: Remove this when the common controller code is refactored out - it is only necessary
@@ -362,7 +369,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
   /**
    * Resolve a PdsProductIdentifier to a PdsLidVid according to the common rules of the API. The
    * rules are currently trivial, but may incorporate additional behaviour later
-   * 
+   *
    * @param identifier a LID or LIDVID
    * @return a LIDVID
    */
@@ -457,7 +464,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
    * Given a PdsProductIdentifier and the name of a document field which is expected to contain an
    * array of LIDVID strings, return the chained contents of that field from all documents matching
    * the identifier (multiple docs are possible if the identifier is a LID).
-   * 
+   *
    * @param identifier the LID/LIDVID for which to retrieve documents
    * @param fieldName the name of the document _source property/field from which to extract results
    * @return a deduplicated list of the aggregated property/field contents, converted to
@@ -607,4 +614,59 @@ public class ProductsController implements ProductsApi, ClassesApi {
         Arrays.stream(PdsProductClasses.values()).map(PdsProductClasses::getSwaggerName).toList(),
         HttpStatusCode.valueOf(200));
   }
+
+  /**
+   * Resolve the appropriate enumerated user type hint from an OpenSearch Property
+   */
+  protected PropertiesListInner.TypeEnum _resolvePropertyToEnumType(Property property) {
+    if (property.isBoolean()) {
+      return PropertiesListInner.TypeEnum.BOOLEAN;
+    } else if (property.isKeyword() || property.isText()) {
+      return PropertiesListInner.TypeEnum.STRING;
+    } else if (property.isDate()) {
+      return PropertiesListInner.TypeEnum.TIMESTAMP;
+    } else if (property.isInteger() || property.isLong()) {
+      return PropertiesListInner.TypeEnum.INTEGER;
+    } else if (property.isFloat() || property.isDouble()) {
+      return PropertiesListInner.TypeEnum.FLOAT;
+    } else {
+      return PropertiesListInner.TypeEnum.UNSUPPORTED;
+    }
+  }
+
+  @Override
+  public ResponseEntity<List<PropertiesListInner>> productPropertiesList() throws Exception {
+
+    List<String> indexNames = this.connectionContext.getRegistryIndices();
+
+    GetMappingRequest getMappingRequest = new GetMappingRequest.Builder().index(indexNames).build();
+
+    OpenSearchIndicesClient indicesClient = this.openSearchClient.indices();
+
+    GetMappingResponse getMappingResponse = indicesClient.getMapping(getMappingRequest);
+
+    Set<String> resultIndexNames = getMappingResponse.result().keySet();
+    SortedMap<String, PropertiesListInner.TypeEnum> aggregatedMappings = new TreeMap<>();
+    for (String indexName : resultIndexNames) {
+      Set<Map.Entry<String, Property>> indexProperties = getMappingResponse.result().get(indexName).mappings().properties().entrySet();
+      for (Map.Entry<String, Property> property : indexProperties) {
+        String jsonPropertyName = PdsProperty.toJsonPropertyString(property.getKey());
+        Property openPropertyName = property.getValue();
+        PropertiesListInner.TypeEnum propertyEnumType = _resolvePropertyToEnumType(openPropertyName);
+
+//        No consistency-checking between duplicates, for now. TODO: add error log for mismatching duplicates
+        aggregatedMappings.put(jsonPropertyName, propertyEnumType);
+      }
+    }
+
+    List<PropertiesListInner> apiResponseContent = aggregatedMappings.entrySet().stream().map((entry) -> {
+      PropertiesListInner propertyElement = new PropertiesListInner();
+      propertyElement.setProperty(entry.getKey());
+      propertyElement.setType(entry.getValue());
+      return propertyElement;
+    }).toList();
+
+    return new ResponseEntity<>(apiResponseContent, HttpStatus.OK);
+  }
 }
+
