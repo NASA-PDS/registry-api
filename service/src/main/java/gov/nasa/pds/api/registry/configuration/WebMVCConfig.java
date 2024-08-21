@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.registry.configuration;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +162,10 @@ public class WebMVCConfig implements WebMvcConfigurer {
   static public Class<? extends ProductBusinessLogic> selectFormatterClass(String acceptHeaderValue)
       throws AcceptFormatNotSupportedException {
 
-    String[] acceptOrderedValues = acceptHeaderValue.split(",", 0);
+
+    // split by , and remove extra spaces
+    String[] acceptOrderedValues =
+        Arrays.stream(acceptHeaderValue.split(",")).map(String::trim).toArray(String[]::new);
 
     for (String acceptValue : acceptOrderedValues) {
       if (WebMVCConfig.formatters.containsKey(acceptValue)) {
@@ -171,7 +175,7 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
     // if none of the Accept format proposed matches
     throw new AcceptFormatNotSupportedException(
-        "None of the format(s) " + acceptHeaderValue + "is supported.");
+        "None of the format(s) " + acceptHeaderValue + " is supported.");
 
   }
 
