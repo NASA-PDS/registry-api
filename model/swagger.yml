@@ -119,7 +119,7 @@ paths:
       tags:
         - 5. all docs
       summary: |
-        search on all registry documents by posting an OpenSearch DSL query
+        WORK IN PROGRESS: search on all registry documents by posting an OpenSearch DSL query
       operationId: docs
       requestBody:
         description: OpenSearch DSL query
