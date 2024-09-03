@@ -2,7 +2,7 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import java.util.Set;
-
+import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,7 +59,7 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
   @ExceptionHandler(value = {AcceptFormatNotSupportedException.class})
   protected ResponseEntity<Object> notAcceptable(AcceptFormatNotSupportedException ex,
       WebRequest request) {
-    Set<String> supportedFormats = ProductsController.getFormatters().keySet();
+    Set<String> supportedFormats = WebMVCConfig.getFormatters().keySet();
     String errorDescriptionSuffix =
         " Supported formats (in Accept header) are: " + String.join(", ", supportedFormats);
 
@@ -69,7 +69,7 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
 
   @ExceptionHandler(value = {SortSearchAfterMismatchException.class})
   protected ResponseEntity<Object> missSort(SortSearchAfterMismatchException ex,
-                                            WebRequest request) {
+      WebRequest request) {
     return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
   }
 

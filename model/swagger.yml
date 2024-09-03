@@ -668,7 +668,7 @@ components:
       content:
         "*":
           schema:
-            type: object
+            $ref: '#/components/schemas/propertiesList'
         "*/*":
           schema:
             $ref: '#/components/schemas/propertiesList'

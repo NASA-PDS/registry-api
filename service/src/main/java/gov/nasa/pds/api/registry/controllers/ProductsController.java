@@ -3,18 +3,25 @@ package gov.nasa.pds.api.registry.controllers;
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.base.ClassesApi;
+import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
+import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.OpenSearchException;
+import org.opensearch.client.opensearch._types.mapping.Property;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
+import org.opensearch.client.opensearch.indices.GetMappingRequest;
+import org.opensearch.client.opensearch.indices.GetMappingResponse;
+import org.opensearch.client.opensearch.indices.OpenSearchIndicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +34,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
@@ -35,16 +43,18 @@ import gov.nasa.pds.api.registry.model.api_responses.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.model.PropertiesListInner;
 
 
 
 @Controller
 // TODO: Refactor common controller code out of ProductsController and split the additional API implementations out into
 //  corresponding controllers
-public class ProductsController implements ProductsApi, ClassesApi {
+public class ProductsController implements ProductsApi, ClassesApi, PropertiesApi {
 
   @Override
-  // TODO: Remove this when the common controller code is refactored out - it is only necessary because additional
+  // TODO: Remove this when the common controller code is refactored out - it is only necessary
+  // because additional
   // interfaces have been implemented as a stopgap
   public Optional<NativeWebRequest> getRequest() {
     return ProductsApi.super.getRequest();
@@ -58,34 +68,10 @@ public class ProductsController implements ProductsApi, ClassesApi {
   private OpenSearchClient openSearchClient;
   private SearchRequest presetSearchRequest;
 
-  // TODO move that at a better place, it is not specific to this controller
-  private static Map<String, Class<? extends ProductBusinessLogic>> formatters =
-      new HashMap<String, Class<? extends ProductBusinessLogic>>();
-
-  static Map<String, Class<? extends ProductBusinessLogic>> getFormatters() {
-    return formatters;
-  }
-
   static Integer DEFAULT_LIMIT = 100;
 
-  static {
-    // TODO move that at a better place, it is not specific to this controller
-    formatters.put("*", PdsProductBusinessObject.class);
-    formatters.put("*/*", PdsProductBusinessObject.class);
-    formatters.put("application/csv", WyriwygBusinessObject.class);
-    formatters.put("application/json", PdsProductBusinessObject.class);
-    formatters.put("application/kvp+json", WyriwygBusinessObject.class);
-    // this.formatters.put("application/vnd.nasa.pds.pds4+json", new
-    // Pds4ProductBusinessObject(true));
-    // this.formatters.put("application/vnd.nasa.pds.pds4+xml", new
-    // Pds4ProductBusinessObject(false));
-    formatters.put("application/xml", PdsProductBusinessObject.class);
-    formatters.put("text/csv", WyriwygBusinessObject.class);
-    formatters.put("text/html", PdsProductBusinessObject.class);
-    formatters.put("text/xml", PdsProductBusinessObject.class);
-  }
 
-
+  // TODO move that at a better place, it is not specific to this controller
   @Autowired
   public ProductsController(ConnectionContext connectionContext,
       ErrorMessageFactory errorMessageFactory, ObjectMapper objectMapper) {
@@ -97,6 +83,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
   }
 
+
   private ResponseEntity<Object> formatSingleProduct(HashMap<String, Object> product,
       List<String> fields) throws AcceptFormatNotSupportedException, UnhandledException {
     // TODO add case when Accept is not available, default application/json
@@ -104,13 +91,8 @@ public class ProductsController implements ProductsApi, ClassesApi {
         ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     String acceptHeaderValue = curRequest.getHeader("Accept");
 
-    if (!ProductsController.formatters.containsKey(acceptHeaderValue)) {
-      throw new AcceptFormatNotSupportedException(
-          "format " + acceptHeaderValue + "is not supported.");
-    }
-
     Class<? extends ProductBusinessLogic> formatterClass =
-        ProductsController.formatters.get(acceptHeaderValue);
+        WebMVCConfig.selectFormatterClass(acceptHeaderValue);
 
     try {
       // TODO replace URLs from the request path
@@ -137,13 +119,9 @@ public class ProductsController implements ProductsApi, ClassesApi {
         ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     String acceptHeaderValue = curRequest.getHeader("Accept");
 
-    if (!ProductsController.formatters.containsKey(acceptHeaderValue)) {
-      throw new AcceptFormatNotSupportedException(
-          "format " + acceptHeaderValue + " is not supported.");
-    }
-
     Class<? extends ProductBusinessLogic> formatterClass =
-        ProductsController.formatters.get(acceptHeaderValue);
+        WebMVCConfig.selectFormatterClass(acceptHeaderValue);
+
 
     try {
       // TODO replace URLs from the request path
@@ -249,8 +227,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
-            .build();
+        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -269,9 +246,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       throws OpenSearchException, IOException, NotFoundException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .matchLidvid(identifier)
-            .fieldsFromStrings(fields)
-            .build();
+        .matchLidvid(identifier).fieldsFromStrings(fields).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -293,10 +268,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       List<String> fields) throws OpenSearchException, IOException, NotFoundException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .matchLid(identifier)
-            .fieldsFromStrings(fields)
-            .excludeSupersededProducts()
-            .build();
+        .matchLid(identifier).fieldsFromStrings(fields).excludeSupersededProducts().build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -320,9 +292,7 @@ public class ProductsController implements ProductsApi, ClassesApi {
       throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .matchLid(identifier).fieldsFromStrings(fields)
-            .paginate(limit, sort, searchAfter)
-            .build();
+        .matchLid(identifier).fieldsFromStrings(fields).paginate(limit, sort, searchAfter).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -339,34 +309,33 @@ public class ProductsController implements ProductsApi, ClassesApi {
   }
 
   private PdsProductClasses resolveProductClass(PdsProductIdentifier identifier)
-  throws OpenSearchException, IOException, NotFoundException{
+      throws OpenSearchException, IOException, NotFoundException {
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .matchLid(identifier)
-            .fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
-            .excludeSupersededProducts()
-            .build();
+        .matchLid(identifier).fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
+        .excludeSupersededProducts().build();
 
-    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier.toString());
     }
 
-    String productClassStr = searchResponse.hits().hits().get(0).source().get(PdsProductClasses.getPropertyName()).toString();
+    String productClassStr = searchResponse.hits().hits().get(0).source()
+        .get(PdsProductClasses.getPropertyName()).toString();
     return PdsProductClasses.valueOf(productClassStr);
   }
 
 
   private PdsLidVid resolveLatestLidvid(PdsProductIdentifier identifier)
-          throws OpenSearchException, IOException, NotFoundException {
+      throws OpenSearchException, IOException, NotFoundException {
 
-    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .matchLid(identifier.getLid())
-            .fieldsFromStrings(List.of())
-            .excludeSupersededProducts()
-            .build();
+    SearchRequest searchRequest =
+        new RegistrySearchRequestBuilder(this.connectionContext).matchLid(identifier.getLid())
+            .fieldsFromStrings(List.of()).excludeSupersededProducts().build();
 
-    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No lidvids found with lid " + identifier.getLid().toString());
@@ -379,46 +348,49 @@ public class ProductsController implements ProductsApi, ClassesApi {
 
 
   private List<PdsLidVid> resolveExtantLidvids(PdsLid lid)
-          throws OpenSearchException, IOException, NotFoundException{
+      throws OpenSearchException, IOException, NotFoundException {
 
     String lidvidKey = "_id";
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .matchLid(lid)
-            .fieldsFromStrings(List.of(lidvidKey))
-            .build();
+        .matchLid(lid).fieldsFromStrings(List.of(lidvidKey)).build();
 
-    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No lidvids found with lid " + lid.toString());
     }
 
-    return searchResponse.hits().hits().stream().map(hit -> hit.source().get(lidvidKey).toString()).map(PdsLidVid::fromString).toList();
+    return searchResponse.hits().hits().stream().map(hit -> hit.source().get(lidvidKey).toString())
+        .map(PdsLidVid::fromString).toList();
   }
 
   /**
-   * Resolve a PdsProductIdentifier to a PdsLidVid according to the common rules of the API.
-   * The rules are currently trivial, but may incorporate additional behaviour later
+   * Resolve a PdsProductIdentifier to a PdsLidVid according to the common rules of the API. The
+   * rules are currently trivial, but may incorporate additional behaviour later
+   *
    * @param identifier a LID or LIDVID
    * @return a LIDVID
    */
-  private PdsLidVid resolveIdentifierToLidvid(PdsProductIdentifier identifier) throws NotFoundException, IOException {
+  private PdsLidVid resolveIdentifierToLidvid(PdsProductIdentifier identifier)
+      throws NotFoundException, IOException {
     return identifier.isLidvid() ? (PdsLidVid) identifier : resolveLatestLidvid(identifier);
   }
 
   @Override
-  public ResponseEntity<Object> productMembers(
-          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
-          AcceptFormatNotSupportedException{
+  public ResponseEntity<Object> productMembers(String identifier, List<String> fields,
+      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
+      BadRequestException, AcceptFormatNotSupportedException {
 
-    try{
+    try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
       PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
-      RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+      RegistrySearchRequestBuilder searchRequestBuilder =
+          new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
         searchRequestBuilder.matchMembersOfBundle(lidvid);
@@ -427,17 +399,18 @@ public class ProductsController implements ProductsApi, ClassesApi {
         searchRequestBuilder.matchMembersOfCollection(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
-        throw new BadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
-                PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection +
-                "' (got '" + productClass + "')");
+        throw new BadRequestException(
+            "productMembers endpoint is only valid for products with Product_Class '"
+                + PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection
+                + "' (got '" + productClass + "')");
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
-              .build();
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .build();
 
       SearchResponse<HashMap> searchResponse =
-              this.openSearchClient.search(searchRequest, HashMap.class);
+          this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
@@ -449,32 +422,34 @@ public class ProductsController implements ProductsApi, ClassesApi {
   }
 
   @Override
-  public ResponseEntity<Object> productMembersMembers(
-          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
-          AcceptFormatNotSupportedException{
+  public ResponseEntity<Object> productMembersMembers(String identifier, List<String> fields,
+      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
+      BadRequestException, AcceptFormatNotSupportedException {
 
-    try{
+    try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
       PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
-      RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+      RegistrySearchRequestBuilder searchRequestBuilder =
+          new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
         searchRequestBuilder.matchMembersOfBundle(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
-        throw new BadRequestException("productMembers endpoint is only valid for products with Product_Class '" +
-                PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
+        throw new BadRequestException(
+            "productMembers endpoint is only valid for products with Product_Class '"
+                + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
-              .build();
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .build();
 
       SearchResponse<HashMap> searchResponse =
-              this.openSearchClient.search(searchRequest, HashMap.class);
+          this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
@@ -486,69 +461,77 @@ public class ProductsController implements ProductsApi, ClassesApi {
   }
 
   /**
-   * Given a PdsProductIdentifier and the name of a document field which is expected to contain an array of LIDVID
-   * strings, return the chained contents of that field from all documents matching the identifier (multiple docs are
-   * possible if the identifier is a LID).
+   * Given a PdsProductIdentifier and the name of a document field which is expected to contain an
+   * array of LIDVID strings, return the chained contents of that field from all documents matching
+   * the identifier (multiple docs are possible if the identifier is a LID).
+   *
    * @param identifier the LID/LIDVID for which to retrieve documents
    * @param fieldName the name of the document _source property/field from which to extract results
-   * @return a deduplicated list of the aggregated property/field contents, converted to PdsProductLidvids
+   * @return a deduplicated list of the aggregated property/field contents, converted to
+   *         PdsProductLidvids
    */
-  private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier, String fieldName)
-          throws OpenSearchException, IOException, NotFoundException, UnhandledException {
+  private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier,
+      String fieldName)
+      throws OpenSearchException, IOException, NotFoundException, UnhandledException {
 
-    RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
+    RegistrySearchRequestBuilder searchRequestBuilder =
+        new RegistrySearchRequestBuilder(this.connectionContext);
 
     if (identifier.isLid()) {
       searchRequestBuilder.matchLid(identifier);
     } else if (identifier.isLidvid()) {
       searchRequestBuilder.matchLidvid(identifier);
     } else {
-      throw new UnhandledException("PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
+      throw new UnhandledException(
+          "PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
     }
 
-    SearchRequest searchRequest = searchRequestBuilder
-            .matchLid(identifier)
-            .fieldsFromStrings(List.of(fieldName))
-            .build();
+    SearchRequest searchRequest =
+        searchRequestBuilder.matchLid(identifier).fieldsFromStrings(List.of(fieldName)).build();
 
-    SearchResponse<HashMap> searchResponse = this.openSearchClient.search(searchRequest, HashMap.class);
+    SearchResponse<HashMap> searchResponse =
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier);
     }
 
-    return searchResponse.hits().hits().stream().map(hit -> (List<String>) hit.source().get(fieldName)).filter(Objects::nonNull).flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
+    return searchResponse.hits().hits().stream()
+        .map(hit -> (List<String>) hit.source().get(fieldName)).filter(Objects::nonNull)
+        .flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
   }
 
 
   @Override
-  public ResponseEntity<Object> productMemberOf(
-          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
-          AcceptFormatNotSupportedException, UnparsableQParamException {
+  public ResponseEntity<Object> productMemberOf(String identifier, List<String> fields,
+      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
+      BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
-    try{
+    try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
       PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
       List<PdsLidVid> parentIds;
       if (productClass.isCollection()) {
-        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+        parentIds =
+            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
       } else if (productClass.isBasicProduct()) {
-        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_collection_identifier");
+        parentIds = resolveLidVidsFromProductField(lidvid,
+            "ops:Provenance/ops:parent_collection_identifier");
       } else {
-        throw new BadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
-                PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
+        throw new BadRequestException(
+            "productMembersOf endpoint is not valid for products with Product_Class '"
+                + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
-              .matchFieldAnyOfIdentifiers("_id", parentIds)
-              .build();
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
-              this.openSearchClient.search(searchRequest, HashMap.class);
+          this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
@@ -560,32 +543,34 @@ public class ProductsController implements ProductsApi, ClassesApi {
   }
 
   @Override
-  public ResponseEntity<Object> productMemberOfOf(
-          String identifier, List<String> fields, Integer limit, String q, List<String> sort, List<String> searchAfter)
-          throws NotFoundException, UnhandledException, SortSearchAfterMismatchException, BadRequestException,
-          AcceptFormatNotSupportedException, UnparsableQParamException {
+  public ResponseEntity<Object> productMemberOfOf(String identifier, List<String> fields,
+      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
+      BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
-    try{
+    try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
       PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
       List<PdsLidVid> parentIds;
       if (productClass.isBasicProduct()) {
-        parentIds = resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+        parentIds =
+            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
       } else {
-//        TODO: replace with enumeration of acceptable values later
-        throw new BadRequestException("productMembersOf endpoint is not valid for products with Product_Class '" +
-                PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection + "' (got '" + productClass + "')");
+        // TODO: replace with enumeration of acceptable values later
+        throw new BadRequestException(
+            "productMembersOf endpoint is not valid for products with Product_Class '"
+                + PdsProductClasses.Product_Bundle + "' or '" + PdsProductClasses.Product_Collection
+                + "' (got '" + productClass + "')");
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-              .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
-              .matchFieldAnyOfIdentifiers("_id", parentIds)
-              .build();
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
-              this.openSearchClient.search(searchRequest, HashMap.class);
+          this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
@@ -597,22 +582,24 @@ public class ProductsController implements ProductsApi, ClassesApi {
   }
 
   @Override
-  // TODO: Relocate this to ClassesController once common controller code has been extracted/refactored
-  public ResponseEntity<Object> classList(String propertyClass, List<String> fields, List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+  // TODO: Relocate this to ClassesController once common controller code has been
+  // extracted/refactored
+  public ResponseEntity<Object> classList(String propertyClass, List<String> fields,
+      List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter)
+      throws Exception {
     PdsProductClasses pdsProductClass;
     try {
-       pdsProductClass = PdsProductClasses.fromSwaggerName(propertyClass);
+      pdsProductClass = PdsProductClasses.fromSwaggerName(propertyClass);
     } catch (IllegalArgumentException err) {
       throw new BadRequestException(err.getMessage());
     }
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-            .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
-            .matchProductClass(pdsProductClass)
-            .build();
+        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
+        .matchProductClass(pdsProductClass).build();
 
     SearchResponse<HashMap> searchResponse =
-            this.openSearchClient.search(searchRequest, HashMap.class);
+        this.openSearchClient.search(searchRequest, HashMap.class);
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
@@ -620,8 +607,66 @@ public class ProductsController implements ProductsApi, ClassesApi {
   }
 
   @Override
-  // TODO: Relocate this to ClassesController once common controller code has been extracted/refactored
+  // TODO: Relocate this to ClassesController once common controller code has been
+  // extracted/refactored
   public ResponseEntity<List<String>> classes() throws Exception {
-    return new ResponseEntity<>(Arrays.stream(PdsProductClasses.values()).map(PdsProductClasses::getSwaggerName).toList(), HttpStatusCode.valueOf(200));
+    return new ResponseEntity<>(
+        Arrays.stream(PdsProductClasses.values()).map(PdsProductClasses::getSwaggerName).toList(),
+        HttpStatusCode.valueOf(200));
+  }
+
+  /**
+   * Resolve the appropriate enumerated user type hint from an OpenSearch Property
+   */
+  protected PropertiesListInner.TypeEnum _resolvePropertyToEnumType(Property property) {
+    if (property.isBoolean()) {
+      return PropertiesListInner.TypeEnum.BOOLEAN;
+    } else if (property.isKeyword() || property.isText()) {
+      return PropertiesListInner.TypeEnum.STRING;
+    } else if (property.isDate()) {
+      return PropertiesListInner.TypeEnum.TIMESTAMP;
+    } else if (property.isInteger() || property.isLong()) {
+      return PropertiesListInner.TypeEnum.INTEGER;
+    } else if (property.isFloat() || property.isDouble()) {
+      return PropertiesListInner.TypeEnum.FLOAT;
+    } else {
+      return PropertiesListInner.TypeEnum.UNSUPPORTED;
+    }
+  }
+
+  @Override
+  public ResponseEntity<List<PropertiesListInner>> productPropertiesList() throws Exception {
+
+    List<String> indexNames = this.connectionContext.getRegistryIndices();
+
+    GetMappingRequest getMappingRequest = new GetMappingRequest.Builder().index(indexNames).build();
+
+    OpenSearchIndicesClient indicesClient = this.openSearchClient.indices();
+
+    GetMappingResponse getMappingResponse = indicesClient.getMapping(getMappingRequest);
+
+    Set<String> resultIndexNames = getMappingResponse.result().keySet();
+    SortedMap<String, PropertiesListInner.TypeEnum> aggregatedMappings = new TreeMap<>();
+    for (String indexName : resultIndexNames) {
+      Set<Map.Entry<String, Property>> indexProperties = getMappingResponse.result().get(indexName).mappings().properties().entrySet();
+      for (Map.Entry<String, Property> property : indexProperties) {
+        String jsonPropertyName = PdsProperty.toJsonPropertyString(property.getKey());
+        Property openPropertyName = property.getValue();
+        PropertiesListInner.TypeEnum propertyEnumType = _resolvePropertyToEnumType(openPropertyName);
+
+//        No consistency-checking between duplicates, for now. TODO: add error log for mismatching duplicates
+        aggregatedMappings.put(jsonPropertyName, propertyEnumType);
+      }
+    }
+
+    List<PropertiesListInner> apiResponseContent = aggregatedMappings.entrySet().stream().map((entry) -> {
+      PropertiesListInner propertyElement = new PropertiesListInner();
+      propertyElement.setProperty(entry.getKey());
+      propertyElement.setType(entry.getValue());
+      return propertyElement;
+    }).toList();
+
+    return new ResponseEntity<>(apiResponseContent, HttpStatus.OK);
   }
 }
+
