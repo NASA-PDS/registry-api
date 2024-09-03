@@ -1,13 +1,21 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-07-29)
+## [release/1.5.0](https://github.com/NASA-PDS/registry-api/tree/release/1.5.0) (2024-09-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...release/1.5.0)
 
 **Requirements:**
 
+- As a user, I want to get a description of the API when I request it from its base URL in a web browser [\#516](https://github.com/NASA-PDS/registry-api/issues/516)
 - As a user, I want to get all the products for a specific PDS4 product class [\#511](https://github.com/NASA-PDS/registry-api/issues/511)
+- As a user, I want to know what are all the possible properties I can search against \(`/properties`\) [\#506](https://github.com/NASA-PDS/registry-api/issues/506)
 - As a user, I want to receive metadata only in the API responses \(no binary blobs\) [\#497](https://github.com/NASA-PDS/registry-api/issues/497)
+- As a user, I want to filter the products by any available PDS4 property by combining comparison operators using logical operators [\#495](https://github.com/NASA-PDS/registry-api/issues/495)
+- As a user, I want to filter the products by any available PDS4 property using comparison operators [\#494](https://github.com/NASA-PDS/registry-api/issues/494)
+- As a user, I want to apply an additional query filter \(`q=`\) to the `/classes/{class}` result set [\#493](https://github.com/NASA-PDS/registry-api/issues/493)
+- As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of/member-of` result set [\#492](https://github.com/NASA-PDS/registry-api/issues/492)
+- As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of` result set [\#491](https://github.com/NASA-PDS/registry-api/issues/491)
+- As a user, I want to apply an additional query filter \(`q=`\) to members of the members of an aggregate product \(`/products/{identifier}/members/members`\) [\#490](https://github.com/NASA-PDS/registry-api/issues/490)
 - As a user, by default, I want to search for the latest versions of all products on the `/classes/{class}` endpoint unless explicitly requested [\#488](https://github.com/NASA-PDS/registry-api/issues/488)
 - As a user, by default, I want to search only for the latest versions of all products on the `/products/{identifier}/member-of/member-of` endpoint [\#487](https://github.com/NASA-PDS/registry-api/issues/487)
 - As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/member-of` endpoint [\#486](https://github.com/NASA-PDS/registry-api/issues/486)
@@ -15,16 +23,24 @@
 - As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members` endpoint [\#484](https://github.com/NASA-PDS/registry-api/issues/484)
 - As a user, I want to filter the products by any available PDS4 property using a combination of comparison, logical, and precedence grouping operators [\#469](https://github.com/NASA-PDS/registry-api/issues/469)
 - As a user, I want to get all product versions associated to one lid [\#436](https://github.com/NASA-PDS/registry-api/issues/436)
+- As a user, by default, I want to resolve the latest version of a product when given a product logical\_identifier \(LID\) \(`/products/{logical_identifier}` endpoint\)  [\#435](https://github.com/NASA-PDS/registry-api/issues/435)
 - As a user, I want to get a product description given a lidvid [\#434](https://github.com/NASA-PDS/registry-api/issues/434)
+- As a user, I want to apply an additional query filter \(`q=`\) to members of an aggregate product \(`/products/{identifier}/members`\) [\#298](https://github.com/NASA-PDS/registry-api/issues/298)
+- As a user, I want to be able to paginate over any number of results returned from a query. [\#176](https://github.com/NASA-PDS/registry-api/issues/176)
+- As a user, by default, I want to search only for the latest versions of all products on the `/products` endpoint [\#426](https://github.com/NASA-PDS/registry-api/issues/426)
 
 **Defects:**
 
+- Investigate sporadic 500 and 504 errors with registry API [\#431](https://github.com/NASA-PDS/registry-api/issues/431) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Insufficient scrubbing of user input values prior to logging [\#388](https://github.com/NASA-PDS/registry-api/issues/388) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Cleanup logging of keys [\#387](https://github.com/NASA-PDS/registry-api/issues/387) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
+- Refactor common RegistrySearchRequestBuilder dot-chains into applyMultipleProductsDefaults\(\) [\#515](https://github.com/NASA-PDS/registry-api/issues/515)
 - Manage renewal of AWS credentials [\#514](https://github.com/NASA-PDS/registry-api/issues/514)
+- Investigate why the API is slow on MCP [\#510](https://github.com/NASA-PDS/registry-api/issues/510) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Complete deployment procedure for the SAs [\#509](https://github.com/NASA-PDS/registry-api/issues/509)
 - Partial implementation of the opensearch serverless queries [\#470](https://github.com/NASA-PDS/registry-api/issues/470)
 - ECS Roles for Registry-API [\#429](https://github.com/NASA-PDS/registry-api/issues/429)
 - Demo partial implementation on AWS [\#423](https://github.com/NASA-PDS/registry-api/issues/423)
@@ -34,7 +50,11 @@
 
 ## [v1.4.1](https://github.com/NASA-PDS/registry-api/tree/v1.4.1) (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...v1.4.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.4.1...v1.4.1)
+
+## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
 
 **Defects:**
 
