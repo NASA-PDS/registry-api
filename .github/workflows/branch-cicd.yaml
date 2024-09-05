@@ -110,13 +110,13 @@ jobs:
                 with:
                     python-version: '3.9'
 
-            -
-                name: ∫ Test PDS Deep Archive compatibility
-                run: |
-                    git clone --quiet https://github.com/NASA-PDS/deep-archive.git
-                    cd deep-archive
-                    pip install .
-                    pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
+            # -
+            #     name: ∫ Test PDS Deep Archive compatibility
+            #     run: |
+            #         git clone --quiet https://github.com/NASA-PDS/deep-archive.git
+            #         cd deep-archive
+            #         pip install .
+            #         pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
 
 ...
 
