@@ -1,21 +1,60 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2024-03-18)
+## [release/1.5.0](https://github.com/NASA-PDS/registry-api/tree/release/1.5.0) (2024-09-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...release/1.5.0)
+
+**Requirements:**
+
+- As a user, I want to get a description of the API when I request it from its base URL in a web browser [\#516](https://github.com/NASA-PDS/registry-api/issues/516)
+- As a user, I want to get all the products for a specific PDS4 product class [\#511](https://github.com/NASA-PDS/registry-api/issues/511)
+- As a user, I want to know what are all the possible properties I can search against \(`/properties`\) [\#506](https://github.com/NASA-PDS/registry-api/issues/506)
+- As a user, I want to receive metadata only in the API responses \(no binary blobs\) [\#497](https://github.com/NASA-PDS/registry-api/issues/497)
+- As a user, I want to filter the products by any available PDS4 property by combining comparison operators using logical operators [\#495](https://github.com/NASA-PDS/registry-api/issues/495)
+- As a user, I want to filter the products by any available PDS4 property using comparison operators [\#494](https://github.com/NASA-PDS/registry-api/issues/494)
+- As a user, I want to apply an additional query filter \(`q=`\) to the `/classes/{class}` result set [\#493](https://github.com/NASA-PDS/registry-api/issues/493)
+- As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of/member-of` result set [\#492](https://github.com/NASA-PDS/registry-api/issues/492)
+- As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of` result set [\#491](https://github.com/NASA-PDS/registry-api/issues/491)
+- As a user, I want to apply an additional query filter \(`q=`\) to members of the members of an aggregate product \(`/products/{identifier}/members/members`\) [\#490](https://github.com/NASA-PDS/registry-api/issues/490)
+- As a user, by default, I want to search for the latest versions of all products on the `/classes/{class}` endpoint unless explicitly requested [\#488](https://github.com/NASA-PDS/registry-api/issues/488)
+- As a user, by default, I want to search only for the latest versions of all products on the `/products/{identifier}/member-of/member-of` endpoint [\#487](https://github.com/NASA-PDS/registry-api/issues/487)
+- As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/member-of` endpoint [\#486](https://github.com/NASA-PDS/registry-api/issues/486)
+- As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members/members` endpoint [\#485](https://github.com/NASA-PDS/registry-api/issues/485)
+- As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members` endpoint [\#484](https://github.com/NASA-PDS/registry-api/issues/484)
+- As a user, I want to filter the products by any available PDS4 property using a combination of comparison, logical, and precedence grouping operators [\#469](https://github.com/NASA-PDS/registry-api/issues/469)
+- As a user, I want to get all product versions associated to one lid [\#436](https://github.com/NASA-PDS/registry-api/issues/436)
+- As a user, by default, I want to resolve the latest version of a product when given a product logical\_identifier \(LID\) \(`/products/{logical_identifier}` endpoint\)  [\#435](https://github.com/NASA-PDS/registry-api/issues/435)
+- As a user, I want to get a product description given a lidvid [\#434](https://github.com/NASA-PDS/registry-api/issues/434)
+- As a user, I want to apply an additional query filter \(`q=`\) to members of an aggregate product \(`/products/{identifier}/members`\) [\#298](https://github.com/NASA-PDS/registry-api/issues/298)
+- As a user, I want to be able to paginate over any number of results returned from a query. [\#176](https://github.com/NASA-PDS/registry-api/issues/176)
+- As a user, by default, I want to search only for the latest versions of all products on the `/products` endpoint [\#426](https://github.com/NASA-PDS/registry-api/issues/426)
 
 **Defects:**
 
+- Investigate sporadic 500 and 504 errors with registry API [\#431](https://github.com/NASA-PDS/registry-api/issues/431) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Insufficient scrubbing of user input values prior to logging [\#388](https://github.com/NASA-PDS/registry-api/issues/388) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Cleanup logging of keys [\#387](https://github.com/NASA-PDS/registry-api/issues/387) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 
 **Other closed issues:**
 
+- Refactor common RegistrySearchRequestBuilder dot-chains into applyMultipleProductsDefaults\(\) [\#515](https://github.com/NASA-PDS/registry-api/issues/515)
+- Manage renewal of AWS credentials [\#514](https://github.com/NASA-PDS/registry-api/issues/514)
+- Investigate why the API is slow on MCP [\#510](https://github.com/NASA-PDS/registry-api/issues/510) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Complete deployment procedure for the SAs [\#509](https://github.com/NASA-PDS/registry-api/issues/509)
+- Partial implementation of the opensearch serverless queries [\#470](https://github.com/NASA-PDS/registry-api/issues/470)
+- ECS Roles for Registry-API [\#429](https://github.com/NASA-PDS/registry-api/issues/429)
+- Demo partial implementation on AWS [\#423](https://github.com/NASA-PDS/registry-api/issues/423)
+- Demo registry-api with new opensearchclient [\#422](https://github.com/NASA-PDS/registry-api/issues/422)
 - Add pds-deep-registry-archive execution to branch testing [\#412](https://github.com/NASA-PDS/registry-api/issues/412)
+- Add github action on dev branch push, running registry integration test with docker compose [\#301](https://github.com/NASA-PDS/registry-api/issues/301)
 
 ## [v1.4.1](https://github.com/NASA-PDS/registry-api/tree/v1.4.1) (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...v1.4.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.4.1...v1.4.1)
+
+## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
 
 **Defects:**
 
@@ -92,11 +131,13 @@
 
 **Requirements:**
 
-- Remove provenance --reset option [\#310](https://github.com/NASA-PDS/registry-api/issues/310)
 - As a user, I want to see available query params in the swagger documentation [\#249](https://github.com/NASA-PDS/registry-api/issues/249)
 - Suggest: Return Content-Type application/json by default [\#248](https://github.com/NASA-PDS/registry-api/issues/248)
 - As a user, I want to search by any metadata attribute [\#282](https://github.com/NASA-PDS/registry-api/issues/282)
 - As a user, I want to know the members of a bundle product [\#223](https://github.com/NASA-PDS/registry-api/issues/223) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- As a user, I want to get application/json response format by default if I request an API url in my browser [\#439](https://github.com/NASA-PDS/registry-api/issues/439)
+- As a user, I want to query only the latest versions of products unless explicitly requested [\#441](https://github.com/NASA-PDS/registry-api/issues/441)
+- As a user, I want to be able to access the Search API Swagger interface from pds.nasa.gov [\#442](https://github.com/NASA-PDS/registry-api/issues/442)
 - the default proposed mime type in swagger-ui.html should be 'application/json' [\#88](https://github.com/NASA-PDS/registry-api/issues/88) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
 
 **Defects:**
@@ -128,6 +169,7 @@
 
 **Other closed issues:**
 
+- Remove provenance --reset option [\#310](https://github.com/NASA-PDS/registry-api/issues/310)
 - Establish consistency between how Provenance and the API select \(filter\) documents by archive\_status [\#308](https://github.com/NASA-PDS/registry-api/issues/308)
 - If \>1 products with the same LIDVID are registered by different nodes, we should respond with one of them [\#306](https://github.com/NASA-PDS/registry-api/issues/306)
 - Update Java params and Docker image to expand JVM memory beyond 50% [\#300](https://github.com/NASA-PDS/registry-api/issues/300)
@@ -162,6 +204,10 @@
 ## [v1.1.11](https://github.com/NASA-PDS/registry-api/tree/v1.1.11) (2022-12-14)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.1.10...v1.1.11)
+
+**Requirements:**
+
+- As a user, I want an end-point of each of the PDS4 IM classes of products [\#461](https://github.com/NASA-PDS/registry-api/issues/461)
 
 **Defects:**
 
@@ -298,15 +344,41 @@
 
 **Requirements:**
 
+- As a user, I want to receive error messages when an invalid request is submitted to the API [\#443](https://github.com/NASA-PDS/registry-api/issues/443)
+- As a user, I want the API response media types to be compliant with RFC 6838 [\#464](https://github.com/NASA-PDS/registry-api/issues/464)
 - As a user, I want to see the version of the API specification in the URL of the service [\#59](https://github.com/NASA-PDS/registry-api/issues/59)
+- As a user, I want to get a key-value-pair JSON response [\#444](https://github.com/NASA-PDS/registry-api/issues/444)
+- As a user, I want to receive a XML response that contains the PDS4 label metadata in XML format \(application/vnd.nasa.pds.pds4+xml\)  [\#440](https://github.com/NASA-PDS/registry-api/issues/440)
+- As an API user, I want a CSV response format option [\#445](https://github.com/NASA-PDS/registry-api/issues/445)
+- As a user, I want to clearly see which formats are accepted by the API when a 406 error is raised [\#446](https://github.com/NASA-PDS/registry-api/issues/446)
+- As an API user, I want to explicitly request the latest version of a product [\#448](https://github.com/NASA-PDS/registry-api/issues/448)
+- As a API manager, I want to restrict access to registered products that should not be publicly accessible [\#466](https://github.com/NASA-PDS/registry-api/issues/466)
+- As an API user, I want to know how long a request took to complete [\#463](https://github.com/NASA-PDS/registry-api/issues/463)
+- As a user, I want to receive a JSON response that contains the PDS4 label metadata in JSON format \(application/vnd.nasa.pds.pds4+json\) [\#450](https://github.com/NASA-PDS/registry-api/issues/450)
+- As an API user, I want to be able to use the API for free text search [\#460](https://github.com/NASA-PDS/registry-api/issues/460)
+- As an API user, I want to get the latest version of a product, by default [\#449](https://github.com/NASA-PDS/registry-api/issues/449)
+- As a user, I want to query for all versions of a product [\#438](https://github.com/NASA-PDS/registry-api/issues/438)
 - As a user, I want to have a complete default fields \(for now at least\) [\#155](https://github.com/NASA-PDS/registry-api/issues/155)
 - As a user, I want the end-point /api to redirect to the API documentation [\#63](https://github.com/NASA-PDS/registry-api/issues/63)
 - As a user, I want the /products end point to work for any class of products [\#64](https://github.com/NASA-PDS/registry-api/issues/64)
 - As a user,  I want specific end points for products which are not collections or bundles [\#65](https://github.com/NASA-PDS/registry-api/issues/65)
 - As a user, I want to know why my query syntax is invalid [\#66](https://github.com/NASA-PDS/registry-api/issues/66)
 - As an operator, I want to have a wrapper script for starting up the API service [\#67](https://github.com/NASA-PDS/registry-api/issues/67)
+- As an API user, I want to search using URL parameters [\#462](https://github.com/NASA-PDS/registry-api/issues/462)
+- As a developer, I never want the label blob to be returned [\#467](https://github.com/NASA-PDS/registry-api/issues/467)
 - As an API user, I want to handle long-running queries that take \>10 seconds. [\#68](https://github.com/NASA-PDS/registry-api/issues/68)
 - As an API user, I want an average query response time of 1 second for q=\* queries [\#69](https://github.com/NASA-PDS/registry-api/issues/69)
+- As an API user, I want to specify whether I get the latest or all versions of a product [\#447](https://github.com/NASA-PDS/registry-api/issues/447)
+- As an API user, I want to search by a temporal range as an ISO-8601 time interval. [\#465](https://github.com/NASA-PDS/registry-api/issues/465)
+- As an API user, I want to get an XML response [\#456](https://github.com/NASA-PDS/registry-api/issues/456)
+- As an API user, I want to get only the fields I explicitly requested [\#459](https://github.com/NASA-PDS/registry-api/issues/459)
+- As a user, when I request specific fields I want to get records which have at least one of these fields [\#455](https://github.com/NASA-PDS/registry-api/issues/455)
+- As an API user, I want to know the Bundle for a given Collection. [\#452](https://github.com/NASA-PDS/registry-api/issues/452)
+- As an API user, I want to know the Collection\(s\) for a given Product. [\#451](https://github.com/NASA-PDS/registry-api/issues/451)
+- As an API user, I want to know the Bundle for a given Product. [\#454](https://github.com/NASA-PDS/registry-api/issues/454)
+- As an API user, I want to know the Product\(s\) that belong to a given Bundle. [\#453](https://github.com/NASA-PDS/registry-api/issues/453)
+- As an API user, I want to know the children and ancestors of bundle, collections, and products [\#458](https://github.com/NASA-PDS/registry-api/issues/458)
+- As an API user, I want to perform a search using wildcards [\#457](https://github.com/NASA-PDS/registry-api/issues/457)
 
 **Improvements:**
 
