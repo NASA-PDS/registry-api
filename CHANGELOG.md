@@ -1,8 +1,8 @@
 # Changelog
 
-## [release/1.5.0](https://github.com/NASA-PDS/registry-api/tree/release/1.5.0) (2024-09-03)
+## [v1.5.0](https://github.com/NASA-PDS/registry-api/tree/v1.5.0) (2024-09-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...release/1.5.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...v1.5.0)
 
 **Requirements:**
 
