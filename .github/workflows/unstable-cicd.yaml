@@ -111,7 +111,7 @@ jobs:
                     cd registry/docker/certs
                     ./generate-certs.sh
                     cd ..
-                    docker image inspect ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:latest
+                    docker image pull ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:latest
                     docker image inspect ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:latest >/dev/null
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
