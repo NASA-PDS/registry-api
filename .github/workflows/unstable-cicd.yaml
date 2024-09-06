@@ -69,7 +69,7 @@ jobs:
                     restore-keys: pds-${{runner.os}}-mvn-
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@stable
+                uses: NASA-PDS/roundup-action@ff-only
                 with:
                     assembly: unstable
                     packages: openjdk17-jdk
