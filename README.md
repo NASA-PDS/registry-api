@@ -127,5 +127,3 @@ Launch the test in command line:
     newman run docker/postman/postman_collection.json --env-var baseUrl=http://localhost:8080
     
     
-
-
