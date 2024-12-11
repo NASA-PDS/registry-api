@@ -339,7 +339,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
       }
       return this;
     } catch (RecognitionException | ParseCancellationException e) {
-      log.info("Unable to parse q " + q + "error message is " + e);
+      String sanitizedQ = q.replace('\n', ' ').replace('\r', ' ');
+      log.info("Unable to parse q " + sanitizedQ + " error message is " + e);
       throw new UnparsableQParamException(
           "q string value:" + q + " Error message " + e.getMessage());
     }
