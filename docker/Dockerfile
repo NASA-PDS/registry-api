@@ -41,7 +41,7 @@
 # Normally we'd prefer Alpine Linux, but JDK 11 isn't available with it, so
 # we go with a slim Debian. Debian's good too.
 
-FROM openjdk:17-slim
+FROM openjdk:18-slim
 
 
 # API JAR file
