@@ -14,6 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.lang3.StringUtils;
 import org.opensearch.client.opensearch._types.FieldSort;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.SortOptions;
@@ -339,8 +340,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
       }
       return this;
     } catch (RecognitionException | ParseCancellationException e) {
-      String sanitizedQ = q.replace('\n', ' ').replace('\r', ' ');
-      log.info("Unable to parse q " + sanitizedQ + " error message is " + e);
+      log.info("Unable to parse q " + StringUtils.normalizeSpace(q) + "error message is " + e);
       throw new UnparsableQParamException(
           "q string value:" + q + " Error message " + e.getMessage());
     }
