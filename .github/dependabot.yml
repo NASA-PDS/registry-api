@@ -9,18 +9,22 @@ updates:
     directory: "/"
     schedule:
         interval: "monthly"
+    target-branch: "develop"
 
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    target-branch: "develop"
 
   - package-ecosystem: "docker" # See documentation for possible values
     directory: "/docker/" # Location of package manifests
     schedule:
       interval: "weekly"
+    target-branch: "develop"
 
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "/terraform/" # Location of package manifests
     schedule:
       interval: "weekly"
+    target-branch: "develop"

@@ -18,7 +18,7 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
 
   private String errorDisclaimerHeader = "An error occured.\n";
   private String errorDisclaimerFooter =
-      "For assistance, forward this error message to pds-operator@jpl.nasa.org";
+      "For assistance, forward this error message to pds-operator@jpl.nasa.gov";
 
   // TODO refactor code to avoid repeating oneself.
 
