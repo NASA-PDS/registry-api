@@ -91,7 +91,7 @@ Go through this file line-by-line and replace the template values with your own.
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-numbers-primes</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
             <type>jar</type>
             <scope>compile</scope>
             <optional>false</optional>
