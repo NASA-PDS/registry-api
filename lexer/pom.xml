@@ -49,7 +49,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- configure the versions you want to use here -->
-    <antlr4.version>4.11.1</antlr4.version>
+    <antlr4.version>4.13.2</antlr4.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
   
   </properties>
