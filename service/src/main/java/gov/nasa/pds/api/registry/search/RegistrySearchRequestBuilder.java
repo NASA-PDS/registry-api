@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.registry.search;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,21 +152,26 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
     SearchRequest searchRequest = super.build();
 
-    try (StringWriter writer = new StringWriter();) {
-      JsonFactory jsonFactory = new JsonFactory();
-      JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
-      jsonGenerator.useDefaultPrettyPrinter();
-
-      JacksonJsonpGenerator jacksonJsonpGenerator = new JacksonJsonpGenerator(jsonGenerator);
-      searchRequest.serialize(jacksonJsonpGenerator, null);
-      jsonGenerator.close();
-      String jsonString = writer.toString();
-      log.debug("Generated OpenSearch SearchRequest with query:\n" + jsonString);
+    try {
+      String requestJson = serializeSearchRequest(searchRequest);
+      log.debug("Generated OpenSearch SearchRequest with query:\n" + requestJson);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Failed to generate json serialization of SearchRequest: " + e);
     }
 
     return searchRequest;
+  }
+
+  public String serializeSearchRequest(SearchRequest searchRequest) throws IOException {
+    StringWriter writer = new StringWriter();
+    JsonFactory jsonFactory = new JsonFactory();
+    JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
+    jsonGenerator.useDefaultPrettyPrinter();
+
+    JacksonJsonpGenerator jacksonJsonpGenerator = new JacksonJsonpGenerator(jsonGenerator);
+    searchRequest.serialize(jacksonJsonpGenerator, null);
+    jsonGenerator.close();
+    return writer.toString();
   }
 
   /**
