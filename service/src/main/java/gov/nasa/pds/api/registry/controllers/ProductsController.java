@@ -12,6 +12,9 @@ import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -48,8 +51,9 @@ import gov.nasa.pds.model.PropertiesListInner;
 
 
 @Controller
-// TODO: Refactor common controller code out of ProductsController and split the additional API implementations out into
-//  corresponding controllers
+// TODO: Refactor common controller code out of ProductsController and split the additional API
+// implementations out into
+// corresponding controllers
 public class ProductsController implements ProductsApi, ClassesApi, PropertiesApi {
 
   @Override
@@ -150,7 +154,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   // lid, suffix latest, we want the latest lidvid which lid matches (case latest)
   // lid suffix all, we want all the lidvid which lid matches (case all)
   // lidvid, suffix all, we want the exact match with the lidvid (case exact)
-
   @Override
   public ResponseEntity<Object> selectByLidvid(String identifier, List<String> fields)
       throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
@@ -225,6 +228,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   @Override
   public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
         .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true).build();
@@ -648,23 +652,27 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     Set<String> resultIndexNames = getMappingResponse.result().keySet();
     SortedMap<String, PropertiesListInner.TypeEnum> aggregatedMappings = new TreeMap<>();
     for (String indexName : resultIndexNames) {
-      Set<Map.Entry<String, Property>> indexProperties = getMappingResponse.result().get(indexName).mappings().properties().entrySet();
+      Set<Map.Entry<String, Property>> indexProperties =
+          getMappingResponse.result().get(indexName).mappings().properties().entrySet();
       for (Map.Entry<String, Property> property : indexProperties) {
         String jsonPropertyName = PdsProperty.toJsonPropertyString(property.getKey());
         Property openPropertyName = property.getValue();
-        PropertiesListInner.TypeEnum propertyEnumType = _resolvePropertyToEnumType(openPropertyName);
+        PropertiesListInner.TypeEnum propertyEnumType =
+            _resolvePropertyToEnumType(openPropertyName);
 
-//        No consistency-checking between duplicates, for now. TODO: add error log for mismatching duplicates
+        // No consistency-checking between duplicates, for now. TODO: add error log for mismatching
+        // duplicates
         aggregatedMappings.put(jsonPropertyName, propertyEnumType);
       }
     }
 
-    List<PropertiesListInner> apiResponseContent = aggregatedMappings.entrySet().stream().map((entry) -> {
-      PropertiesListInner propertyElement = new PropertiesListInner();
-      propertyElement.setProperty(entry.getKey());
-      propertyElement.setType(entry.getValue());
-      return propertyElement;
-    }).toList();
+    List<PropertiesListInner> apiResponseContent =
+        aggregatedMappings.entrySet().stream().map((entry) -> {
+          PropertiesListInner propertyElement = new PropertiesListInner();
+          propertyElement.setProperty(entry.getKey());
+          propertyElement.setType(entry.getValue());
+          return propertyElement;
+        }).toList();
 
     return new ResponseEntity<>(apiResponseContent, HttpStatus.OK);
   }

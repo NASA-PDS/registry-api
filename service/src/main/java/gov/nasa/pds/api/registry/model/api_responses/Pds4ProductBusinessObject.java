@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.model.Pds4ProductFactory;
+import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
@@ -30,7 +31,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
   public final boolean isJSON;
   public final String[] PDS4_PRODUCT_FIELDS;
 
-  public Pds4ProductBusinessObject(boolean isJSON) {
+  public Pds4ProductBusinessObject(boolean isJSON) throws UnauthorizedForwardedHostException {
     super();
     String temp[] = {
         // BLOB

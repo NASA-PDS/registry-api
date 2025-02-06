@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -39,6 +41,7 @@ import gov.nasa.pds.api.registry.view.PdsProductsTextHtmlSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductXMLSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductsXMLSerializer;
 import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
+import gov.nasa.pds.api.registry.controllers.SecurityValidationFilter;
 
 @Configuration
 @EnableWebMvc
@@ -46,8 +49,6 @@ import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
     "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.search"})
 public class WebMVCConfig implements WebMvcConfigurer {
   private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
-
-
 
   @Value("${server.contextPath}")
   private String contextPath;
@@ -177,6 +178,14 @@ public class WebMVCConfig implements WebMvcConfigurer {
     throw new AcceptFormatNotSupportedException(
         "None of the format(s) " + acceptHeaderValue + " is supported.");
 
+  }
+
+  @Autowired
+  private SecurityValidationFilter queryParameterValidationInterceptor;
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(queryParameterValidationInterceptor);
   }
 
 }

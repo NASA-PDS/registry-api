@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
+import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
@@ -20,11 +21,16 @@ import gov.nasa.pds.model.Summary;
 
 
 public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
+
   private static final Logger log = LoggerFactory.getLogger(PdsProductBusinessObject.class);
   private ObjectMapper objectMapper;
   private PdsProduct product = null;
   private PdsProducts products = null;
 
+  public PdsProductBusinessObject() throws UnauthorizedForwardedHostException {
+    super();
+    // TODO Auto-generated constructor stub
+  }
 
   @Override
   public String[] getMaximallyRequiredFields() {

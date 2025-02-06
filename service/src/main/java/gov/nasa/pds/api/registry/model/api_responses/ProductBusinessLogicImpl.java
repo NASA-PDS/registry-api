@@ -10,6 +10,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -17,6 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.api.registry.model.BlobUtil;
 import gov.nasa.pds.api.registry.model.SearchUtil;
+import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 
 @Component
 @RequestScope
@@ -48,8 +50,11 @@ public abstract class ProductBusinessLogicImpl implements ProductBusinessLogic {
       HttpServletRequest request =
           ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
+
       String proxyContextPath = request.getContextPath();
       ProductBusinessLogicImpl.log.debug("contextPath is: '" + proxyContextPath + "'");
+
+      String serverName = request.getServerName();
 
       if (ProductBusinessLogicImpl.proxyRunsOnDefaultPort(request)) {
         this.baseURL = new URL(request.getScheme(), request.getServerName(), proxyContextPath);
