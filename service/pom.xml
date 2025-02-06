@@ -163,16 +163,15 @@
    <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.0.4</version>
+      <version>2.8.4</version>
    </dependency>
 
 	<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-common -->
 	<dependency>
 	    <groupId>org.springdoc</groupId>
 	    <artifactId>springdoc-openapi-starter-common</artifactId>
-	    <version>2.0.4</version>
+	    <version>2.8.4</version>
 	</dependency>
-
 
 	 <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -183,7 +182,7 @@
 	<dependency>
 	    <groupId>io.swagger.core.v3</groupId>
 	    <artifactId>swagger-core</artifactId>
-	    <version>2.2.8</version>
+	    <version>2.2.28</version>
 	</dependency>
 
 
@@ -322,7 +321,7 @@
 	    <groupId>org.apache.httpcomponents.client5</groupId>
 	    <artifactId>httpclient5</artifactId>
 	    <!--version>5.2.3</version-->
-	    <version>5.3.1</version>
+	    <version>5.4.1</version>
 	</dependency>
 	
 	<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5 -->
@@ -330,7 +329,7 @@
 	<dependency>
 	    <groupId>org.apache.httpcomponents.core5</groupId>
 	    <artifactId>httpcore5</artifactId>
-	    <version>5.2.4</version>
+	    <version>5.3.3</version>
 	</dependency>
 
 
@@ -338,7 +337,7 @@
 	<dependency>
 	    <groupId>org.apache.httpcomponents.core5</groupId>
 	    <artifactId>httpcore5-h2</artifactId>
-	    <version>5.2.4</version>
+	    <version>5.3.3</version>
 	</dependency>
 	
 	<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5-fluent -->
@@ -454,13 +453,12 @@
         <scope>test</scope>
     </dependency>
     
-    
-    
-    
+   
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+    
 
     <dependency>
       <groupId>com.amazonaws</groupId>
