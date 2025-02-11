@@ -72,16 +72,6 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void setResponse(SearchHit hit, List<String> fields) {
-    Map<String, Object> kvp = hit.getSourceAsMap();;
-
-    this.setResponse(kvp, fields);
-
-  }
-
-
-  @Override
-  @SuppressWarnings("unchecked")
   public void setResponse(List<Map<String, Object>> hits, Summary summary, List<String> fields) {
     PdsProducts products = new PdsProducts();
     Set<String> uniqueProperties = new TreeSet<String>();
@@ -111,68 +101,4 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
   }
 
 
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public int setResponse(HitIterator hits, Summary summary, List<String> fields) {
-    int count;
-    PdsProducts products = new PdsProducts();
-    Set<String> uniqueProperties = new TreeSet<String>();
-
-    for (Map<String, Object> kvp : hits) {
-      try {
-        uniqueProperties.addAll(getFilteredProperties(kvp, fields, excludedProperties).keySet());
-
-        products.addDataItem(SearchUtil.entityProductToAPIProduct(
-            objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-        products.getData().get(products.getData().size() - 1)
-            .setProperties((Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp,
-                fields, excludedProperties));
-      } catch (Throwable t) {
-        String lidvid = "unknown";
-        if (kvp.containsKey("lidvid")) {
-          lidvid = kvp.get("lidvid").toString();
-        }
-        log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: "
-            + lidvid, t);
-      }
-    }
-    count = products.getData().size();
-
-    summary.setProperties(new ArrayList<String>(uniqueProperties));
-    products.setSummary(summary);
-    this.products = products;
-    return count;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public int setResponse(SearchHits hits, Summary summary, List<String> fields) {
-    Map<String, Object> kvp;
-    PdsProducts products = new PdsProducts();
-    Set<String> uniqueProperties = new TreeSet<String>();
-
-    for (SearchHit hit : hits) {
-      try {
-        kvp = hit.getSourceAsMap();
-        uniqueProperties.addAll(getFilteredProperties(kvp, fields, excludedProperties).keySet());
-
-        products.addDataItem(SearchUtil.entityProductToAPIProduct(
-            objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL));
-        // TODO: understand why the getFilteredProperties method is called with null arguments,
-        // should we add fields or not call the method at all ?
-        products.getData().get(products.getData().size() - 1)
-            .setProperties((Map<String, List<String>>) (Map<String, ?>) getFilteredProperties(kvp,
-                null, excludedProperties));
-      } catch (Throwable t) {
-        log.error("DATA ERROR: could not convert opensearch document to EntityProduct for lidvid: "
-            + hit.getId(), t);
-      }
-    }
-
-    summary.setProperties(new ArrayList<String>(uniqueProperties));
-    products.setSummary(summary);
-    this.products = products;
-    return (int) hits.getTotalHits().value;
-  }
 }

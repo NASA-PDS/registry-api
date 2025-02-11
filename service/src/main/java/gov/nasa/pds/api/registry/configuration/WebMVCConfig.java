@@ -20,10 +20,12 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.Pds4JsonProductBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.Pds4ProductBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.Pds4XmlProductBusinessObject;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
@@ -67,10 +69,8 @@ public class WebMVCConfig implements WebMvcConfigurer {
     formatters.put("application/csv", WyriwygBusinessObject.class);
     formatters.put("application/json", PdsProductBusinessObject.class);
     formatters.put("application/kvp+json", WyriwygBusinessObject.class);
-    // this.formatters.put("application/vnd.nasa.pds.pds4+json", new
-    // Pds4ProductBusinessObject(true));
-    // this.formatters.put("application/vnd.nasa.pds.pds4+xml", new
-    // Pds4ProductBusinessObject(false));
+    formatters.put("application/vnd.nasa.pds.pds4+json", Pds4JsonProductBusinessObject.class);
+    formatters.put("application/vnd.nasa.pds.pds4+xml", Pds4XmlProductBusinessObject.class);
     formatters.put("application/xml", PdsProductBusinessObject.class);
     formatters.put("text/csv", WyriwygBusinessObject.class);
     formatters.put("text/html", PdsProductBusinessObject.class);
