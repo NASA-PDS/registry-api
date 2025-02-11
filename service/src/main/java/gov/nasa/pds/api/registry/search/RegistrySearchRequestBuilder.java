@@ -1,9 +1,13 @@
 package gov.nasa.pds.api.registry.search;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -15,6 +19,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
+import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
 import org.opensearch.client.opensearch._types.FieldSort;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.SortOptions;
@@ -141,10 +146,32 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   public SearchRequest build() {
-    this.query(this.queryBuilder.build().toQuery());
+    BoolQuery bQuery = this.queryBuilder.build();
+    this.query(bQuery.toQuery());
     this.trackTotalHits(t -> t.enabled(true));
 
-    return super.build();
+    SearchRequest searchRequest = super.build();
+
+    try {
+      String requestJson = serializeSearchRequest(searchRequest);
+      log.debug("Generated OpenSearch SearchRequest with query:\n" + requestJson);
+    } catch (Exception e) {
+      log.error("Failed to generate json serialization of SearchRequest: " + e);
+    }
+
+    return searchRequest;
+  }
+
+  public String serializeSearchRequest(SearchRequest searchRequest) throws IOException {
+    StringWriter writer = new StringWriter();
+    JsonFactory jsonFactory = new JsonFactory();
+    JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
+    jsonGenerator.useDefaultPrettyPrinter();
+
+    JacksonJsonpGenerator jacksonJsonpGenerator = new JacksonJsonpGenerator(jsonGenerator);
+    searchRequest.serialize(jacksonJsonpGenerator, null);
+    jsonGenerator.close();
+    return writer.toString();
   }
 
   /**
