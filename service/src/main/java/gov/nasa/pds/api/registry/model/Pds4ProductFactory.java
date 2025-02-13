@@ -161,7 +161,8 @@ public class Pds4ProductFactory {
   private static Pds4MetadataOpsTrackingMeta createTrackingMeta(Map<String, Object> fieldMap) {
     Pds4MetadataOpsTrackingMeta item = new Pds4MetadataOpsTrackingMeta();
 
-    item.setOpsColonArchiveStatus((String) fieldMap.get(FLD_TRACK_META_ARCHIVE_STATUS));
+    item.setOpsColonArchiveStatus(
+        (String) ((List<?>) fieldMap.get(FLD_TRACK_META_ARCHIVE_STATUS)).get(0));
     return item;
   }
 }

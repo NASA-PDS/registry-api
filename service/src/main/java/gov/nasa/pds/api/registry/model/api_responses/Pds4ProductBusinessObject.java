@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.model.Pds4ProductFactory;
+import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.search.HitIterator;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
@@ -27,10 +28,10 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
   @SuppressWarnings("unused")
   private URL baseURL;
 
-  public final boolean isJSON;
+  private boolean isJSON;
   public final String[] PDS4_PRODUCT_FIELDS;
 
-  public Pds4ProductBusinessObject(boolean isJSON) {
+  public Pds4ProductBusinessObject(boolean isJSON) throws UnauthorizedForwardedHostException {
     super();
     String temp[] = {
         // BLOB
@@ -52,8 +53,9 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
         // Node Name
         Pds4ProductFactory.FLD_NODE_NAME};
 
-    this.PDS4_PRODUCT_FIELDS = temp;
     this.isJSON = isJSON;
+    this.PDS4_PRODUCT_FIELDS = temp;
+
   }
 
   @Override
@@ -79,71 +81,9 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
 
   @Override
   public void setResponse(Map<String, Object> kvp, List<String> fields) {
-    // TODO: to be implemented
-    this.product = null;
-  }
+    String id = (String) kvp.get("lidvid");
+    this.product = Pds4ProductFactory.createProduct(id, kvp, this.isJSON);
 
-  @Override
-  public void setResponse(SearchHit hit, List<String> fields) {
-    this.product = Pds4ProductFactory.createProduct(hit.getId(), hit.getSourceAsMap(), this.isJSON);
-  }
-
-  @Override
-  public int setResponse(HitIterator hits, Summary summary, List<String> fields) {
-    List<Pds4Product> list = new ArrayList<Pds4Product>();
-    Pds4Products products = new Pds4Products();
-    Set<String> uniqueProperties = new TreeSet<String>();
-
-    for (Map<String, Object> kvp : hits) {
-
-      uniqueProperties.addAll(getFilteredProperties(kvp, fields, null).keySet());
-
-      try {
-        Pds4Product prod = Pds4ProductFactory.createProduct(hits.getCurrentId(), kvp, this.isJSON);
-        list.add(prod);
-      } catch (Throwable t) {
-        String lidvid = "unknown";
-        if (kvp.containsKey("lidvid")) {
-          lidvid = kvp.get("lidvid").toString();
-        }
-        log.error("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: "
-            + lidvid, t);
-      }
-    }
-
-    products.setData(list);
-    products.setSummary(summary);
-    summary.setProperties(new ArrayList<String>(uniqueProperties));
-    this.products = products;
-    return list.size();
-  }
-
-  @Override
-  public int setResponse(SearchHits hits, Summary summary, List<String> fields) {
-    List<Pds4Product> list = new ArrayList<Pds4Product>();
-    Pds4Products products = new Pds4Products();
-    Set<String> uniqueProperties = new TreeSet<String>();
-
-    // Products
-    for (SearchHit hit : hits) {
-      String id = hit.getId();
-      Map<String, Object> fieldMap = hit.getSourceAsMap();
-
-      uniqueProperties.addAll(getFilteredProperties(fieldMap, fields, null).keySet());
-
-      try {
-        Pds4Product prod = Pds4ProductFactory.createProduct(id, fieldMap, this.isJSON);
-        list.add(prod);
-      } catch (Throwable t) {
-        log.error("DATA ERROR: could not convert opensearch document to Pds4Product for lidvid: "
-            + hit.getId(), t);
-      }
-    }
-    products.setData(list);
-    products.setSummary(summary);
-    summary.setProperties(new ArrayList<String>(uniqueProperties));
-    this.products = products;
-    return (int) hits.getTotalHits().value;
   }
 
 
@@ -156,7 +96,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
     // Products
     for (Map<String, Object> hit : hits) {
       // TODO complete that
-      id = (String) hit.get("_id");
+      id = (String) hit.get("lidvid");
       uniqueProperties.addAll(getFilteredProperties(hit, fields, null).keySet());
 
       try {

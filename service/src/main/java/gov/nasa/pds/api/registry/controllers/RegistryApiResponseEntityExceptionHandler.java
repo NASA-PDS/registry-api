@@ -79,5 +79,17 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
     return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(value = {UnknownQueryParameterException.class})
+  public ResponseEntity<Object> unknownQueryParameter(UnknownQueryParameterException ex,
+      WebRequest request) {
+    return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(value = {UnauthorizedForwardedHostException.class})
+  public ResponseEntity<Object> unknownQueryParameter(UnauthorizedForwardedHostException ex,
+      WebRequest request) {
+    return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
+  }
+
 
 }

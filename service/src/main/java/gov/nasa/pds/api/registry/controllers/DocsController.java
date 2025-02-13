@@ -64,18 +64,22 @@ public class DocsController implements DocsApi {
     Map.Entry<String, String> acceptHeader =
         new AbstractMap.SimpleEntry<String, String>("Accept", "application/json");
     headers.add(acceptHeader);
-    Request request = Requests.create("POST", endPoint, headers, new HashMap<String, String>(),
-        Bodies.json(body));
-
-
-    OpenSearchGenericClient openSearchGenericClient =
-        this.connectionContext.getOpenSearchGenericClient();
-    // TODO make that work, it does not now,
-    // but I have to keep that development aside for now
-    Response response = openSearchGenericClient.execute(request);
-
-    log.info("Request status response is " + response.getStatus());
-    log.debug("Request response body is " + response.getBody());
+    // TODO develop this part again, this never worked by the way
+    /*
+     * Request request = Requests.create("POST", endPoint, headers, new HashMap<String, String>(),
+     * Bodies.json(body));
+     * 
+     * 
+     * OpenSearchGenericClient openSearchGenericClient =
+     * this.connectionContext.getOpenSearchGenericClient(); // TODO make that work, it does not now,
+     * // but I have to keep that development aside for now Response response =
+     * openSearchGenericClient.execute(request);
+     * 
+     * 
+     * log.info("Request status response is " + response.getStatus());
+     * log.debug("Request response body is " + response.getBody());
+     * 
+     */
 
 
     return new ResponseEntity<Object>(HttpStatus.OK);

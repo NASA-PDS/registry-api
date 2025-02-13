@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +16,16 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.Pds4JsonProductBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.Pds4ProductBusinessObject;
+import gov.nasa.pds.api.registry.model.api_responses.Pds4XmlProductBusinessObject;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
@@ -39,6 +43,7 @@ import gov.nasa.pds.api.registry.view.PdsProductsTextHtmlSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductXMLSerializer;
 import gov.nasa.pds.api.registry.view.PdsProductsXMLSerializer;
 import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
+import gov.nasa.pds.api.registry.controllers.SecurityValidationFilter;
 
 @Configuration
 @EnableWebMvc
@@ -46,8 +51,6 @@ import gov.nasa.pds.api.registry.view.XmlErrorMessageSerializer;
     "gov.nasa.pds.api.registry.controller", "gov.nasa.pds.api.registry.search"})
 public class WebMVCConfig implements WebMvcConfigurer {
   private static final Logger log = LoggerFactory.getLogger(WebMVCConfig.class);
-
-
 
   @Value("${server.contextPath}")
   private String contextPath;
@@ -66,10 +69,8 @@ public class WebMVCConfig implements WebMvcConfigurer {
     formatters.put("application/csv", WyriwygBusinessObject.class);
     formatters.put("application/json", PdsProductBusinessObject.class);
     formatters.put("application/kvp+json", WyriwygBusinessObject.class);
-    // this.formatters.put("application/vnd.nasa.pds.pds4+json", new
-    // Pds4ProductBusinessObject(true));
-    // this.formatters.put("application/vnd.nasa.pds.pds4+xml", new
-    // Pds4ProductBusinessObject(false));
+    formatters.put("application/vnd.nasa.pds.pds4+json", Pds4JsonProductBusinessObject.class);
+    formatters.put("application/vnd.nasa.pds.pds4+xml", Pds4XmlProductBusinessObject.class);
     formatters.put("application/xml", PdsProductBusinessObject.class);
     formatters.put("text/csv", WyriwygBusinessObject.class);
     formatters.put("text/html", PdsProductBusinessObject.class);
@@ -177,6 +178,14 @@ public class WebMVCConfig implements WebMvcConfigurer {
     throw new AcceptFormatNotSupportedException(
         "None of the format(s) " + acceptHeaderValue + " is supported.");
 
+  }
+
+  @Autowired
+  private SecurityValidationFilter queryParameterValidationInterceptor;
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(queryParameterValidationInterceptor);
   }
 
 }
