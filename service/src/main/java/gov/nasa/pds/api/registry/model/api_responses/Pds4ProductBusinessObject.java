@@ -81,6 +81,7 @@ public class Pds4ProductBusinessObject extends ProductBusinessLogicImpl {
 
   @Override
   public void setResponse(Map<String, Object> kvp, List<String> fields) {
+    log.debug("kvp keySet:" + kvp.keySet());
     String id = (String) kvp.get("lidvid");
     this.product = Pds4ProductFactory.createProduct(id, kvp, this.isJSON);
 

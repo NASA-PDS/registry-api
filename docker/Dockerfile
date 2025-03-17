@@ -62,6 +62,8 @@ ARG api_jar
 
 ADD $api_jar /usr/local/registry-api-service/registry-api-service.jar
 
+ADD docker/certs/certificate.p12 /workspace/BOOT-INF/classes/certificate.p12 
+
 RUN : &&\
     apt-get update --quiet --yes &&\
     apt-get install --quiet --yes libtcnative-1 &&\
@@ -76,9 +78,9 @@ RUN : &&\
 #
 # External context.
 
-ARG SERVER_PORT=80
+ARG SERVER_PORT=8443
 ARG SPRING_BOOT_APP_ARGS=" "
-ARG JAVA_OPTS="-Xmx6144m -Xms512Mb"
+ARG JAVA_OPTS="-Xmx6144m -Xms512Mbi -cp /usr/local/registry-api-service/"
 
 WORKDIR /usr/local/registry-api-service
 EXPOSE  ${SERVER_PORT}
