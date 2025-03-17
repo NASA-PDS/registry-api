@@ -66,3 +66,7 @@ variable "aws_fg_ram_units" {
   description = "RAM Units for Fargate"
   default = 512
 }
+
+variable "aws_acm_certificate_arn" {
+  description = "ACM SSL Certificate for the load balancer"
+}

@@ -34,6 +34,10 @@ resource "aws_lb_target_group" "pds-registry-api-target-group" {
   target_type = "ip"
   vpc_id      = var.aws_fg_vpc
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   health_check {
     enabled = true
     path    = "/healthcheck"
@@ -44,8 +48,9 @@ resource "aws_lb_target_group" "pds-registry-api-target-group" {
 
 resource "aws_lb_listener" "registry-api-ld-listener" {
   load_balancer_arn = aws_lb.registry-api-lb.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.aws_acm_certificate_arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
@@ -187,4 +192,3 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
     Charlie = "registry"
   }
 }
-
