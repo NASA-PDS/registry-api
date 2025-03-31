@@ -41,7 +41,6 @@
 # Normally we'd prefer Alpine Linux, but JDK 11 isn't available with it, so
 # we go with a slim Debian. Debian's good too.
 
-#FROM openjdk:17-slim
 FROM tomcat:9.0.58-jdk17-openjdk-slim
 
 # API JAR file
@@ -57,14 +56,12 @@ ARG api_jar
 # Layering
 # --------
 #
-# Add the API JAR file and the libtcnative-1 package—which is needed for
-# some reason.
+# Add the API JAR file and curl to wait for elasticsearch.
 
 ADD $api_jar /usr/local/registry-api-service/registry-api-service.jar
 
 RUN : &&\
     apt-get update --quiet --yes &&\
-    apt-get install --quiet --yes libtcnative-1 &&\
     apt-get install curl -y &&\
     apt-get autoclean --quiet --yes &&\
     rm --recursive --force /var/lib/apt/lists/* &&\
@@ -82,8 +79,8 @@ ARG JAVA_OPTS="-Xmx6144m -Xms512Mb"
 
 WORKDIR /usr/local/registry-api-service
 EXPOSE  ${SERVER_PORT}
-CMD java $JAVA_OPT -jar /usr/local/registry-api-service/registry-api-service.jar \
-    gov.nasa.pds.api.registry.SpringBootMain --server.port=${SERVER_PORT} ${SPRING_BOOT_APP_ARGS}
+CMD ["java",  "$JAVA_OPT",  "-jar",  "/usr/local/registry-api-service/registry-api-service.jar", \
+    "gov.nasa.pds.api.registry.SpringBootMain", "--server.port=${SERVER_PORT}",  "${SPRING_BOOT_APP_ARGS}"]
 
 
 # Labels
@@ -92,6 +89,6 @@ CMD java $JAVA_OPT -jar /usr/local/registry-api-service/registry-api-service.jar
 # `org.label-schema` is deprecated, but no one can figure out whatever
 # replaced it, so we'll use it here.
 
-LABEL "org.label-schema.name" = "PDS Registry API"
-LABEL "org.label-schema.description" = "Planetary Data System's Application Programmer's Interface for the Registry"
-LABEL "org.label-schema.url" = "https://github.com/NASA-PDS/registry-api"
+LABEL "org.label-schema.name" "PDS Registry API"
+LABEL "org.label-schema.description" "Planetary Data System's Application Programmer's Interface for the Registry"
+LABEL "org.label-schema.url" "https://github.com/NASA-PDS/registry-api"
