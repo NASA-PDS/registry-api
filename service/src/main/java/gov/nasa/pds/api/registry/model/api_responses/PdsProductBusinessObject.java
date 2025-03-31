@@ -15,6 +15,7 @@ import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.util.LogExecutionTime;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.Summary;
@@ -72,6 +73,7 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
   @Override
   @SuppressWarnings("unchecked")
+  @LogExecutionTime
   public void setResponse(List<Map<String, Object>> hits, Summary summary, List<String> fields) {
     PdsProducts products = new PdsProducts();
     Set<String> uniqueProperties = new TreeSet<String>();

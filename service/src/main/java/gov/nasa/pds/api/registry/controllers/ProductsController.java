@@ -46,6 +46,7 @@ import gov.nasa.pds.api.registry.model.api_responses.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.util.LogExecutionTime;
 import gov.nasa.pds.model.PropertiesListInner;
 
 
@@ -87,7 +88,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   }
 
-
+  @LogExecutionTime
   private ResponseEntity<Object> formatSingleProduct(HashMap<String, Object> product,
       List<String> fields) throws AcceptFormatNotSupportedException, UnhandledException {
     // TODO add case when Accept is not available, default application/json
@@ -116,6 +117,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
   }
 
+  @LogExecutionTime
   private ResponseEntity<Object> formatMultipleProducts(RawMultipleProductResponse response,
       List<String> fields) throws AcceptFormatNotSupportedException, UnhandledException {
     // TODO add case when Accept is not available, default application/json
@@ -226,6 +228,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
   @Override
+  @LogExecutionTime
   public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
 
@@ -237,8 +240,9 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
         this.openSearchClient.search(searchRequest, HashMap.class);
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+    ResponseEntity<Object> response = formatMultipleProducts(products, fields);
 
-    return formatMultipleProducts(products, fields);
+    return response;
 
 
   }
