@@ -20,7 +20,7 @@ public class LoggingAspect {
     long startTime = System.currentTimeMillis();
     Object proceed = joinPoint.proceed();
     long endTime = System.currentTimeMillis();
-    logger.info(joinPoint.getSignature() + " executed in " + (endTime - startTime) + "ms");
+    logger.info("{} executed in {} ms", joinPoint.getSignature(), endTime - startTime);
     return proceed;
   }
 }

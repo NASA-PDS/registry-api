@@ -240,10 +240,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
         this.openSearchClient.search(searchRequest, HashMap.class);
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
-    ResponseEntity<Object> response = formatMultipleProducts(products, fields);
-
-    return response;
-
+    return formatMultipleProducts(products, fields);
 
   }
 
