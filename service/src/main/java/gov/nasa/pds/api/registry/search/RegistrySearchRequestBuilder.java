@@ -123,6 +123,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * @param pageSize - the page size to use for pagination
    * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to lowest priority
    * @param searchAfterFieldValues - the values corresponding to the sort fields, for pagination
+   * @param facetFields - the opensearch fields to generate facet aggregations for
    * @param excludeSupersededProducts - whether to exclude superseded products from the result set
    */
   public RegistrySearchRequestBuilder applyMultipleProductsDefaults(
@@ -139,7 +140,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
       .fieldsFromStrings(includeFieldNames)
       .constrainByQueryString(queryString)
       .addKeywordsParam(keywords)
-      .addPropertyFacets(facetFields.stream().map(PdsProperty::new).toList())
+      .addPropertyFacets(facetFields)
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
     if (excludeSupersededProducts) {
@@ -432,12 +433,15 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Add a collection of properties to the response as bucket aggregations.
-   * @param properties a flat list of properties on which to facet
+   * @param propertyNames a flat list of properties on which to facet
    */
-  public RegistrySearchRequestBuilder addPropertyFacets(List<PdsProperty> properties) {
-    for (PdsProperty property : properties) {
-      String aggregationName = "bucket_by_" + property.toJsonPropertyString();
-      this.aggregations(aggregationName, field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()))));
+  public RegistrySearchRequestBuilder addPropertyFacets(List<String> propertyNames) {
+    if (propertyNames != null){
+      for (String propertyName : propertyNames) {
+        PdsProperty property = new PdsProperty(propertyName);
+        String aggregationName = "bucket_by_" + property.toJsonPropertyString();
+        this.aggregations(aggregationName, field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()))));
+      }
     }
 
     return this;
