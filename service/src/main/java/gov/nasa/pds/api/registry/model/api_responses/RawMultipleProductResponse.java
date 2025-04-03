@@ -15,6 +15,7 @@ public class RawMultipleProductResponse {
   public RawMultipleProductResponse(SearchResponse<HashMap> searchResponse) {
     this.summary = new Summary();
     this.summary.setHits((int) searchResponse.hits().total().value());
+    this.summary.setFacets(searchResponse.aggregations());
     this.products = searchResponse.hits().hits().stream().map(p -> (Map<String, Object>) p.source())
         .collect(Collectors.toList());
 
