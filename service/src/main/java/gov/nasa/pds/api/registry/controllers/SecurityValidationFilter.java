@@ -37,7 +37,7 @@ public class SecurityValidationFilter implements HandlerInterceptor {
       throws Exception {
     for (String paramName : request.getParameterMap().keySet()) {
       if (!ALLOWED_QUERY_PARAMETERS.contains(paramName)) {
-        throw new UnknownQueryParameterException("Undeclared query parameter: " + paramName);
+        throw new UnknownQueryParameterException("Query parameter not enumerated in SecurityValidationFilter.ALLOWED_QUERY_PARAMETERS: " + paramName);
       }
     }
 
