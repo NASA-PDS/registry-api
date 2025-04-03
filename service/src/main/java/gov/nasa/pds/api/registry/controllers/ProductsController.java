@@ -220,6 +220,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new UnhandledException(e);
     }
 
+    //todo: apply faceting to this route if applicable
     return formatMultipleProducts(response, fields);
 
 
@@ -238,6 +239,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
+    //todo: apply faceting to this route if applicable
     return formatMultipleProducts(products, fields);
 
 
@@ -418,7 +420,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
@@ -457,7 +460,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
@@ -539,7 +543,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -578,7 +583,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -607,6 +613,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
+    //todo: apply faceting to this route if applicable
     return formatMultipleProducts(products, fields);
   }
 
