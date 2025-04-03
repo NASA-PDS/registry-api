@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
+import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -24,6 +25,7 @@ import org.opensearch.client.opensearch._types.FieldSort;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.SortOptions;
 import org.opensearch.client.opensearch._types.SortOrder;
+import org.opensearch.client.opensearch._types.aggregations.TermsAggregation;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
 import org.opensearch.client.opensearch._types.query_dsl.FieldAndFormat;
@@ -423,6 +425,19 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     TermsQuery query = new TermsQuery.Builder().field(PdsProductClasses.getPropertyName()).terms(termsQueryField).build();
 
     this.queryBuilder.mustNot(query.toQuery());
+    return this;
+  }
+
+  /**
+   * Add a collection of properties to the response as bucket aggregations.
+   * @param properties a flat list of properties on which to facet
+   */
+  public RegistrySearchRequestBuilder addPropertyFacets(List<PdsProperty> properties) {
+    for (PdsProperty property : properties) {
+      String aggregationName = "bucket_by_" + property.toJsonPropertyString();
+      this.aggregations(aggregationName, field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()))));
+    }
+
     return this;
   }
 
