@@ -162,6 +162,7 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
 
   /products/{identifier}:
     get:
@@ -574,6 +575,19 @@ components:
         behavior: for each field specified in the "sort" qparam, specify the field value for the last result returned in the previous page
           It is strongly recommended to use ops:Harvest_Info/ops:harvest_date_time as your final sort field, to ensure successful pagination.
           Remember to url-encode special characters, ex. /products?limit=10&sort=ops%3AHarvest_Info%2Fops%3Aharvest_date_time
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    FacetFields:
+      name: facet-fields
+      in: query
+      description: |
+        syntax: facet-fields=field1&facet-fields=field2...
+
+        behavior: Return bucket aggregations for each field specified, as part of the response.
+          The facet values and counts will be accessible via attribute "bucket_by_$field"
       required: false
       schema:
         type: array

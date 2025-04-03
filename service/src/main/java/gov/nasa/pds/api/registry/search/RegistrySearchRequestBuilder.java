@@ -132,12 +132,14 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
           Integer pageSize,
           List<String> sortFieldNames,
           List<String> searchAfterFieldValues,
+          List<String> facetFields,
           Boolean excludeSupersededProducts
   ) throws UnparsableQParamException, SortSearchAfterMismatchException {
     this
       .fieldsFromStrings(includeFieldNames)
       .constrainByQueryString(queryString)
       .addKeywordsParam(keywords)
+      .addPropertyFacets(facetFields.stream().map(PdsProperty::new).toList())
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
     if (excludeSupersededProducts) {

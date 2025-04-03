@@ -228,11 +228,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
-      Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields) throws Exception {
 
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true).build();
+        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, facetFields, true).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -412,7 +412,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, List.of(), true)
           .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -452,7 +452,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, List.of(), true)
           .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -535,7 +535,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, List.of(), true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -575,7 +575,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, List.of(), true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -605,7 +605,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
+        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, List.of(), true)
         .matchProductClass(pdsProductClass).build();
 
     SearchResponse<HashMap> searchResponse =
