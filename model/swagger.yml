@@ -797,9 +797,44 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryFacet'
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
+
+    SummaryFacet:
+      properties:
+        property:
+          $ref: '#/components/schemas/SummaryProperty'
+      anyOf:
+        - $ref: '#/components/schemas/FacetTerms'
+        - $ref: '#/components/schemas/FacetHistogram'
+
+    FacetTerms:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [terms]
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+
+# Not yet implemented
+    FacetHistogram:
+      type: object
+      properties:
+        notYetImplemented:
+          type: string
+#  End not yet implemented
+
     pdsProduct:
       type: object
       description: default PDS product description format for the API.
@@ -915,10 +950,14 @@ components:
         data:
           items:
             $ref: '#/components/schemas/wyriwygProduct'
+
+    SummaryProperty:
+      type: string
+
     propertyArrayValues:
       type: array
       items:
-        type: string
+        $ref: '#/components/schemas/SummaryProperty'
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
@@ -961,6 +1000,7 @@ components:
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
+
     metadata:
       type: object
       required:

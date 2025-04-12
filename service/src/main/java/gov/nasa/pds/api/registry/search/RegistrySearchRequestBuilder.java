@@ -439,8 +439,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     if (propertyNames != null){
       for (String propertyName : propertyNames) {
         PdsProperty property = new PdsProperty(propertyName);
-        String aggregationName = "bucket_by_" + property.toJsonPropertyString();
-        this.aggregations(aggregationName, field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()))));
+        this.aggregations(property.toJsonPropertyString(), field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()))));
       }
     }
 
