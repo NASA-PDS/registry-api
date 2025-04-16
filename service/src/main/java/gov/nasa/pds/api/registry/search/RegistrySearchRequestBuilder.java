@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -26,7 +27,6 @@ import org.opensearch.client.opensearch._types.SortOptions;
 import org.opensearch.client.opensearch._types.SortOrder;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.FieldAndFormat;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
@@ -40,8 +40,8 @@ import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
-import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
+import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
@@ -50,15 +50,6 @@ import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
-
-  private static final ArrayList<FieldAndFormat> STATIC_FIELDANDFORMATS =
-      new ArrayList<FieldAndFormat>() {
-        {
-          for (String prop : EntityProduct.JSON_PROPERTIES) {
-            add(new FieldAndFormat.Builder().field(prop).build());
-          }
-        }
-      };
 
   private ConnectionContext connectionContext;
   private List<String> registryIndices;
@@ -130,10 +121,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
           Integer pageSize,
           List<String> sortFieldNames,
           List<String> searchAfterFieldValues,
-          Boolean excludeSupersededProducts
+          Boolean excludeSupersededProducts,
+          ProductBusinessLogic fieldController
   ) throws UnparsableQParamException, SortSearchAfterMismatchException {
     this
-      .fieldsFromStrings(includeFieldNames)
+      .fieldsFromStrings(includeFieldNames, fieldController)
       .constrainByQueryString(queryString)
       .addKeywordsParam(keywords)
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
@@ -311,27 +303,25 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * Implements an alternative to .fields() that accepts values as strings.
    * @param fieldNames
    */
-  public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
+  public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames, ProductBusinessLogic fieldController) {
+    HashSet<String> allNames = new HashSet<String>();
+    HashSet<String> limitations = new HashSet<String>(Arrays.asList(fieldController.getMaximallyRequiredFields()));
+    allNames.addAll(fieldNames);
+    allNames.addAll(Arrays.asList(fieldController.getMinimallyRequiredFields()));
 
-    if ((fieldNames == null) || (fieldNames.isEmpty())) {
-      return this;
-    } else {
-      log.info("restricting list of fields requested from OpenSearch.");
-      // TODO refine to only pull the static field when the output response requires it.
-      List<String> openSearchField =
-              new ArrayList<String>(Arrays.asList(EntityProduct.JSON_PROPERTIES));
-      for (String field : fieldNames) {
-        openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
-      }
-
-      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
-      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
-
-      this.source(limitedSourceCfg);
-
-      return this;
+    if (limitations.size() > 0) {
+      allNames.retainAll(limitations);
     }
 
+    log.info("restricting list of fields requested from OpenSearch.");
+    ArrayList<String> openSearchField = new ArrayList<String>();
+    for (String field : allNames) {
+      openSearchField.add(SearchUtil.jsonPropertyToOpenProperty(field));
+    }
+    SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
+    SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
+    this.source(limitedSourceCfg);
+    return this;
   }
 
   private static BoolQuery parseQueryString(String queryString) {
