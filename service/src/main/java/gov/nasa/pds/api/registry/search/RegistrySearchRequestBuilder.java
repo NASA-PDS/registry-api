@@ -306,7 +306,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames, ProductBusinessLogic fieldController) {
     HashSet<String> allNames = new HashSet<String>();
     HashSet<String> limitations = new HashSet<String>(Arrays.asList(fieldController.getMaximallyRequiredFields()));
-    allNames.addAll(fieldNames);
+    if (fieldNames != null) allNames.addAll(fieldNames);
     allNames.addAll(Arrays.asList(fieldController.getMinimallyRequiredFields()));
 
     if (limitations.size() > 0) {
