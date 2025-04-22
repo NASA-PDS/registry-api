@@ -163,6 +163,7 @@ paths:
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
       - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
 
   /products/{identifier}:
     get:
@@ -580,6 +581,17 @@ components:
         type: array
         items:
           type: string
+    FacetLimit:
+      name: facet-limit
+      in: query
+      description: |
+        syntax: facet-limit=10
+        
+        behavior: set the number n for which facets will return the n-most-populous buckets
+      schema:
+        type: integer
+        minimum: 0
+        default: 10
     FacetFields:
       name: facet-fields
       in: query

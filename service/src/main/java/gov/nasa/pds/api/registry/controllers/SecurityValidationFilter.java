@@ -21,7 +21,7 @@ public class SecurityValidationFilter implements HandlerInterceptor {
   private static final Logger log = LoggerFactory.getLogger(SecurityValidationFilter.class);
 
   private static final List<String> ALLOWED_QUERY_PARAMETERS =
-      Arrays.asList("q", "fields", "limit", "sort", "search-after", "keywords", "facet-fields");
+      Arrays.asList("q", "fields", "limit", "sort", "search-after", "keywords", "facet-fields", "facet-limit");
 
   @Value("#{'${server.authorizedForwardedHost:}'.split(',')}")
   List<String> authorizedForwardedHosts;

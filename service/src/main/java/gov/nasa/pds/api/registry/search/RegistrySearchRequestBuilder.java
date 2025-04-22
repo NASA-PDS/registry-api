@@ -134,6 +134,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
           List<String> sortFieldNames,
           List<String> searchAfterFieldValues,
           List<String> facetFields,
+          Integer facetLimit,
           Boolean excludeSupersededProducts
   ) throws UnparsableQParamException, SortSearchAfterMismatchException {
     this
