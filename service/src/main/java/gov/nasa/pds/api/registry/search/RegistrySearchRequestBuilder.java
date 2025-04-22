@@ -141,7 +141,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
       .fieldsFromStrings(includeFieldNames)
       .constrainByQueryString(queryString)
       .addKeywordsParam(keywords)
-      .addPropertyFacets(facetFields)
+      .addPropertyFacets(facetFields, facetLimit)
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
     if (excludeSupersededProducts) {
@@ -436,11 +436,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * Add a collection of properties to the response as bucket aggregations.
    * @param propertyNames a flat list of properties on which to facet
    */
-  public RegistrySearchRequestBuilder addPropertyFacets(List<String> propertyNames) {
+  public RegistrySearchRequestBuilder addPropertyFacets(List<String> propertyNames, Integer bucketSize) {
     if (propertyNames != null){
       for (String propertyName : propertyNames) {
         PdsProperty property = new PdsProperty(propertyName);
-        this.aggregations(property.toJsonPropertyString(), field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()))));
+        this.aggregations(property.toJsonPropertyString(), field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()).size(bucketSize))));
       }
     }
 
