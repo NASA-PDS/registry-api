@@ -113,6 +113,8 @@ paths:
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/SearchAfter"
+        - $ref: "#/components/parameters/FacetFields"
+        - $ref: "#/components/parameters/FacetLimit"
 
   /docs:
     post:
@@ -283,6 +285,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/members/{versions}:
     get:
       tags:
@@ -334,6 +338,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/members/members/{versions}:
     get:
       tags:
@@ -385,6 +391,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/member-of/{versions}:
     get:
       tags:
@@ -436,6 +444,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
