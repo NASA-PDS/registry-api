@@ -480,8 +480,16 @@
 	    <version>6.0.0</version>
 	    <scope>provided</scope>
 	</dependency>
-    
+	
+	<!-- https://mvnrepository.com/artifact/org.springframework/spring-aspects -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-aspects</artifactId>
+	    <version>6.2.5</version>
+	</dependency>
+	
   </dependencies>
+    
 
   <dependencyManagement>
     <dependencies>
