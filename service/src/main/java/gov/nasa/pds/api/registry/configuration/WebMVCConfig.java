@@ -160,13 +160,25 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
 
 
+  public static String[] parseAcceptValues(String input, String defaultValue) {
+    if (input == null || input.trim().isEmpty()) {
+      WebMVCConfig.log.info(
+          "No Accept header provided by the user, assigning the default value " + defaultValue);
+      return new String[] {defaultValue};
+    }
+
+    return Arrays.stream(input.split(",")).map(String::trim).filter(s -> !s.isEmpty())
+        .toArray(String[]::new);
+  }
+
+
   static public Class<? extends ProductBusinessLogic> selectFormatterClass(String acceptHeaderValue)
       throws AcceptFormatNotSupportedException {
 
 
-    // split by , and remove extra spaces
+
     String[] acceptOrderedValues =
-        Arrays.stream(acceptHeaderValue.split(",")).map(String::trim).toArray(String[]::new);
+        parseAcceptValues(acceptHeaderValue, MediaType.APPLICATION_JSON_VALUE);
 
     for (String acceptValue : acceptOrderedValues) {
       if (WebMVCConfig.formatters.containsKey(acceptValue)) {
