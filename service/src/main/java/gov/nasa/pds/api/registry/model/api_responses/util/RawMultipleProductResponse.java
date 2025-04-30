@@ -1,4 +1,4 @@
-package gov.nasa.pds.api.registry.model.api_responses;
+package gov.nasa.pds.api.registry.model.api_responses.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

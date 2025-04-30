@@ -15,6 +15,7 @@ import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.search.HitIterator;
+import gov.nasa.pds.api.registry.search.OpenSearchFields;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.Summary;
@@ -23,6 +24,23 @@ import gov.nasa.pds.model.Summary;
 public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
 
   private static final Logger log = LoggerFactory.getLogger(PdsProductBusinessObject.class);
+
+  private final static String[] REQUIRED_OPENSEARCH_FIELDS =
+      {OpenSearchFields.DATA_FILE_NAME, OpenSearchFields.DATA_FILE_CREATION,
+          OpenSearchFields.DATA_FILE_REF, OpenSearchFields.DATA_FILE_SIZE,
+          OpenSearchFields.DATA_FILE_MD5, OpenSearchFields.DATA_FILE_MIME_TYPE,
+
+          // Label Info
+          OpenSearchFields.LABEL_FILE_NAME, OpenSearchFields.LABEL_FILE_CREATION,
+          OpenSearchFields.LABEL_FILE_REF, OpenSearchFields.LABEL_FILE_SIZE,
+          OpenSearchFields.LABEL_FILE_MD5,
+
+          // Tracking Meta
+          OpenSearchFields.TRACK_META_ARCHIVE_STATUS,
+
+          // Node Name
+          OpenSearchFields.NODE_NAME};
+
   private ObjectMapper objectMapper;
   private PdsProduct product = null;
   private PdsProducts products = null;
@@ -31,6 +49,19 @@ public class PdsProductBusinessObject extends ProductBusinessLogicImpl {
     super();
     // TODO Auto-generated constructor stub
   }
+
+  public static String[] getOpensearchRequiredFields(String[] requestedFields) {
+
+    return REQUIRED_OPENSEARCH_FIELDS;
+
+  }
+
+
+  public static String[] getAPIHiddenFields() {
+    return new String[] {OpenSearchFields.JSON_BLOB};
+  }
+
+
 
   @Override
   public String[] getMaximallyRequiredFields() {

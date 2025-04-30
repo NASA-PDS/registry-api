@@ -39,14 +39,15 @@ import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
-import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
-import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogicImpl;
-import gov.nasa.pds.api.registry.model.api_responses.RawMultipleProductResponse;
-import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
+import gov.nasa.pds.api.registry.model.transformers.Pds4XmlProductTransformer;
+import gov.nasa.pds.api.registry.model.transformers.ResponseTransformer;
+import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerImpl;
+import gov.nasa.pds.api.registry.model.transformers.Pds4JsonProductTransformer;
+import gov.nasa.pds.api.registry.model.api_responses.util.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import gov.nasa.pds.model.PropertiesListInner;
+import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
 
 
 
@@ -74,8 +75,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   static Integer DEFAULT_LIMIT = 100;
 
-
-  // TODO move that at a better place, it is not specific to this controller
   @Autowired
   public ProductsController(ConnectionContext connectionContext,
       ErrorMessageFactory errorMessageFactory, ObjectMapper objectMapper) {
@@ -87,65 +86,35 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   }
 
+  
 
-  private ResponseEntity<Object> formatSingleProduct(HashMap<String, Object> product,
-      List<String> fields) throws AcceptFormatNotSupportedException, UnhandledException {
-    // TODO add case when Accept is not available, default application/json
+
+  private ResponseTransformerImpl getTransformerInstance() throws UnhandledException, AcceptFormatNotSupportedException {
+    // TODO replace URLs from the request path
     HttpServletRequest curRequest =
         ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     String acceptHeaderValue = curRequest.getHeader("Accept");
 
-    Class<? extends ProductBusinessLogic> formatterClass =
-        WebMVCConfig.selectFormatterClass(acceptHeaderValue);
-
     try {
+      Class<? extends ResponseTransformer> transformerClass =
+          ResponseTransformerRegistry.selectTransformerClass(acceptHeaderValue);
+
+      log.debug("Transformer class: " + transformerClass);
+
       // TODO replace URLs from the request path
-      ProductBusinessLogicImpl formatter =
-          (ProductBusinessLogicImpl) formatterClass.getConstructor().newInstance();
+      ResponseTransformerImpl transformer =
+          (ResponseTransformerImpl) transformerClass.getConstructor().newInstance();
       // TODO check if that is applicable to all formatters.
       // Would there be a better place to assign the object mapper ? I don't understand why we have
       // only one assigned at the controller level.
-      formatter.setObjectMapper(this.objectMapper);
-      formatter.setResponse(product, fields);
-
-      return new ResponseEntity<Object>(formatter.getResponse(), HttpStatus.OK);
+      transformer.setObjectMapper(this.objectMapper);
+      return transformer;
 
     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException
         | InstantiationException e) {
       throw new UnhandledException(e);
     }
   }
-
-  private ProductBusinessLogic getFieldController() throws AcceptFormatNotSupportedException, UnhandledException {
-    // TODO add case when Accept is not available, default application/json
-    HttpServletRequest curRequest =
-        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    String acceptHeaderValue = curRequest.getHeader("Accept");
-
-    Class<? extends ProductBusinessLogic> formatterClass =
-        WebMVCConfig.selectFormatterClass(acceptHeaderValue);
-    try {
-      return formatterClass.getConstructor().newInstance();
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException
-        | InstantiationException e) {
-      throw new UnhandledException(e);
-    }
-  }
-  private ResponseEntity<Object> formatMultipleProducts(RawMultipleProductResponse response,
-      List<String> fields) throws AcceptFormatNotSupportedException, UnhandledException {
-      // TODO replace URLs from the request path
-      ProductBusinessLogicImpl formatter =
-          (ProductBusinessLogicImpl) this.getFieldController();
-      // TODO check if that is applicable to all formatters.
-      // Would there be a better place to assign the object mapper ? I don't understand why we have
-      // only one assigned at the controller level.
-      formatter.setObjectMapper(this.objectMapper);
-      formatter.setResponse(response.getProducts(), response.getSummary(), fields);
-
-      return new ResponseEntity<Object>(formatter.getResponse(), HttpStatus.OK);
-  }
-
-
 
   // 6 cases:
   // lidvid, no suffix we want the exact match with the lidvid (case exact)
@@ -155,63 +124,79 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   // lid suffix all, we want all the lidvid which lid matches (case all)
   // lidvid, suffix all, we want the exact match with the lidvid (case exact)
   @Override
-  public ResponseEntity<Object> selectByLidvid(String identifier, List<String> fields)
+  public ResponseEntity<Object> selectByLidvid(String identifier, List<String> userRequestedFields)
       throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
 
     HashMap<String, Object> product;
+
+    ResponseTransformerImpl transformer = getTransformerInstance();
+
+    List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
 
       if (pdsIdentifier.isLidvid()) {
-        product = this.getLidVid(pdsIdentifier, fields);
+        product = this.getLidVid(pdsIdentifier, allRequiredFields);
       } else {
-        product = this.getLatestLidVid(pdsIdentifier, fields);
+        product = this.getLatestLidVid(pdsIdentifier, allRequiredFields);
       }
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
     }
 
-    return formatSingleProduct(product, fields);
+    Object response = transformer.transformSingle(product, userRequestedFields);
 
-
+    return new ResponseEntity<Object>(response, HttpStatus.OK);
 
   }
 
 
   @Override
-  public ResponseEntity<Object> selectByLidvidLatest(String identifier, List<String> fields)
+  public ResponseEntity<Object> selectByLidvidLatest(String identifier, List<String> userRequestedFields)
       throws UnhandledException, NotFoundException, AcceptFormatNotSupportedException {
 
     HashMap<String, Object> product;
 
+    ResponseTransformerImpl transformer = getTransformerInstance();
+
+    List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
-      product = this.getLatestLidVid(pdsIdentifier, fields);
+      product = this.getLatestLidVid(pdsIdentifier, allRequiredFields);
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
     }
 
-    return formatSingleProduct(product, fields);
+    Object response = transformer.transformSingle(product, userRequestedFields);
+
+    return new ResponseEntity<Object>(response, HttpStatus.OK);
+
 
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public ResponseEntity<Object> selectByLidvidAll(String identifier, List<String> fields,
+  public ResponseEntity<Object> selectByLidvidAll(String identifier, List<String> userRequestedFields,
       Integer limit, List<String> sort, List<String> searchAfter) throws UnhandledException,
       NotFoundException, AcceptFormatNotSupportedException, SortSearchAfterMismatchException {
 
     RawMultipleProductResponse response;
 
+    ResponseTransformerImpl transformer = getTransformerInstance();
+
+    List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
 
       if (pdsIdentifier.isLidvid()) {
-        response = new RawMultipleProductResponse(this.getLidVid(pdsIdentifier, fields));
+        response = new RawMultipleProductResponse(this.getLidVid(pdsIdentifier, allRequiredFields));
 
       } else {
         limit = (limit == null) ? DEFAULT_LIMIT : limit;
-        response = this.getAllLidVid(pdsIdentifier, fields, limit, sort, searchAfter);
+        response = this.getAllLidVid(pdsIdentifier, allRequiredFields, limit, sort, searchAfter);
       }
 
 
@@ -220,25 +205,33 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new UnhandledException(e);
     }
 
-    return formatMultipleProducts(response, fields);
+    Object transformedResponse = transformer.transformMultiple(response, userRequestedFields);
+
+    return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
 
   }
 
   @Override
-  public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
+  public ResponseEntity<Object> productList(List<String> userRequestedFields, List<String> keywords,
       Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
 
+    ResponseTransformerImpl transformer = getTransformerInstance();
+
+    List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true, this.getFieldController()).build();
+        .applyMultipleProductsDefaults(allRequiredFields, q, keywords, limit, sort, searchAfter, true)
+        .build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
 
-    RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+    RawMultipleProductResponse rawResponse = new RawMultipleProductResponse(searchResponse);
 
-    return formatMultipleProducts(products, fields);
+    Object transformedResponse = transformer.transformMultiple(rawResponse, userRequestedFields);
+
+    return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
 
   }
@@ -247,10 +240,12 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLidVid(PdsProductIdentifier identifier, List<String> fields)
-      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
+      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException,
+      UnhandledException {
 
-    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .matchLidvid(identifier).fieldsFromStrings(fields, this.getFieldController()).build();
+    SearchRequest searchRequest =
+        new RegistrySearchRequestBuilder(this.connectionContext).matchLidvid(identifier)
+            .fieldsFromStrings(fields).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -269,10 +264,12 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLatestLidVid(PdsProductIdentifier identifier,
-      List<String> fields) throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
+      List<String> fields) throws OpenSearchException, IOException, NotFoundException,
+      AcceptFormatNotSupportedException, UnhandledException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .matchLid(identifier).fieldsFromStrings(fields, this.getFieldController()).excludeSupersededProducts().build();
+        .matchLid(identifier).fieldsFromStrings(fields)
+        .excludeSupersededProducts().build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -293,10 +290,12 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-      throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException, AcceptFormatNotSupportedException, UnhandledException {
+      throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException,
+      AcceptFormatNotSupportedException, UnhandledException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .matchLid(identifier).fieldsFromStrings(fields, this.getFieldController()).paginate(limit, sort, searchAfter).build();
+        .matchLid(identifier).fieldsFromStrings(fields)
+        .paginate(limit, sort, searchAfter).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -313,9 +312,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
   private PdsProductClasses resolveProductClass(PdsProductIdentifier identifier)
-      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
+      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException,
+      UnhandledException {
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .matchLid(identifier).fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()), this.getFieldController())
+        .matchLid(identifier).fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
         .excludeSupersededProducts().build();
 
     SearchResponse<HashMap> searchResponse =
@@ -331,12 +331,13 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
 
-  private PdsLidVid resolveLatestLidvid(PdsProductIdentifier identifier)
-      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
+  private PdsLidVid resolveLatestLidvid(PdsProductIdentifier identifier) throws OpenSearchException,
+      IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
 
     SearchRequest searchRequest =
         new RegistrySearchRequestBuilder(this.connectionContext).matchLid(identifier.getLid())
-            .fieldsFromStrings(List.of(),this.getFieldController()).excludeSupersededProducts().build();
+            .fieldsFromStrings(List.of())
+            .excludeSupersededProducts().build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -351,13 +352,14 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
 
-  private List<PdsLidVid> resolveExtantLidvids(PdsLid lid)
-      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
+  private List<PdsLidVid> resolveExtantLidvids(PdsLid lid) throws OpenSearchException, IOException,
+      NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
 
     String lidvidKey = "_id";
 
-    SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .matchLid(lid).fieldsFromStrings(List.of(lidvidKey), this.getFieldController()).build();
+    SearchRequest searchRequest =
+        new RegistrySearchRequestBuilder(this.connectionContext).matchLid(lid)
+            .fieldsFromStrings(List.of(lidvidKey)).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -376,20 +378,22 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
    *
    * @param identifier a LID or LIDVID
    * @return a LIDVID
-   * @throws OpenSearchException 
-   * @throws UnhandledException 
-   * @throws AcceptFormatNotSupportedException 
+   * @throws OpenSearchException
+   * @throws UnhandledException
+   * @throws AcceptFormatNotSupportedException
    */
   private PdsLidVid resolveIdentifierToLidvid(PdsProductIdentifier identifier)
-      throws NotFoundException, IOException, AcceptFormatNotSupportedException, UnhandledException, OpenSearchException {
+      throws NotFoundException, IOException, AcceptFormatNotSupportedException, UnhandledException,
+      OpenSearchException {
     return identifier.isLidvid() ? (PdsLidVid) identifier : resolveLatestLidvid(identifier);
   }
 
   @Override
-  public ResponseEntity<Object> productMembers(String identifier, List<String> fields,
+  public ResponseEntity<Object> productMembers(String identifier, List<String> userRequestedFields,
       Integer limit, String q, List<String> sort, List<String> searchAfter)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException {
+
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
@@ -412,16 +416,23 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + "' (got '" + productClass + "')");
       }
 
-      SearchRequest searchRequest = searchRequestBuilder
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true, this.getFieldController())
-          .build();
+
+      ResponseTransformerImpl transformer = getTransformerInstance();
+
+      List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
+      SearchRequest searchRequest =
+          searchRequestBuilder.applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort,
+              searchAfter, true).build();
 
       SearchResponse<HashMap> searchResponse =
           this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+
+      return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
     } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
@@ -429,7 +440,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
   @Override
-  public ResponseEntity<Object> productMembersMembers(String identifier, List<String> fields,
+  public ResponseEntity<Object> productMembersMembers(String identifier, List<String> userRequestedFields,
       Integer limit, String q, List<String> sort, List<String> searchAfter)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException {
@@ -451,16 +462,22 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
-      SearchRequest searchRequest = searchRequestBuilder
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true, this.getFieldController())
-          .build();
+      ResponseTransformerImpl transformer = getTransformerInstance();
+
+      List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
+      SearchRequest searchRequest =
+          searchRequestBuilder.applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort,
+              searchAfter, true).build();
 
       SearchResponse<HashMap> searchResponse =
           this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+
+      return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
     } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
@@ -476,11 +493,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
    * @param fieldName the name of the document _source property/field from which to extract results
    * @return a deduplicated list of the aggregated property/field contents, converted to
    *         PdsProductLidvids
-   * @throws AcceptFormatNotSupportedException 
+   * @throws AcceptFormatNotSupportedException
    */
   private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier,
-      String fieldName)
-      throws OpenSearchException, IOException, NotFoundException, UnhandledException, AcceptFormatNotSupportedException {
+      String fieldName) throws OpenSearchException, IOException, NotFoundException,
+      UnhandledException, AcceptFormatNotSupportedException {
 
     RegistrySearchRequestBuilder searchRequestBuilder =
         new RegistrySearchRequestBuilder(this.connectionContext);
@@ -494,8 +511,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
           "PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
     }
 
-    SearchRequest searchRequest =
-        searchRequestBuilder.matchLid(identifier).fieldsFromStrings(List.of(fieldName), this.getFieldController()).build();
+    SearchRequest searchRequest = searchRequestBuilder.matchLid(identifier)
+        .fieldsFromStrings(List.of(fieldName)).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -511,7 +528,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
 
   @Override
-  public ResponseEntity<Object> productMemberOf(String identifier, List<String> fields,
+  public ResponseEntity<Object> productMemberOf(String identifier, List<String> userRequestedFields,
       Integer limit, String q, List<String> sort, List<String> searchAfter)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
@@ -534,8 +551,12 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
+      ResponseTransformerImpl transformer = getTransformerInstance();
+
+      List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true, this.getFieldController())
+          .applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort, searchAfter, true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -543,7 +564,9 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+
+      return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -551,7 +574,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
   @Override
-  public ResponseEntity<Object> productMemberOfOf(String identifier, List<String> fields,
+  public ResponseEntity<Object> productMemberOfOf(String identifier, List<String> userRequestedFields,
       Integer limit, String q, List<String> sort, List<String> searchAfter)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
@@ -573,8 +596,13 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + "' (got '" + productClass + "')");
       }
 
+
+      ResponseTransformerImpl transformer = getTransformerInstance();
+
+      List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true, this.getFieldController())
+          .applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort, searchAfter, true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -582,7 +610,9 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+
+      return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -592,7 +622,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   @Override
   // TODO: Relocate this to ClassesController once common controller code has been
   // extracted/refactored
-  public ResponseEntity<Object> classList(String propertyClass, List<String> fields,
+  public ResponseEntity<Object> classList(String propertyClass, List<String> userRequestedFields,
       List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter)
       throws Exception {
     PdsProductClasses pdsProductClass;
@@ -602,8 +632,12 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new BadRequestException(err.getMessage());
     }
 
+    ResponseTransformerImpl transformer = getTransformerInstance();
+
+    List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
+
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true, this.getFieldController())
+        .applyMultipleProductsDefaults(allRequiredFields, q, keywords, limit, sort, searchAfter, true)
         .matchProductClass(pdsProductClass).build();
 
     SearchResponse<HashMap> searchResponse =
@@ -611,7 +645,9 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-    return formatMultipleProducts(products, fields);
+    Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+
+    return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
   }
 
   @Override

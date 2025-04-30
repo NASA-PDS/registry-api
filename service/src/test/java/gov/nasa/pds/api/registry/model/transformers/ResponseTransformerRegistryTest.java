@@ -1,12 +1,14 @@
-package gov.nasa.pds.api.registry.configuration;
+package gov.nasa.pds.api.registry.model.transformers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 
-class WebMVCConfigTest {
+class ResponseTransformerRegistryTest {
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
@@ -23,7 +25,7 @@ class WebMVCConfigTest {
     String foundFormatterClassName;
 
     try {
-      Class<? extends ProductBusinessLogic> formatter = WebMVCConfig.selectFormatterClass(format);
+      Class<? extends ResponseTransformer> formatter = ResponseTransformerRegistry.selectTransformerClass(format);
 
       foundFormatterClassName = formatter.getName();
       assertEquals(expectedFormatterClassName, foundFormatterClassName);
@@ -41,7 +43,7 @@ class WebMVCConfigTest {
     String format = "text/htmm";
 
     Exception exception = assertThrows(AcceptFormatNotSupportedException.class, () -> {
-      WebMVCConfig.selectFormatterClass(format);
+      ResponseTransformerRegistry.selectTransformerClass(format);
     });
 
     String expectedMessage = "None of the format(s) text/htmm is supported.";
@@ -60,7 +62,7 @@ class WebMVCConfigTest {
     String foundFormatterClassName;
 
     try {
-      Class<? extends ProductBusinessLogic> formatter = WebMVCConfig.selectFormatterClass(format);
+      Class<? extends ResponseTransformer> formatter = ResponseTransformerRegistry.selectTransformerClass(format);
 
       foundFormatterClassName = formatter.getName();
       assertEquals(expectedFormatterClassName, foundFormatterClassName);
@@ -81,7 +83,7 @@ class WebMVCConfigTest {
     String foundFormatterClassName;
 
     try {
-      Class<? extends ProductBusinessLogic> formatter = WebMVCConfig.selectFormatterClass(format);
+      Class<? extends ResponseTransformer> formatter = ResponseTransformerRegistry.selectTransformerClass(format);
 
       foundFormatterClassName = formatter.getName();
       assertEquals(expectedFormatterClassName, foundFormatterClassName);
@@ -99,7 +101,7 @@ class WebMVCConfigTest {
     String format = "text/htmm,car/porsche+911";
 
     Exception exception = assertThrows(AcceptFormatNotSupportedException.class, () -> {
-      WebMVCConfig.selectFormatterClass(format);
+      ResponseTransformerRegistry.selectTransformerClass(format);
     });
 
 

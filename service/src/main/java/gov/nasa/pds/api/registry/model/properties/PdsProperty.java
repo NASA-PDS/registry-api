@@ -14,6 +14,29 @@ import static gov.nasa.pds.api.registry.model.SearchUtil.openPropertyToJsonPrope
 public class PdsProperty {
     private final String value;
 
+      // Data File Info
+  public static final String DATA_FILE_NAME = "ops:Data_File_Info.ops:file_name";
+  public static final String DATA_FILE_CREATION = "ops:Data_File_Info.ops:creation_date_time";
+  public static final String DATA_FILE_REF = "ops:Data_File_Info.ops:file_ref";
+  public static final String DATA_FILE_SIZE = "ops:Data_File_Info.ops:file_size";
+  public static final String DATA_FILE_MD5 = "ops:Data_File_Info.ops:md5_checksum";
+  public static final String DATA_FILE_MIME_TYPE = "ops:Data_File_Info.ops:mime_type";
+
+  // Label Info
+  public static final String LABEL_FILE_NAME = "ops:Label_File_Info.ops:file_name";
+  public static final String LABEL_FILE_CREATION = "ops:Label_File_Info.ops:creation_date_time";
+  public static final String LABEL_FILE_REF = "ops:Label_File_Info.ops:file_ref";
+  public static final String LABEL_FILE_SIZE = "ops:Label_File_Info.ops:file_size";
+  public static final String LABEL_FILE_MD5 = "ops:Label_File_Info.ops:md5_checksum";
+
+  // Tracking_Meta
+  public static final String TRACK_META_ARCHIVE_STATUS = "ops:Tracking_Meta.ops:archive_status";
+
+  // Node Name
+  public static final String NODE_NAME = "ops:Harvest_Info.ops:node_name";
+  public final static String JSON_BLOB = "ops:Label_File_Info.ops:json_blob";
+  public final static String XML_BLOB = "ops:Label_File_Info.ops:blob";
+
     public PdsProperty(String value) {
         this.value = value;
     }

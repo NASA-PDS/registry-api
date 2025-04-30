@@ -20,13 +20,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
-import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.Pds4JsonProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.Pds4ProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.Pds4XmlProductBusinessObject;
-import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
 import gov.nasa.pds.api.registry.view.CsvSingularSerializer;
@@ -54,29 +47,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
   @Value("${server.contextPath}")
   private String contextPath;
-
-  private static Map<String, Class<? extends ProductBusinessLogic>> formatters =
-      new HashMap<String, Class<? extends ProductBusinessLogic>>();
-
-  static public Map<String, Class<? extends ProductBusinessLogic>> getFormatters() {
-    return formatters;
-  }
-
-  static {
-    // TODO move that at a better place, it is not specific to this controller
-    formatters.put("*", PdsProductBusinessObject.class);
-    formatters.put("*/*", PdsProductBusinessObject.class);
-    formatters.put("application/csv", WyriwygBusinessObject.class);
-    formatters.put("application/json", PdsProductBusinessObject.class);
-    formatters.put("application/kvp+json", WyriwygBusinessObject.class);
-    formatters.put("application/vnd.nasa.pds.pds4+json", Pds4JsonProductBusinessObject.class);
-    formatters.put("application/vnd.nasa.pds.pds4+xml", Pds4XmlProductBusinessObject.class);
-    formatters.put("application/xml", PdsProductBusinessObject.class);
-    formatters.put("text/csv", WyriwygBusinessObject.class);
-    formatters.put("text/html", PdsProductBusinessObject.class);
-    formatters.put("text/xml", PdsProductBusinessObject.class);
-  }
-
 
 
   @Override
@@ -158,27 +128,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
         + Integer.toString(converters.size()));
   }
 
-
-
-  static public Class<? extends ProductBusinessLogic> selectFormatterClass(String acceptHeaderValue)
-      throws AcceptFormatNotSupportedException {
-
-
-    // split by , and remove extra spaces
-    String[] acceptOrderedValues =
-        Arrays.stream(acceptHeaderValue.split(",")).map(String::trim).toArray(String[]::new);
-
-    for (String acceptValue : acceptOrderedValues) {
-      if (WebMVCConfig.formatters.containsKey(acceptValue)) {
-        return WebMVCConfig.formatters.get(acceptValue);
-      }
-    }
-
-    // if none of the Accept format proposed matches
-    throw new AcceptFormatNotSupportedException(
-        "None of the format(s) " + acceptHeaderValue + " is supported.");
-
-  }
 
   @Autowired
   private SecurityValidationFilter queryParameterValidationInterceptor;

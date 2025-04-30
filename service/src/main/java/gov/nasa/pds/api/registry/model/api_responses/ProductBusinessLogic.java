@@ -6,6 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.model.Summary;
 
 public interface ProductBusinessLogic {
+
+  public static String[] getOpensearchRequiredFields() {
+    return null;
+  }
+
+  public static String[] getAPIHiddenFields() {
+    return null;
+  }
+
+
+
   public String[] getMinimallyRequiredFields();
 
   public String[] getMaximallyRequiredFields();
