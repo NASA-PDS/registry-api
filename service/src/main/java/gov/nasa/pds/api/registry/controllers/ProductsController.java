@@ -222,6 +222,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new UnhandledException(e);
     }
 
+    //todo: apply faceting to this route if applicable
     return formatMultipleProducts(response, fields);
 
 
@@ -230,16 +231,18 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   @Override
   @LogExecutionTime
   public ResponseEntity<Object> productList(List<String> fields, List<String> keywords,
-      Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit) throws Exception {
 
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true).build();
+        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, facetFields, facetLimit, true).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
+
+    //todo: apply faceting to this route if applicable
     return formatMultipleProducts(products, fields);
 
   }
@@ -385,7 +388,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMembers(String identifier, List<String> fields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException {
 
@@ -411,7 +414,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, facetFields, facetLimit, true)
           .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -419,7 +422,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
@@ -428,7 +432,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMembersMembers(String identifier, List<String> fields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException {
 
@@ -450,7 +454,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = searchRequestBuilder
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, facetFields, facetLimit, true)
           .build();
 
       SearchResponse<HashMap> searchResponse =
@@ -458,7 +462,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException | UnparsableQParamException e) {
       throw new UnhandledException(e);
@@ -509,7 +514,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMemberOf(String identifier, List<String> fields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
@@ -532,7 +537,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, facetFields, facetLimit, true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -540,7 +545,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -549,7 +555,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMemberOfOf(String identifier, List<String> fields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
@@ -571,7 +577,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       }
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(fields, q, List.of(), limit, sort, searchAfter, facetFields, facetLimit, true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -579,7 +585,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      return formatMultipleProducts(products, fields);
+      //todo: apply faceting to this route if applicable
+    return formatMultipleProducts(products, fields);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -590,7 +597,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   // TODO: Relocate this to ClassesController once common controller code has been
   // extracted/refactored
   public ResponseEntity<Object> classList(String propertyClass, List<String> fields,
-      List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter)
+      List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws Exception {
     PdsProductClasses pdsProductClass;
     try {
@@ -600,7 +607,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, true)
+        .applyMultipleProductsDefaults(fields, q, keywords, limit, sort, searchAfter, facetFields, facetLimit, true)
         .matchProductClass(pdsProductClass).build();
 
     SearchResponse<HashMap> searchResponse =
@@ -608,6 +615,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
+    //todo: apply faceting to this route if applicable
     return formatMultipleProducts(products, fields);
   }
 
