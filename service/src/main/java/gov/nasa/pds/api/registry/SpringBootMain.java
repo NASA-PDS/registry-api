@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 @EnableScheduling
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration",
     "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.model",
-    "gov.nasa.pds.api.registry.search", "javax.servlet.http"})
+    "gov.nasa.pds.api.registry.search", "gov.nasa.pds.api.registry.util", "javax.servlet.http"})
 public class SpringBootMain implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootMain.class);

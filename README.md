@@ -60,12 +60,18 @@ There are two approaches to running a local development instance of the API
 3. Temporarily disable certificate verification by making the following modification to [application.properties](./service/src/main/resources/application.properties)
 
        openSearch.sslCertificateCNVerification=false
+       
+4. If using the docker-compose setup (step 1), only one discipline node tenant is configured, it is 'geo', check this line:
 
-4. Build the application
+
+       openSearch.disciplineNodes=geo
+
+
+5. Build the application
 
        mvn clean install
 
-5. Start the application 
+6. Start the application 
 
        cd service
        mvn spring-boot:run
@@ -73,10 +79,10 @@ There are two approaches to running a local development instance of the API
 
 The API will now be accessible on (by default) https://localhost:8080
        
-6. Specific configuration profile: if you run the application in a specific environment you can define a dedicated `application.properties`, for example `application-dev.properties` that does not need to be commited on git. Launch it as follow:
+7. Specific configuration profile: if you run the application in a specific environment you can define a dedicated `application.properties`, for example `application-dev.properties` that does not need to be commited on git. Launch it as follow:
 
 
-    mvn -Dspring-boot.run.profiles=dev spring-boot:run
+       mvn -Dspring-boot.run.profiles=dev spring-boot:run
      
 
     

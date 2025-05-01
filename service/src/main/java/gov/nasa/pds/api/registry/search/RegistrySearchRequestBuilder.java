@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
+import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -26,6 +27,7 @@ import org.opensearch.client.opensearch._types.FieldSort;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.SortOptions;
 import org.opensearch.client.opensearch._types.SortOrder;
+import org.opensearch.client.opensearch._types.aggregations.TermsAggregation;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
@@ -113,6 +115,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * @param pageSize - the page size to use for pagination
    * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to lowest priority
    * @param searchAfterFieldValues - the values corresponding to the sort fields, for pagination
+   * @param facetFields - the opensearch fields to generate facet aggregations for
    * @param excludeSupersededProducts - whether to exclude superseded products from the result set
    */
   public RegistrySearchRequestBuilder applyMultipleProductsDefaults(
@@ -122,12 +125,15 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
           Integer pageSize,
           List<String> sortFieldNames,
           List<String> searchAfterFieldValues,
+          List<String> facetFields,
+          Integer facetLimit,
           Boolean excludeSupersededProducts
   ) throws UnparsableQParamException, SortSearchAfterMismatchException {
     this
       .fieldsFromStrings(includeFieldNames)
       .constrainByQueryString(queryString)
       .addKeywordsParam(keywords)
+      .addPropertyFacets(facetFields, facetLimit)
       .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
     if (excludeSupersededProducts) {
@@ -409,6 +415,21 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     TermsQuery query = new TermsQuery.Builder().field(PdsProductClasses.getPropertyName()).terms(termsQueryField).build();
 
     this.queryBuilder.mustNot(query.toQuery());
+    return this;
+  }
+
+  /**
+   * Add a collection of properties to the response as bucket aggregations.
+   * @param propertyNames a flat list of properties on which to facet
+   */
+  public RegistrySearchRequestBuilder addPropertyFacets(List<String> propertyNames, Integer bucketSize) {
+    if (propertyNames != null){
+      for (String propertyName : propertyNames) {
+        PdsProperty property = new PdsProperty(propertyName);
+        this.aggregations(property.toJsonPropertyString(), field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()).size(bucketSize))));
+      }
+    }
+
     return this;
   }
 

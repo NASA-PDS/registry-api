@@ -39,6 +39,7 @@ import gov.nasa.pds.api.registry.model.transformers.ResponseTransformer;
 import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerImpl;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
+import gov.nasa.pds.api.registry.util.LogExecutionTime;
 import gov.nasa.pds.model.PropertiesListInner;
 import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
 
@@ -76,8 +77,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     this.openSearchClient = this.connectionContext.getOpenSearchClient();
 
   }
-
-  
 
 
   private ResponseTransformerImpl getTransformerInstance() throws UnhandledException, AcceptFormatNotSupportedException {
@@ -198,20 +197,19 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
-
   }
 
   @Override
+  @LogExecutionTime
   public ResponseEntity<Object> productList(List<String> userRequestedFields, List<String> keywords,
-      Integer limit, String q, List<String> sort, List<String> searchAfter) throws Exception {
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit) throws Exception {
 
     ResponseTransformerImpl transformer = getTransformerInstance();
 
     List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(allRequiredFields, q, keywords, limit, sort, searchAfter, true)
-        .build();
+        .applyMultipleProductsDefaults(allRequiredFields, q, keywords, limit, sort, searchAfter, facetFields, facetLimit, true).build();
 
     SearchResponse<HashMap> searchResponse =
         this.openSearchClient.search(searchRequest, HashMap.class);
@@ -221,7 +219,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     Object transformedResponse = transformer.transform(rawResponse, userRequestedFields);
 
     return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
-
 
   }
 
@@ -336,7 +333,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
 
     // TODO: Determine how to handle multiple hits due to sweepers lag
-
     return PdsLidVid.fromString(searchResponse.hits().hits().get(0).id());
   }
 
@@ -379,7 +375,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMembers(String identifier, List<String> userRequestedFields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException {
 
@@ -405,14 +401,13 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + "' (got '" + productClass + "')");
       }
 
-
       ResponseTransformerImpl transformer = getTransformerInstance();
 
       List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
       SearchRequest searchRequest =
           searchRequestBuilder.applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort,
-              searchAfter, true).build();
+              searchAfter, facetFields, facetLimit, true).build();
 
       SearchResponse<HashMap> searchResponse =
           this.openSearchClient.search(searchRequest, HashMap.class);
@@ -430,7 +425,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMembersMembers(String identifier, List<String> userRequestedFields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException {
 
@@ -451,19 +446,21 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
+
       ResponseTransformerImpl transformer = getTransformerInstance();
 
       List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
       SearchRequest searchRequest =
           searchRequestBuilder.applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort,
-              searchAfter, true).build();
+              searchAfter, facetFields, facetLimit, true).build();
 
       SearchResponse<HashMap> searchResponse =
           this.openSearchClient.search(searchRequest, HashMap.class);
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
+      //todo: apply faceting to this route if applicable
       Object transformedResponse = transformer.transform(products, userRequestedFields);
 
       return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
@@ -518,7 +515,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMemberOf(String identifier, List<String> userRequestedFields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
@@ -545,7 +542,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort, searchAfter, facetFields, facetLimit, true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -564,7 +561,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<Object> productMemberOfOf(String identifier, List<String> userRequestedFields,
-      Integer limit, String q, List<String> sort, List<String> searchAfter)
+      Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
@@ -591,7 +588,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
       SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-          .applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort, searchAfter, true)
+          .applyMultipleProductsDefaults(allRequiredFields, q, List.of(), limit, sort, searchAfter, facetFields, facetLimit, true)
           .matchFieldAnyOfIdentifiers("_id", parentIds).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -612,7 +609,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   // TODO: Relocate this to ClassesController once common controller code has been
   // extracted/refactored
   public ResponseEntity<Object> classList(String propertyClass, List<String> userRequestedFields,
-      List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter)
+      List<String> keywords, Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws Exception {
     PdsProductClasses pdsProductClass;
     try {
@@ -626,7 +623,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     List<String> allRequiredFields = transformer.getRequestedFields(userRequestedFields);
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .applyMultipleProductsDefaults(allRequiredFields, q, keywords, limit, sort, searchAfter, true)
+        .applyMultipleProductsDefaults(allRequiredFields, q, keywords, limit, sort, searchAfter, facetFields, facetLimit, true)
         .matchProductClass(pdsProductClass).build();
 
     SearchResponse<HashMap> searchResponse =
@@ -637,6 +634,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     Object transformedResponse = transformer.transform(products, userRequestedFields);
 
     return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
+
   }
 
   @Override
