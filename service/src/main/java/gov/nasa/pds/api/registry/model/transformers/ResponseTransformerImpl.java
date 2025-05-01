@@ -1,5 +1,7 @@
 package gov.nasa.pds.api.registry.model.transformers;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
+import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.SearchUtil;
-import gov.nasa.pds.api.registry.model.api_responses.util.RawMultipleProductResponse;
-
+import gov.nasa.pds.api.registry.search.OpenSearchFields;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 @Component
 @RequestScope
 public abstract class ResponseTransformerImpl implements ResponseTransformer {
@@ -22,7 +28,45 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   private static final Logger log = LoggerFactory.getLogger(ResponseTransformerImpl.class);
 
   private static final String DEFAULT_NULL_VALUE = null;
-  private ObjectMapper objectMapper;
+  protected static final List<String> OPENSEARCH_EXCLUDED_PROPERTIES = List.of(OpenSearchFields.XML_BLOB, OpenSearchFields.JSON_BLOB);
+
+  protected ObjectMapper objectMapper;
+  protected URL baseURL;
+
+  public ResponseTransformerImpl() {
+    try {
+
+      HttpServletRequest request =
+          ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+
+      String proxyContextPath = request.getContextPath();
+      log.debug("contextPath is: '" + proxyContextPath + "'");
+
+      String serverName = request.getServerName();
+
+      if (proxyRunsOnDefaultPort(request)) {
+        this.baseURL = new URL(request.getScheme(), request.getServerName(), proxyContextPath);
+      } else {
+        this.baseURL = new URL(request.getScheme(), request.getServerName(),
+            request.getServerPort(), proxyContextPath);
+      }
+
+      log.debug("baseUrl is " + this.baseURL.toString());
+
+
+    } catch (MalformedURLException e) {
+      log.error("Server URL was not retrieved");
+
+    }
+  }
+
+
+  private static boolean proxyRunsOnDefaultPort(HttpServletRequest request) {
+    return (("https".equals(request.getScheme()) && (request.getServerPort() == 443))
+        || ("http".equals(request.getScheme()) && (request.getServerPort() == 80)));
+  }
+
 
   @Override
   public void setObjectMapper(ObjectMapper om) {
@@ -35,13 +79,13 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   }
 
   @Override
-  public Object transformSingle(Map<String, Object> kvp, List<String> fields) {
+  public Object transform(RawMultipleProductResponse input, List<String> fields) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public Object transformMultiple(RawMultipleProductResponse rawResponse, List<String> fields) {
+  public Object transform(Map<String, Object> input, List<String> fields) {
     // TODO Auto-generated method stub
     return null;
   }

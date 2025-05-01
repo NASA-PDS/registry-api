@@ -20,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
 import gov.nasa.pds.api.registry.view.CsvSingularSerializer;
@@ -47,7 +48,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
   @Value("${server.contextPath}")
   private String contextPath;
-
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -127,7 +127,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
     WebMVCConfig.log.info("Number of converters available after adding locals "
         + Integer.toString(converters.size()));
   }
-
 
   @Autowired
   private SecurityValidationFilter queryParameterValidationInterceptor;

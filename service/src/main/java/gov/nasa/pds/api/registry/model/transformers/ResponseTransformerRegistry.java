@@ -12,16 +12,16 @@ public class ResponseTransformerRegistry {
   public static final Map<String, Class<? extends ResponseTransformer>> TRANSFORMERS = new HashMap<>();
   
   static {
-      // TODO move that at a better place, it is not specific to this controller
-    // formatters.put("*", PdsProductBusinessObject.class);
-    // formatters.put("*/*", PdsProductBusinessObject.class);
-    // formatters.put("application/csv", WyriwygBusinessObject.class);
-    // formatters.put("application/json", PdsProductBusinessObject.class);
-    // formatters.put("application/kvp+json", WyriwygBusinessObject.class);
-     // formatters.put("application/xml", PdsProductBusinessObject.class);
-    // formatters.put("text/csv", WyriwygBusinessObject.class);
-    // formatters.put("text/html", PdsProductBusinessObject.class);
-    // formatters.put("text/xml", PdsProductBusinessObject.class);
+    TRANSFORMERS.put("*", PdsProductTransformer.class);
+    TRANSFORMERS.put("*/*", PdsProductTransformer.class);
+    TRANSFORMERS.put("application/csv", WyriwygProductTransformer.class);
+    TRANSFORMERS.put("application/json", PdsProductTransformer.class);
+    TRANSFORMERS.put("application/kvp+json", WyriwygProductTransformer.class);
+    TRANSFORMERS.put("application/json", PdsProductTransformer.class);
+    TRANSFORMERS.put("application/xml", PdsProductTransformer.class);
+    TRANSFORMERS.put("text/csv", WyriwygProductTransformer.class);
+    TRANSFORMERS.put("text/html", PdsProductTransformer.class);
+    TRANSFORMERS.put("text/xml", PdsProductTransformer.class);
     TRANSFORMERS.put("application/vnd.nasa.pds.pds4+json", Pds4JsonProductTransformer.class);
     TRANSFORMERS.put("application/vnd.nasa.pds.pds4+xml", Pds4XmlProductTransformer.class);
   }

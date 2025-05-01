@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
-import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 
 class ResponseTransformerRegistryTest {

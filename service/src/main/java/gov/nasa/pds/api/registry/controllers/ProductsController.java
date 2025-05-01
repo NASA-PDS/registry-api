@@ -3,7 +3,6 @@ package gov.nasa.pds.api.registry.controllers;
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import gov.nasa.pds.api.base.ClassesApi;
 import gov.nasa.pds.api.base.PropertiesApi;
@@ -12,9 +11,6 @@ import gov.nasa.pds.api.registry.model.identifiers.PdsLid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -37,13 +33,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import gov.nasa.pds.api.base.ProductsApi;
 import gov.nasa.pds.api.registry.ConnectionContext;
-import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.ErrorMessageFactory;
-import gov.nasa.pds.api.registry.model.transformers.Pds4XmlProductTransformer;
+import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.transformers.ResponseTransformer;
 import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerImpl;
-import gov.nasa.pds.api.registry.model.transformers.Pds4JsonProductTransformer;
-import gov.nasa.pds.api.registry.model.api_responses.util.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 import gov.nasa.pds.api.registry.search.RegistrySearchRequestBuilder;
 import gov.nasa.pds.model.PropertiesListInner;
@@ -68,10 +61,9 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   private static final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
   private final ConnectionContext connectionContext;
-  private final ErrorMessageFactory errorMessageFactory;
   private final ObjectMapper objectMapper;
   private OpenSearchClient openSearchClient;
-  private SearchRequest presetSearchRequest;
+
 
   static Integer DEFAULT_LIMIT = 100;
 
@@ -79,7 +71,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   public ProductsController(ConnectionContext connectionContext,
       ErrorMessageFactory errorMessageFactory, ObjectMapper objectMapper) {
 
-    this.errorMessageFactory = errorMessageFactory;
     this.objectMapper = objectMapper;
     this.connectionContext = connectionContext;
     this.openSearchClient = this.connectionContext.getOpenSearchClient();
@@ -90,7 +81,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
 
   private ResponseTransformerImpl getTransformerInstance() throws UnhandledException, AcceptFormatNotSupportedException {
-    // TODO replace URLs from the request path
+
     HttpServletRequest curRequest =
         ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     String acceptHeaderValue = curRequest.getHeader("Accept");
@@ -101,7 +92,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       log.debug("Transformer class: " + transformerClass);
 
-      // TODO replace URLs from the request path
       ResponseTransformerImpl transformer =
           (ResponseTransformerImpl) transformerClass.getConstructor().newInstance();
       // TODO check if that is applicable to all formatters.
@@ -145,7 +135,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new UnhandledException(e);
     }
 
-    Object response = transformer.transformSingle(product, userRequestedFields);
+    Object response = transformer.transform(product, userRequestedFields);
 
     return new ResponseEntity<Object>(response, HttpStatus.OK);
 
@@ -169,14 +159,13 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new UnhandledException(e);
     }
 
-    Object response = transformer.transformSingle(product, userRequestedFields);
+    Object response = transformer.transform(product, userRequestedFields);
 
     return new ResponseEntity<Object>(response, HttpStatus.OK);
 
 
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public ResponseEntity<Object> selectByLidvidAll(String identifier, List<String> userRequestedFields,
       Integer limit, List<String> sort, List<String> searchAfter) throws UnhandledException,
@@ -205,7 +194,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new UnhandledException(e);
     }
 
-    Object transformedResponse = transformer.transformMultiple(response, userRequestedFields);
+    Object transformedResponse = transformer.transform(response, userRequestedFields);
 
     return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
@@ -229,7 +218,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     RawMultipleProductResponse rawResponse = new RawMultipleProductResponse(searchResponse);
 
-    Object transformedResponse = transformer.transformMultiple(rawResponse, userRequestedFields);
+    Object transformedResponse = transformer.transform(rawResponse, userRequestedFields);
 
     return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
@@ -430,7 +419,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+      Object transformedResponse = transformer.transform(products, userRequestedFields);
 
       return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
@@ -475,7 +464,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+      Object transformedResponse = transformer.transform(products, userRequestedFields);
 
       return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
@@ -564,7 +553,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+      Object transformedResponse = transformer.transform(products, userRequestedFields);
 
       return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
@@ -610,7 +599,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-      Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+      Object transformedResponse = transformer.transform(products, userRequestedFields);
 
       return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
 
@@ -645,7 +634,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     RawMultipleProductResponse products = new RawMultipleProductResponse(searchResponse);
 
-    Object transformedResponse = transformer.transformMultiple(products, userRequestedFields);
+    Object transformedResponse = transformer.transform(products, userRequestedFields);
 
     return new ResponseEntity<Object>(transformedResponse, HttpStatus.OK);
   }

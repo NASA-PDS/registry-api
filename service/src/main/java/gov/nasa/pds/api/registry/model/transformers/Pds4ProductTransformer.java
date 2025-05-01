@@ -8,8 +8,7 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.model.Pds4ProductFactory;
-import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.util.RawMultipleProductResponse;
+import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
@@ -48,7 +47,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
 
 
   @Override
-  public Object transformMultiple(RawMultipleProductResponse input, List<String> fields) {
+  public Object transform(RawMultipleProductResponse input, List<String> fields) {
     List<Pds4Product> list = new ArrayList<>();
     Pds4Products products = new Pds4Products();
     Set<String> uniqueProperties = new TreeSet<>();
@@ -74,7 +73,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
   }
 
   @Override
-  public Object transformSingle(Map<String, Object> kvp, List<String> fields) {
+  public Object transform(Map<String, Object> kvp, List<String> fields) {
     String id = (String) kvp.get("lidvid");
 
     // TODO add warning fields are not supported

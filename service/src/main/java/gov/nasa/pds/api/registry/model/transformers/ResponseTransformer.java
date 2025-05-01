@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import gov.nasa.pds.api.registry.model.api_responses.util.RawMultipleProductResponse;
+import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 
 public interface ResponseTransformer {
@@ -16,8 +15,7 @@ public interface ResponseTransformer {
 
   public List<String> getRequestedFields(List<String> userRequestFields);
   
-  Object transformMultiple(RawMultipleProductResponse rawResponse, List<String> fields);
-
-  Object transformSingle(Map<String, Object> kvp, List<String> fields);
+  Object transform(RawMultipleProductResponse input, List<String> fields);
+  Object transform(Map<String, Object> input, List<String> fields);
 
 }

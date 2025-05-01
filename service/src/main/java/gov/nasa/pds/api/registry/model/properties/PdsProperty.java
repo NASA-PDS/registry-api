@@ -14,6 +14,20 @@ import static gov.nasa.pds.api.registry.model.SearchUtil.openPropertyToJsonPrope
 public class PdsProperty {
     private final String value;
 
+    public static final String LIDVID = "lidvid";
+    public static final String VID = "vid";
+    public static final String TITLE = "title";
+    public static final String PRODUCT_CLASS = "product_class";
+    public static final String START_DATE_TIME = "pds:Time_Coordinates.pds:start_date_time";
+    public static final String STOP_DATE_TIME = "pds:Time_Coordinates.pds:stop_date_time";
+    public static final String MODIFICATION_DATE = "pds:Modification_Detail.pds:modification_date";
+    public static final String CREATION_DATE_TIME = "pds:File.pds:creation_date_time";
+    public static final String REF_LID_INSTRUMENT_HOST = "ref_lid_instrument_host";
+    public static final String REF_LID_INSTRUMENT = "ref_lid_instrument";
+    public static final String REF_LID_INVESTIGATION = "ref_lid_investigation";
+    public static final String REF_LID_TARGET = "ref_lid_target";
+
+ 
       // Data File Info
   public static final String DATA_FILE_NAME = "ops:Data_File_Info.ops:file_name";
   public static final String DATA_FILE_CREATION = "ops:Data_File_Info.ops:creation_date_time";
