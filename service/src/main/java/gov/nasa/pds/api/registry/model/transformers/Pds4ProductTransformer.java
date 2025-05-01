@@ -47,6 +47,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
 
 
   @Override
+  @LogExecutionTime
   public Object transform(RawMultipleProductResponse input, List<String> fields) {
     List<Pds4Product> list = new ArrayList<>();
     Pds4Products products = new Pds4Products();
@@ -73,6 +74,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
   }
 
   @Override
+  @LogExecutionTime
   public Object transform(Map<String, Object> kvp, List<String> fields) {
     String id = (String) kvp.get("lidvid");
 

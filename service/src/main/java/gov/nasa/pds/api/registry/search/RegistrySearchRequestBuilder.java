@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,6 @@ import gov.nasa.pds.api.registry.ConnectionContext;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
-import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.model.exceptions.SortSearchAfterMismatchException;
 import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
