@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 
 public class ResponseTransformerRegistry {
@@ -28,7 +29,7 @@ public class ResponseTransformerRegistry {
 
   public static String[] parseAcceptValues(String input, String defaultValue) {
     if (input == null || input.trim().isEmpty()) {
-      WebMVCConfig.log.info(
+      log.info(
           "No Accept header provided by the user, assigning the default value " + defaultValue);
       return new String[] {defaultValue};
     }

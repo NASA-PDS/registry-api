@@ -13,6 +13,7 @@ import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import gov.nasa.pds.model.Pds4Product;
 import gov.nasa.pds.model.Pds4Products;
 import gov.nasa.pds.model.Summary;
+import gov.nasa.pds.api.registry.util.LogExecutionTime;
 
 public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
 

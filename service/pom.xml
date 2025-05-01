@@ -294,7 +294,7 @@
     <dependency>
       <groupId>gov.nasa.pds.registry-api</groupId>
       <artifactId>registry-api-model</artifactId>
-      <version>1.5.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
