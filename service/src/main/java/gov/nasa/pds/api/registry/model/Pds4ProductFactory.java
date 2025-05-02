@@ -29,7 +29,7 @@ public class Pds4ProductFactory {
    */
   public static Pds4Product createProduct(String lidvid, Map<String, Object> fieldMap,
       boolean isJSON) {
-    log.debug("Creating Pds4Product object from opensearch key-value field map with keys {}", fieldMap.keySet());
+    log.debug("Creating Pds4Product with id {} object from opensearch key-value field map with keys {}", lidvid, fieldMap.keySet());
 
     Pds4Product prod = new Pds4Product();
     prod.setId(lidvid);

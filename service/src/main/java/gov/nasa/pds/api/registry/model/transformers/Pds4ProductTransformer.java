@@ -21,14 +21,15 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
 
   protected boolean isJSON;
   protected static final List<String> REQUIRED_FIELDS = List.of(
-    PdsProperty.DATA_FILE_NAME, PdsProperty.DATA_FILE_CREATION,
-    PdsProperty.DATA_FILE_REF, PdsProperty.DATA_FILE_SIZE,
-    PdsProperty.DATA_FILE_MD5, PdsProperty.DATA_FILE_MIME_TYPE,
+    PdsProperty.LIDVID,
+    PdsProperty.DATA_FILE.NAME, PdsProperty.DATA_FILE.CREATION,
+    PdsProperty.DATA_FILE.REF, PdsProperty.DATA_FILE.SIZE,
+    PdsProperty.DATA_FILE.MD5, PdsProperty.DATA_FILE.MIME_TYPE,
 
     // Label Info
-    PdsProperty.LABEL_FILE_NAME, PdsProperty.LABEL_FILE_CREATION,
-    PdsProperty.LABEL_FILE_REF, PdsProperty.LABEL_FILE_SIZE,
-    PdsProperty.LABEL_FILE_MD5,
+    PdsProperty.LABEL_FILE.NAME, PdsProperty.LABEL_FILE.CREATION,
+    PdsProperty.LABEL_FILE.REF, PdsProperty.LABEL_FILE.SIZE,
+    PdsProperty.LABEL_FILE.MD5,
 
     // Tracking Meta
     PdsProperty.TRACK_META_ARCHIVE_STATUS,
@@ -43,6 +44,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
 
   @Override
   public List<String> getRequestedFields(List<String> userRequestFields) {
+
     return userRequestFields;
   }
 
@@ -77,7 +79,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
   @Override
   @LogExecutionTime
   public Object transform(Map<String, Object> kvp, List<String> fields) {
-    String id = (String) kvp.get("lidvid");
+    String id = (String) kvp.get(PdsProperty.LIDVID);
 
     // TODO add warning fields are not supported
 

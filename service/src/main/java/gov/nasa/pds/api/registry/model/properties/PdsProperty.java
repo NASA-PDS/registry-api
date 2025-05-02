@@ -27,29 +27,37 @@ public class PdsProperty {
     public static final String REF_LID_INVESTIGATION = "ref_lid_investigation";
     public static final String REF_LID_TARGET = "ref_lid_target";
 
+
+        // Data File Info
+    public static class DATA_FILE {
+        private static final String OBJECT_PREFIX = "ops:Data_File_Info.";
+
+        public static final String NAME = OBJECT_PREFIX + "ops:file_name";
+        public static final String CREATION = OBJECT_PREFIX + "ops:creation_date_time";
+        public static final String REF = OBJECT_PREFIX + "ops:file_ref";
+        public static final String SIZE = OBJECT_PREFIX + "ops:file_size";
+        public static final String MD5 = OBJECT_PREFIX + "ops:md5_checksum";
+        public static final String MIME_TYPE = OBJECT_PREFIX + "ops:mime_type";
+    }
+
+    public static class LABEL_FILE {
+        private static final String OBJECT_PREFIX = "ops:Label_File_Info.";
+
+        public static final String NAME = OBJECT_PREFIX + "ops:file_name";
+        public static final String CREATION = OBJECT_PREFIX + "ops:creation_date_time";
+        public static final String REF = OBJECT_PREFIX + "ops:file_ref";
+        public static final String SIZE = OBJECT_PREFIX + "ops:file_size";
+        public static final String MD5 = OBJECT_PREFIX + "ops:md5_checksum";
+    }
  
-      // Data File Info
-  public static final String DATA_FILE_NAME = "ops:Data_File_Info.ops:file_name";
-  public static final String DATA_FILE_CREATION = "ops:Data_File_Info.ops:creation_date_time";
-  public static final String DATA_FILE_REF = "ops:Data_File_Info.ops:file_ref";
-  public static final String DATA_FILE_SIZE = "ops:Data_File_Info.ops:file_size";
-  public static final String DATA_FILE_MD5 = "ops:Data_File_Info.ops:md5_checksum";
-  public static final String DATA_FILE_MIME_TYPE = "ops:Data_File_Info.ops:mime_type";
+  
+    // Tracking_Meta
+    public static final String TRACK_META_ARCHIVE_STATUS = "ops:Tracking_Meta.ops:archive_status";
 
-  // Label Info
-  public static final String LABEL_FILE_NAME = "ops:Label_File_Info.ops:file_name";
-  public static final String LABEL_FILE_CREATION = "ops:Label_File_Info.ops:creation_date_time";
-  public static final String LABEL_FILE_REF = "ops:Label_File_Info.ops:file_ref";
-  public static final String LABEL_FILE_SIZE = "ops:Label_File_Info.ops:file_size";
-  public static final String LABEL_FILE_MD5 = "ops:Label_File_Info.ops:md5_checksum";
-
-  // Tracking_Meta
-  public static final String TRACK_META_ARCHIVE_STATUS = "ops:Tracking_Meta.ops:archive_status";
-
-  // Node Name
-  public static final String NODE_NAME = "ops:Harvest_Info.ops:node_name";
-  public final static String JSON_BLOB = "ops:Label_File_Info.ops:json_blob";
-  public final static String XML_BLOB = "ops:Label_File_Info.ops:blob";
+    // Node Name
+    public static final String NODE_NAME = "ops:Harvest_Info.ops:node_name";
+    public  static final String JSON_BLOB = "ops:Label_File_Info.ops:json_blob";
+    public  static final String XML_BLOB = "ops:Label_File_Info.ops:blob";
 
     public PdsProperty(String value) {
         this.value = value;

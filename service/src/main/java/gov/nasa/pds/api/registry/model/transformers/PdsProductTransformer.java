@@ -22,7 +22,7 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
 
   protected boolean isJSON;
   protected static final List<String> REQUIRED_FIELDS =
-      List.of(PdsProperty.LIDVID, PdsProperty.TITLE, PdsProperty.PRODUCT_CLASS, PdsProperty.START_DATE_TIME, PdsProperty.STOP_DATE_TIME, PdsProperty.MODIFICATION_DATE, PdsProperty.CREATION_DATE_TIME, PdsProperty.REF_LID_INSTRUMENT_HOST, PdsProperty.REF_LID_INSTRUMENT, PdsProperty.REF_LID_INVESTIGATION, PdsProperty.REF_LID_TARGET, PdsProperty.VID, PdsProperty.DATA_FILE_REF, PdsProperty.TRACK_META_ARCHIVE_STATUS);
+      List.of(PdsProperty.LIDVID, PdsProperty.TITLE, PdsProperty.PRODUCT_CLASS, PdsProperty.START_DATE_TIME, PdsProperty.STOP_DATE_TIME, PdsProperty.MODIFICATION_DATE, PdsProperty.CREATION_DATE_TIME, PdsProperty.REF_LID_INSTRUMENT_HOST, PdsProperty.REF_LID_INSTRUMENT, PdsProperty.REF_LID_INVESTIGATION, PdsProperty.REF_LID_TARGET, PdsProperty.VID, PdsProperty.DATA_FILE.REF, PdsProperty.TRACK_META_ARCHIVE_STATUS);
 
 
   private static final List<String> EXCLUDED_PROPERTIES = List.of(PdsProperty.XML_BLOB, PdsProperty.JSON_BLOB);
