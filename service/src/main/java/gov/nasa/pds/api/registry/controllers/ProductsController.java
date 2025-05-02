@@ -89,7 +89,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       Class<? extends ResponseTransformer> transformerClass =
           ResponseTransformerRegistry.selectTransformerClass(acceptHeaderValue);
 
-      log.debug("Transformer class: " + transformerClass);
+      log.debug("Transformer class: {}", transformerClass.getName());
 
       ResponseTransformerImpl transformer =
           (ResponseTransformerImpl) transformerClass.getConstructor().newInstance();
