@@ -3,14 +3,13 @@ package gov.nasa.pds.api.registry.model.transformers;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
-
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +20,7 @@ import gov.nasa.pds.api.registry.search.OpenSearchFields;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
 @Component
 @RequestScope
 public abstract class ResponseTransformerImpl implements ResponseTransformer {

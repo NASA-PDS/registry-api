@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.registry.model.transformers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,17 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.model.EntityProduct;
-import gov.nasa.pds.api.registry.model.Pds4ProductFactory;
 import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
-import gov.nasa.pds.api.registry.search.OpenSearchFields;
 import gov.nasa.pds.api.registry.util.LogExecutionTime;
-import gov.nasa.pds.model.Pds4Product;
-import gov.nasa.pds.model.Pds4Products;
-import gov.nasa.pds.model.PdsProduct;
-import gov.nasa.pds.model.PdsProducts;
 import gov.nasa.pds.model.Summary;
 import gov.nasa.pds.model.WyriwygProduct;
 import gov.nasa.pds.model.WyriwygProductKeyValuePair;
