@@ -289,8 +289,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
       List<String> fields, Integer limit, List<String> sort, List<String> searchAfter)
-      throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException,
-      AcceptFormatNotSupportedException, UnhandledException {
+      throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
         .matchLid(identifier).fieldsFromStrings(fields)
@@ -311,8 +310,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   }
 
   private PdsProductClasses resolveProductClass(PdsProductIdentifier identifier)
-      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException,
-      UnhandledException {
+      throws OpenSearchException, IOException, NotFoundException {
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
         .matchLid(identifier).fieldsFromStrings(List.of(PdsProductClasses.getPropertyName()))
         .excludeSupersededProducts().build();
@@ -331,7 +329,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
 
   private PdsLidVid resolveLatestLidvid(PdsProductIdentifier identifier) throws OpenSearchException,
-      IOException, NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
+      IOException, NotFoundException {
 
     SearchRequest searchRequest =
         new RegistrySearchRequestBuilder(this.connectionContext).matchLid(identifier.getLid())
@@ -349,26 +347,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     return PdsLidVid.fromString(searchResponse.hits().hits().get(0).id());
   }
 
-
-  private List<PdsLidVid> resolveExtantLidvids(PdsLid lid) throws OpenSearchException, IOException,
-      NotFoundException, AcceptFormatNotSupportedException, UnhandledException {
-
-    String lidvidKey = "_id";
-
-    SearchRequest searchRequest =
-        new RegistrySearchRequestBuilder(this.connectionContext).matchLid(lid)
-            .fieldsFromStrings(List.of(lidvidKey)).build();
-
-    SearchResponse<HashMap> searchResponse =
-        this.openSearchClient.search(searchRequest, HashMap.class);
-
-    if (searchResponse.hits().total().value() == 0) {
-      throw new NotFoundException("No lidvids found with lid " + lid.toString());
-    }
-
-    return searchResponse.hits().hits().stream().map(hit -> hit.source().get(lidvidKey).toString())
-        .map(PdsLidVid::fromString).toList();
-  }
 
   /**
    * Resolve a PdsProductIdentifier to a PdsLidVid according to the common rules of the API. The
@@ -460,8 +438,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
    * @throws AcceptFormatNotSupportedException
    */
   private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier,
-      String fieldName) throws OpenSearchException, IOException, NotFoundException,
-      UnhandledException, AcceptFormatNotSupportedException {
+      String fieldName) throws OpenSearchException, IOException, NotFoundException, UnhandledException {
 
     RegistrySearchRequestBuilder searchRequestBuilder =
         new RegistrySearchRequestBuilder(this.connectionContext);
