@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.SearchUtil;
-import gov.nasa.pds.api.registry.search.OpenSearchFields;
+import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -28,7 +28,10 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   private static final Logger log = LoggerFactory.getLogger(ResponseTransformerImpl.class);
 
   private static final String DEFAULT_NULL_VALUE = null;
-  protected static final List<String> OPENSEARCH_EXCLUDED_PROPERTIES = List.of(OpenSearchFields.XML_BLOB, OpenSearchFields.JSON_BLOB);
+  protected static final List<String> OPENSEARCH_EXCLUDED_PROPERTIES = List.of(
+    PdsProperty.toOpenPropertyString(PdsProperty.XML_BLOB), 
+    PdsProperty.toOpenPropertyString(PdsProperty.JSON_BLOB)
+  );
 
   protected ObjectMapper objectMapper;
   protected URL baseURL;
