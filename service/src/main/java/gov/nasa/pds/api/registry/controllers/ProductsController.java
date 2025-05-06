@@ -105,7 +105,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
   }
 
-  private ResponseEntity<Object> executeSearch(
+  private ResponseEntity<Object> searchAndTransform(
       List<String> userRequestedFields,
       List<String> keywords,
       Integer limit,
@@ -234,15 +234,14 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       Integer limit, String q, List<String> sort, List<String> searchAfter, List<String> facetFields, Integer facetLimit) throws Exception {
     
     RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext);
-    return executeSearch(userRequestedFields, keywords, limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
+    return searchAndTransform(userRequestedFields, keywords, limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
   }
 
 
 
   @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLidVid(PdsProductIdentifier identifier, List<String> fields)
-      throws OpenSearchException, IOException, NotFoundException, AcceptFormatNotSupportedException,
-      UnhandledException {
+      throws OpenSearchException, IOException, NotFoundException {
 
     SearchRequest searchRequest =
         new RegistrySearchRequestBuilder(this.connectionContext).matchLidvid(identifier)
@@ -265,8 +264,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLatestLidVid(PdsProductIdentifier identifier,
-      List<String> fields) throws OpenSearchException, IOException, NotFoundException,
-      AcceptFormatNotSupportedException, UnhandledException {
+      List<String> fields) throws OpenSearchException, IOException, NotFoundException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
         .matchLid(identifier).fieldsFromStrings(fields)
@@ -414,7 +412,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + "' (got '" + productClass + "')");
       }
 
-      return executeSearch(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
+      return searchAndTransform(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -443,7 +441,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
       }
 
-      return executeSearch(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
+      return searchAndTransform(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -518,7 +516,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext)
           .matchFieldAnyOfIdentifiers("_id", parentIds);
 
-      return executeSearch(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
+      return searchAndTransform(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -549,7 +547,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext)
           .matchFieldAnyOfIdentifiers("_id", parentIds);
 
-      return executeSearch(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
+      return searchAndTransform(userRequestedFields, List.of(), limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
 
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -572,7 +570,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     RegistrySearchRequestBuilder searchRequestBuilder = new RegistrySearchRequestBuilder(this.connectionContext)
         .matchProductClass(pdsProductClass);
 
-    return executeSearch(userRequestedFields, keywords, limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
+    return searchAndTransform(userRequestedFields, keywords, limit, q, sort, searchAfter, facetFields, facetLimit, searchRequestBuilder);
   }
 
   @Override

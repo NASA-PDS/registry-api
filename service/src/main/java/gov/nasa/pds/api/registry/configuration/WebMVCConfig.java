@@ -1,9 +1,7 @@
 package gov.nasa.pds.api.registry.configuration;
 
-import java.util.Arrays;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
 import gov.nasa.pds.api.registry.view.CsvSingularSerializer;
