@@ -45,7 +45,7 @@ function createFooterUsaGov() {
     usaGov.classList.add('footer-section', 'left');
 
     const logo = createExternalLinkElement();
-    logo.setAttribute('href', 'http://www.usa.gov');
+    logo.setAttribute('href', 'https://www.usa.gov');
     const logoImg = document.createElement('img');
     logoImg.setAttribute('src', 'https://pds.nasa.gov/images/usa-gov.gif');
     logoImg.setAttribute('alt', 'USA.gov home');
@@ -58,7 +58,7 @@ function createFooterUsaGov() {
     privacy.setAttribute('href', 'https://www.nasa.gov/about/highlights/HP_Privacy.html');
     privacy.innerText = 'Privacy / Copyright';
     const freedom = createExternalLinkElement();
-    freedom.setAttribute('href', 'http://www.hq.nasa.gov/office/pao/FOIA/');
+    freedom.setAttribute('href', 'https://www.hq.nasa.gov/office/pao/FOIA/');
     freedom.innerText = 'Freedom of Information Act';
     links.append(privacy, freedom);
 
@@ -71,13 +71,13 @@ function createFooterExternalLinks() {
     externalLinks.classList.add('footer-section', 'middle');
 
     const nasa = createExternalLinkElement();
-    nasa.setAttribute('href', 'http://www.nasa.gov/');
+    nasa.setAttribute('href', 'https://www.nasa.gov/');
     nasa.innerText = 'NASA';
     const caltech = createExternalLinkElement();
-    caltech.setAttribute('href', 'http://www.caltech.edu/');
+    caltech.setAttribute('href', 'https://www.caltech.edu/');
     caltech.innerText = 'Caltech';
     const privacy = createExternalLinkElement();
-    privacy.setAttribute('href', 'https://www.jpl.nasa.gov/privacy');
+    privacy.setAttribute('href', 'httpss://www.jpl.nasa.gov/privacy');
     privacy.innerText = 'Privacy';
     const imagePolicy = createExternalLinkElement();
     imagePolicy.setAttribute('href', 'https://www.jpl.nasa.gov/imagepolicy');
@@ -105,7 +105,7 @@ function createFooterSiteInfo() {
     const info = document.createElement('p');
     info.classList.add('block-info');
     info.innerHTML = 'Webmaster: <a href="mailto:pds_operator@jpl.nasa.gov">PDS Operator</a><br />' +
-        'NASA Official: <a href="mailto:meagan.thompson@nasa.gov">Meagan Thompson</a><br />' +
+        'NASA Official: <a href="cerese.m.albers@nasa.gov">Cerese Albers</a><br />' +
         'Clearance: CL#22-1582<br />' +
         'Last updated: March 2022';
 
