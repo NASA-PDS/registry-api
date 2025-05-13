@@ -24,15 +24,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 @Component
 @RequestScope
 public abstract class ResponseTransformerImpl implements ResponseTransformer {
-  
+
   private static final Logger log = LoggerFactory.getLogger(ResponseTransformerImpl.class);
 
   private static final String DEFAULT_NULL_VALUE = null;
-  protected static final List<String> OPENSEARCH_EXCLUDED_PROPERTIES = List.of(
-    PdsProperty.toOpenPropertyString(PdsProperty.XML_BLOB), 
-    PdsProperty.toOpenPropertyString(PdsProperty.JSON_BLOB)
-  );
-
   protected ObjectMapper objectMapper;
   protected URL baseURL;
 
@@ -77,22 +72,22 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   }
 
   @Override
-  public List<String> getRequestedFields(List<String> userRequestFields) {
+  public List<PdsProperty> getRequestedFields(List<PdsProperty> userRequestFields) {
     return userRequestFields;
   }
 
   @Override
-  public Object transform(RawMultipleProductResponse input, List<String> fields) {
+  public Object transform(RawMultipleProductResponse input, List<PdsProperty> fields) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public Object transform(Map<String, Object> input, List<String> fields) {
+  public Object transform(Map<String, Object> input, List<PdsProperty> fields) {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
   private static List<String> object2PropertyValue(Object o) {
     ArrayList<String> pv = new ArrayList<String>();
 
@@ -109,7 +104,7 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
 
     return pv;
   }
-  
+
   /**
    * @param sourceAsMap source map coming from openSearch
    * @param included_fields, in API syntax, with .
@@ -119,33 +114,31 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   public static Map<String, List<String>> getFilteredProperties(Map<String, Object> sourceAsMap, // in
                                                                                                  // ES
                                                                                                  // syntax
-      List<String> included_fields, // in API syntax
-      List<String> excluded_fields) { // in API syntax
+      List<PdsProperty> included_fields, // in API syntax
+      List<PdsProperty> excluded_fields) { // in API syntax
 
     Map<String, List<String>> filteredMapJsonProperties = new HashMap<String, List<String>>();
 
     if ((included_fields == null) || (included_fields.size() == 0)) {
-      String apiProperty;
+      PdsProperty property;
       log.debug("Excluded fields are " + excluded_fields);
       for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
-        try {
-          apiProperty = SearchUtil.openPropertyToJsonProperty(entry.getKey());
-          if ((excluded_fields == null) || !excluded_fields.contains(apiProperty)) {
-            filteredMapJsonProperties.put(apiProperty, object2PropertyValue(entry.getValue()));
-          }
-        } catch (UnsupportedSearchProperty e) {
-          log.warn("openSearch property " + entry.getKey() + " is not supported, ignored");
-        }
+        property = new PdsProperty(entry.getKey());
+        if ((excluded_fields == null) || !excluded_fields.contains(property))
+          filteredMapJsonProperties.put(property.toJsonPropertyString(),
+              object2PropertyValue(entry.getValue()));
+
       }
     } else {
       String esField;
-      for (String field : included_fields) {
-        esField = SearchUtil.jsonPropertyToOpenProperty(field);
+      for (PdsProperty field : included_fields) {
+        esField = field.toOpenPropertyString();
 
         if (sourceAsMap.containsKey(esField)) {
-          filteredMapJsonProperties.put(field, object2PropertyValue(sourceAsMap.get(esField)));
+          filteredMapJsonProperties.put(field.toJsonPropertyString(),
+              object2PropertyValue(sourceAsMap.get(esField)));
         } else {
-          filteredMapJsonProperties.put(field,
+          filteredMapJsonProperties.put(field.toJsonPropertyString(),
               object2PropertyValue(DEFAULT_NULL_VALUE));
         }
       }

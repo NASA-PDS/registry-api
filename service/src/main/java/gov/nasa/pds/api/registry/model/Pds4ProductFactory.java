@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
+import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4MetadataOpsDataFile;
 import gov.nasa.pds.model.Pds4MetadataOpsLabelFileInfo;
@@ -21,21 +22,36 @@ import gov.nasa.pds.model.Pds4Product;
 public class Pds4ProductFactory {
   private static final Logger log = LoggerFactory.getLogger(Pds4ProductFactory.class);
 
-  private static final String OPENSEARCH_JSON_BLOB = PdsProperty.toOpenPropertyString(PdsProperty.JSON_BLOB);
-  private static final String OPENSEARCH_XML_BLOB = PdsProperty.toOpenPropertyString(PdsProperty.XML_BLOB);
-  private static final String OPENSEARCH_NODE_NAME = PdsProperty.toOpenPropertyString(PdsProperty.NODE_NAME);
-  private static final String OPENSEARCH_LABEL_FILE_NAME = PdsProperty.toOpenPropertyString(PdsProperty.LABEL_FILE.NAME);
-  private static final String OPENSEARCH_LABEL_FILE_CREATION = PdsProperty.toOpenPropertyString(PdsProperty.LABEL_FILE.CREATION);
-  private static final String OPENSEARCH_LABEL_FILE_REF = PdsProperty.toOpenPropertyString(PdsProperty.LABEL_FILE.REF);
-  private static final String OPENSEARCH_LABEL_FILE_SIZE = PdsProperty.toOpenPropertyString(PdsProperty.LABEL_FILE.SIZE);
-  private static final String OPENSEARCH_LABEL_FILE_MD5 = PdsProperty.toOpenPropertyString(PdsProperty.LABEL_FILE.MD5);
-  private static final String OPENSEARCH_DATA_FILE_NAME = PdsProperty.toOpenPropertyString(PdsProperty.DATA_FILE.NAME);
-  private static final String OPENSEARCH_DATA_FILE_CREATION = PdsProperty.toOpenPropertyString(PdsProperty.DATA_FILE.CREATION);
-  private static final String OPENSEARCH_DATA_FILE_REF = PdsProperty.toOpenPropertyString(PdsProperty.DATA_FILE.REF);
-  private static final String OPENSEARCH_DATA_FILE_SIZE = PdsProperty.toOpenPropertyString(PdsProperty.DATA_FILE.SIZE);
-  private static final String OPENSEARCH_DATA_FILE_MD5 = PdsProperty.toOpenPropertyString(PdsProperty.DATA_FILE.MD5);
-  private static final String OPENSEARCH_DATA_FILE_MIME_TYPE = PdsProperty.toOpenPropertyString(PdsProperty.DATA_FILE.MIME_TYPE);
-  private static final String OPENSEARCH_TRACK_META_ARCHIVE_STATUS = PdsProperty.toOpenPropertyString(PdsProperty.TRACK_META_ARCHIVE_STATUS);
+  private static final String OPENSEARCH_JSON_BLOB =
+      PdsPropertyConstants.JSON_BLOB.toOpenPropertyString();
+  private static final String OPENSEARCH_XML_BLOB =
+      PdsPropertyConstants.XML_BLOB.toOpenPropertyString();
+  private static final String OPENSEARCH_NODE_NAME =
+      PdsPropertyConstants.NODE_NAME.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_NAME =
+      PdsPropertyConstants.LABEL_FILE.NAME.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_CREATION =
+      PdsPropertyConstants.LABEL_FILE.CREATION.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_REF =
+      PdsPropertyConstants.LABEL_FILE.REF.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_SIZE =
+      PdsPropertyConstants.LABEL_FILE.SIZE.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_MD5 =
+      PdsPropertyConstants.LABEL_FILE.MD5.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_NAME =
+      PdsPropertyConstants.DATA_FILE.NAME.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_CREATION =
+      PdsPropertyConstants.DATA_FILE.CREATION.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_REF =
+      PdsPropertyConstants.DATA_FILE.REF.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_SIZE =
+      PdsPropertyConstants.DATA_FILE.SIZE.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_MD5 =
+      PdsPropertyConstants.DATA_FILE.MD5.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_MIME_TYPE =
+      PdsPropertyConstants.DATA_FILE.MIME_TYPE.toOpenPropertyString();
+  private static final String OPENSEARCH_TRACK_META_ARCHIVE_STATUS =
+      PdsPropertyConstants.TRACK_META_ARCHIVE_STATUS.toOpenPropertyString();
 
   /**
    * Create Pds4Product object from opensearch key-value field map.
@@ -46,8 +62,10 @@ public class Pds4ProductFactory {
    */
   public static Pds4Product createProduct(String lidvid, Map<String, Object> fieldMap,
       boolean isJSON) {
-    log.debug("Creating Pds4Product with id {} object from opensearch key-value field map with keys {}", lidvid, fieldMap.keySet());
-    
+    log.debug(
+        "Creating Pds4Product with id {} object from opensearch key-value field map with keys {}",
+        lidvid, fieldMap.keySet());
+
     Pds4Product prod = new Pds4Product();
     prod.setId(lidvid);
 
@@ -146,10 +164,8 @@ public class Pds4ProductFactory {
       item.setOpsColonCreationDate(
           (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_CREATION)).get(i));
       item.opsColonFileRef((String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_REF)).get(i));
-      item.setOpsColonFileSize(
-          (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_SIZE)).get(i));
-      item.setOpsColonMd5Checksum(
-          (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_MD5)).get(i));
+      item.setOpsColonFileSize((String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_SIZE)).get(i));
+      item.setOpsColonMd5Checksum((String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_MD5)).get(i));
       item.setOpsColonMimeType(
           (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_MIME_TYPE)).get(i));
       items.add(item);

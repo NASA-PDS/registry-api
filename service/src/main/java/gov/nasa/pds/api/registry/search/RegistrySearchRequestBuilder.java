@@ -48,7 +48,7 @@ import gov.nasa.pds.api.registry.model.exceptions.UnparsableQParamException;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 
 
-public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
+public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
   private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
 
@@ -57,7 +57,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   private BoolQuery.Builder queryBuilder;
 
   public RegistrySearchRequestBuilder(ConnectionContext connectionContext) {
-//    edunn TODO: Evaluate what can be taken out of the constructor
+    // edunn TODO: Evaluate what can be taken out of the constructor
 
     this.connectionContext = connectionContext;
 
@@ -67,13 +67,14 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     this.index(registryIndices);
 
     Query baseQuery = getMandatoryBaselineQuery(connectionContext);
-    this.queryBuilder = new BoolQuery.Builder()
-            .must(baseQuery);
+    this.queryBuilder = new BoolQuery.Builder().must(baseQuery);
   }
 
   /**
-   * Return a baseline, non-configurable query which applies to all search requests.  Currently, this is just archive
-   * status, but this will likely be subject to extensive revision (may balloon, or disappear entirely)
+   * Return a baseline, non-configurable query which applies to all search requests. Currently, this
+   * is just archive status, but this will likely be subject to extensive revision (may balloon, or
+   * disappear entirely)
+   * 
    * @param connectionContext
    * @return the minimal match constraints applicable to all search requests
    */
@@ -81,23 +82,21 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     List<String> archiveStatus = connectionContext.getArchiveStatus();
     List<FieldValue> archiveStatusFieldValues = archiveStatus.stream().map(FieldValue::of).toList();
     log.info("Only publishes archiveStatus: " + String.join(",", archiveStatus));
-    TermsQueryField archiveStatusTerms = new TermsQueryField.Builder()
-            .value(archiveStatusFieldValues)
-            .build();
+    TermsQueryField archiveStatusTerms =
+        new TermsQueryField.Builder().value(archiveStatusFieldValues).build();
 
     TermsQuery archiveStatusQuery = new TermsQuery.Builder()
-            .field("ops:Tracking_Meta/ops:archive_status")
-            .terms(archiveStatusTerms)
-            .build();
+        .field("ops:Tracking_Meta/ops:archive_status").terms(archiveStatusTerms).build();
 
     return archiveStatusQuery.toQuery();
   }
 
   /**
    * Access the internal BoolQuery.Builder instance which is used to build a query during
-   * RegistrySearchRequestBuilder.build()
-   * Before accessing the query builder directly, consider whether the behaviour is common enough that it should be
-   * abstracted as a method of RegistrySearchRequestBuilder.
+   * RegistrySearchRequestBuilder.build() Before accessing the query builder directly, consider
+   * whether the behaviour is common enough that it should be abstracted as a method of
+   * RegistrySearchRequestBuilder.
+   * 
    * @return the query builder instance for this search-request builder
    */
   public BoolQuery.Builder getQueryBuilder() {
@@ -105,34 +104,28 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   /**
-   * Applies a common set of constraints and other build options which generally apply to any endpoint which queries
-   * OpenSearch for a result-set of multiple products.
-   * @param includeFieldNames - which properties to include in the results (JSON format, not OpenSearch format)
+   * Applies a common set of constraints and other build options which generally apply to any
+   * endpoint which queries OpenSearch for a result-set of multiple products.
+   * 
+   * @param includePdsProperties - which properties to include in the results (JSON format, not
+   *        OpenSearch format)
    * @param queryString - a querystring (q=) to constrain the result-set by
    * @param keywords - a set of keyword matches to <exact behaviour TBD - not implemented yet>
    * @param pageSize - the page size to use for pagination
-   * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to lowest priority
+   * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to
+   *        lowest priority
    * @param searchAfterFieldValues - the values corresponding to the sort fields, for pagination
    * @param facetFields - the opensearch fields to generate facet aggregations for
    * @param excludeSupersededProducts - whether to exclude superseded products from the result set
    */
   public RegistrySearchRequestBuilder applyMultipleProductsDefaults(
-          List<String> includeFieldNames,
-          String queryString,
-          List<String> keywords,
-          Integer pageSize,
-          List<String> sortFieldNames,
-          List<String> searchAfterFieldValues,
-          List<String> facetFields,
-          Integer facetLimit,
-          Boolean excludeSupersededProducts
-  ) throws UnparsableQParamException, SortSearchAfterMismatchException {
-    this
-      .fieldsFromStrings(includeFieldNames)
-      .constrainByQueryString(queryString)
-      .addKeywordsParam(keywords)
-      .addPropertyFacets(facetFields, facetLimit)
-      .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
+      List<PdsProperty> includePdsProperties, String queryString, List<String> keywords,
+      Integer pageSize, List<String> sortFieldNames, List<String> searchAfterFieldValues,
+      List<String> facetFields, Integer facetLimit, Boolean excludeSupersededProducts)
+      throws UnparsableQParamException, SortSearchAfterMismatchException {
+    this.fieldsFromPdsProperties(includePdsProperties).constrainByQueryString(queryString)
+        .addKeywordsParam(keywords).addPropertyFacets(facetFields, facetLimit)
+        .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
     if (excludeSupersededProducts) {
       this.excludeSupersededProducts();
@@ -172,6 +165,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Add a constraint that a given field name must match the given field value
+   * 
    * @param fieldName the name of the field in OpenSearch format
    * @param value the value which must be present in the given field
    */
@@ -186,21 +180,26 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Add a constraint that a given field name must match the given field value
+   * 
    * @param fieldName the name of the field in OpenSearch format
-   * @param identifier the PDS identifier whose string representation must be present in the given field
+   * @param identifier the PDS identifier whose string representation must be present in the given
+   *        field
    */
-  public RegistrySearchRequestBuilder matchField(String fieldName, PdsProductIdentifier identifier) {
+  public RegistrySearchRequestBuilder matchField(String fieldName,
+      PdsProductIdentifier identifier) {
     return this.matchField(fieldName, identifier.toString());
   }
 
 
   /**
    * Add a constraint that a given field name must match at least one of the given field values
+   * 
    * @param fieldName the name of the field in OpenSearch format
    * @param values the values, one of which must be present in the given field
    */
   public RegistrySearchRequestBuilder matchFieldAnyOf(String fieldName, List<String> values) {
-    List<FieldValue> fieldValues = values.stream().map(value -> new FieldValue.Builder().stringValue(value).build()).toList();
+    List<FieldValue> fieldValues =
+        values.stream().map(value -> new FieldValue.Builder().stringValue(value).build()).toList();
     TermsQueryField termsQueryField = new TermsQueryField.Builder().value(fieldValues).build();
     TermsQuery query = new TermsQuery.Builder().field(fieldName).terms(termsQueryField).build();
 
@@ -211,11 +210,15 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Add a constraint that a given field name must match at least one of the given field values
+   * 
    * @param fieldName the name of the field in OpenSearch format
-   * @param identifiers the PDS identifiers, one of whose string representation must be present in the given field
+   * @param identifiers the PDS identifiers, one of whose string representation must be present in
+   *        the given field
    */
-  public RegistrySearchRequestBuilder matchFieldAnyOfIdentifiers(String fieldName, List<? extends PdsProductIdentifier> identifiers) {
-    return this.matchFieldAnyOf(fieldName, identifiers.stream().map(PdsProductIdentifier::toString).toList());
+  public RegistrySearchRequestBuilder matchFieldAnyOfIdentifiers(String fieldName,
+      List<? extends PdsProductIdentifier> identifiers) {
+    return this.matchFieldAnyOf(fieldName,
+        identifiers.stream().map(PdsProductIdentifier::toString).toList());
   }
 
   public RegistrySearchRequestBuilder matchLidvid(PdsProductIdentifier identifier) {
@@ -248,9 +251,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
     if ((searchAfterFieldValues != null) && (!searchAfterFieldValues.isEmpty())) {
       if (sortFieldNames == null) {
-        throw new SortSearchAfterMismatchException("sort argument must be provided if searchAfter argument is provided");
+        throw new SortSearchAfterMismatchException(
+            "sort argument must be provided if searchAfter argument is provided");
       } else if (searchAfterFieldValues.size() != sortFieldNames.size()) {
-        throw new SortSearchAfterMismatchException("sort and searchAfter arguments must be of equal length if provided");
+        throw new SortSearchAfterMismatchException(
+            "sort and searchAfter arguments must be of equal length if provided");
       }
       this.searchAfterFromStrings(searchAfterFieldValues);
     }
@@ -260,8 +265,9 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   /**
-   * Implements an alternative to .sort() that accepts strings in API property format.
-   * Currently hardcoded to sort in ascending order only.
+   * Implements an alternative to .sort() that accepts strings in API property format. Currently
+   * hardcoded to sort in ascending order only.
+   * 
    * @param sortFieldNames
    */
   public RegistrySearchRequestBuilder sortFromStrings(List<String> sortFieldNames) {
@@ -283,17 +289,18 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   /**
-   * Implements an alternative to .searchAfter() that accepts values as strings.
-   * No-op in current version of OpenSearch client, but a later version will require the commented-out
-   * implementation to convert the Strings to FieldValues
+   * Implements an alternative to .searchAfter() that accepts values as strings. No-op in current
+   * version of OpenSearch client, but a later version will require the commented-out implementation
+   * to convert the Strings to FieldValues
+   * 
    * @param searchAfterValues
    */
   public RegistrySearchRequestBuilder searchAfterFromStrings(List<String> searchAfterValues) {
     /*
      * List<FieldValue> fieldValues = new ArrayList<FieldValue>();
      * 
-     * for (String fieldValue : searchAfter) { fieldValues.add(new
-    // TODO check if the number value need to be handled specfically. Method stringValue() implies yes
+     * for (String fieldValue : searchAfter) { fieldValues.add(new // TODO check if the number value
+     * need to be handled specfically. Method stringValue() implies yes
      * FieldValue.Builder().stringValue(fieldValue).build()); }
      */
     this.searchAfter(searchAfterValues);
@@ -305,16 +312,16 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Implements an alternative to .fields() that accepts values as strings.
+   * 
    * @param fieldNames
    */
   public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
     // We want everything if the user did not request any specific fields
     if ((fieldNames != null) && (!fieldNames.isEmpty())) {
       log.info("restricting list of fields requested from OpenSearch.");
-      List<String> openSearchField = fieldNames.stream()
-          .map(SearchUtil::jsonPropertyToOpenProperty)
+      List<String> openSearchField = fieldNames.stream().map(SearchUtil::jsonPropertyToOpenProperty)
           .collect(Collectors.toList());
-    
+
       SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
       SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
 
@@ -323,7 +330,30 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
     return this;
   }
 
-  
+
+
+  /**
+   * Implements an alternative to .fields() that accepts values as List<PdsProperty>.
+   * 
+   * @param PdsProperties
+   */
+  public RegistrySearchRequestBuilder fieldsFromPdsProperties(List<PdsProperty> PdsProperties) {
+    // We want everything if the user did not request any specific fields
+    if ((PdsProperties != null) && (!PdsProperties.isEmpty())) {
+      log.info("restricting list of fields requested from OpenSearch.");
+      List<String> openSearchField = PdsProperties.stream().map(PdsProperty::toOpenPropertyString)
+          .collect(Collectors.toList());
+
+      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
+      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
+
+      this.source(limitedSourceCfg);
+    }
+    return this;
+  }
+
+
+
   private static BoolQuery parseQueryString(String queryString) {
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
@@ -345,10 +375,12 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Constrain results with a query-string in PDS API Search Query syntax
+   * 
    * @param q a PDS API Search Query string
    * @throws UnparsableQParamException if the string is not parseable
    */
-  public RegistrySearchRequestBuilder constrainByQueryString(String q) throws UnparsableQParamException {
+  public RegistrySearchRequestBuilder constrainByQueryString(String q)
+      throws UnparsableQParamException {
 
     try {
       if ((q != null) && (q.length() > 0)) {
@@ -372,15 +404,14 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
   }
 
   /**
-   * Limit results to the latest version of each LID in the result-set.
-   * N.B. this does *not* mean the latest version which satisfies other constraints, so application of this constraint
-   * can result in no hits being returned despite valid results existing.
+   * Limit results to the latest version of each LID in the result-set. N.B. this does *not* mean
+   * the latest version which satisfies other constraints, so application of this constraint can
+   * result in no hits being returned despite valid results existing.
    */
   public RegistrySearchRequestBuilder excludeSupersededProducts() {
 
-    ExistsQuery supersededByExists = new ExistsQuery.Builder()
-            .field("ops:Provenance/ops:superseded_by")
-            .build();
+    ExistsQuery supersededByExists =
+        new ExistsQuery.Builder().field("ops:Provenance/ops:superseded_by").build();
 
     this.queryBuilder.mustNot(supersededByExists.toQuery());
 
@@ -391,14 +422,17 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * Limit results to bundle products
    */
   public RegistrySearchRequestBuilder onlyBundles() {
-    return this.matchField(PdsProductClasses.getPropertyName(), PdsProductClasses.Product_Bundle.toString());
+    return this.matchField(PdsProductClasses.getPropertyName(),
+        PdsProductClasses.Product_Bundle.toString());
   }
 
 
   /**
    * Limit results to collection products
-   */public RegistrySearchRequestBuilder onlyCollections() {
-    return this.matchField(PdsProductClasses.getPropertyName(), PdsProductClasses.Product_Collection.toString());
+   */
+  public RegistrySearchRequestBuilder onlyCollections() {
+    return this.matchField(PdsProductClasses.getPropertyName(),
+        PdsProductClasses.Product_Collection.toString());
   }
 
 
@@ -406,11 +440,12 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
    * Limit results to basic (non-aggregate) products, i.e. exclude bundles/collections
    */
   public RegistrySearchRequestBuilder onlyBasicProducts() {
-    List<FieldValue> excludeValues = Arrays.stream(PdsProductClasses.values())
-            .filter(cls -> !cls.isBasicProduct())
+    List<FieldValue> excludeValues =
+        Arrays.stream(PdsProductClasses.values()).filter(cls -> !cls.isBasicProduct())
             .map(value -> new FieldValue.Builder().stringValue(value.toString()).build()).toList();
     TermsQueryField termsQueryField = new TermsQueryField.Builder().value(excludeValues).build();
-    TermsQuery query = new TermsQuery.Builder().field(PdsProductClasses.getPropertyName()).terms(termsQueryField).build();
+    TermsQuery query = new TermsQuery.Builder().field(PdsProductClasses.getPropertyName())
+        .terms(termsQueryField).build();
 
     this.queryBuilder.mustNot(query.toQuery());
     return this;
@@ -418,13 +453,16 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder{
 
   /**
    * Add a collection of properties to the response as bucket aggregations.
+   * 
    * @param propertyNames a flat list of properties on which to facet
    */
-  public RegistrySearchRequestBuilder addPropertyFacets(List<String> propertyNames, Integer bucketSize) {
-    if (propertyNames != null){
+  public RegistrySearchRequestBuilder addPropertyFacets(List<String> propertyNames,
+      Integer bucketSize) {
+    if (propertyNames != null) {
       for (String propertyName : propertyNames) {
         PdsProperty property = new PdsProperty(propertyName);
-        this.aggregations(property.toJsonPropertyString(), field -> field.terms(TermsAggregation.of(term -> term.field(property.toOpenPropertyString()).size(bucketSize))));
+        this.aggregations(property.toJsonPropertyString(), field -> field.terms(TermsAggregation
+            .of(term -> term.field(property.toOpenPropertyString()).size(bucketSize))));
       }
     }
 

@@ -11,6 +11,7 @@ import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
+import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 import gov.nasa.pds.api.registry.util.LogExecutionTime;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.PdsProducts;
@@ -21,20 +22,26 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
   private static final Logger log = LoggerFactory.getLogger(PdsProductTransformer.class);
 
   protected boolean isJSON;
-  protected static final List<String> REQUIRED_FIELDS =
-      List.of(PdsProperty.LIDVID, PdsProperty.TITLE, PdsProperty.PRODUCT_CLASS, PdsProperty.START_DATE_TIME, PdsProperty.STOP_DATE_TIME, PdsProperty.MODIFICATION_DATE, PdsProperty.CREATION_DATE_TIME, PdsProperty.REF_LID_INSTRUMENT_HOST, PdsProperty.REF_LID_INSTRUMENT, PdsProperty.REF_LID_INVESTIGATION, PdsProperty.REF_LID_TARGET, PdsProperty.VID, PdsProperty.DATA_FILE.REF, PdsProperty.TRACK_META_ARCHIVE_STATUS);
+  protected static final List<PdsProperty> REQUIRED_FIELDS =
+      List.of(PdsPropertyConstants.LIDVID, PdsPropertyConstants.TITLE,
+          PdsPropertyConstants.PRODUCT_CLASS, PdsPropertyConstants.START_DATE_TIME,
+          PdsPropertyConstants.STOP_DATE_TIME, PdsPropertyConstants.MODIFICATION_DATE,
+          PdsPropertyConstants.CREATION_DATE_TIME, PdsPropertyConstants.REF_LID_INSTRUMENT_HOST,
+          PdsPropertyConstants.REF_LID_INSTRUMENT, PdsPropertyConstants.REF_LID_INVESTIGATION,
+          PdsPropertyConstants.REF_LID_TARGET, PdsPropertyConstants.VID,
+          PdsPropertyConstants.DATA_FILE.REF, PdsPropertyConstants.TRACK_META_ARCHIVE_STATUS);
 
 
-  private static final List<String> EXCLUDED_PROPERTIES = List.of(PdsProperty.XML_BLOB, PdsProperty.JSON_BLOB);
+  private static final List<PdsProperty> EXCLUDED_PROPERTIES =
+      List.of(PdsPropertyConstants.XML_BLOB, PdsPropertyConstants.JSON_BLOB);
 
   @Override
-  public List<String> getRequestedFields(List<String> userRequestFields) {
+  public List<PdsProperty> getRequestedFields(List<PdsProperty> userRequestFields) {
     if (userRequestFields != null && !userRequestFields.isEmpty()) {
-      List<String> allFields = new ArrayList<>(REQUIRED_FIELDS);
+      List<PdsProperty> allFields = new ArrayList<PdsProperty>(REQUIRED_FIELDS);
       allFields.addAll(userRequestFields);
-      return new ArrayList<>(new TreeSet<>(allFields));
-    }
-    else {
+      return new ArrayList<PdsProperty>(new TreeSet<PdsProperty>(allFields));
+    } else {
       // if the user did not specify anything, everything will be returned
       // we want to keep it like that
       return null;
@@ -43,7 +50,7 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
 
   @Override
   @LogExecutionTime
-  public Object transform(RawMultipleProductResponse input, List<String> fields) {
+  public Object transform(RawMultipleProductResponse input, List<PdsProperty> fields) {
     log.debug("transform: fields: {}, excluded fields: {}", fields, EXCLUDED_PROPERTIES);
     PdsProducts products = new PdsProducts();
     Set<String> uniqueProperties = new TreeSet<String>();
@@ -51,10 +58,12 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
 
     for (Map<String, Object> kvp : input.getProducts()) {
       try {
-        PdsProduct product = SearchUtil.entityProductToAPIProduct(objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
-        
+        PdsProduct product = SearchUtil.entityProductToAPIProduct(
+            objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
+
         // TODO check why every value is a String
-        properties = (Map<String, List<String>>) getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
+        properties =
+            (Map<String, List<String>>) getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
 
         product.setProperties(properties);
 
@@ -77,13 +86,12 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
 
   @Override
   @LogExecutionTime
-  public Object transform(Map<String, Object> kvp, List<String> fields) {
+  public Object transform(Map<String, Object> kvp, List<PdsProperty> fields) {
     EntityProduct ep = objectMapper.convertValue(kvp, EntityProduct.class);
     PdsProduct product = SearchUtil.entityProductToAPIProduct(ep, this.baseURL);
-    
-    Map<String, List<String>> properties = (Map<String, List<String>>) getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
-    // TODO: findout why the getFilteredProperties method is used here. Should we add fields as a
-    // second argument instead of null ?
+
+    Map<String, List<String>> properties =
+        (Map<String, List<String>>) getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
 
     product.setProperties(properties);
     return product;
