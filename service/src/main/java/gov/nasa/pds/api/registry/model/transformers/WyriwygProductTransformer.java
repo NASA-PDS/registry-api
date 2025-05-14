@@ -22,7 +22,7 @@ import gov.nasa.pds.model.WyriwygProducts;
 
 public class WyriwygProductTransformer extends ResponseTransformerImpl {
 
-  private static final Logger log = LoggerFactory.getLogger(PdsProductTransformer.class);
+  private static final Logger log = LoggerFactory.getLogger(WyriwygProductTransformer.class);
 
   protected boolean isJSON;
 
@@ -31,25 +31,22 @@ public class WyriwygProductTransformer extends ResponseTransformerImpl {
       List.of(PdsPropertyConstants.XML_BLOB, PdsPropertyConstants.JSON_BLOB);
 
   private WyriwygProduct generateWyriwygProduct(Map<String, Object> hit,
-      List<PdsProperty> included_fields) {
+      List<PdsProperty> includedFields) {
     WyriwygProduct product = new WyriwygProduct();
     PdsProperty pdsProperty;
-    List<String> includedFieldJsonStrings = included_fields == null ? null
-        : included_fields.stream().map(PdsProperty::toJsonPropertyString).toList();
+    List<String> includedFieldJsonStrings = includedFields == null ? null
+        : includedFields.stream().map(PdsProperty::toJsonPropertyString).toList();
     log.debug("Included fields are {}", includedFieldJsonStrings);
     for (Entry<String, Object> pair : hit.entrySet()) {
       WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       pdsProperty = new PdsProperty(pair.getKey());
-      log.debug("current property, as Json is: {}", pdsProperty.toJsonPropertyString());
-      if (!EXCLUDED_PROPERTIES.contains(pdsProperty)) {
-        if (included_fields == null || included_fields.isEmpty()
-            || included_fields.contains(pdsProperty)) {
-          log.debug(
-              "In this case we keep the property in the response, it is not excluded and request implicitly or explicitelly by the user");
-          kvp.setKey(pdsProperty.toJsonPropertyString());
-          kvp.setValue(getStringValueOf(pair.getValue()));
-          product.addKeyValuePairsItem(kvp);
-        }
+      if (!EXCLUDED_PROPERTIES.contains(pdsProperty) && (includedFields == null
+          || includedFields.isEmpty() || includedFields.contains(pdsProperty))) {
+        log.debug(
+            "In this case we keep the property in the response, it is not excluded and request implicitly or explicitelly by the user");
+        kvp.setKey(pdsProperty.toJsonPropertyString());
+        kvp.setValue(getStringValueOf(pair.getValue()));
+        product.addKeyValuePairsItem(kvp);
       }
 
     }

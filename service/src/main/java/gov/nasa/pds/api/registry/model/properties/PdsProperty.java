@@ -1,8 +1,6 @@
 package gov.nasa.pds.api.registry.model.properties;
 
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
-import gov.nasa.pds.api.registry.model.exceptions.UnhandledException;
-import gov.nasa.pds.api.registry.model.transformers.Pds4XmlProductTransformer;
 import static gov.nasa.pds.api.registry.model.SearchUtil.jsonPropertyToOpenProperty;
 import static gov.nasa.pds.api.registry.model.SearchUtil.openPropertyToJsonProperty;
 import java.util.Objects;
@@ -31,10 +29,12 @@ public class PdsProperty implements Comparable<PdsProperty> {
       log.debug("no equal because null or inconsistent class");
       return false;
     }
-    boolean isEqual =
-        (this.toJsonPropertyString().equals(((PdsProperty) obj).toJsonPropertyString()));
-    log.debug("Compare properties as Jsom {} == {} --> {}", this.toJsonPropertyString(),
-        ((PdsProperty) obj).toJsonPropertyString(), isEqual);
+    String currentJsonPropertyString = this.toJsonPropertyString();
+    String otherJsonPropertyString = ((PdsProperty) obj).toJsonPropertyString();
+
+    boolean isEqual = currentJsonPropertyString.equals(otherJsonPropertyString);
+    log.debug("Compare properties as Jsom {} == {} --> {}", currentJsonPropertyString,
+        otherJsonPropertyString, isEqual);
     return isEqual;
   }
 

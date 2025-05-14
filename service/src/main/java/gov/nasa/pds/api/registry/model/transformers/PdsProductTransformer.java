@@ -62,8 +62,7 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
             objectMapper.convertValue(kvp, EntityProduct.class), this.baseURL);
 
         // TODO check why every value is a String
-        properties =
-            (Map<String, List<String>>) getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
+        properties = getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
 
         product.setProperties(properties);
 
@@ -90,8 +89,7 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
     EntityProduct ep = objectMapper.convertValue(kvp, EntityProduct.class);
     PdsProduct product = SearchUtil.entityProductToAPIProduct(ep, this.baseURL);
 
-    Map<String, List<String>> properties =
-        (Map<String, List<String>>) getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
+    Map<String, List<String>> properties = getFilteredProperties(kvp, fields, EXCLUDED_PROPERTIES);
 
     product.setProperties(properties);
     return product;

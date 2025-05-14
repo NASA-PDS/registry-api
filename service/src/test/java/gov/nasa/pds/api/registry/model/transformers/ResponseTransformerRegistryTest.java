@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 
 class ResponseTransformerRegistryTest {
 
   @BeforeAll
   static void setUpBeforeClass() throws Exception {
+    // Nothing needs to be setup up front.
 
 
   }
@@ -24,7 +24,8 @@ class ResponseTransformerRegistryTest {
     String foundFormatterClassName;
 
     try {
-      Class<? extends ResponseTransformer> formatter = ResponseTransformerRegistry.selectTransformerClass(format);
+      Class<? extends ResponseTransformer> formatter =
+          ResponseTransformerRegistry.selectTransformerClass(format);
 
       foundFormatterClassName = formatter.getName();
       assertEquals(expectedFormatterClassName, foundFormatterClassName);
@@ -61,7 +62,8 @@ class ResponseTransformerRegistryTest {
     String foundFormatterClassName;
 
     try {
-      Class<? extends ResponseTransformer> formatter = ResponseTransformerRegistry.selectTransformerClass(format);
+      Class<? extends ResponseTransformer> formatter =
+          ResponseTransformerRegistry.selectTransformerClass(format);
 
       foundFormatterClassName = formatter.getName();
       assertEquals(expectedFormatterClassName, foundFormatterClassName);
@@ -82,7 +84,8 @@ class ResponseTransformerRegistryTest {
     String foundFormatterClassName;
 
     try {
-      Class<? extends ResponseTransformer> formatter = ResponseTransformerRegistry.selectTransformerClass(format);
+      Class<? extends ResponseTransformer> formatter =
+          ResponseTransformerRegistry.selectTransformerClass(format);
 
       foundFormatterClassName = formatter.getName();
       assertEquals(expectedFormatterClassName, foundFormatterClassName);

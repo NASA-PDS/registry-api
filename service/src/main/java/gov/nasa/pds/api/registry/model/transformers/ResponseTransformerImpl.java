@@ -13,9 +13,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
-import gov.nasa.pds.api.registry.model.SearchUtil;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,7 +29,7 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   protected ObjectMapper objectMapper;
   protected URL baseURL;
 
-  public ResponseTransformerImpl() {
+  protected ResponseTransformerImpl() {
     try {
 
       HttpServletRequest request =
@@ -39,9 +37,7 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
 
 
       String proxyContextPath = request.getContextPath();
-      log.debug("contextPath is: '" + proxyContextPath + "'");
-
-      String serverName = request.getServerName();
+      log.debug("contextPath is: '{}'", proxyContextPath);
 
       if (proxyRunsOnDefaultPort(request)) {
         this.baseURL = new URL(request.getScheme(), request.getServerName(), proxyContextPath);
@@ -50,7 +46,8 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
             request.getServerPort(), proxyContextPath);
       }
 
-      log.debug("baseUrl is " + this.baseURL.toString());
+      String baseURL = this.baseURL.toString();
+      log.debug("baseUrl is {}", baseURL);
 
 
     } catch (MalformedURLException e) {
@@ -93,13 +90,13 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
 
     if (o instanceof List<?>) {
       for (Object p : (List<?>) o) {
-        ((ArrayList<String>) pv).add(String.valueOf(p));
+        pv.add(String.valueOf(p));
       }
 
     } else {
       // TODO find a type which make String castable in PropertyValue,
       // currently I am desperate so I transform String in a List<String>
-      ((ArrayList<String>) pv).add(String.valueOf(o));
+      pv.add(String.valueOf(o));
     }
 
     return pv;
@@ -108,30 +105,29 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   /**
    * @param sourceAsMap source map coming from openSearch
    * @param included_fields, in API syntax, with .
-   * @param excluded_fields is ignored is included_fields is not null and not empty, in API syntax
+   * @param excludedFields is ignored is included_fields is not null and not empty, in API syntax
    * @return
    */
   public static Map<String, List<String>> getFilteredProperties(Map<String, Object> sourceAsMap, // in
                                                                                                  // ES
                                                                                                  // syntax
-      List<PdsProperty> included_fields, // in API syntax
-      List<PdsProperty> excluded_fields) { // in API syntax
+      List<PdsProperty> includedFields, // in API syntax
+      List<PdsProperty> excludedFields) { // in API syntax
 
     Map<String, List<String>> filteredMapJsonProperties = new HashMap<String, List<String>>();
 
-    if ((included_fields == null) || (included_fields.size() == 0)) {
+    if ((includedFields == null) || (includedFields.size() == 0)) {
       PdsProperty property;
-      log.debug("Excluded fields are " + excluded_fields);
       for (Map.Entry<String, Object> entry : sourceAsMap.entrySet()) {
         property = new PdsProperty(entry.getKey());
-        if ((excluded_fields == null) || !excluded_fields.contains(property))
+        if ((excludedFields == null) || !excludedFields.contains(property))
           filteredMapJsonProperties.put(property.toJsonPropertyString(),
               object2PropertyValue(entry.getValue()));
 
       }
     } else {
       String esField;
-      for (PdsProperty field : included_fields) {
+      for (PdsProperty field : includedFields) {
         esField = field.toOpenPropertyString();
 
         if (sourceAsMap.containsKey(esField)) {

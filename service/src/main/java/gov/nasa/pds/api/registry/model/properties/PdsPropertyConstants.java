@@ -32,6 +32,10 @@ public class PdsPropertyConstants {
     public static final PdsProperty SIZE = new PdsProperty(OBJECT_PREFIX + "ops:file_size");
     public static final PdsProperty MD5 = new PdsProperty(OBJECT_PREFIX + "ops:md5_checksum");
     public static final PdsProperty MIME_TYPE = new PdsProperty(OBJECT_PREFIX + "ops:mime_type");
+
+    private DATA_FILE() {
+      throw new AssertionError("Cannot instantiate DATA_FILE");
+    }
   }
 
   public static class LABEL_FILE {
@@ -43,6 +47,10 @@ public class PdsPropertyConstants {
     public static final PdsProperty REF = new PdsProperty(OBJECT_PREFIX + "ops:file_ref");
     public static final PdsProperty SIZE = new PdsProperty(OBJECT_PREFIX + "ops:file_size");
     public static final PdsProperty MD5 = new PdsProperty(OBJECT_PREFIX + "ops:md5_checksum");
+
+    private LABEL_FILE() {
+      throw new AssertionError("Cannot instantiate LABEL_FILE");
+    }
   }
 
 

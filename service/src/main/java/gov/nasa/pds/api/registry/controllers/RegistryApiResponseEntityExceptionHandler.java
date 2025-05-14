@@ -2,7 +2,6 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import java.util.Set;
-import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
 

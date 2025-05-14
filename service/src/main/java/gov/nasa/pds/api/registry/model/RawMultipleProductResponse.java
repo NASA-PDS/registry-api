@@ -52,7 +52,7 @@ public class RawMultipleProductResponse {
 
   }
 
-  public RawMultipleProductResponse(HashMap<String, Object> product) {
+  public RawMultipleProductResponse(Map<String, Object> product) {
     this.summary = new Summary();
     this.summary.setHits(1);
     this.products = new ArrayList<Map<String, Object>>();

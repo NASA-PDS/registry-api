@@ -38,7 +38,7 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
       PdsPropertyConstants.NODE_NAME);
 
 
-  public Pds4ProductTransformer(boolean isJSON) {
+  protected Pds4ProductTransformer(boolean isJSON) {
     this.isJSON = isJSON;
   }
 

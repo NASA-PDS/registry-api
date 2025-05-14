@@ -335,14 +335,14 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   /**
    * Implements an alternative to .fields() that accepts values as List<PdsProperty>.
    * 
-   * @param PdsProperties
+   * @param pdsProperties
    */
-  public RegistrySearchRequestBuilder fieldsFromPdsProperties(List<PdsProperty> PdsProperties) {
+  public RegistrySearchRequestBuilder fieldsFromPdsProperties(List<PdsProperty> pdsProperties) {
     // We want everything if the user did not request any specific fields
-    if ((PdsProperties != null) && (!PdsProperties.isEmpty())) {
+    if ((pdsProperties != null) && (!pdsProperties.isEmpty())) {
       log.info("restricting list of fields requested from OpenSearch.");
       List<String> openSearchField =
-          PdsProperties.stream().map(PdsProperty::toOpenPropertyString).toList();
+          pdsProperties.stream().map(PdsProperty::toOpenPropertyString).toList();
 
       SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
       SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
