@@ -319,8 +319,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
     // We want everything if the user did not request any specific fields
     if ((fieldNames != null) && (!fieldNames.isEmpty())) {
       log.info("restricting list of fields requested from OpenSearch.");
-      List<String> openSearchField = fieldNames.stream().map(SearchUtil::jsonPropertyToOpenProperty)
-          .collect(Collectors.toList());
+      List<String> openSearchField =
+          fieldNames.stream().map(SearchUtil::jsonPropertyToOpenProperty).toList();
 
       SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
       SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
@@ -341,8 +341,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
     // We want everything if the user did not request any specific fields
     if ((PdsProperties != null) && (!PdsProperties.isEmpty())) {
       log.info("restricting list of fields requested from OpenSearch.");
-      List<String> openSearchField = PdsProperties.stream().map(PdsProperty::toOpenPropertyString)
-          .collect(Collectors.toList());
+      List<String> openSearchField =
+          PdsProperties.stream().map(PdsProperty::toOpenPropertyString).toList();
 
       SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
       SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();

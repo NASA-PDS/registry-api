@@ -11,7 +11,8 @@ public class RawMultipleProductResponse {
   private Summary summary;
   private List<Map<String, Object>> products;
 
-  private List<SummaryFacet> extractFacetsFromSearchResponse(SearchResponse<HashMap> searchResponse) {
+  private List<SummaryFacet> extractFacetsFromSearchResponse(
+      SearchResponse<HashMap> searchResponse) {
     List<SummaryFacet> facets = new ArrayList<>();
 
     searchResponse.aggregations().forEach((propertyName, aggregate) -> {
@@ -46,8 +47,8 @@ public class RawMultipleProductResponse {
     this.summary = new Summary();
     this.summary.setHits((int) searchResponse.hits().total().value());
     this.summary.setFacets(extractFacetsFromSearchResponse(searchResponse));
-    this.products = searchResponse.hits().hits().stream().map(p -> (Map<String, Object>) p.source())
-        .collect(Collectors.toList());
+    this.products =
+        searchResponse.hits().hits().stream().map(p -> (Map<String, Object>) p.source()).toList();
 
   }
 

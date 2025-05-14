@@ -114,7 +114,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     ResponseTransformerImpl transformer = getTransformerInstance();
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
-        : userRequestedFields.stream().map(PdsProperty::new).collect(Collectors.toList());
+        : userRequestedFields.stream().map(PdsProperty::new).toList();
     List<PdsProperty> allRequiredProperties =
         transformer.getRequestedFields(userRequestedPdsProperty);
 
@@ -150,7 +150,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     ResponseTransformerImpl transformer = getTransformerInstance();
 
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
-        : userRequestedFields.stream().map(PdsProperty::new).collect(Collectors.toList());
+        : userRequestedFields.stream().map(PdsProperty::new).toList();
     List<PdsProperty> allRequiredProperties =
         transformer.getRequestedFields(userRequestedPdsProperty);
 
@@ -183,7 +183,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     ResponseTransformerImpl transformer = getTransformerInstance();
 
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
-        : userRequestedFields.stream().map(PdsProperty::new).collect(Collectors.toList());
+        : userRequestedFields.stream().map(PdsProperty::new).toList();
     List<PdsProperty> allRequiredProperties =
         transformer.getRequestedFields(userRequestedPdsProperty);
 
@@ -215,7 +215,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     ResponseTransformerImpl transformer = getTransformerInstance();
 
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
-        : userRequestedFields.stream().map(PdsProperty::new).collect(Collectors.toList());
+        : userRequestedFields.stream().map(PdsProperty::new).toList();
     List<PdsProperty> allRequiredProperties =
         transformer.getRequestedFields(userRequestedPdsProperty);
 
