@@ -13,5 +13,4 @@ public class BadRequestException extends RegistryApiException {
     public BadRequestException(String msg) {
         super("BadRequestException: " + msg);
     }
-
 }

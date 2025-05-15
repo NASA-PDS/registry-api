@@ -2,8 +2,9 @@ package gov.nasa.pds.api.registry.controllers;
 
 
 import java.util.Set;
-import gov.nasa.pds.api.registry.configuration.WebMVCConfig;
 import gov.nasa.pds.api.registry.model.exceptions.*;
+import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +60,7 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
   @ExceptionHandler(value = {AcceptFormatNotSupportedException.class})
   protected ResponseEntity<Object> notAcceptable(AcceptFormatNotSupportedException ex,
       WebRequest request) {
-    Set<String> supportedFormats = WebMVCConfig.getFormatters().keySet();
+    Set<String> supportedFormats = ResponseTransformerRegistry.TRANSFORMERS.keySet();
     String errorDescriptionSuffix =
         " Supported formats (in Accept header) are: " + String.join(", ", supportedFormats);
 

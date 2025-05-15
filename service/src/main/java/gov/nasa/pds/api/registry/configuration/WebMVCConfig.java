@@ -1,9 +1,6 @@
 package gov.nasa.pds.api.registry.configuration;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +17,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogic;
-import gov.nasa.pds.api.registry.model.api_responses.WyriwygBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.Pds4JsonProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.Pds4ProductBusinessObject;
-import gov.nasa.pds.api.registry.model.api_responses.Pds4XmlProductBusinessObject;
-import gov.nasa.pds.api.registry.model.exceptions.AcceptFormatNotSupportedException;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
 import gov.nasa.pds.api.registry.view.CsvPluralSerializer;
 import gov.nasa.pds.api.registry.view.CsvSingularSerializer;
@@ -54,30 +44,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
   @Value("${server.contextPath}")
   private String contextPath;
-
-  private static Map<String, Class<? extends ProductBusinessLogic>> formatters =
-      new HashMap<String, Class<? extends ProductBusinessLogic>>();
-
-  static public Map<String, Class<? extends ProductBusinessLogic>> getFormatters() {
-    return formatters;
-  }
-
-  static {
-    // TODO move that at a better place, it is not specific to this controller
-    formatters.put("*", PdsProductBusinessObject.class);
-    formatters.put("*/*", PdsProductBusinessObject.class);
-    formatters.put("application/csv", WyriwygBusinessObject.class);
-    formatters.put("application/json", PdsProductBusinessObject.class);
-    formatters.put("application/kvp+json", WyriwygBusinessObject.class);
-    formatters.put("application/vnd.nasa.pds.pds4+json", Pds4JsonProductBusinessObject.class);
-    formatters.put("application/vnd.nasa.pds.pds4+xml", Pds4XmlProductBusinessObject.class);
-    formatters.put("application/xml", PdsProductBusinessObject.class);
-    formatters.put("text/csv", WyriwygBusinessObject.class);
-    formatters.put("text/html", PdsProductBusinessObject.class);
-    formatters.put("text/xml", PdsProductBusinessObject.class);
-  }
-
-
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -156,40 +122,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
     WebMVCConfig.log.info("Number of converters available after adding locals "
         + Integer.toString(converters.size()));
-  }
-
-
-
-  public static String[] parseAcceptValues(String input, String defaultValue) {
-    if (input == null || input.trim().isEmpty()) {
-      WebMVCConfig.log.info(
-          "No Accept header provided by the user, assigning the default value " + defaultValue);
-      return new String[] {defaultValue};
-    }
-
-    return Arrays.stream(input.split(",")).map(String::trim).filter(s -> !s.isEmpty())
-        .toArray(String[]::new);
-  }
-
-
-  static public Class<? extends ProductBusinessLogic> selectFormatterClass(String acceptHeaderValue)
-      throws AcceptFormatNotSupportedException {
-
-
-
-    String[] acceptOrderedValues =
-        parseAcceptValues(acceptHeaderValue, MediaType.APPLICATION_JSON_VALUE);
-
-    for (String acceptValue : acceptOrderedValues) {
-      if (WebMVCConfig.formatters.containsKey(acceptValue)) {
-        return WebMVCConfig.formatters.get(acceptValue);
-      }
-    }
-
-    // if none of the Accept format proposed matches
-    throw new AcceptFormatNotSupportedException(
-        "None of the format(s) " + acceptHeaderValue + " is supported.");
-
   }
 
   @Autowired

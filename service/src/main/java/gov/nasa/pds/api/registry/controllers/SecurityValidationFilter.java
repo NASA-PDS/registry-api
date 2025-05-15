@@ -3,7 +3,6 @@ package gov.nasa.pds.api.registry.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import gov.nasa.pds.api.registry.model.api_responses.ProductBusinessLogicImpl;
 import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.model.exceptions.UnknownQueryParameterException;
 import io.micrometer.core.instrument.util.StringEscapeUtils;
