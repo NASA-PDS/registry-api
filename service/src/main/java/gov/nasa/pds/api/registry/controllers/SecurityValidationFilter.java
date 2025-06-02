@@ -19,8 +19,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class SecurityValidationFilter implements HandlerInterceptor {
   private static final Logger log = LoggerFactory.getLogger(SecurityValidationFilter.class);
 
-  private static final List<String> ALLOWED_QUERY_PARAMETERS =
-      Arrays.asList("q", "fields", "limit", "sort", "search-after", "keywords", "facet-fields", "facet-limit");
+  private static final List<String> ALLOWED_QUERY_PARAMETERS = Arrays.asList("q", "fields", "limit",
+      "sort", "search-after", "keywords", "facet-fields", "facet-limit");
+  private static final List<String> CACHE_POISONING_HEADER_TARGETS =
+      Arrays.asList("x-forwarded-host", "x-host", "x-forwarded-server"); // in lower case to make
+                                                                         // test cases insensitive
 
   @Value("#{'${server.authorizedForwardedHost:}'.split(',')}")
   List<String> authorizedForwardedHosts;
@@ -34,21 +37,38 @@ public class SecurityValidationFilter implements HandlerInterceptor {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws Exception {
+
+    // check authorized parameters
     for (String paramName : request.getParameterMap().keySet()) {
       if (!ALLOWED_QUERY_PARAMETERS.contains(paramName)) {
-        throw new UnknownQueryParameterException("Query parameter not enumerated in SecurityValidationFilter.ALLOWED_QUERY_PARAMETERS: " + paramName);
+        throw new UnknownQueryParameterException(
+            "Query parameter not enumerated in SecurityValidationFilter.ALLOWED_QUERY_PARAMETERS: "
+                + paramName);
       }
     }
 
 
-    String serverName = request.getServerName();
+    // check cache poisoning targets
+    Enumeration<String> headerNames = request.getHeaderNames();
+    if (headerNames != null) {
+      String headerName;
+      String proxyHostName;
+      while (headerNames.hasMoreElements()) {
+        headerName = headerNames.nextElement();
+        if (CACHE_POISONING_HEADER_TARGETS.contains(headerName.toLowerCase())) {
+          proxyHostName = request.getHeader(headerName);
 
-    if (!authorizedServerName(serverName)) {
-      log.error("Server cannot be proxied from " + serverName + " but from "
-          + this.authorizedForwardedHosts);
-      throw new UnauthorizedForwardedHostException("Server cannot be proxied from " + serverName);
+          if (!authorizedServerName(proxyHostName)) {
+            log.error("Server cannot be proxied from " + proxyHostName + " but from "
+                + this.authorizedForwardedHosts);
+            throw new UnauthorizedForwardedHostException(
+                "Server cannot be proxied from " + proxyHostName);
+          }
+
+        }
+
+      }
     }
-
 
     return true;
   }

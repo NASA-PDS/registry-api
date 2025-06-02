@@ -40,7 +40,7 @@ resource "aws_lb_target_group" "pds-registry-api-target-group" {
 
   health_check {
     enabled = true
-    path    = "/healthcheck"
+    path    = "/health"
     matcher = "200"
     interval = 300
   }

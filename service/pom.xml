@@ -48,6 +48,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-boot-version>3.4.1</spring-boot-version>
     <jackson-version>2.18.2</jackson-version>
+    <awssdk-version>2.31.54</awssdk-version>
   </properties>
   <build>
     <resources>
@@ -313,7 +314,8 @@
 	<dependency>
 	    <groupId>org.opensearch.client</groupId>
 	    <artifactId>opensearch-java</artifactId>
-	    <version>2.10.1</version>
+	    <!--version>2.10.1</version-->
+	    <version>2.24.0</version>
 	</dependency>
 
 	<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
@@ -354,39 +356,46 @@
 	<dependency>
 	    <groupId>software.amazon.awssdk</groupId>
 	    <artifactId>apache-client</artifactId>
-	    <version>2.25.21</version>
+	    <version>${awssdk-version}</version>
 	</dependency>
 	
-    <dependency>
-      <groupId>software.amazon.awssdk</groupId>
-      <artifactId>apache-client</artifactId>
-      <version>2.25.21</version>
-    </dependency>
+	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/checksums -->
+	<dependency>
+	    <groupId>software.amazon.awssdk</groupId>
+	    <artifactId>checksums</artifactId>
+	    <version>${awssdk-version}</version>
+	</dependency>
 	
 	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/regions -->
 	<dependency>
 	    <groupId>software.amazon.awssdk</groupId>
 	    <artifactId>regions</artifactId>
-	    <version>2.25.21</version>
-	</dependency>
-	
-	
-	
-	<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/regions -->
-	<dependency>
-	    <groupId>software.amazon.awssdk</groupId>
-	    <artifactId>auth</artifactId>
-	    <version>2.29.37</version>
-	</dependency>
-
-	
-	<dependency>
-		<groupId>com.amazonaws</groupId>
-		<artifactId>aws-java-sdk-core</artifactId>
-		<version>1.12.688</version>
+	    <version>${awssdk-version}</version>
 	</dependency>
 	
 	<!-- END dependencies for new OpenSearchClient -->
+	
+		
+	<!-- other aws dependencies -->
+	<dependency>
+	    <groupId>software.amazon.awssdk</groupId>
+	    <artifactId>auth</artifactId>
+	    <version>${awssdk-version}</version>
+	</dependency>
+
+
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>secretsmanager</artifactId>
+      <version>${awssdk-version}</version>
+    </dependency>
+
+	
+	<dependency>
+		<groupId>software.amazon.awssdk</groupId>
+		<artifactId>sdk-core</artifactId>
+		<version>${awssdk-version}</version>
+	</dependency>
 
 
 	<!-- START dependencies for older OpenSearch RestHighLevelClient -->
@@ -460,11 +469,6 @@
     </dependency>
     
 
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-secretsmanager</artifactId>
-      <version>1.12.201</version>
-    </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
     <dependency>
