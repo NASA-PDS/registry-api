@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerExcept
 
 public class AWSSecretsAccess {
 
+
   public static final String REGISTRY_DEFAULT_AWS_REGION = "us-west-2";
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -48,7 +49,7 @@ public class AWSSecretsAccess {
       log.debug("Submitting getSecretValueRequest.");
       response = client.getSecretValue(getSecretValueRequest);
     } catch (SecretsManagerException e) {
-      System.err.println(e.awsErrorDetails().errorMessage());
+      log.error(e.awsErrorDetails().errorMessage());
       System.exit(1);
     }
 
