@@ -41,7 +41,8 @@
 # Normally we'd prefer Alpine Linux, but JDK 11 isn't available with it, so
 # we go with a slim Debian. Debian's good too.
 
-FROM tomcat:9.0.58-jdk17-openjdk-slim
+#FROM tomcat:9.0.58-jdk17-openjdk-slim
+FROM tomcat:10.1.0-jdk17-openjdk-slim
 
 # API JAR file
 # ------------
@@ -73,15 +74,15 @@ RUN : &&\
 #
 # External context.
 
-ARG SERVER_PORT=80
-ARG SPRING_BOOT_APP_ARGS=" "
-ARG JAVA_OPTS="-Xmx6144m -Xms512Mb"
+ENV SERVER_PORT=" "
+ENV SPRING_BOOT_APP_ARGS=" "
+ENV JAVA_OPTS="-Xmx6144m -Xms512m"
 
 WORKDIR /usr/local/registry-api-service
 EXPOSE  ${SERVER_PORT}
-CMD ["java",  "$JAVA_OPT",  "-jar",  "/usr/local/registry-api-service/registry-api-service.jar", \
-    "gov.nasa.pds.api.registry.SpringBootMain", "--server.port=${SERVER_PORT}",  "${SPRING_BOOT_APP_ARGS}"]
-
+CMD java $JAVA_OPTS -jar /usr/local/registry-api-service/registry-api-service.jar \
+    gov.nasa.pds.api.registry.SpringBootMain \
+    --server.port=$SERVER_PORT $SPRING_BOOT_APP_ARGS
 
 # Labels
 # ------

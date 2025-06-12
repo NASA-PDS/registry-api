@@ -65,7 +65,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   private OpenSearchClient openSearchClient;
 
 
-  static Integer DEFAULT_LIMIT = 100;
+  static Integer DEFAULT_LIMIT = 2000;
 
   @Autowired
   public ProductsController(ConnectionContext connectionContext,

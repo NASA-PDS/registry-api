@@ -40,8 +40,14 @@
 }
 
 
-div.topbar-wrapper > a > img {
-     content: url(../static/logo.png);
-     width: 40px; /* width of your logo */
-     height: 40px; /* height of your logo */
+.swagger-ui .topbar svg { /* Target the logo element */
+  display: none; /* Hide the default logo */
+}
+
+
+.swagger-ui .topbar { /* Target the top bar */
+  background-image: url("../static/logo.svg"); /* Set your custom logo as a background image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-position: 10px center; /* Adjust positioning as needed */
+  background-size: 50px;   /* Adjust size as needed */
 }

@@ -32,6 +32,10 @@ import org.opensearch.client.opensearch.generic.Response;
 
 @Controller
 public class DocsController implements DocsApi {
+  /*
+   * This controller is meant to provide access to the opensearch API. It has never been developed
+   * as far as a working controller.
+   */
 
   private static final Logger log = LoggerFactory.getLogger(DocsController.class);
 

@@ -33,13 +33,13 @@ servers:
     description: production server
 
 paths:
-  /healthcheck:
+  /health:
     get:
       tags:
-        - 4. healthcheck
+        - 4. health
       summary: |
         returns payload of system health information. Detection of any fatal issues results in a non-200 response. The primary intention of this endpoint is to provide an accurate assessment of the service to determine if ECS/Fargate should instantiate a new instance of the task.
-      operationId: healthcheck
+      operationId: health
       responses:
         '200':
           description: The system checked out as healthy, returning a JSON payload of results
