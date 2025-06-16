@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
+import gov.nasa.pds.api.registry.util.LoggingAspect;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -389,9 +390,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
       }
       return this;
     } catch (RecognitionException | ParseCancellationException e) {
-      log.info("Unable to parse q " + StringUtils.normalizeSpace(q) + "error message is " + e);
-      throw new UnparsableQParamException(
-          "q string value:" + q + " Error message " + e.getMessage());
+      log.info("Unable to parse q " + LoggingAspect.sanitizeForLog(q) + "error message is " + e);
+      throw new UnparsableQParamException("Invalid q string value syntax " + e.getMessage());
     }
 
 

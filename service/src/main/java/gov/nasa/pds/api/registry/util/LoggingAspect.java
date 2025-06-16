@@ -14,6 +14,15 @@ import org.slf4j.LoggerFactory;
 public class LoggingAspect {
   private Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
+
+  public static String sanitizeForLog(String input) {
+    if (input == null)
+      return null;
+    return input.replaceAll("[\n\r\t]", "_") // Replace newlines and tabs
+        .replaceAll("[\\x1b\\u001B]\\[[;\\d]*[ -/]*[@-~]", ""); // ANSI escape
+  }
+
+
   @Around("@annotation(gov.nasa.pds.api.registry.util.LogExecutionTime)")
   public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
     logger.info("Log execution time through decorator");

@@ -36,7 +36,6 @@ public class WyriwygProductTransformer extends ResponseTransformerImpl {
     PdsProperty pdsProperty;
     List<String> includedFieldJsonStrings = includedFields == null ? null
         : includedFields.stream().map(PdsProperty::toJsonPropertyString).toList();
-    log.debug("Included fields are {}", includedFieldJsonStrings);
     for (Entry<String, Object> pair : hit.entrySet()) {
       WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       pdsProperty = new PdsProperty(pair.getKey());
