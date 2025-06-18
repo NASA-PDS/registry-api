@@ -22,10 +22,11 @@ public class SecurityValidationFilter implements HandlerInterceptor {
   private static final List<String> ALLOWED_QUERY_PARAMETERS = Arrays.asList("q", "fields", "limit",
       "sort", "search-after", "keywords", "facet-fields", "facet-limit");
   private static final List<String> CACHE_POISONING_HEADER_TARGETS =
-      Arrays.asList("x-forwarded-host", "x-host", "x-forwarded-server"); // in lower case to make
-                                                                         // test cases insensitive
+      Arrays.asList("x-forwarded-host", "x-host", "x-forwarded-server"); // in lower case to
+                                                                         // make
+  // test cases insensitive
 
-  @Value("#{'${server.authorizedForwardedHost:}'.split(',')}")
+  @Value("#{'${server.authorizedForwardedHost}'.split(',')}")
   List<String> authorizedForwardedHosts;
 
   private boolean authorizedServerName(String serverName) {
@@ -55,18 +56,28 @@ public class SecurityValidationFilter implements HandlerInterceptor {
       String proxyHostName;
       while (headerNames.hasMoreElements()) {
         headerName = headerNames.nextElement();
+        log.debug("investigating header {} for cache poisoning risks", headerName);
         if (CACHE_POISONING_HEADER_TARGETS.contains(headerName.toLowerCase())) {
           proxyHostName = request.getHeader(headerName);
-
+          log.debug("Risk of cache poisoning on header with value {}", proxyHostName);
           if (!authorizedServerName(proxyHostName)) {
             log.error("Server cannot be proxied from {} but from {}", proxyHostName,
                 this.authorizedForwardedHosts);
             throw new UnauthorizedForwardedHostException(
                 "Server cannot be proxied from " + proxyHostName);
+          } else {
+            log.debug("Value is considered safe.");
           }
 
         }
+      }
 
+      // since the forwarded-headers might be consumed by spring-boot at earlier stage we also
+      // control the following value
+      String serverName = request.getServerName();
+      log.debug("Servername is {}", serverName);
+      if (!authorizedServerName(serverName)) {
+        throw new UnauthorizedForwardedHostException("Server cannot be proxied from " + serverName);
       }
     }
 
