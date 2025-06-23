@@ -74,6 +74,7 @@ jobs:
                 with:
                     assembly: unstable
                     packages: openjdk17-jdk
+                    maven-doc-phases: package
                 env:
                     central_portal_username: ${{secrets.CENTRAL_REPOSITORY_USERNAME}}
                     central_portal_token: ${{secrets.CENTRAL_REPOSITORY_TOKEN}}
