@@ -103,7 +103,7 @@ jobs:
                     build-args: api_jar=${{steps.jarrer.outputs.jar_file}}
                     platforms: linux/amd64,linux/arm64
                     push: true
-                    tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:latest
+                    tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |
