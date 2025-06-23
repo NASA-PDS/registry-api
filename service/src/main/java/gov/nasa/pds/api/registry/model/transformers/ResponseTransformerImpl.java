@@ -104,7 +104,7 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
 
   /**
    * @param sourceAsMap source map coming from openSearch
-   * @param included_fields, in API syntax, with .
+   * @param includedFields, in API syntax, with .
    * @param excludedFields is ignored is included_fields is not null and not empty, in API syntax
    * @return
    */

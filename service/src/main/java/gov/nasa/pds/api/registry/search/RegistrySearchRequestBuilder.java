@@ -111,7 +111,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
    * @param includePdsProperties - which properties to include in the results (JSON format, not
    *        OpenSearch format)
    * @param queryString - a querystring (q=) to constrain the result-set by
-   * @param keywords - a set of keyword matches to <exact behaviour TBD - not implemented yet>
+   * @param keywords - a set of keyword matches to apply for text search - not implemented: detailed
+   *        design and code to be done.
    * @param pageSize - the page size to use for pagination
    * @param sortFieldNames - the fields by which results are sorted (ascending), from highest to
    *        lowest priority
@@ -334,7 +335,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
 
   /**
-   * Implements an alternative to .fields() that accepts values as List<PdsProperty>.
+   * Implements an alternative to .fields() that accepts values as List of PdsProperty.
    * 
    * @param pdsProperties
    */
