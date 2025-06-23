@@ -9,7 +9,7 @@ To build an image, run:
 
 
     cd ./service
-    docker image build --build-arg api_jar=URL --tag [OWNER/]registry-api-service:TAG .
+    docker image build --build-arg api_jar=URL --tag [OWNER/]registry-api-service:TAG -f ../docker/Dockerfile .
     
 
 Replace `URL` with the URL (or relative file path) to a `registry-api-service.jar` and `TAG` with the desired version tag. You can add `OWNER/` to tag the image for a specific owner, such as `nasapds/`.

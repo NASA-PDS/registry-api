@@ -50,14 +50,14 @@ jobs:
         steps:
             -
                 name: 💳 Checkout
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
                 with:
                     lfs: true
                     fetch-depth: 0
                     token: ${{secrets.ADMIN_GITHUB_TOKEN}}
             -
                 name: 💵 Maven Cache
-                uses: actions/cache@v3
+                uses: actions/cache@v4
                 with:
                     path: ~/.m2/repository
                     # The "key" used to indicate a set of cached files is the operating system runner
@@ -67,43 +67,44 @@ jobs:
                     key: pds-${{runner.os}}-mvn-${{hashFiles('**/pom.xml')}}
                     # To restore a set of files, we only need to match a prefix of the saved key.
                     restore-keys: pds-${{runner.os}}-mvn-
-            # -
-            #     name: 🤠 Roundup
-            #     uses: NASA-PDS/roundup-action@ff-only
-            #     with:
-            #         assembly: unstable
-            #         packages: openjdk17-jdk
-            #     env:
-            #         central_portal_username: ${{secrets.CENTRAL_REPOSITORY_USERNAME}}
-            #         central_portal_token: ${{secrets.CENTRAL_REPOSITORY_TOKEN}}
-            #         CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
-            #         ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
+
+            -
+                name: 🤠 Roundup
+                uses: NASA-PDS/roundup-action@ff-only
+                with:
+                    assembly: unstable
+                    packages: openjdk17-jdk
+                env:
+                    central_portal_username: ${{secrets.CENTRAL_REPOSITORY_USERNAME}}
+                    central_portal_token: ${{secrets.CENTRAL_REPOSITORY_TOKEN}}
+                    CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
+                    ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
             -
                 name: 🫙 Jar File Determination
                 id: jarrer
                 run: echo "jar_file=$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT)?\.jar')" >> $GITHUB_OUTPUT
             -
                 name: 💳 Docker Hub Identification
-                uses: docker/login-action@v2
+                uses: docker/login-action@v3
                 with:
                     username: ${{secrets.DOCKERHUB_USERNAME}}
                     password: ${{secrets.DOCKERHUB_TOKEN}}
             -
                 name: 🎰 QEMU Multiple Machine Emulation
-                uses: docker/setup-qemu-action@v2
+                uses: docker/setup-qemu-action@v3
             -
                 name: 🚢 Docker Buildx
-                uses: docker/setup-buildx-action@v2
+                uses: docker/setup-buildx-action@v3
             -
                 name: 🧱 Image Construction and Publication
-                uses: docker/build-push-action@v3
+                uses: docker/build-push-action@v6
                 with:
                     context: ./
                     file: ./docker/Dockerfile
                     build-args: api_jar=${{steps.jarrer.outputs.jar_file}}
                     platforms: linux/amd64,linux/arm64
                     push: true
-                    tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:latest
+                    tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |

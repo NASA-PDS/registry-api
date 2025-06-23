@@ -50,7 +50,7 @@ Go through this file line-by-line and replace the template values with your own.
         <project-name>Registry API</project-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <spring-framework-version>6.0.19</spring-framework-version>
+        <spring-framework-version>6.2.2</spring-framework-version>
     </properties>
 
     <groupId>gov.nasa.pds</groupId>
@@ -91,7 +91,7 @@ Go through this file line-by-line and replace the template values with your own.
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-numbers-primes</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
             <type>jar</type>
             <scope>compile</scope>
             <optional>false</optional>
@@ -212,7 +212,7 @@ Go through this file line-by-line and replace the template values with your own.
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>3.0.0-M4</version>
+            <version>3.1.1</version>
             <configuration>
                 <tagNameFormat>v@{project.version}</tagNameFormat>
             </configuration>

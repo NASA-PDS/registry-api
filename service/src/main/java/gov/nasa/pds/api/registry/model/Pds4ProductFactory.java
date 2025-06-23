@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import gov.nasa.pds.api.registry.model.properties.PdsProperty;
+import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 import gov.nasa.pds.model.Pds4Metadata;
 import gov.nasa.pds.model.Pds4MetadataOpsDataFile;
 import gov.nasa.pds.model.Pds4MetadataOpsLabelFileInfo;
@@ -19,30 +22,36 @@ import gov.nasa.pds.model.Pds4Product;
 public class Pds4ProductFactory {
   private static final Logger log = LoggerFactory.getLogger(Pds4ProductFactory.class);
 
-  // JSON BLOB
-  public static final String FLD_JSON_BLOB = BlobUtil.JSON_BLOB_PROPERTY;
-  public static final String FLD_XML_BLOB = BlobUtil.XML_BLOB_PROPERTY;
-
-  // Data File Info
-  public static final String FLD_DATA_FILE_NAME = "ops:Data_File_Info/ops:file_name";
-  public static final String FLD_DATA_FILE_CREATION = "ops:Data_File_Info/ops:creation_date_time";
-  public static final String FLD_DATA_FILE_REF = "ops:Data_File_Info/ops:file_ref";
-  public static final String FLD_DATA_FILE_SIZE = "ops:Data_File_Info/ops:file_size";
-  public static final String FLD_DATA_FILE_MD5 = "ops:Data_File_Info/ops:md5_checksum";
-  public static final String FLD_DATA_FILE_MIME_TYPE = "ops:Data_File_Info/ops:mime_type";
-
-  // Label Info
-  public static final String FLD_LABEL_FILE_NAME = "ops:Label_File_Info/ops:file_name";
-  public static final String FLD_LABEL_FILE_CREATION = "ops:Label_File_Info/ops:creation_date_time";
-  public static final String FLD_LABEL_FILE_REF = "ops:Label_File_Info/ops:file_ref";
-  public static final String FLD_LABEL_FILE_SIZE = "ops:Label_File_Info/ops:file_size";
-  public static final String FLD_LABEL_FILE_MD5 = "ops:Label_File_Info/ops:md5_checksum";
-
-  // Tracking_Meta
-  public static final String FLD_TRACK_META_ARCHIVE_STATUS = "ops:Tracking_Meta/ops:archive_status";
-
-  // Node Name
-  public static final String FLD_NODE_NAME = "ops:Harvest_Info/ops:node_name";
+  private static final String OPENSEARCH_JSON_BLOB =
+      PdsPropertyConstants.JSON_BLOB.toOpenPropertyString();
+  private static final String OPENSEARCH_XML_BLOB =
+      PdsPropertyConstants.XML_BLOB.toOpenPropertyString();
+  private static final String OPENSEARCH_NODE_NAME =
+      PdsPropertyConstants.NODE_NAME.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_NAME =
+      PdsPropertyConstants.LABEL_FILE.NAME.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_CREATION =
+      PdsPropertyConstants.LABEL_FILE.CREATION.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_REF =
+      PdsPropertyConstants.LABEL_FILE.REF.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_SIZE =
+      PdsPropertyConstants.LABEL_FILE.SIZE.toOpenPropertyString();
+  private static final String OPENSEARCH_LABEL_FILE_MD5 =
+      PdsPropertyConstants.LABEL_FILE.MD5.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_NAME =
+      PdsPropertyConstants.DATA_FILE.NAME.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_CREATION =
+      PdsPropertyConstants.DATA_FILE.CREATION.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_REF =
+      PdsPropertyConstants.DATA_FILE.REF.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_SIZE =
+      PdsPropertyConstants.DATA_FILE.SIZE.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_MD5 =
+      PdsPropertyConstants.DATA_FILE.MD5.toOpenPropertyString();
+  private static final String OPENSEARCH_DATA_FILE_MIME_TYPE =
+      PdsPropertyConstants.DATA_FILE.MIME_TYPE.toOpenPropertyString();
+  private static final String OPENSEARCH_TRACK_META_ARCHIVE_STATUS =
+      PdsPropertyConstants.TRACK_META_ARCHIVE_STATUS.toOpenPropertyString();
 
   /**
    * Create Pds4Product object from opensearch key-value field map.
@@ -53,6 +62,10 @@ public class Pds4ProductFactory {
    */
   public static Pds4Product createProduct(String lidvid, Map<String, Object> fieldMap,
       boolean isJSON) {
+    log.debug(
+        "Creating Pds4Product with id {} object from opensearch key-value field map with keys {}",
+        lidvid, fieldMap.keySet());
+
     Pds4Product prod = new Pds4Product();
     prod.setId(lidvid);
 
@@ -65,11 +78,11 @@ public class Pds4ProductFactory {
     try {
 
       if (isJSON) {
-        blob = getVal(fieldMap, FLD_JSON_BLOB);
+        blob = getVal(fieldMap, OPENSEARCH_JSON_BLOB);
         decoded_blob = BlobUtil.blobToString(String.valueOf(blob));
       } else {
         int first, last;
-        blob = getVal(fieldMap, FLD_XML_BLOB);
+        blob = getVal(fieldMap, OPENSEARCH_XML_BLOB);
         decoded_blob = BlobUtil.blobToString(String.valueOf(blob));
         decoded_blob = decoded_blob.replaceAll("\r", "");
         first = decoded_blob.indexOf("<?");
@@ -94,7 +107,7 @@ public class Pds4ProductFactory {
   private static Pds4Metadata createMetadata(Map<String, Object> fieldMap) {
     Pds4Metadata meta = new Pds4Metadata();
 
-    ArrayList<String> nodeNames = (ArrayList<String>) fieldMap.get(FLD_NODE_NAME);
+    ArrayList<String> nodeNames = (ArrayList<String>) fieldMap.get(OPENSEARCH_NODE_NAME);
     String nodeName = nodeNames.get(0);
     meta.setNodeName(nodeName);
     meta.setOpsColonLabelFileInfo(createLabelFile(fieldMap));
@@ -109,7 +122,7 @@ public class Pds4ProductFactory {
   }
 
   private static Pds4MetadataOpsLabelFileInfo createLabelFile(Map<String, Object> fieldMap) {
-    ArrayList<String> vals = (ArrayList<String>) fieldMap.get(FLD_LABEL_FILE_NAME);
+    ArrayList<String> vals = (ArrayList<String>) fieldMap.get(OPENSEARCH_LABEL_FILE_NAME);
 
     if (vals == null)
       return null;
@@ -120,16 +133,16 @@ public class Pds4ProductFactory {
 
     item.setOpsColonFileName(val);
 
-    val = getVal(fieldMap, FLD_LABEL_FILE_CREATION);
+    val = getVal(fieldMap, OPENSEARCH_LABEL_FILE_CREATION);
     item.setOpsColonCreationDate(val);
 
-    val = getVal(fieldMap, FLD_LABEL_FILE_REF);
+    val = getVal(fieldMap, OPENSEARCH_LABEL_FILE_REF);
     item.setOpsColonFileRef(val);
 
-    val = getVal(fieldMap, FLD_LABEL_FILE_SIZE);
+    val = getVal(fieldMap, OPENSEARCH_LABEL_FILE_SIZE);
     item.setOpsColonFileSize(val);
 
-    val = getVal(fieldMap, FLD_LABEL_FILE_MD5);
+    val = getVal(fieldMap, OPENSEARCH_LABEL_FILE_MD5);
     item.setOpsColonMd5Checksum(val);
 
     return item;
@@ -137,7 +150,7 @@ public class Pds4ProductFactory {
 
   @SuppressWarnings("rawtypes")
   private static List<Pds4MetadataOpsDataFile> createDataFiles(Map<String, Object> fieldMap) {
-    ArrayList<String> vals = (ArrayList<String>) fieldMap.get(FLD_DATA_FILE_NAME);
+    ArrayList<String> vals = (ArrayList<String>) fieldMap.get(OPENSEARCH_DATA_FILE_NAME);
     if (vals == null) {
       return new ArrayList<Pds4MetadataOpsDataFile>();
     }
@@ -146,12 +159,15 @@ public class Pds4ProductFactory {
 
     for (int i = 0; i < ((List) vals).size(); i++) {
       Pds4MetadataOpsDataFile item = new Pds4MetadataOpsDataFile();
-      item.setOpsColonFileName((String) ((List) fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
-      item.setOpsColonCreationDate((String) ((List) fieldMap.get(FLD_DATA_FILE_CREATION)).get(i));
-      item.opsColonFileRef((String) ((List) fieldMap.get(FLD_DATA_FILE_REF)).get(i));
-      item.setOpsColonFileSize((String) ((List) fieldMap.get(FLD_DATA_FILE_SIZE)).get(i));
-      item.setOpsColonMd5Checksum((String) ((List) fieldMap.get(FLD_DATA_FILE_MD5)).get(i));
-      item.setOpsColonMimeType((String) ((List) fieldMap.get(FLD_DATA_FILE_MIME_TYPE)).get(i));
+      item.setOpsColonFileName(
+          (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_CREATION)).get(i));
+      item.setOpsColonCreationDate(
+          (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_CREATION)).get(i));
+      item.opsColonFileRef((String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_REF)).get(i));
+      item.setOpsColonFileSize((String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_SIZE)).get(i));
+      item.setOpsColonMd5Checksum((String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_MD5)).get(i));
+      item.setOpsColonMimeType(
+          (String) ((List) fieldMap.get(OPENSEARCH_DATA_FILE_MIME_TYPE)).get(i));
       items.add(item);
     }
 
@@ -161,7 +177,8 @@ public class Pds4ProductFactory {
   private static Pds4MetadataOpsTrackingMeta createTrackingMeta(Map<String, Object> fieldMap) {
     Pds4MetadataOpsTrackingMeta item = new Pds4MetadataOpsTrackingMeta();
 
-    item.setOpsColonArchiveStatus((String) fieldMap.get(FLD_TRACK_META_ARCHIVE_STATUS));
+    item.setOpsColonArchiveStatus(
+        (String) ((List<?>) fieldMap.get(OPENSEARCH_TRACK_META_ARCHIVE_STATUS)).get(0));
     return item;
   }
 }

@@ -33,13 +33,13 @@ servers:
     description: production server
 
 paths:
-  /healthcheck:
+  /health:
     get:
       tags:
-        - 4. healthcheck
+        - 4. health
       summary: |
         returns payload of system health information. Detection of any fatal issues results in a non-200 response. The primary intention of this endpoint is to provide an accurate assessment of the service to determine if ECS/Fargate should instantiate a new instance of the task.
-      operationId: healthcheck
+      operationId: health
       responses:
         '200':
           description: The system checked out as healthy, returning a JSON payload of results
@@ -113,6 +113,8 @@ paths:
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/SearchAfter"
+        - $ref: "#/components/parameters/FacetFields"
+        - $ref: "#/components/parameters/FacetLimit"
 
   /docs:
     post:
@@ -162,6 +164,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
 
   /products/{identifier}:
     get:
@@ -281,6 +285,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/members/{versions}:
     get:
       tags:
@@ -332,6 +338,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/members/members/{versions}:
     get:
       tags:
@@ -383,6 +391,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/member-of/{versions}:
     get:
       tags:
@@ -434,6 +444,8 @@ paths:
       - $ref: "#/components/parameters/Query"
       - $ref: "#/components/parameters/Sort"
       - $ref: "#/components/parameters/SearchAfter"
+      - $ref: "#/components/parameters/FacetFields"
+      - $ref: "#/components/parameters/FacetLimit"
   /products/{identifier}/member-of/member-of/{versions}:
     get:
       tags:
@@ -574,6 +586,30 @@ components:
         behavior: for each field specified in the "sort" qparam, specify the field value for the last result returned in the previous page
           It is strongly recommended to use ops:Harvest_Info/ops:harvest_date_time as your final sort field, to ensure successful pagination.
           Remember to url-encode special characters, ex. /products?limit=10&sort=ops%3AHarvest_Info%2Fops%3Aharvest_date_time
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    FacetLimit:
+      name: facet-limit
+      in: query
+      description: |
+        syntax: facet-limit=10
+        
+        behavior: set the number n for which facets will return the n-most-populous buckets
+      schema:
+        type: integer
+        minimum: 0
+        default: 10
+    FacetFields:
+      name: facet-fields
+      in: query
+      description: |
+        syntax: facet-fields=field1&facet-fields=field2...
+
+        behavior: Return bucket aggregations for each field specified, as part of the response.
+          The facet values and counts will be accessible via attribute "bucket_by_$field"
       required: false
       schema:
         type: array
@@ -783,9 +819,44 @@ components:
           xml:
             prefix: 'pds_api'
             namespace: 'http://pds.nasa.gov/api'
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryFacet'
+          xml:
+            prefix: 'pds_api'
+            namespace: 'http://pds.nasa.gov/api'
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
+
+    SummaryFacet:
+      properties:
+        property:
+          $ref: '#/components/schemas/SummaryProperty'
+      anyOf:
+        - $ref: '#/components/schemas/FacetTerms'
+        - $ref: '#/components/schemas/FacetHistogram'
+
+    FacetTerms:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [terms]
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+
+# Not yet implemented
+    FacetHistogram:
+      type: object
+      properties:
+        notYetImplemented:
+          type: string
+#  End not yet implemented
+
     pdsProduct:
       type: object
       description: default PDS product description format for the API.
@@ -901,10 +972,14 @@ components:
         data:
           items:
             $ref: '#/components/schemas/wyriwygProduct'
+
+    SummaryProperty:
+      type: string
+
     propertyArrayValues:
       type: array
       items:
-        type: string
+        $ref: '#/components/schemas/SummaryProperty'
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
@@ -947,6 +1022,7 @@ components:
       xml:
         prefix: 'pds_api'
         namespace: 'http://pds.nasa.gov/api'
+
     metadata:
       type: object
       required:
