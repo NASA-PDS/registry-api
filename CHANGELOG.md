@@ -1,16 +1,8 @@
 # Changelog
 
-## [1.6.0](https://github.com/NASA-PDS/registry-api/tree/1.6.0) (2025-06-24)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2025-06-24)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.0...1.6.0)
-
-**Other closed issues:**
-
-- Fix AWS deployment after dependabot upgrades [\#654](https://github.com/NASA-PDS/registry-api/issues/654)
-
-## [release/1.6.0](https://github.com/NASA-PDS/registry-api/tree/release/1.6.0) (2025-06-12)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.5.0...release/1.6.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.5.0...«unknown»)
 
 **Requirements:**
 
@@ -29,6 +21,7 @@
 
 **Other closed issues:**
 
+- Fix AWS deployment after dependabot upgrades [\#654](https://github.com/NASA-PDS/registry-api/issues/654)
 - Analyze app scan [\#607](https://github.com/NASA-PDS/registry-api/issues/607)
 - Latest `develop` version builds but does not run in local development environment. [\#605](https://github.com/NASA-PDS/registry-api/issues/605)
 - Delete deprecated LIDs from Registry [\#560](https://github.com/NASA-PDS/registry-api/issues/560)
@@ -39,11 +32,7 @@
 
 ## [v1.5.0](https://github.com/NASA-PDS/registry-api/tree/v1.5.0) (2024-09-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.5.0...v1.5.0)
-
-## [release/1.5.0](https://github.com/NASA-PDS/registry-api/tree/release/1.5.0) (2024-09-03)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...release/1.5.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...v1.5.0)
 
 **Requirements:**
 
@@ -91,11 +80,7 @@
 
 ## [v1.4.1](https://github.com/NASA-PDS/registry-api/tree/v1.4.1) (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.4.1...v1.4.1)
-
-## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...v1.4.1)
 
 **Defects:**
 
