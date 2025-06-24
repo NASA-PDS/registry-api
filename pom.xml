@@ -195,23 +195,6 @@ Go through this file line-by-line and replace the template values with your own.
         </configuration>
       </plugin>
         <plugin>
-            <!--
-                This POM doesn't inherit from the gov.nasa.pds:parent POM so we'll reproduce the
-                change to use the new Central Repository Portal plugin here.
-                See https://github.com/NASA-PDS/software-issues-repo/issues/128 for more info.
-                See https://central.sonatype.org/publish/publish-portal-maven/ for configuration.
-            -->
-            <groupId>org.sonatype.central</groupId>
-            <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.7.0</version>
-            <extensions>true</extensions>
-            <configuration>
-                <publishingSeverId>central</publishingSeverId>
-                <autoPublish>true</autoPublish>
-                <waitUntil>publishhed</waitUntil>
-            </configuration>
-        </plugin>
-        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-site-plugin</artifactId>
             <version>4.0.0-M13</version>
