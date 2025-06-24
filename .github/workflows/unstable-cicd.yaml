@@ -80,6 +80,7 @@ jobs:
                     central_portal_token: ${{secrets.CENTRAL_REPOSITORY_TOKEN}}
                     CODE_SIGNING_KEY: ${{secrets.CODE_SIGNING_KEY}}
                     ADMIN_GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
+                    GITHUB_TOKEN: ${{secrets.ADMIN_GITHUB_TOKEN}}
             -
                 name: 🫙 Jar File Determination
                 id: jarrer
