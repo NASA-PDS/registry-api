@@ -70,7 +70,7 @@ jobs:
 
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@ff-only
+                uses: NASA-PDS/roundup-action@stable
                 with:
                     assembly: unstable
                     packages: openjdk17-jdk
