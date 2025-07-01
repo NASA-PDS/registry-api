@@ -47,7 +47,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-boot-version>3.4.1</spring-boot-version>
-    <jackson-version>2.18.2</jackson-version>
+    <jackson-version>2.19.1</jackson-version>
     <awssdk-version>2.31.54</awssdk-version>
   </properties>
   <build>
