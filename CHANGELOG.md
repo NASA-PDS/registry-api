@@ -1,5 +1,17 @@
 # Changelog
 
+## [release/1.6.1](https://github.com/NASA-PDS/registry-api/tree/release/1.6.1) (2025-07-08)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.0...release/1.6.1)
+
+**Requirements:**
+
+- As a user, I want the total number of products returned to match both the total number of products expected to be loaded and the total number of products that were loaded [\#630](https://github.com/NASA-PDS/registry-api/issues/630)
+
+## [v1.6.0](https://github.com/NASA-PDS/registry-api/tree/v1.6.0) (2025-06-26)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.0...v1.6.0)
+
 ## [release/1.6.0](https://github.com/NASA-PDS/registry-api/tree/release/1.6.0) (2025-06-25)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.5.0...release/1.6.0)
