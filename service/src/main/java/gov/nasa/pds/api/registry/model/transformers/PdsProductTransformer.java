@@ -22,14 +22,14 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
   private static final Logger log = LoggerFactory.getLogger(PdsProductTransformer.class);
 
   protected boolean isJSON;
-  protected static final List<PdsProperty> REQUIRED_FIELDS =
-      List.of(PdsPropertyConstants.LIDVID, PdsPropertyConstants.TITLE,
-          PdsPropertyConstants.PRODUCT_CLASS, PdsPropertyConstants.START_DATE_TIME,
-          PdsPropertyConstants.STOP_DATE_TIME, PdsPropertyConstants.MODIFICATION_DATE,
-          PdsPropertyConstants.CREATION_DATE_TIME, PdsPropertyConstants.REF_LID_INSTRUMENT_HOST,
-          PdsPropertyConstants.REF_LID_INSTRUMENT, PdsPropertyConstants.REF_LID_INVESTIGATION,
-          PdsPropertyConstants.REF_LID_TARGET, PdsPropertyConstants.VID,
-          PdsPropertyConstants.DATA_FILE.REF, PdsPropertyConstants.TRACK_META_ARCHIVE_STATUS);
+  protected static final List<PdsProperty> REQUIRED_FIELDS = List.of(PdsPropertyConstants.LIDVID,
+      PdsPropertyConstants.TITLE, PdsPropertyConstants.PRODUCT_CLASS,
+      PdsPropertyConstants.START_DATE_TIME, PdsPropertyConstants.STOP_DATE_TIME,
+      PdsPropertyConstants.MODIFICATION_DATE, PdsPropertyConstants.CREATION_DATE_TIME,
+      PdsPropertyConstants.REF_LID_INSTRUMENT_HOST, PdsPropertyConstants.REF_LID_INSTRUMENT,
+      PdsPropertyConstants.REF_LID_INVESTIGATION, PdsPropertyConstants.REF_LID_TARGET,
+      PdsPropertyConstants.VID, PdsPropertyConstants.DATA_FILE.REF,
+      PdsPropertyConstants.TRACK_META_ARCHIVE_STATUS, PdsPropertyConstants.LABEL_FILE.REF);
 
 
   private static final List<PdsProperty> EXCLUDED_PROPERTIES =
