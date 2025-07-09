@@ -49,6 +49,11 @@ public class SecurityValidationFilter implements HandlerInterceptor {
     }
 
 
+    // safe request we don't analyze headers
+    if (request.getRequestURI().equals("/health")) {
+      return true;
+    }
+
     // check cache poisoning targets
     Enumeration<String> headerNames = request.getHeaderNames();
     if (headerNames != null) {
