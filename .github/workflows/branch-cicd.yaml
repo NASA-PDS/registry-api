@@ -97,15 +97,15 @@ jobs:
                     ./generate-certs.sh
                     cd ..
                     docker image inspect nasapds/registry-api-service:latest >/dev/null
-                    # removed --detach 
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
-                        up --quiet-pull --abort-on-container-exit 
-                    echo "===== Docker logs ====="
-                    docker compose logs --no-color
-                    #docker compose \
-                    #    --ansi never --profile int-registry-batch-loader --project-name registry \
-                    #    run --rm --no-TTY reg-api-integration-test-with-wait
+                        up --quiet-pull --detach
+                    # --abort-on-container-exit 
+                    #echo "===== Docker logs ====="
+                    #docker compose logs --no-color
+                    docker compose \
+                        --ansi never --profile int-registry-batch-loader --project-name registry \
+                        run --rm --no-TTY reg-api-integration-test-with-wait
 
             -
                 name: Set up Python 3
