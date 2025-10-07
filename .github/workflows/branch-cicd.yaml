@@ -103,6 +103,7 @@ jobs:
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
                         run --rm --no-TTY reg-api-integration-test-with-wait
+                    docker compose logs --no-color
 
             -
                 name: Set up Python 3
