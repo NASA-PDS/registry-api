@@ -50,7 +50,7 @@ Go through this file line-by-line and replace the template values with your own.
         <project-name>Registry API</project-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <spring-framework-version>6.2.2</spring-framework-version>
+        <spring-framework-version>6.2.10</spring-framework-version>
     </properties>
 
     <groupId>gov.nasa.pds</groupId>
