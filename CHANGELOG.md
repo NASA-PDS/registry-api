@@ -1,8 +1,62 @@
 # Changelog
 
+## [1.6.1](https://github.com/NASA-PDS/registry-api/tree/1.6.1) (2025-07-09)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.2...1.6.1)
+
+## [release/1.6.2](https://github.com/NASA-PDS/registry-api/tree/release/1.6.2) (2025-07-09)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.1...release/1.6.2)
+
+## [v1.6.1](https://github.com/NASA-PDS/registry-api/tree/v1.6.1) (2025-07-08)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.0...v1.6.1)
+
+**Requirements:**
+
+- As a user, I want the total number of products returned to match both the total number of products expected to be loaded and the total number of products that were loaded [\#630](https://github.com/NASA-PDS/registry-api/issues/630)
+
+## [v1.6.0](https://github.com/NASA-PDS/registry-api/tree/v1.6.0) (2025-06-26)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.0...v1.6.0)
+
+## [release/1.6.0](https://github.com/NASA-PDS/registry-api/tree/release/1.6.0) (2025-06-25)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.5.0...release/1.6.0)
+
+**Requirements:**
+
+- As application support, I want to see in the server side logs the full query being sent to OpenSearch [\#575](https://github.com/NASA-PDS/registry-api/issues/575)
+- As a user, I want to receive a XML response that contains the PDS4 label metadata in XML format \(application/vnd.nasa.pds.pds4+xml\)  [\#440](https://github.com/NASA-PDS/registry-api/issues/440)
+- As a client developer, I want to facet on 1 or more fields in the registry [\#283](https://github.com/NASA-PDS/registry-api/issues/283)
+- As a user, I want to receive a JSON response that contains the PDS4 label metadata in JSON format \(application/vnd.nasa.pds.pds4+json\) [\#450](https://github.com/NASA-PDS/registry-api/issues/450)
+
+**Defects:**
+
+- The API fails when no Accept header is provided [\#638](https://github.com/NASA-PDS/registry-api/issues/638) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Fix broken branch testing [\#634](https://github.com/NASA-PDS/registry-api/issues/634) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- Registry API returning \>1 version of data [\#616](https://github.com/NASA-PDS/registry-api/issues/616) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+- Responses do not return correct metadata when `fields` parameter is specified [\#548](https://github.com/NASA-PDS/registry-api/issues/548) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- Fix code scanning alerts per logging [\#522](https://github.com/NASA-PDS/registry-api/issues/522) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Fix AWS deployment after dependabot upgrades [\#654](https://github.com/NASA-PDS/registry-api/issues/654)
+- Analyze app scan [\#607](https://github.com/NASA-PDS/registry-api/issues/607)
+- Latest `develop` version builds but does not run in local development environment. [\#605](https://github.com/NASA-PDS/registry-api/issues/605)
+- Delete deprecated LIDs from Registry [\#560](https://github.com/NASA-PDS/registry-api/issues/560)
+- Benchmark optimal number of products per page for API requests [\#552](https://github.com/NASA-PDS/registry-api/issues/552)
+- Test task ignore me develop [\#545](https://github.com/NASA-PDS/registry-api/issues/545)
+- Test task ignore me [\#543](https://github.com/NASA-PDS/registry-api/issues/543)
+- Update to utilize new multi-tenancy approach [\#304](https://github.com/NASA-PDS/registry-api/issues/304)
+
 ## [v1.5.0](https://github.com/NASA-PDS/registry-api/tree/v1.5.0) (2024-09-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...v1.5.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.5.0...v1.5.0)
+
+## [release/1.5.0](https://github.com/NASA-PDS/registry-api/tree/release/1.5.0) (2024-09-03)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...release/1.5.0)
 
 **Requirements:**
 
@@ -50,7 +104,11 @@
 
 ## [v1.4.1](https://github.com/NASA-PDS/registry-api/tree/v1.4.1) (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...v1.4.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.4.1...v1.4.1)
+
+## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
 
 **Defects:**
 
@@ -291,10 +349,6 @@
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.0.0...v1.0.1)
 
-**Requirements:**
-
-- As an API caller\(user\) I want to specify fields for endpoints given a lidvid [\#80](https://github.com/NASA-PDS/registry-api/issues/80)
-
 **Improvements:**
 
 - \[SECURITY\] Upgrade jackson dependencies to remove vulnerability [\#122](https://github.com/NASA-PDS/registry-api/issues/122) [[s.low](https://github.com/NASA-PDS/registry-api/labels/s.low)]
@@ -344,14 +398,11 @@
 - As a user, I want the API response media types to be compliant with RFC 6838 [\#464](https://github.com/NASA-PDS/registry-api/issues/464)
 - As a user, I want to see the version of the API specification in the URL of the service [\#59](https://github.com/NASA-PDS/registry-api/issues/59)
 - As a user, I want to get a key-value-pair JSON response [\#444](https://github.com/NASA-PDS/registry-api/issues/444)
-- As a user, I want to receive a XML response that contains the PDS4 label metadata in XML format \(application/vnd.nasa.pds.pds4+xml\)  [\#440](https://github.com/NASA-PDS/registry-api/issues/440)
 - As an API user, I want a CSV response format option [\#445](https://github.com/NASA-PDS/registry-api/issues/445)
 - As a user, I want to clearly see which formats are accepted by the API when a 406 error is raised [\#446](https://github.com/NASA-PDS/registry-api/issues/446)
 - As an API user, I want to explicitly request the latest version of a product [\#448](https://github.com/NASA-PDS/registry-api/issues/448)
 - As a API manager, I want to restrict access to registered products that should not be publicly accessible [\#466](https://github.com/NASA-PDS/registry-api/issues/466)
 - As an API user, I want to know how long a request took to complete [\#463](https://github.com/NASA-PDS/registry-api/issues/463)
-- As a user, I want to receive a JSON response that contains the PDS4 label metadata in JSON format \(application/vnd.nasa.pds.pds4+json\) [\#450](https://github.com/NASA-PDS/registry-api/issues/450)
-- As an API user, I want to be able to use the API for free text search [\#460](https://github.com/NASA-PDS/registry-api/issues/460)
 - As an API user, I want to get the latest version of a product, by default [\#449](https://github.com/NASA-PDS/registry-api/issues/449)
 - As a user, I want to query for all versions of a product [\#438](https://github.com/NASA-PDS/registry-api/issues/438)
 - As a user, I want to have a complete default fields \(for now at least\) [\#155](https://github.com/NASA-PDS/registry-api/issues/155)
@@ -364,10 +415,9 @@
 - As a developer, I never want the label blob to be returned [\#467](https://github.com/NASA-PDS/registry-api/issues/467)
 - As an API user, I want to handle long-running queries that take \>10 seconds. [\#68](https://github.com/NASA-PDS/registry-api/issues/68)
 - As an API user, I want an average query response time of 1 second for q=\* queries [\#69](https://github.com/NASA-PDS/registry-api/issues/69)
-- As an API user, I want to specify whether I get the latest or all versions of a product [\#447](https://github.com/NASA-PDS/registry-api/issues/447)
 - As an API user, I want to search by a temporal range as an ISO-8601 time interval. [\#465](https://github.com/NASA-PDS/registry-api/issues/465)
 - As an API user, I want to get an XML response [\#456](https://github.com/NASA-PDS/registry-api/issues/456)
-- As an API user, I want to get only the fields I explicitly requested [\#459](https://github.com/NASA-PDS/registry-api/issues/459)
+- As an API user, I want to get only the fields I explicitly requested \(`fields=`\) [\#459](https://github.com/NASA-PDS/registry-api/issues/459)
 - As a user, when I request specific fields I want to get records which have at least one of these fields [\#455](https://github.com/NASA-PDS/registry-api/issues/455)
 - As an API user, I want to know the Bundle for a given Collection. [\#452](https://github.com/NASA-PDS/registry-api/issues/452)
 - As an API user, I want to know the Collection\(s\) for a given Product. [\#451](https://github.com/NASA-PDS/registry-api/issues/451)

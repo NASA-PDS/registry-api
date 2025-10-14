@@ -99,7 +99,10 @@ jobs:
                     docker image inspect nasapds/registry-api-service:latest >/dev/null
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
-                        up --detach --quiet-pull
+                        up --quiet-pull --detach
+                    # --abort-on-container-exit 
+                    #echo "===== Docker logs ====="
+                    #docker compose logs --no-color
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
                         run --rm --no-TTY reg-api-integration-test-with-wait
@@ -108,7 +111,7 @@ jobs:
                 name: Set up Python 3
                 uses: actions/setup-python@v5
                 with:
-                    python-version: '3.9'
+                    python-version: '3.13'
 
             -
                 name: ∫ Test PDS Deep Archive compatibility
