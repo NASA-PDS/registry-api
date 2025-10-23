@@ -2,33 +2,25 @@ package gov.nasa.pds.api.registry.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
+import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.RangeQuery;
 import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermsQueryField;
-import org.opensearch.client.opensearch._types.query_dsl.TermsSetQuery;
-import org.opensearch.client.opensearch._types.query_dsl.WildcardQuery;
-import org.opensearch.client.opensearch._types.query_dsl.Operator;
-import org.opensearch.index.query.RangeQueryBuilder;
-import org.opensearch.index.query.SimpleQueryStringBuilder;
-import org.opensearch.index.query.TermQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
+
 
 public class Antlr4SearchListener extends SearchBaseListener {
   enum conjunctions {
@@ -176,6 +168,36 @@ public class Antlr4SearchListener extends SearchBaseListener {
       this.queryBuilder.should(comparatorQuery);
     }
 
+  }
+
+  @Override
+  public void exitExistence(SearchParser.ExistenceContext ctx) {
+    ArrayList<Query> checks = new ArrayList<Query>();
+    final String fieldName = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
+    final String regexp = ctx.STRINGVAL().getText();
+    String theKey = "''";
+    
+    if (fieldName != null && !fieldName.isBlank()) {
+      theKey = fieldName;
+      checks.add(new ExistsQuery.Builder().field(fieldName).build().toQuery());
+    } else if (regexp != null && !regexp.isBlank()) {
+      theKey = regexp;
+      List<String> fieldNames = new ArrayList<String>(); // FIXME: need to get the mapping for field names here
+      Pattern regex = Pattern.compile(regexp);
+      for (String fn : fieldNames.stream()
+          .flatMap(s -> regex.matcher(s).results())
+          .map(matchResults -> matchResults.group())
+          .collect(Collectors.toList())) {
+        checks.add(new ExistsQuery.Builder().field(fn).build().toQuery());
+      }
+    if (checks.isEmpty())
+      throw new ParseCancellationException("For existence testing, cannot match any field names to " + theKey);
+    }
+    if (this.conjunction == conjunctions.AND) {
+      this.queryBuilder.must(checks);
+    } else {
+      this.queryBuilder.should(checks);
+    }
   }
 
   @Override

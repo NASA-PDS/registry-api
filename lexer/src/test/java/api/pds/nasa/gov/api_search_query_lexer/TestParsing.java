@@ -18,6 +18,7 @@ import gov.nasa.pds.api.registry.lexer.SearchListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ExistenceContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
@@ -242,6 +243,18 @@ public class TestParsing implements ParseTreeListener, SearchListener {
   public void exitLikeComparison(LikeComparisonContext ctx) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  public void enterExistence(ExistenceContext ctx) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void exitExistence(ExistenceContext ctx) {
+    // TODO Auto-generated method stub
+    
   }
 
 
