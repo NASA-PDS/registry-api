@@ -3,7 +3,6 @@ package gov.nasa.pds.api.registry.controllers;
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 import gov.nasa.pds.api.base.ClassesApi;
 import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.api.registry.model.exceptions.*;
@@ -598,7 +597,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   /**
    * Resolve the appropriate enumerated user type hint from an OpenSearch Property
    */
-  protected PropertiesListInner.TypeEnum _resolvePropertyToEnumType(Property property) {
+  protected static PropertiesListInner.TypeEnum _resolvePropertyToEnumType(Property property) {
     if (property.isBoolean()) {
       return PropertiesListInner.TypeEnum.BOOLEAN;
     } else if (property.isKeyword() || property.isText()) {
@@ -616,12 +615,15 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @Override
   public ResponseEntity<List<PropertiesListInner>> productPropertiesList() throws Exception {
+    return ProductsController.productPropertiesList(this.connectionContext);
+  }
+  public static ResponseEntity<List<PropertiesListInner>> productPropertiesList(ConnectionContext connectionContext) throws OpenSearchException, IOException {
 
-    List<String> indexNames = this.connectionContext.getRegistryIndices();
+    List<String> indexNames = connectionContext.getRegistryIndices();
 
     GetMappingRequest getMappingRequest = new GetMappingRequest.Builder().index(indexNames).build();
 
-    OpenSearchIndicesClient indicesClient = this.openSearchClient.indices();
+    OpenSearchIndicesClient indicesClient = connectionContext.getOpenSearchClient().indices();
 
     GetMappingResponse getMappingResponse = indicesClient.getMapping(getMappingRequest);
 

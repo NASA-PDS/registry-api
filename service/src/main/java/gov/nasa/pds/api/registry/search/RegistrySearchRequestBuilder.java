@@ -356,7 +356,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
 
 
-  private static BoolQuery parseQueryString(String queryString) {
+  private BoolQuery parseQueryString(String queryString) {
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
@@ -369,7 +369,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
     // Walk it and attach our listener
     ParseTreeWalker walker = new ParseTreeWalker();
-    Antlr4SearchListener listener = new Antlr4SearchListener();
+    Antlr4SearchListener listener = new Antlr4SearchListener(this.connectionContext);
     walker.walk(listener, tree);
 
     return listener.getBoolQuery();
@@ -386,7 +386,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
     try {
       if ((q != null) && (q.length() > 0)) {
-        BoolQuery qBoolQuery = RegistrySearchRequestBuilder.parseQueryString(q);
+        BoolQuery qBoolQuery = this.parseQueryString(q);
         this.queryBuilder.must(qBoolQuery.toQuery());
       }
       return this;

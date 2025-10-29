@@ -2,16 +2,21 @@ package gov.nasa.pds.api.registry.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
-
+import gov.nasa.pds.model.PropertiesListInner;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.opensearch.OpenSearchException;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
@@ -36,13 +41,16 @@ public class Antlr4SearchListener extends SearchBaseListener {
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
   private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
+  final private ConnectionContext connectionContext;
   final private Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
   final private Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
+  final private Set<String> knownFieldNames = new HashSet<String>();
 
   private operation operator = null;
 
-  public Antlr4SearchListener() {
+  public Antlr4SearchListener(ConnectionContext connectionContext) {
     super();
+    this.connectionContext = connectionContext;
   }
 
 
@@ -182,9 +190,17 @@ public class Antlr4SearchListener extends SearchBaseListener {
       checks.add(new ExistsQuery.Builder().field(fieldName).build().toQuery());
     } else if (regexp != null && !regexp.isBlank()) {
       theKey = regexp;
-      List<String> fieldNames = new ArrayList<String>(); // FIXME: need to get the mapping for field names here
+      if (knownFieldNames.isEmpty()) {
+        try {
+          for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
+            knownFieldNames.add(property.getProperty());
+          }
+        } catch (OpenSearchException | IOException e) {
+          log.error("Could not load the mapping(s) from opensearch; meaning 'exists' will not work");
+        }
+      }
       Pattern regex = Pattern.compile(regexp);
-      for (String fn : fieldNames.stream()
+      for (String fn : knownFieldNames.stream()
           .flatMap(s -> regex.matcher(s).results())
           .map(matchResults -> matchResults.group())
           .collect(Collectors.toList())) {
