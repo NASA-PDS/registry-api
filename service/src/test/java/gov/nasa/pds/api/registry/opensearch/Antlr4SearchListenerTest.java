@@ -24,7 +24,7 @@ import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
 
-public class Antlr4SearchListenerTest {
+class Antlr4SearchListenerTest {
   private class NegativeTester implements Executable {
     final private Antlr4SearchListenerTest parent;
     final private String qs;
@@ -68,13 +68,13 @@ public class Antlr4SearchListenerTest {
 
 
   @Test
-  public void testSimpleCompEq() {
+  void testSimpleCompEq() {
     String qs = "pds:Time_Coordinates.pds:stop_date_time eq \"2021-05-21T15:47:08Z\"";
     BoolQuery query = this.run(qs);
     // TODO: add asserts
-    Assertions.assertEquals(query.must().size(), 1);
+    Assertions.assertEquals(1, query.must().size());
     Query matchQuery = (Query) query.must().get(0);
-    Assertions.assertEquals(matchQuery._kind(), Query.Kind.Match);
+    Assertions.assertEquals(Query.Kind.Match, matchQuery._kind());
     // Assertions.assertEquals((matchQuery).field(), "pds:Time_Coordinates/pds:stop_date_time");
 
 
@@ -82,7 +82,7 @@ public class Antlr4SearchListenerTest {
 
 
   @Test
-  public void testLikeWildcard() {
+  void testLikeWildcard() {
     String qs = "lid like \"*pdart14_meap\"";
     BoolQuery query = this.run(qs);
     // TODO: add asserts
@@ -91,7 +91,7 @@ public class Antlr4SearchListenerTest {
   }
 
   @Test
-  public void testEscape() {
+  void testEscape() {
     String qs = "lid eq \"*pdart14_meap?\"";
     BoolQuery query = this.run(qs);
 
@@ -99,7 +99,7 @@ public class Antlr4SearchListenerTest {
   }
 
   @Test
-  public void testGroupedStatementAndExclusiveInequality() {
+  void testGroupedStatementAndExclusiveInequality() {
     String qs = "( timestamp gt 12 and timestamp lt 27 )";
     BoolQuery query = this.run(qs);
 
@@ -107,7 +107,7 @@ public class Antlr4SearchListenerTest {
   }
 
   @Test
-  public void testGroupedStatementAndInclusiveInequality() {
+  void testGroupedStatementAndInclusiveInequality() {
     String qs = "( timestamp_A ge 12 and timestamp_B le 27 )";
     BoolQuery query = this.run(qs);
 
@@ -115,7 +115,7 @@ public class Antlr4SearchListenerTest {
   }
 
   @Test
-  public void testNot() {
+  void testNot() {
     String qs = "not ( timestamp ge 12 and timestamp le 27 )";
     BoolQuery query = this.run(qs);
 
@@ -124,7 +124,7 @@ public class Antlr4SearchListenerTest {
 
 
   @Test
-  public void testNestedGrouping() {
+  void testNestedGrouping() {
 
     String qs =
         "( ( timestamp ge 12 and timestamp le 27 ) or ( timestamp gt 13 and timestamp lt 37 ) )";
@@ -137,7 +137,7 @@ public class Antlr4SearchListenerTest {
 
 
   @Test
-  public void testNoWildcardQuoted() {
+  void testNoWildcardQuoted() {
     String qs = "ref_lid_target eq \"urn:nasa:pds:context:target:planet.mercury\"";
     BoolQuery query = this.run(qs);
 
@@ -145,7 +145,7 @@ public class Antlr4SearchListenerTest {
   }
 
   @Test
-  public void testExceptionsInParsing() {
+  void testExceptionsInParsing() {
     NegativeTester actor;
     String fails[] = {"( a eq b", "a eq b )", "not( a eq b )", "a eq b and c eq d and",
         "( a eq b and c eq d and )", "( a eq b and c eq d or e eq f )"};
