@@ -46,10 +46,10 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     walker.walk(this, tree);
 
     Assertions.assertNotNull(this.field);
-    Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
+    Assertions.assertEquals("lid", this.field.getSymbol().getText());
 
     Assertions.assertNotEquals(this.number, null);
-    Assertions.assertEquals(this.number.getSymbol().getText(), "1234");
+    Assertions.assertEquals("1234", this.number.getSymbol().getText());
 
   }
 
@@ -65,10 +65,10 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     walker.walk(this, tree);
 
     Assertions.assertNotNull(this.field);
-    Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
+    Assertions.assertEquals("lid", this.field.getSymbol().getText());
 
     Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals(this.strval.getSymbol().getText(), "\"*text*\"");
+    Assertions.assertEquals("\"*text*\"", this.strval.getSymbol().getText());
   }
 
 
@@ -84,10 +84,10 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     walker.walk(this, tree);
 
     Assertions.assertNotNull(this.field);
-    Assertions.assertEquals(this.field.getText(), "lid");
+    Assertions.assertEquals("lid", this.field.getText());
 
     Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
+    Assertions.assertEquals("\"*text*\"", this.strval.getText());
   }
 
 

@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -21,7 +20,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.lang3.StringUtils;
 import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
 import org.opensearch.client.opensearch._types.FieldSort;
 import org.opensearch.client.opensearch._types.FieldValue;
@@ -63,7 +61,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
     this.connectionContext = connectionContext;
 
     this.registryIndices = this.connectionContext.getRegistryIndices();
-    log.info("Use indices: " + String.join(",", registryIndices) + "End indices");
+    log.info("Use indices: {}", String.join(",", registryIndices) + "End indices");
 
     this.index(registryIndices);
 
@@ -82,7 +80,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   private static Query getMandatoryBaselineQuery(ConnectionContext connectionContext) {
     List<String> archiveStatus = connectionContext.getArchiveStatus();
     List<FieldValue> archiveStatusFieldValues = archiveStatus.stream().map(FieldValue::of).toList();
-    log.info("Only publishes archiveStatus: " + String.join(",", archiveStatus));
+    log.info("Only publishes archiveStatus: {}", String.join(",", archiveStatus));
     TermsQueryField archiveStatusTerms =
         new TermsQueryField.Builder().value(archiveStatusFieldValues).build();
 
@@ -136,6 +134,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
     return this;
   }
 
+  @Override
   public SearchRequest build() {
     BoolQuery bQuery = this.queryBuilder.build();
     this.query(bQuery.toQuery());
@@ -145,9 +144,9 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
     try {
       String requestJson = serializeSearchRequest(searchRequest);
-      log.debug("Generated OpenSearch SearchRequest with query:\n" + requestJson);
+      log.debug("Generated OpenSearch SearchRequest with query:\n{}", requestJson);
     } catch (Exception e) {
-      log.error("Failed to generate json serialization of SearchRequest: " + e);
+      log.error("Failed to generate json serialization of SearchRequest: {}", e);
     }
 
     return searchRequest;
@@ -391,7 +390,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
       }
       return this;
     } catch (RecognitionException | ParseCancellationException e) {
-      log.info("Unable to parse q " + LoggingAspect.sanitizeForLog(q) + "error message is " + e);
+      log.info("Unable to parse q {} error message is {}", LoggingAspect.sanitizeForLog(q), e);
       throw new UnparsableQParamException("Invalid q string value syntax " + e.getMessage());
     }
 

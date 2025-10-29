@@ -274,7 +274,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throw new NotFoundException("No product found with identifier " + identifier.toString());
     }
     HashMap<String, Object> product = searchResponse.hits().hits().get(0).source();
-    ProductsController.log.debug("Found product with lid=" + product.get("lid"));
+    ProductsController.log.debug("Found product with lid={}", product.get("lid"));
     return product;
 
   }
@@ -300,8 +300,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
 
     HashMap<String, Object> product = searchResponse.hits().hits().get(0).source();
-    ProductsController.log.debug("Found product with lid=" + product.get("lid"));
-    return (HashMap<String, Object>) searchResponse.hits().hits().get(0).source();
+    ProductsController.log.debug("Found product with lid={}", product.get("lid"));
+    return searchResponse.hits().hits().get(0).source();
 
   }
 
@@ -377,8 +377,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
    * @throws AcceptFormatNotSupportedException
    */
   private PdsLidVid resolveIdentifierToLidvid(PdsProductIdentifier identifier)
-      throws NotFoundException, IOException, AcceptFormatNotSupportedException, UnhandledException,
-      OpenSearchException {
+      throws NotFoundException, IOException, OpenSearchException {
     return identifier.isLidvid() ? (PdsLidVid) identifier : resolveLatestLidvid(identifier);
   }
 
@@ -597,7 +596,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   /**
    * Resolve the appropriate enumerated user type hint from an OpenSearch Property
    */
-  protected static PropertiesListInner.TypeEnum _resolvePropertyToEnumType(Property property) {
+  protected static PropertiesListInner.TypeEnum resolvePropertyToEnumType(Property property) {
     if (property.isBoolean()) {
       return PropertiesListInner.TypeEnum.BOOLEAN;
     } else if (property.isKeyword() || property.isText()) {
@@ -636,7 +635,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
         String jsonPropertyName = PdsProperty.toJsonPropertyString(property.getKey());
         Property openPropertyName = property.getValue();
         PropertiesListInner.TypeEnum propertyEnumType =
-            _resolvePropertyToEnumType(openPropertyName);
+            resolvePropertyToEnumType(openPropertyName);
 
         // No consistency-checking between duplicates, for now. TODO: add error log for mismatching
         // duplicates

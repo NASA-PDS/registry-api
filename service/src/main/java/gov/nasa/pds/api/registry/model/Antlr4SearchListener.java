@@ -41,10 +41,10 @@ public class Antlr4SearchListener extends SearchBaseListener {
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
   private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
-  final private ConnectionContext connectionContext;
-  final private Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
-  final private Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
-  final private Set<String> knownFieldNames = new HashSet<String>();
+  private final ConnectionContext connectionContext;
+  private final Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
+  private final Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
+  private final Set<String> knownFieldNames = new HashSet<String>();
 
   private operation operator = null;
 
@@ -196,7 +196,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
             knownFieldNames.add(property.getProperty());
           }
         } catch (OpenSearchException | IOException e) {
-          log.error("Could not load the mapping(s) from opensearch; meaning 'exists' will not work");
+          log.error("Could not load the mapping(s) from opensearch; meaning 'exists' will not work", e);
         }
       }
       Pattern regex = Pattern.compile(regexp);
@@ -232,7 +232,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
         .query(right).fuzzyMaxExpansions(0).build();
 
     Query query = simpleQueryString.toQuery();
-    log.debug("Exit Like comparison: left member is " + left + " right member is " + right);
+    log.debug("Exit Like comparison: left member is {} right member is {}", left, right);
 
     if (this.conjunction == conjunctions.AND) {
       this.queryBuilder.must(query);
