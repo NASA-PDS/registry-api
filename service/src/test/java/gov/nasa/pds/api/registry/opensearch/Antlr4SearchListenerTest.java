@@ -44,7 +44,7 @@ public class Antlr4SearchListenerTest {
 
   @BeforeEach
   void setUp() {
-    listener = new Antlr4SearchListener();
+    listener = new Antlr4SearchListener(null);
   }
 
 
@@ -57,7 +57,7 @@ public class Antlr4SearchListenerTest {
     ParseTree tree = par.query();
     // Walk it and attach our listener
     ParseTreeWalker walker = new ParseTreeWalker();
-    Antlr4SearchListener listener = new Antlr4SearchListener();
+    Antlr4SearchListener listener = new Antlr4SearchListener(null);
     walker.walk(listener, tree);
 
     // System.out.println ("query string: " + query);
