@@ -48,7 +48,7 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     Assertions.assertNotNull(this.field);
     Assertions.assertEquals("lid", this.field.getSymbol().getText());
 
-    Assertions.assertNotEquals(this.number, null);
+    Assertions.assertNotNull(this.number);
     Assertions.assertEquals("1234", this.number.getSymbol().getText());
 
   }

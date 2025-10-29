@@ -146,7 +146,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
       String requestJson = serializeSearchRequest(searchRequest);
       log.debug("Generated OpenSearch SearchRequest with query:\n{}", requestJson);
     } catch (Exception e) {
-      log.error("Failed to generate json serialization of SearchRequest: {}", e);
+      log.error("Failed to generate json serialization of SearchRequest: ", e);
     }
 
     return searchRequest;

@@ -14,7 +14,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.opensearch.OpenSearchException;
 import org.opensearch.client.json.JsonData;
@@ -43,7 +42,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   private final ConnectionContext connectionContext;
   private final Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
-  private final Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
+  private final Deque<conjunctions> stackConjunction = new ArrayDeque<conjunctions>();
   private final Set<String> knownFieldNames = new HashSet<String>();
 
   private operation operator = null;
@@ -61,7 +60,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
   public void enterGroup(SearchParser.GroupContext ctx) {
     log.debug("Enter Group");
 
-    this.stack_conjunction.push(this.conjunction);
+    this.stackConjunction.push(this.conjunction);
     this.conjunction = conjunctions.AND; // DEFAULT
 
     this.stackQueryBuilders.push(this.queryBuilder);
@@ -75,7 +74,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
     log.debug("Exit Group");
 
     BoolQuery.Builder upperBoolQueryBuilder = this.stackQueryBuilders.pop();
-    this.conjunction = this.stack_conjunction.pop();
+    this.conjunction = this.stackConjunction.pop();
 
     Query innerQuery = this.queryBuilder.build().toQuery();
     if (ctx.NOT() != null) {
@@ -203,7 +202,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
       for (String fn : knownFieldNames.stream()
           .flatMap(s -> regex.matcher(s).results())
           .map(matchResults -> matchResults.group())
-          .collect(Collectors.toList())) {
+          .toList()) {
         checks.add(new ExistsQuery.Builder().field(fn).build().toQuery());
       }
     if (checks.isEmpty())
