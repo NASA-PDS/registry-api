@@ -189,7 +189,7 @@ class Antlr4SearchListenerTest {
   void testExitOrStatement() {
     listener.enterOrStatement(Mockito.mock(SearchParser.OrStatementContext.class));
     listener.exitOrStatement(Mockito.mock(SearchParser.OrStatementContext.class));
-    assertSame("1", listener.getBoolQuery().minimumShouldMatch(),
+    assertEquals("1", listener.getBoolQuery().minimumShouldMatch(),
         "Minimum should match should be set");
   }
 
