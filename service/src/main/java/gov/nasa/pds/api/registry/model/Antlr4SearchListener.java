@@ -2,33 +2,29 @@ package gov.nasa.pds.api.registry.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
-
+import gov.nasa.pds.model.PropertiesListInner;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.opensearch.OpenSearchException;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
+import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.RangeQuery;
 import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermsQueryField;
-import org.opensearch.client.opensearch._types.query_dsl.TermsSetQuery;
-import org.opensearch.client.opensearch._types.query_dsl.WildcardQuery;
-import org.opensearch.client.opensearch._types.query_dsl.Operator;
-import org.opensearch.index.query.RangeQueryBuilder;
-import org.opensearch.index.query.SimpleQueryStringBuilder;
-import org.opensearch.index.query.TermQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
+
 
 public class Antlr4SearchListener extends SearchBaseListener {
   enum conjunctions {
@@ -44,13 +40,16 @@ public class Antlr4SearchListener extends SearchBaseListener {
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
   private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
-  final private Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
-  final private Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
+  private final ConnectionContext connectionContext;
+  private final Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
+  private final Deque<conjunctions> stackConjunction = new ArrayDeque<conjunctions>();
+  private final Set<String> knownFieldNames = new HashSet<String>();
 
   private operation operator = null;
 
-  public Antlr4SearchListener() {
+  public Antlr4SearchListener(ConnectionContext connectionContext) {
     super();
+    this.connectionContext = connectionContext;
   }
 
 
@@ -61,7 +60,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
   public void enterGroup(SearchParser.GroupContext ctx) {
     log.debug("Enter Group");
 
-    this.stack_conjunction.push(this.conjunction);
+    this.stackConjunction.push(this.conjunction);
     this.conjunction = conjunctions.AND; // DEFAULT
 
     this.stackQueryBuilders.push(this.queryBuilder);
@@ -75,7 +74,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
     log.debug("Exit Group");
 
     BoolQuery.Builder upperBoolQueryBuilder = this.stackQueryBuilders.pop();
-    this.conjunction = this.stack_conjunction.pop();
+    this.conjunction = this.stackConjunction.pop();
 
     Query innerQuery = this.queryBuilder.build().toQuery();
     if (ctx.NOT() != null) {
@@ -179,6 +178,43 @@ public class Antlr4SearchListener extends SearchBaseListener {
   }
 
   @Override
+  public void exitExistence(SearchParser.ExistenceContext ctx) {
+    ArrayList<Query> checks = new ArrayList<Query>();
+    final String fieldName = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
+    final String regexp = ctx.STRINGVAL().getText();
+    String theKey = "''";
+    
+    if (fieldName != null && !fieldName.isBlank()) {
+      theKey = fieldName;
+      checks.add(new ExistsQuery.Builder().field(fieldName).build().toQuery());
+    } else if (regexp != null && !regexp.isBlank()) {
+      theKey = regexp;
+      if (knownFieldNames.isEmpty()) {
+        try {
+          for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
+            knownFieldNames.add(property.getProperty());
+          }
+        } catch (OpenSearchException | IOException e) {
+          log.error("Could not load the mapping(s) from opensearch; meaning 'exists' will not work", e);
+        }
+      }
+      Pattern regex = Pattern.compile(regexp);
+      for (String fn : knownFieldNames.stream()
+          .filter(s -> regex.matcher(s).matches())
+          .toList()) {
+        checks.add(new ExistsQuery.Builder().field(fn).build().toQuery());
+      }
+    if (checks.isEmpty())
+      throw new ParseCancellationException("For existence testing, cannot match any field names to " + theKey);
+    }
+    if (this.conjunction == conjunctions.AND) {
+      this.queryBuilder.must(checks);
+    } else {
+      this.queryBuilder.should(checks);
+    }
+  }
+
+  @Override
   public void enterLikeComparison(SearchParser.LikeComparisonContext ctx) {}
 
   @Override
@@ -194,7 +230,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
         .query(right).fuzzyMaxExpansions(0).build();
 
     Query query = simpleQueryString.toQuery();
-    log.debug("Exit Like comparison: left member is " + left + " right member is " + right);
+    log.debug("Exit Like comparison: left member is {} right member is {}", left, right);
 
     if (this.conjunction == conjunctions.AND) {
       this.queryBuilder.must(query);

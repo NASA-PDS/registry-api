@@ -18,6 +18,7 @@ import gov.nasa.pds.api.registry.lexer.SearchListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ExistenceContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
@@ -45,10 +46,10 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     walker.walk(this, tree);
 
     Assertions.assertNotNull(this.field);
-    Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
+    Assertions.assertEquals("lid", this.field.getSymbol().getText());
 
-    Assertions.assertNotEquals(this.number, null);
-    Assertions.assertEquals(this.number.getSymbol().getText(), "1234");
+    Assertions.assertNotNull(this.number);
+    Assertions.assertEquals("1234", this.number.getSymbol().getText());
 
   }
 
@@ -64,10 +65,10 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     walker.walk(this, tree);
 
     Assertions.assertNotNull(this.field);
-    Assertions.assertEquals(this.field.getSymbol().getText(), "lid");
+    Assertions.assertEquals("lid", this.field.getSymbol().getText());
 
     Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals(this.strval.getSymbol().getText(), "\"*text*\"");
+    Assertions.assertEquals("\"*text*\"", this.strval.getSymbol().getText());
   }
 
 
@@ -83,10 +84,10 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     walker.walk(this, tree);
 
     Assertions.assertNotNull(this.field);
-    Assertions.assertEquals(this.field.getText(), "lid");
+    Assertions.assertEquals("lid", this.field.getText());
 
     Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals(this.strval.getText(), "\"*text*\"");
+    Assertions.assertEquals("\"*text*\"", this.strval.getText());
   }
 
 
@@ -242,6 +243,18 @@ public class TestParsing implements ParseTreeListener, SearchListener {
   public void exitLikeComparison(LikeComparisonContext ctx) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  public void enterExistence(ExistenceContext ctx) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void exitExistence(ExistenceContext ctx) {
+    // TODO Auto-generated method stub
+    
   }
 
 
