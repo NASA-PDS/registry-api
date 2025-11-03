@@ -200,8 +200,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
       }
       Pattern regex = Pattern.compile(regexp);
       for (String fn : knownFieldNames.stream()
-          .flatMap(s -> regex.matcher(s).results())
-          .map(matchResults -> matchResults.group())
+          .filter(s -> regex.matcher(s).matches())
           .toList()) {
         checks.add(new ExistsQuery.Builder().field(fn).build().toQuery());
       }
