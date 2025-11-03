@@ -63,8 +63,24 @@ There are a few steps required to prepare for merging code back into the main br
 
 1. Create a pull request if have not done this already.
 1. Address all automated messages.
-1. Run all regression checks to make sure changes have re-introduced already fixed bugs.
+1. **Add required integration tests** (see [Integration Testing Requirements](#integration-testing-requirements) below).
+1. Run all regression checks to make sure changes have not re-introduced already fixed bugs.
 1. Move from draft to ready for review if in draft mode.
 1. Request review.
+
+## Integration Testing Requirements
+
+**IMPORTANT**: Each new feature, requirement, or bug fix must include at least one integration test added to the Postman collection.
+
+Integration tests are maintained in the [`registry` repository](https://github.com/NASA-PDS/registry) and must be updated as part of your contribution. For detailed instructions on creating and submitting integration tests, see:
+
+**[Integration Testing Guide](https://nasa-pds.github.io/registry/developer/integration-testing.html)**
+
+The guide covers:
+- When tests are required
+- Step-by-step process for adding tests to Postman
+- TestRail integration (for internal developers)
+- Running and validating tests locally
+- Submitting test updates via pull request
 
    

@@ -113,23 +113,19 @@ The integration tests will be automatically applied. Check the results, update/c
 
 ## Tests
 
-**Important note:** As a developer you are asked to complete the postman test suite according to the new feature you are developing. Do a pull request in the `registry` project to submit the updates.
+### Testing Requirements
 
-Integration test are maintained in postman.
+**IMPORTANT:** As a developer, you are **required** to add integration tests to the Postman test suite for:
+- Each new feature or requirement
+- Each bug fix
+- Any changes to existing API behavior
 
-### Edit/Run of the integration tests in postman GUI
+### Integration Testing Guide
 
-Install the postman desktop, from https://www.postman.com/downloads/
+Integration tests are maintained in the `registry` repository as Postman collections. For complete instructions on creating, running, and submitting integration tests, see:
 
-Download and open the test suite found in https://github.com/NASA-PDS/registry/tree/main/docker/postman
+**[Integration Testing Guide](https://nasa-pds.github.io/registry/developer/integration-testing.html)**
 
-### Run the integration tests in command line
-
-In the `registry` project.
-
-Launch the test in command line:
-
-    npm install newman
-    newman run docker/postman/postman_collection.json --env-var baseUrl=http://localhost:8080
+All test updates must be submitted as pull requests to the [`registry` repository](https://github.com/NASA-PDS/registry).
     
     
