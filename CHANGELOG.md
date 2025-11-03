@@ -2,7 +2,7 @@
 
 ## [1.6.0](https://github.com/NASA-PDS/registry-api/tree/1.6.0) (2025-10-14)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...1.6.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/1.6.0...v1.6.2)
 
 **Defects:**
 
