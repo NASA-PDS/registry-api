@@ -25,6 +25,8 @@ public class TestParsing {
   @Test
   public void testMaliciousQuery() {
 
+    @SuppressWarnings("java:S1481") // the objective of the test is to catch the exception, we don't
+                                    // need to use it.
     ParseCancellationException ex =
         Assertions.assertThrows(ParseCancellationException.class, () -> {
           String queryString = "select * from table where lid like '%'";
