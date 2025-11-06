@@ -1,12 +1,25 @@
 # Changelog
 
+## [1.6.0](https://github.com/NASA-PDS/registry-api/tree/1.6.0) (2025-10-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...1.6.0)
+
+**Defects:**
+
+- API search results using "search-after" returns empty \[data\] block even though I can find the product by lidvid [\#677](https://github.com/NASA-PDS/registry-api/issues/677) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Registry API Test Suite is failing [\#680](https://github.com/NASA-PDS/registry-api/issues/680) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
+- Manage errors as recommended in the spring mvc framework [\#286](https://github.com/NASA-PDS/registry-api/issues/286)
+
+## [v1.6.2](https://github.com/NASA-PDS/registry-api/tree/v1.6.2) (2025-07-09)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/1.6.1...v1.6.2)
+
 ## [1.6.1](https://github.com/NASA-PDS/registry-api/tree/1.6.1) (2025-07-09)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.2...1.6.1)
-
-## [release/1.6.2](https://github.com/NASA-PDS/registry-api/tree/release/1.6.2) (2025-07-09)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.1...release/1.6.2)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.1...1.6.1)
 
 ## [v1.6.1](https://github.com/NASA-PDS/registry-api/tree/v1.6.1) (2025-07-08)
 
