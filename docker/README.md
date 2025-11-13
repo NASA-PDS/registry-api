@@ -46,12 +46,3 @@ For example on AWS, with OpenSearch serverless as a back-end:
 
     SPRING_BOOT_APP_ARGS=--openSearch.host=<your opensearch serverless URL> --openSearch.CCSEnabled=true --openSearch.username="" --openSearch.disciplineNodes=atm-delta,en-delta --registry.service.version=1.5.0-SNAPSHOT
     SERVER_PORT=80
-
-
-
-
-
-
-## 📍 Dockerfile.local
-
-You can ignore `Dockerfile.local` unless you're @al-niessner.
