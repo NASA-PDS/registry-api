@@ -99,7 +99,6 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     CommonTokenStream tokens = new CommonTokenStream(lex);
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
-
     ParseTreeWalker walker = new ParseTreeWalker();
     walker.walk(this, tree);
 
@@ -107,7 +106,66 @@ public class TestParsing implements ParseTreeListener, SearchListener {
 
   }
 
-
+  @Test
+  void testFieldExistence() {
+    String queryString  = "apple exists";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
+    
+    Assertions.assertNotNull(this.field);
+    Assertions.assertNull(this.strval);
+    Assertions.assertEquals("apple", this.field.getSymbol().getText());
+  }
+  @Test
+  void testParenFieldExistence() {
+    String queryString  = "(apple exists)";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
+    
+    Assertions.assertNotNull(this.field);
+    Assertions.assertNull(this.strval);
+    Assertions.assertEquals("apple", this.field.getSymbol().getText());
+  }
+  @Test
+  void testStrvalExistence() {
+    String queryString  = "\".*apple\" exists";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
+    
+    Assertions.assertNull(this.field);
+    Assertions.assertNotNull(this.strval);
+    Assertions.assertEquals("\".*apple\"", this.strval.getSymbol().getText());
+  }
+  @Test
+  void testParenStrvalExistence() {
+    String queryString  = "(\".*apple\" exists)";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+    ParseTreeWalker walker = new ParseTreeWalker();
+    walker.walk(this, tree);
+    
+    Assertions.assertNull(this.field);
+    Assertions.assertNotNull(this.strval);
+    Assertions.assertEquals("\".*apple\"", this.strval.getSymbol().getText());
+  }
   @Override
   public void enterQuery(QueryContext ctx) {
     // TODO Auto-generated method stub
@@ -236,7 +294,7 @@ public class TestParsing implements ParseTreeListener, SearchListener {
 
     String op = ctx.getChild(1).getText();
     if ("not".equals(op))
-      isNot = true;
+      this.isNot = true;
   }
 
   @Override
@@ -253,9 +311,7 @@ public class TestParsing implements ParseTreeListener, SearchListener {
 
   @Override
   public void exitExistence(ExistenceContext ctx) {
-    // TODO Auto-generated method stub
-    
+    this.field = ctx.FIELD();
+    this.strval = ctx.STRINGVAL();
   }
-
-
 }
