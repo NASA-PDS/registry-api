@@ -180,31 +180,32 @@ public class Antlr4SearchListener extends SearchBaseListener {
   @Override
   public void exitExistence(SearchParser.ExistenceContext ctx) {
     ArrayList<Query> checks = new ArrayList<Query>();
-    final String fieldName = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
-    final String regexp = ctx.STRINGVAL().getText();
+    final String fieldName = ctx.FIELD() == null ? "" : SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
+    final String regexp = ctx.STRINGVAL() == null ? "" : ctx.STRINGVAL().getText();
     String theKey = "''";
     
-    if (fieldName != null && !fieldName.isBlank()) {
+    if (!fieldName.isBlank()) {
       theKey = fieldName;
       checks.add(new ExistsQuery.Builder().field(fieldName).build().toQuery());
-    } else if (regexp != null && !regexp.isBlank()) {
-      theKey = regexp;
-      if (knownFieldNames.isEmpty()) {
+    } else if (!regexp.isBlank()) {
+      theKey = regexp.substring(1, regexp.length()-1);
+      if (this.knownFieldNames.isEmpty()) {
         try {
           for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
-            knownFieldNames.add(property.getProperty());
+            this.knownFieldNames.add(property.getProperty());
           }
         } catch (OpenSearchException | IOException e) {
           log.error("Could not load the mapping(s) from opensearch; meaning 'exists' will not work", e);
         }
       }
-      Pattern regex = Pattern.compile(regexp);
-      for (String fn : knownFieldNames.stream()
+      Pattern regex = Pattern.compile(theKey);
+      for (String fn : this.knownFieldNames.stream()
           .filter(s -> regex.matcher(s).matches())
           .toList()) {
-        checks.add(new ExistsQuery.Builder().field(fn).build().toQuery());
+        checks.add(new ExistsQuery.Builder().field(SearchUtil.jsonPropertyToOpenProperty(fn)).build().toQuery());
       }
-    if (checks.isEmpty())
+    }
+    if (checks.isEmpty()) {
       throw new ParseCancellationException("For existence testing, cannot match any field names to " + theKey);
     }
     if (this.conjunction == conjunctions.AND) {
