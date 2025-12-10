@@ -130,7 +130,6 @@ public class TestParsing {
     // TODO: Parse
 
   }
-}
 
   @Test
   void testFieldExistence() {
