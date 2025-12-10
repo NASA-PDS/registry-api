@@ -1,20 +1,18 @@
 package api.pds.nasa.gov.api_search_query_lexer;
 
 
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import org.junit.jupiter.api.Test;
-
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
-import gov.nasa.pds.api.registry.lexer.SearchListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
@@ -30,9 +28,32 @@ import gov.nasa.pds.api.registry.lexer.SearchParser.QueryTermContext;
 import org.junit.jupiter.api.Assertions;
 
 
-public class TestParsing implements ParseTreeListener, SearchListener {
-  TerminalNode field = null, number = null, strval = null;
-  boolean isNot = false;
+
+public class TestParsing {
+
+
+  @Test
+  public void testMaliciousQuery() {
+
+    @SuppressWarnings("java:S1481") // the objective of the test is to catch the exception, we don't
+                                    // need to use it.
+    ParseCancellationException ex =
+        Assertions.assertThrows(ParseCancellationException.class, () -> {
+          String queryString = "select * from table where lid like '%'";
+
+          CodePointCharStream input = CharStreams.fromString(queryString);
+          SearchLexer lex = new SearchLexer(input);
+          CommonTokenStream tokens = new CommonTokenStream(lex);
+
+          SearchParser par = new SearchParser(tokens);
+          par.setErrorHandler(new BailErrorStrategy());
+          ParseTree tree = par.query();
+        }, "Expected code to throw, but it didn't");
+
+
+  }
+
+
 
   @Test
   public void testNumber() {
@@ -43,7 +64,8 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
 
     Assertions.assertNotNull(this.field);
     Assertions.assertEquals("lid", this.field.getSymbol().getText());
@@ -62,7 +84,8 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
 
     Assertions.assertNotNull(this.field);
     Assertions.assertEquals("lid", this.field.getSymbol().getText());
@@ -81,7 +104,8 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
 
     Assertions.assertNotNull(this.field);
     Assertions.assertEquals("lid", this.field.getText());
@@ -100,11 +124,13 @@ public class TestParsing implements ParseTreeListener, SearchListener {
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
 
     // TODO: Parse
 
   }
+}
 
   @Test
   void testFieldExistence() {
