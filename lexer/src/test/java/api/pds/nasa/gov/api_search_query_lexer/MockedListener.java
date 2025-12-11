@@ -10,6 +10,7 @@ import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ExistenceContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.OperatorContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.OrStatementContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.QueryContext;
@@ -156,6 +157,19 @@ public class MockedListener implements ParseTreeListener, SearchListener {
   public void exitEveryRule(ParserRuleContext ctx) {
     // TODO Auto-generated method stub
 
+  }
+
+
+  @Override
+  public void enterExistence(ExistenceContext ctx) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void exitExistence(ExistenceContext ctx) {
+    this.field = ctx.FIELD();
+    this.strval = ctx.STRINGVAL();
   }
 
 }

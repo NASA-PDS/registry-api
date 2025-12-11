@@ -16,7 +16,6 @@ import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
-import gov.nasa.pds.api.registry.lexer.SearchParser.ExistenceContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
@@ -67,11 +66,11 @@ public class TestParsing {
     MockedListener listener = new MockedListener();
     walker.walk(listener, tree);
 
-    Assertions.assertNotNull(this.field);
-    Assertions.assertEquals("lid", this.field.getSymbol().getText());
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertEquals(listener.field.getSymbol().getText(), "lid");
 
-    Assertions.assertNotNull(this.number);
-    Assertions.assertEquals("1234", this.number.getSymbol().getText());
+    Assertions.assertNotEquals(listener.number, null);
+    Assertions.assertEquals(listener.number.getSymbol().getText(), "1234");
 
   }
 
@@ -87,11 +86,11 @@ public class TestParsing {
     MockedListener listener = new MockedListener();
     walker.walk(listener, tree);
 
-    Assertions.assertNotNull(this.field);
-    Assertions.assertEquals("lid", this.field.getSymbol().getText());
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertEquals(listener.field.getSymbol().getText(), "lid");
 
-    Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals("\"*text*\"", this.strval.getSymbol().getText());
+    Assertions.assertNotNull(listener.strval);
+    Assertions.assertEquals(listener.strval.getSymbol().getText(), "\"*text*\"");
   }
 
 
@@ -107,11 +106,11 @@ public class TestParsing {
     MockedListener listener = new MockedListener();
     walker.walk(listener, tree);
 
-    Assertions.assertNotNull(this.field);
-    Assertions.assertEquals("lid", this.field.getText());
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertEquals(listener.field.getText(), "lid");
 
-    Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals("\"*text*\"", this.strval.getText());
+    Assertions.assertNotNull(listener.strval);
+    Assertions.assertEquals(listener.strval.getText(), "\"*text*\"");
   }
 
 
@@ -123,6 +122,7 @@ public class TestParsing {
     CommonTokenStream tokens = new CommonTokenStream(lex);
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
+
     ParseTreeWalker walker = new ParseTreeWalker();
     MockedListener listener = new MockedListener();
     walker.walk(listener, tree);
@@ -133,210 +133,78 @@ public class TestParsing {
 
   @Test
   void testFieldExistence() {
-    String queryString  = "apple exists";
+    String queryString = "apple exists";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
+
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
-    
-    Assertions.assertNotNull(this.field);
-    Assertions.assertNull(this.strval);
-    Assertions.assertEquals("apple", this.field.getSymbol().getText());
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertNull(listener.strval);
+    Assertions.assertEquals("apple", listener.field.getSymbol().getText());
   }
+
+
   @Test
   void testParenFieldExistence() {
-    String queryString  = "(apple exists)";
+    String queryString = "(apple exists)";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
+
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
-    
-    Assertions.assertNotNull(this.field);
-    Assertions.assertNull(this.strval);
-    Assertions.assertEquals("apple", this.field.getSymbol().getText());
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertNull(listener.strval);
+    Assertions.assertEquals("apple", listener.field.getSymbol().getText());
   }
+
   @Test
   void testStrvalExistence() {
-    String queryString  = "\".*apple\" exists";
+    String queryString = "\".*apple\" exists";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
+
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
-    
-    Assertions.assertNull(this.field);
-    Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals("\".*apple\"", this.strval.getSymbol().getText());
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNull(listener.field);
+    Assertions.assertNotNull(listener.strval);
+    Assertions.assertEquals("\".*apple\"", listener.strval.getSymbol().getText());
   }
+
+
   @Test
   void testParenStrvalExistence() {
-    String queryString  = "(\".*apple\" exists)";
+    String queryString = "(\".*apple\" exists)";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
     SearchParser par = new SearchParser(tokens);
     ParseTree tree = par.query();
+
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(this, tree);
-    
-    Assertions.assertNull(this.field);
-    Assertions.assertNotNull(this.strval);
-    Assertions.assertEquals("\".*apple\"", this.strval.getSymbol().getText());
-  }
-  @Override
-  public void enterQuery(QueryContext ctx) {
-    // TODO Auto-generated method stub
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
 
+    Assertions.assertNull(listener.field);
+    Assertions.assertNotNull(listener.strval);
+    Assertions.assertEquals("\".*apple\"", listener.strval.getSymbol().getText());
   }
 
-  @Override
-  public void exitQuery(QueryContext ctx) {
-    // TODO Auto-generated method stub
 
-  }
 
-  @Override
-  public void enterQueryTerm(QueryTermContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitQueryTerm(QueryTermContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterGroup(GroupContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitGroup(GroupContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterExpression(ExpressionContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitExpression(ExpressionContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterAndStatement(AndStatementContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitAndStatement(AndStatementContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterOrStatement(OrStatementContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitOrStatement(OrStatementContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterComparison(ComparisonContext ctx) {
-    this.field = ctx.FIELD();
-    this.number = ctx.NUMBER();
-    this.strval = ctx.STRINGVAL();
-  }
-
-  @Override
-  public void exitComparison(ComparisonContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterOperator(OperatorContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitOperator(OperatorContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterEveryRule(ParserRuleContext arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void exitEveryRule(ParserRuleContext arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void visitErrorNode(ErrorNode arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void visitTerminal(TerminalNode arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterLikeComparison(LikeComparisonContext ctx) {
-    this.field = ctx.FIELD();
-    this.strval = ctx.STRINGVAL();
-
-    String op = ctx.getChild(1).getText();
-    if ("not".equals(op))
-      this.isNot = true;
-  }
-
-  @Override
-  public void exitLikeComparison(LikeComparisonContext ctx) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void enterExistence(ExistenceContext ctx) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void exitExistence(ExistenceContext ctx) {
-    this.field = ctx.FIELD();
-    this.strval = ctx.STRINGVAL();
-  }
 }
