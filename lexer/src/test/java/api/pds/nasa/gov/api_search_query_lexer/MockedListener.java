@@ -24,73 +24,73 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void enterQuery(QueryContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitQuery(QueryContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterQueryTerm(QueryTermContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitQueryTerm(QueryTermContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterGroup(GroupContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitGroup(GroupContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterExpression(ExpressionContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitExpression(ExpressionContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterAndStatement(AndStatementContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitAndStatement(AndStatementContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterOrStatement(OrStatementContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitOrStatement(OrStatementContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
@@ -103,7 +103,7 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void exitComparison(ComparisonContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
@@ -119,50 +119,50 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void exitLikeComparison(LikeComparisonContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterOperator(OperatorContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitOperator(OperatorContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void visitTerminal(TerminalNode node) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void visitErrorNode(ErrorNode node) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void enterEveryRule(ParserRuleContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
   @Override
   public void exitEveryRule(ParserRuleContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
 
   @Override
   public void enterExistence(ExistenceContext ctx) {
-    // TODO Auto-generated method stub
+    // Nothing useful to do in this mocked version
 
   }
 
