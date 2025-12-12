@@ -14,6 +14,15 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.jupiter.api.Test;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
+import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.OperatorContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.OrStatementContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.QueryContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.QueryTermContext;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -121,6 +130,81 @@ public class TestParsing {
     // TODO: Parse
 
   }
+
+  @Test
+  void testFieldExistence() {
+    String queryString = "apple exists";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+
+    ParseTreeWalker walker = new ParseTreeWalker();
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertNull(listener.strval);
+    Assertions.assertEquals("apple", listener.field.getSymbol().getText());
+  }
+
+
+  @Test
+  void testParenFieldExistence() {
+    String queryString = "(apple exists)";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+
+    ParseTreeWalker walker = new ParseTreeWalker();
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNotNull(listener.field);
+    Assertions.assertNull(listener.strval);
+    Assertions.assertEquals("apple", listener.field.getSymbol().getText());
+  }
+
+  @Test
+  void testStrvalExistence() {
+    String queryString = "\".*apple\" exists";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+
+    ParseTreeWalker walker = new ParseTreeWalker();
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNull(listener.field);
+    Assertions.assertNotNull(listener.strval);
+    Assertions.assertEquals("\".*apple\"", listener.strval.getSymbol().getText());
+  }
+
+
+  @Test
+  void testParenStrvalExistence() {
+    String queryString = "(\".*apple\" exists)";
+    CodePointCharStream input = CharStreams.fromString(queryString);
+    SearchLexer lex = new SearchLexer(input);
+    CommonTokenStream tokens = new CommonTokenStream(lex);
+    SearchParser par = new SearchParser(tokens);
+    ParseTree tree = par.query();
+
+    ParseTreeWalker walker = new ParseTreeWalker();
+    MockedListener listener = new MockedListener();
+    walker.walk(listener, tree);
+
+    Assertions.assertNull(listener.field);
+    Assertions.assertNotNull(listener.strval);
+    Assertions.assertEquals("\".*apple\"", listener.strval.getSymbol().getText());
+  }
+
+
+
 }
-
-

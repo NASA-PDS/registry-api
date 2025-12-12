@@ -1,8 +1,9 @@
 grammar Search;
 
 query : queryTerm EOF ; 
-queryTerm : comparison | likeComparison | group ;
+queryTerm : comparison | likeComparison | existence | group ;
 group : NOT? LPAREN expression RPAREN ;
+existence : ( FIELD | STRINGVAL ) EXISTS ;
 expression : andStatement | orStatement | queryTerm ;
 andStatement : queryTerm (AND queryTerm)+ ;
 orStatement : queryTerm (OR queryTerm)+ ;
@@ -19,6 +20,7 @@ GE : G E ;
 LT : L T ;
 LE : L E ;
 
+EXISTS: E X I S T S;
 LIKE: L I K E;
 
 LPAREN : '(' ;
