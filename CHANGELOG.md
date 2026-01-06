@@ -1,11 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2025-12-12)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-01-06)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
 **Defects:**
 
+- Inconsistent support for `application/vnd.nasa.pds.pds4+json` response format [\#705](https://github.com/NASA-PDS/registry-api/issues/705) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - API search results using "search-after" returns empty \[data\] block even though I can find the product by lidvid [\#677](https://github.com/NASA-PDS/registry-api/issues/677) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
