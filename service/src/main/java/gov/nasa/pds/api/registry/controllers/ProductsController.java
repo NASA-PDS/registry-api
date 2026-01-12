@@ -509,10 +509,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<PdsLidVid> parentIds;
       if (productClass.isCollection()) {
         parentIds =
-            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:ancestry");
+            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:ancestor_refs");
       } else if (productClass.isBasicProduct()) {
         parentIds = resolveLidVidsFromProductField(lidvid,
-            "ops:Provenance/ops:ancestry");
+            "ops:Provenance/ops:ancestor_refs");
       } else {
         throw new BadRequestException(
             "productMembersOf endpoint is not valid for products with Product_Class '"
