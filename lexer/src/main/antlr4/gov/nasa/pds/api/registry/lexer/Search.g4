@@ -1,14 +1,15 @@
 grammar Search;
 
-query : queryTerm EOF ; 
+query : queryTerm EOF ;
 queryTerm : comparison | likeComparison | existence | group ;
+fields : FIELDNAME | ALL LPAREN FIELDNAME RPAREN | ANY LPAREN FIELDNAME RPAREN ;
 group : NOT? LPAREN expression RPAREN ;
-existence : ( FIELD | STRINGVAL ) EXISTS ;
+existence : fields EXISTS ;
 expression : andStatement | orStatement | queryTerm ;
 andStatement : queryTerm (AND queryTerm)+ ;
 orStatement : queryTerm (OR queryTerm)+ ;
-comparison : FIELD operator ( NUMBER | STRINGVAL ) ;
-likeComparison : FIELD LIKE STRINGVAL ;
+comparison : fields operator ( NUMBER | STRINGVAL ) ;
+likeComparison : fields LIKE STRINGVAL ;
 operator : EQ | NE | GT | GE | LT | LE ;
 
 NOT : 'NOT' | 'not' ;
@@ -26,10 +27,12 @@ LIKE: L I K E;
 LPAREN : '(' ;
 RPAREN : ')' ;
 
+ALL : A L L ;
 AND : A N D ;
+ANY : A N Y ;
 OR  : O R ;
 
-FIELD     : [A-Za-z_] [A-Za-z0-9_.:/]* ;
+FIELDNAME     : [A-Za-z_*] [A-Za-z0-9_.:/*]* ;
 STRINGVAL : '"' ~["\r\n]* '"' ;
 NUMBER :  ('-')? [0-9]+ ('.' [0-9]*)?  ;
 
