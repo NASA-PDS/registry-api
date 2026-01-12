@@ -397,10 +397,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
           new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.matchMembers(lidvid);
         searchRequestBuilder.onlyCollections();
       } else if (productClass.isCollection()) {
-        searchRequestBuilder.matchMembersOfCollection(lidvid);
+        searchRequestBuilder.matchMembers(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
         throw new BadRequestException(
@@ -424,6 +424,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
+//    TODO: This functionality is currently deprecated and requires reimplementation or removal
+
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
@@ -433,7 +435,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
           new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.matchMembers(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
         throw new BadRequestException(
@@ -507,10 +509,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<PdsLidVid> parentIds;
       if (productClass.isCollection()) {
         parentIds =
-            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:ancestry");
       } else if (productClass.isBasicProduct()) {
         parentIds = resolveLidVidsFromProductField(lidvid,
-            "ops:Provenance/ops:parent_collection_identifier");
+            "ops:Provenance/ops:ancestry");
       } else {
         throw new BadRequestException(
             "productMembersOf endpoint is not valid for products with Product_Class '"
@@ -535,6 +537,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
+
+//    TODO: This functionality is currently deprecated and requires reimplementation or removal
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);

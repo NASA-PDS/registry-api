@@ -234,12 +234,8 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
     return this.matchField(PdsProductClasses.getPropertyName(), productClass.getValue());
   }
 
-  public RegistrySearchRequestBuilder matchMembersOfBundle(PdsLidVid identifier) {
-    return this.matchField("ops:Provenance/ops:parent_bundle_identifier", identifier);
-  }
-
-  public RegistrySearchRequestBuilder matchMembersOfCollection(PdsLidVid identifier) {
-    return this.matchField("ops:Provenance/ops:parent_collection_identifier", identifier);
+  public RegistrySearchRequestBuilder matchMembers(PdsLidVid identifier) {
+    return this.matchField("ops:Provenance/ops:ancestry", identifier);
   }
 
   public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
