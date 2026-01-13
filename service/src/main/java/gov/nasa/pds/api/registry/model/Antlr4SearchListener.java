@@ -37,9 +37,11 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   private static final Logger log = LoggerFactory.getLogger(Antlr4SearchListener.class);
 
+  private boolean isAnyWildcard = true;
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
   private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
+  private final ArrayList<String> fieldnames = new ArrayList<String>();
   private final ConnectionContext connectionContext;
   private final Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
   private final Deque<conjunctions> stackConjunction = new ArrayDeque<conjunctions>();
@@ -54,8 +56,49 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
 
   @Override
-  public void exitQuery(SearchParser.QueryContext ctx) {}
-
+  public void enterFields(SearchParser.FieldsContext ctx) {
+    this.fieldnames.clear();
+    this.isAnyWildcard = true;
+  }
+  
+  @Override
+  public void exitFields(SearchParser.FieldsContext ctx) {
+    String fieldname = "";
+    if (ctx.FIELDNAME() != null) {
+      fieldname = ctx.FIELDNAME().getText();
+    }
+    if (ctx.ALL() != null ) {
+      fieldname = ctx.ALL().getText();
+    }
+    if (ctx.ANY() != null) {
+      fieldname = ctx.ANY().getText();
+    }
+    if (fieldname.contains("*")) {
+      if (this.knownFieldNames.isEmpty()) {
+        try {
+          for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
+            this.knownFieldNames.add(property.getProperty());
+          }
+        } catch (OpenSearchException | IOException e) {
+          log.error("Could not load the mapping(s) from opensearch; meaning 'wildcarding' will not work", e);
+        }
+      }
+      String theKey = fieldname.replace(".", "\\.").replace("*", ".*");
+      Pattern regex = Pattern.compile(theKey);
+      for (String fn : this.knownFieldNames.stream()
+          .filter(s -> regex.matcher(s).matches())
+          .toList()) {
+        this.fieldnames.add(SearchUtil.jsonPropertyToOpenProperty(fn));
+      }
+      if (this.fieldnames.isEmpty()) {
+        throw new ParseCancellationException("Wildcarding request '" + fieldname + "' cannot match any field names in the LDD using regular expression " + theKey);
+      }
+    } else {
+      this.fieldnames.add(fieldname);
+    }
+    this.isAnyWildcard = ctx.ALL() == null && this.fieldnames.size() > 1; 
+  }
+  
   @Override
   public void enterGroup(SearchParser.GroupContext ctx) {
     log.debug("Enter Group");
@@ -111,13 +154,10 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
 
   @Override
-  public void enterComparison(SearchParser.ComparisonContext ctx) {}
-
-  @Override
   public void exitComparison(SearchParser.ComparisonContext ctx) {
     log.debug("Exit comparison");
-    final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
 
+    BoolQuery.Builder wild = new BoolQuery.Builder();
     String right;
     Query comparatorQuery = null;
 
@@ -132,111 +172,87 @@ public class Antlr4SearchListener extends SearchBaseListener {
           "A right component (literal) of a comparison is neither a number or a string. Number and String are the only types supported for literals.");
     }
 
-    if (this.operator == operation.eq || this.operator == operation.ne) {
+    for (String left : this.fieldnames) {
+      if (this.operator == operation.eq || this.operator == operation.ne) {
+        FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
+        MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
+        comparatorQuery = matchQueryBuilder.toQuery();
 
+        if (this.operator == operation.ne) {
+          comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
+        }
+      } else {
+        RangeQuery.Builder rangeQueryBuilder = new RangeQuery.Builder();
+        rangeQueryBuilder = rangeQueryBuilder.field(left);
 
-      FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
-
-      MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
-
-      comparatorQuery = matchQueryBuilder.toQuery();
-
-      if (this.operator == operation.ne) {
-        comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
+        if (this.operator == operation.ge)
+          rangeQueryBuilder.gte(JsonData.of(right));
+        else if (this.operator == operation.gt)
+          rangeQueryBuilder.gt(JsonData.of(right));
+        else if (this.operator == operation.le)
+          rangeQueryBuilder.lte(JsonData.of(right));
+        else if (this.operator == operation.lt)
+          rangeQueryBuilder.lt(JsonData.of(right));
+        else {
+          throw new ParseCancellationException("Operator " + this.operator.name()
+          + " is not supported. Supported comparison operators are eq, ne, gt, gte, lt, lte.");
+        }
+        comparatorQuery = rangeQueryBuilder.build().toQuery();
       }
-
-
-
-    } else {
-      RangeQuery.Builder rangeQueryBuilder = new RangeQuery.Builder();
-
-      rangeQueryBuilder = rangeQueryBuilder.field(left);
-
-      if (this.operator == operation.ge)
-        rangeQueryBuilder.gte(JsonData.of(right));
-      else if (this.operator == operation.gt)
-        rangeQueryBuilder.gt(JsonData.of(right));
-      else if (this.operator == operation.le)
-        rangeQueryBuilder.lte(JsonData.of(right));
-      else if (this.operator == operation.lt)
-        rangeQueryBuilder.lt(JsonData.of(right));
-      else {
-        throw new ParseCancellationException("Operator " + this.operator.name()
-            + " is not supported. Supported comparison operators are eq, ne, gt, gte, lt, lte.");
+      if (this.isAnyWildcard) {
+        wild.should(comparatorQuery);
+      } else {
+        wild.must(comparatorQuery);
       }
-
-      comparatorQuery = rangeQueryBuilder.build().toQuery();
-
     }
-
     if (this.conjunction == conjunctions.AND) {
-      this.queryBuilder.must(comparatorQuery);
+      this.queryBuilder.must(wild.build().toQuery());
     } else {
-      this.queryBuilder.should(comparatorQuery);
+      this.queryBuilder.should(wild.build().toQuery());
     }
 
   }
 
   @Override
   public void exitExistence(SearchParser.ExistenceContext ctx) {
-    ArrayList<Query> checks = new ArrayList<Query>();
-    final String fieldName = ctx.FIELD() == null ? "" : SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
-    final String regexp = ctx.STRINGVAL() == null ? "" : ctx.STRINGVAL().getText();
-    String theKey = "''";
-    
-    if (!fieldName.isBlank()) {
-      theKey = fieldName;
-      checks.add(new ExistsQuery.Builder().field(fieldName).build().toQuery());
-    } else if (!regexp.isBlank()) {
-      theKey = regexp.substring(1, regexp.length()-1);
-      if (this.knownFieldNames.isEmpty()) {
-        try {
-          for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
-            this.knownFieldNames.add(property.getProperty());
-          }
-        } catch (OpenSearchException | IOException e) {
-          log.error("Could not load the mapping(s) from opensearch; meaning 'exists' will not work", e);
-        }
+    BoolQuery.Builder wild = new BoolQuery.Builder();
+    for (String fieldName : this.fieldnames) {
+      if (this.isAnyWildcard) {
+        wild.should(new ExistsQuery.Builder().field(fieldName).build().toQuery());
+      } else {
+        wild.must(new ExistsQuery.Builder().field(fieldName).build().toQuery());
       }
-      Pattern regex = Pattern.compile(theKey);
-      for (String fn : this.knownFieldNames.stream()
-          .filter(s -> regex.matcher(s).matches())
-          .toList()) {
-        checks.add(new ExistsQuery.Builder().field(SearchUtil.jsonPropertyToOpenProperty(fn)).build().toQuery());
-      }
-    }
-    if (checks.isEmpty()) {
-      throw new ParseCancellationException("For existence testing, cannot match any field names to " + theKey);
     }
     if (this.conjunction == conjunctions.AND) {
-      this.queryBuilder.must(checks);
+      this.queryBuilder.must(wild.build().toQuery());
     } else {
-      this.queryBuilder.should(checks);
+      this.queryBuilder.should(wild.build().toQuery());
     }
   }
 
   @Override
-  public void enterLikeComparison(SearchParser.LikeComparisonContext ctx) {}
-
-  @Override
   public void exitLikeComparison(SearchParser.LikeComparisonContext ctx) {
     log.debug("Exit likeComparison");
-    final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
 
+    BoolQuery.Builder wild = new BoolQuery.Builder();
     String right = ctx.STRINGVAL().getText();
-    // remove quotes
-    right = right.replaceAll("^\"|\"$", "");
+    right = right.replaceAll("^\"|\"$", "");  // remove the quotes
 
-    SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
-        .query(right).fuzzyMaxExpansions(0).build();
-
-    Query query = simpleQueryString.toQuery();
-    log.debug("Exit Like comparison: left member is {} right member is {}", left, right);
-
+    for (String left : this.fieldnames) {
+      SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
+          .query(right).fuzzyMaxExpansions(0).build();
+      if (this.isAnyWildcard) {
+        wild.should(simpleQueryString.toQuery());
+      } else {
+        wild.must(simpleQueryString.toQuery());
+      }
+      log.debug("Exit Like comparison: left member is {} right member is {}", left, right);
+    }
+    
     if (this.conjunction == conjunctions.AND) {
-      this.queryBuilder.must(query);
+      this.queryBuilder.must(wild.build().toQuery());
     } else {
-      this.queryBuilder.should(query);
+      this.queryBuilder.should(wild.build().toQuery());
     }
 
   }
