@@ -161,7 +161,6 @@ public class Antlr4SearchListener extends SearchBaseListener {
     String right;
     Query comparatorQuery = null;
 
-
     if (ctx.NUMBER() != null) {
       right = ctx.NUMBER().getSymbol().getText();
     } else if (ctx.STRINGVAL() != null) {
@@ -171,7 +170,9 @@ public class Antlr4SearchListener extends SearchBaseListener {
       throw new ParseCancellationException(
           "A right component (literal) of a comparison is neither a number or a string. Number and String are the only types supported for literals.");
     }
-
+    if (this.isAnyWildcard) {
+      wild.minimumShouldMatch("1");
+    }
     for (String left : this.fieldnames) {
       if (this.operator == operation.eq || this.operator == operation.ne) {
         FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
@@ -216,6 +217,9 @@ public class Antlr4SearchListener extends SearchBaseListener {
   @Override
   public void exitExistence(SearchParser.ExistenceContext ctx) {
     BoolQuery.Builder wild = new BoolQuery.Builder();
+    if (this.isAnyWildcard) {
+      wild.minimumShouldMatch("1");
+    }
     for (String fieldName : this.fieldnames) {
       if (this.isAnyWildcard) {
         wild.should(new ExistsQuery.Builder().field(fieldName).build().toQuery());
@@ -238,6 +242,9 @@ public class Antlr4SearchListener extends SearchBaseListener {
     String right = ctx.STRINGVAL().getText();
     right = right.replaceAll("^\"|\"$", "");  // remove the quotes
 
+    if (this.isAnyWildcard) {
+      wild.minimumShouldMatch("1");
+    }
     for (String left : this.fieldnames) {
       SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
           .query(right).fuzzyMaxExpansions(0).build();
