@@ -73,7 +73,7 @@ jobs:
                 uses: NASA-PDS/roundup-action@stable
                 with:
                     assembly: unstable
-                    packages: openjdk17-jdk
+                    packages: openjdk25-jdk
                     maven-doc-phases: package
                 env:
                     central_portal_username: ${{secrets.CENTRAL_REPOSITORY_USERNAME}}
