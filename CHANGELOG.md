@@ -1,16 +1,18 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-01-06)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-01-22)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
 **Defects:**
 
+- API in production is unstable and returns 500 errors [\#716](https://github.com/NASA-PDS/registry-api/issues/716) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Inconsistent support for `application/vnd.nasa.pds.pds4+json` response format [\#705](https://github.com/NASA-PDS/registry-api/issues/705) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - API search results using "search-after" returns empty \[data\] block even though I can find the product by lidvid [\#677](https://github.com/NASA-PDS/registry-api/issues/677) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 **Other closed issues:**
 
+- B13.1 Registry + API [\#724](https://github.com/NASA-PDS/registry-api/issues/724)
 - Registry API Test Suite is failing [\#680](https://github.com/NASA-PDS/registry-api/issues/680) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Manage errors as recommended in the spring mvc framework [\#286](https://github.com/NASA-PDS/registry-api/issues/286)
 
