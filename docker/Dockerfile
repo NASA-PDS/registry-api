@@ -41,8 +41,8 @@
 # Normally we'd prefer Alpine Linux, but JDK 11 isn't available with it, so
 # we go with a slim Debian. Debian's good too.
 
-#FROM tomcat:9.0.58-jdk17-openjdk-slim
-FROM tomcat:10.1.0-jdk17-openjdk-slim
+FROM tomcat:jre25-temurin-noble
+
 
 # API JAR file
 # ------------
