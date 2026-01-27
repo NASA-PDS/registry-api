@@ -528,6 +528,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
                 throw new RuntimeException(e);
               }
             })
+            .distinct()
             .toList();
   }
 
