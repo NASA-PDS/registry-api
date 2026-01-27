@@ -41,7 +41,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
   private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
-  private final ArrayList<String> fieldnames = new ArrayList<String>();
+  private final ArrayList<String> fieldNames = new ArrayList<String>();
   private final ConnectionContext connectionContext;
   private final Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
   private final Deque<conjunctions> stackConjunction = new ArrayDeque<conjunctions>();
@@ -57,7 +57,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   @Override
   public void enterFields(SearchParser.FieldsContext ctx) {
-    this.fieldnames.clear();
+    this.fieldNames.clear();
     this.isAnyWildcard = true;
   }
   
@@ -88,15 +88,15 @@ public class Antlr4SearchListener extends SearchBaseListener {
       for (String fn : this.knownFieldNames.stream()
           .filter(s -> regex.matcher(s).matches())
           .toList()) {
-        this.fieldnames.add(SearchUtil.jsonPropertyToOpenProperty(fn));
+        this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fn));
       }
-      if (this.fieldnames.isEmpty()) {
+      if (this.fieldNames.isEmpty()) {
         throw new ParseCancellationException("Wildcarding request '" + fieldname + "' cannot match any field names in the LDD using regular expression " + theKey);
       }
     } else {
-      this.fieldnames.add(fieldname);
+      this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fieldname));
     }
-    this.isAnyWildcard = ctx.ALL() == null && this.fieldnames.size() > 1; 
+    this.isAnyWildcard = ctx.ALL() == null && this.fieldNames.size() > 1; 
   }
   
   @Override
@@ -173,7 +173,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
     if (this.isAnyWildcard) {
       wild.minimumShouldMatch("1");
     }
-    for (String left : this.fieldnames) {
+    for (String left : this.fieldNames) {
       if (this.operator == operation.eq || this.operator == operation.ne) {
         FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
         MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
@@ -220,7 +220,8 @@ public class Antlr4SearchListener extends SearchBaseListener {
     if (this.isAnyWildcard) {
       wild.minimumShouldMatch("1");
     }
-    for (String fieldName : this.fieldnames) {
+    for (String fieldName : this.fieldNames) {
+      log.error("************************* field name: " + fieldName);
       if (this.isAnyWildcard) {
         wild.should(new ExistsQuery.Builder().field(fieldName).build().toQuery());
       } else {
@@ -245,7 +246,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
     if (this.isAnyWildcard) {
       wild.minimumShouldMatch("1");
     }
-    for (String left : this.fieldnames) {
+    for (String left : this.fieldNames) {
       SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
           .query(right).fuzzyMaxExpansions(0).build();
       if (this.isAnyWildcard) {
