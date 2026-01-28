@@ -1,8 +1,14 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-01-26)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-01-28)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
+
+**Requirements:**
+
+- As a user, I want the exists operator to match OpenSearch's native behavior for all fields [\#712](https://github.com/NASA-PDS/registry-api/issues/712)
+- As a user, I want to search by a full/unique hierarchical path for a specific attribute [\#611](https://github.com/NASA-PDS/registry-api/issues/611)
+- As a user, I want to query for documents where a specific search field exists in the document [\#406](https://github.com/NASA-PDS/registry-api/issues/406)
 
 **Defects:**
 
