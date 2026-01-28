@@ -1,5 +1,6 @@
 package api.pds.nasa.gov.api_search_query_lexer;
 
+import java.util.ArrayList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -8,6 +9,7 @@ import gov.nasa.pds.api.registry.lexer.SearchListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser.AndStatementContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ComparisonContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ExpressionContext;
+import gov.nasa.pds.api.registry.lexer.SearchParser.FieldsContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.GroupContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.LikeComparisonContext;
 import gov.nasa.pds.api.registry.lexer.SearchParser.ExistenceContext;
@@ -18,8 +20,8 @@ import gov.nasa.pds.api.registry.lexer.SearchParser.QueryTermContext;
 
 public class MockedListener implements ParseTreeListener, SearchListener {
 
-
-  TerminalNode field = null, number = null, strval = null;
+  ArrayList<String> fields = new ArrayList<String>();
+  TerminalNode number = null, strval = null;
   boolean isNot = false;
 
   @Override
@@ -96,7 +98,6 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void enterComparison(ComparisonContext ctx) {
-    this.field = ctx.FIELD();
     this.number = ctx.NUMBER();
     this.strval = ctx.STRINGVAL();
   }
@@ -109,7 +110,6 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void enterLikeComparison(LikeComparisonContext ctx) {
-    this.field = ctx.FIELD();
     this.strval = ctx.STRINGVAL();
 
     String op = ctx.getChild(1).getText();
@@ -168,8 +168,30 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void exitExistence(ExistenceContext ctx) {
-    this.field = ctx.FIELD();
-    this.strval = ctx.STRINGVAL();
+  }
+
+  @Override
+  public void enterFields(FieldsContext ctx) {
+  }
+
+  @Override
+  public void exitFields(FieldsContext ctx) {
+    boolean any = ctx.ALL() == null;
+    String fieldname = "";
+    if (ctx.FIELDNAME() != null) {
+      fieldname = ctx.FIELDNAME().getText();
+    }
+    if (ctx.ALL() != null ) {
+      fieldname = ctx.ALL().getText();
+    }
+    if (ctx.ANY() != null) {
+      fieldname = ctx.ANY().getText();
+    }
+    if (fieldname.contains("*")) {
+      fields.add(fieldname.replace(".", "\\.").replace("*", ".*"));
+    } else {
+      fields.add(fieldname);
+    }
   }
 
 }
