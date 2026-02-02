@@ -8,17 +8,27 @@ import java.util.List;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.Reference;
 
+@Component
 public class SearchUtil {
 
   private static final Logger log = LoggerFactory.getLogger(SearchUtil.class);
 
+  private static String fnArch;
+  @Value("${registry.field.name.architecture}")
+  public void setFnArch(String fnArch) {
+    SearchUtil.fnArch = fnArch;
+  }
+
   static public String jsonPropertyToOpenProperty(String jsonProperty) {
-    return jsonProperty.replace(".", "/");
+    if ("flat".equalsIgnoreCase(SearchUtil.fnArch)) return jsonProperty.replace(".", "/");
+    return jsonProperty;
   }
 
   static public String[] jsonPropertyToOpenProperty(String[] jsonProperties) {
@@ -41,8 +51,8 @@ public class SearchUtil {
 
   static public String openPropertyToJsonProperty(String openProperty)
       throws UnsupportedSearchProperty {
-
-    return openProperty.replace('/', '.');
+    if ("flat".equalsIgnoreCase(SearchUtil.fnArch)) return openProperty.replace('/', '.');
+    return openProperty;
   }
 
   static private void addReference(ArrayList<Reference> to, String ID, URL baseURL) {
