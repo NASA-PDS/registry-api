@@ -27,7 +27,7 @@ public class SearchUtil {
   }
 
   static public String jsonPropertyToOpenProperty(String jsonProperty) {
-    if ("flat".equalsIgnoreCase(SearchUtil.fnArch)) return jsonProperty.replace(".", "/");
+    if (SearchUtil.fnArch == null || SearchUtil.fnArch.equalsIgnoreCase("flat")) return jsonProperty.replace(".", "/");
     return jsonProperty;
   }
 
@@ -51,7 +51,7 @@ public class SearchUtil {
 
   static public String openPropertyToJsonProperty(String openProperty)
       throws UnsupportedSearchProperty {
-    if ("flat".equalsIgnoreCase(SearchUtil.fnArch)) return openProperty.replace('/', '.');
+    if (SearchUtil.fnArch == null || SearchUtil.fnArch.equalsIgnoreCase("flat")) return openProperty.replace('/', '.');
     return openProperty;
   }
 
