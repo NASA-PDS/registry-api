@@ -505,8 +505,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     }
 
     return searchResponse.hits().hits().stream()
-            .map(hit -> (List<String>) hit.source().get(fieldName))
+            .map(hit -> hit.source().get(fieldName))
             .filter(Objects::nonNull)
+            // the following map() is necessary to support non-array fields like 'lidvid' by normalising them to multi-element collections
+            .map(el -> el instanceof Collection<?> ?  el : List.of(el))
+            .map(x -> (List<String>) x)
             .flatMap(Collection::stream)
             .flatMap(idString -> {
               try {
