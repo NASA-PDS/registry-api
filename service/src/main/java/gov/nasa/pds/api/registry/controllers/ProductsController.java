@@ -3,6 +3,8 @@ package gov.nasa.pds.api.registry.controllers;
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
+
 import gov.nasa.pds.api.base.ClassesApi;
 import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.api.registry.model.exceptions.*;
@@ -397,10 +399,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
           new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.matchMembers(lidvid);
         searchRequestBuilder.onlyCollections();
       } else if (productClass.isCollection()) {
-        searchRequestBuilder.matchMembersOfCollection(lidvid);
+        searchRequestBuilder.matchMembers(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
         throw new BadRequestException(
@@ -424,6 +426,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
 
+//    TODO: This functionality is currently deprecated and requires reimplementation or removal
+
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
@@ -433,7 +437,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
           new RegistrySearchRequestBuilder(this.connectionContext);
 
       if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembersOfBundle(lidvid);
+        searchRequestBuilder.matchMembers(lidvid);
         searchRequestBuilder.onlyBasicProducts();
       } else {
         throw new BadRequestException(
@@ -456,16 +460,30 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
    *
    * @param identifier the LID/LIDVID for which to retrieve documents
    * @param fieldName the name of the document _source property/field from which to extract results
-   * @return a deduplicated list of the aggregated property/field contents, converted to
-   *         PdsProductLidvids
+   * @return a list of the aggregated property/field contents, converted to PdsProductLidvids
    * @throws AcceptFormatNotSupportedException
    */
   private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier,
-      String fieldName)
-      throws OpenSearchException, IOException, NotFoundException, UnhandledException {
+                                                         String fieldName)
+          throws OpenSearchException, IOException, NotFoundException, UnhandledException {
+    return resolveLidVidsFromProductField(identifier, fieldName, 0);
+  }
+
+  /**
+   * Internal implementation with recursion depth protection against the unlikely event that a LID value ever turns up
+   * erroneously in the lidvid property.
+   */
+  private List<PdsLidVid> resolveLidVidsFromProductField(PdsProductIdentifier identifier,
+                                                         String fieldName, int recursionDepth)
+          throws OpenSearchException, IOException, NotFoundException, UnhandledException {
+
+    if (recursionDepth > 1) {
+      throw new UnhandledException(
+              "Recursion depth exceeded in resolveLidVidsFromProductField. Maximum depth is 1.");
+    }
 
     RegistrySearchRequestBuilder searchRequestBuilder =
-        new RegistrySearchRequestBuilder(this.connectionContext);
+            new RegistrySearchRequestBuilder(this.connectionContext);
 
     if (identifier.isLid()) {
       searchRequestBuilder.matchLid(identifier);
@@ -473,22 +491,48 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       searchRequestBuilder.matchLidvid(identifier);
     } else {
       throw new UnhandledException(
-          "PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
+              "PdsProductIdentifier identifier is neither LID nor LIDVID. This should never occur");
     }
 
     SearchRequest searchRequest =
-        searchRequestBuilder.matchLid(identifier).fieldsFromStrings(List.of(fieldName)).build();
+            searchRequestBuilder.matchLid(identifier).fieldsFromStrings(List.of(fieldName)).build();
 
     SearchResponse<HashMap> searchResponse =
-        this.openSearchClient.search(searchRequest, HashMap.class);
+            this.openSearchClient.search(searchRequest, HashMap.class);
 
     if (searchResponse.hits().total().value() == 0) {
       throw new NotFoundException("No product found with identifier " + identifier);
     }
 
     return searchResponse.hits().hits().stream()
-        .map(hit -> (List<String>) hit.source().get(fieldName)).filter(Objects::nonNull)
-        .flatMap(Collection::stream).map(PdsLidVid::fromString).toList();
+            .map(hit -> hit.source().get(fieldName))
+            .filter(Objects::nonNull)
+            // the following map() is necessary to support non-array fields like 'lidvid' by normalising them to multi-element collections
+            .map(el -> el instanceof Collection<?> ?  el : List.of(el))
+            .map(x -> (List<String>) x)
+            .flatMap(Collection::stream)
+            .flatMap(idString -> {
+              try {
+                PdsProductIdentifier parsedId = PdsProductIdentifier.fromString(idString);
+
+                if (parsedId != null && parsedId.isLidvid()) {
+                  return Stream.of((PdsLidVid) parsedId);
+                } else if (parsedId != null && parsedId.isLid()) {
+                  // Recurse to resolve LID to LIDVIDs
+                  return resolveLidVidsFromProductField(parsedId, "lidvid", recursionDepth + 1).stream();
+                } else {
+                  throw new UnhandledException(
+                          "Parsed identifier is neither LID nor LIDVID: " + idString);
+                }
+              } catch (NotFoundException e) {
+                log.warn("Product not found for identifier {}: {}", idString, e.getMessage());
+                return Stream.empty();
+              } catch (IOException | UnhandledException | OpenSearchException e) {
+                throw new RuntimeException(e);
+              }
+            })
+            .distinct()
+            .toList();
   }
 
 
@@ -507,10 +551,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<PdsLidVid> parentIds;
       if (productClass.isCollection()) {
         parentIds =
-            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:parent_bundle_identifier");
+            resolveLidVidsFromProductField(lidvid, "ops:Provenance/ops:ancestor_refs");
       } else if (productClass.isBasicProduct()) {
         parentIds = resolveLidVidsFromProductField(lidvid,
-            "ops:Provenance/ops:parent_collection_identifier");
+            "ops:Provenance/ops:ancestor_refs");
       } else {
         throw new BadRequestException(
             "productMembersOf endpoint is not valid for products with Product_Class '"
@@ -535,6 +579,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
+
+//    TODO: This functionality is currently deprecated and requires reimplementation or removal
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
