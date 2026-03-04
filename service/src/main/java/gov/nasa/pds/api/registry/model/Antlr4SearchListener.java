@@ -73,16 +73,17 @@ public class Antlr4SearchListener extends SearchBaseListener {
     if (ctx.ANY() != null) {
       fieldname = ctx.ANY().getText();
     }
-    if (fieldname.contains("*")) {
-      if (this.knownFieldNames.isEmpty()) {
-        try {
-          for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
-            this.knownFieldNames.add(property.getProperty());
-          }
-        } catch (OpenSearchException | IOException e) {
-          log.error("Could not load the mapping(s) from opensearch; meaning 'wildcarding' will not work", e);
+    if (this.knownFieldNames.isEmpty()) {
+      try {
+        for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
+          this.knownFieldNames.add(property.getProperty());
         }
+      } catch (OpenSearchException | IOException e) {
+        log.error("Could not load the mapping(s) from opensearch; meaning 'wildcarding' will not work", e);
+        throw new ParseCancellationException("Could not load the LDD field names from opensearch.");
       }
+    }
+    if (fieldname.contains("*")) {
       String theKey = fieldname.replace(".", "\\.").replace("*", ".*");
       Pattern regex = Pattern.compile(theKey);
       for (String fn : this.knownFieldNames.stream()
@@ -94,7 +95,12 @@ public class Antlr4SearchListener extends SearchBaseListener {
         throw new ParseCancellationException("Wildcarding request '" + fieldname + "' cannot match any field names in the LDD using regular expression " + theKey);
       }
     } else {
-      this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fieldname));
+      String fn = SearchUtil.jsonPropertyToOpenProperty(fieldname);
+      if (this.fieldNames.contains(fn) ) {
+        this.fieldNames.add(fn);
+      } else {
+        throw new ParseCancellationException("The request '" + fieldname + "' does match any field names in the LDD.");
+      }
     }
     this.isAnyWildcard = ctx.ALL() == null && this.fieldNames.size() > 1; 
   }
