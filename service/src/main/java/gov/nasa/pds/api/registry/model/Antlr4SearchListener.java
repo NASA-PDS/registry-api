@@ -8,7 +8,6 @@ import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.model.PropertiesListInner;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -80,7 +79,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
           this.knownFieldNames.add(property.getProperty());
         }
       } catch (OpenSearchException | IOException e) {
-        throw new UncheckedIOException("Could not load the mapping(s) from opensearch; meaning 'q=' with field names will not work", e);
+        throw new IllegalStateException("Could not load the mapping(s) from opensearch; meaning 'q=' with field names will not work", e);
       }
     }
     if (fieldname.contains("*")) {
