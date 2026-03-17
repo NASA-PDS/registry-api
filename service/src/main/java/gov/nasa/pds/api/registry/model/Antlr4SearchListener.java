@@ -80,7 +80,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
         }
       } catch (OpenSearchException | IOException e) {
         log.error("Could not load the mapping(s) from opensearch; meaning 'wildcarding' will not work", e);
-        throw new ParseCancellationException("Could not load the LDD field names from opensearch.");
+        throw new RuntimeException("Could not load the LDD field names from opensearch.", e);
       }
     }
     if (fieldname.contains("*")) {
