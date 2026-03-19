@@ -49,10 +49,6 @@ variable "ecs_task_execution_role" {
   description = "ECS task execution role"
 }
 
-variable "aws_fg_image" {
-  description = "AWS image name for Fargate"
-}
-
 variable "aws_s3_bucket_logs_id" {
   description = "AWS S3 bucket with the logs"
 }

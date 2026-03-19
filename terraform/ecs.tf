@@ -86,11 +86,7 @@ resource "aws_ecs_cluster" "pds-registry-api-ecs" {
   }
 }
 
-# Do we need individual dev/test/prod repositories?
-# I don't think we do, but then we need to use prod account instead of the dev account, would that work ?
-data "aws_ecr_repository" "pds-registry-api-service" {
-  name = "pds-registry-api-service"
-}
+# ECR repository is now defined in ecr.tf
 
 # Log groups hold logs from our app.
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
@@ -112,7 +108,7 @@ resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
   [
     {
       "name": "pds-${var.venue}-reg-container",
-      "image": "${var.aws_fg_image}",
+      "image": "${aws_ecr_repository.pds-registry-api-service.repository_url}:latest",
       "portMappings": [
         {
           "containerPort": 80

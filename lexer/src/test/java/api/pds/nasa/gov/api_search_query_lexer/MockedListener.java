@@ -168,10 +168,12 @@ public class MockedListener implements ParseTreeListener, SearchListener {
 
   @Override
   public void exitExistence(ExistenceContext ctx) {
+    // Nothing useful to do in this mocked version
   }
 
   @Override
   public void enterFields(FieldsContext ctx) {
+    // Nothing useful to do in this mocked version
   }
 
   @Override
