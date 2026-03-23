@@ -4,7 +4,7 @@ query : queryTerm EOF ;
 queryTerm : comparison | likeComparison | existence | group ;
 fields : FIELDNAME | ALL LPAREN FIELDNAME RPAREN | ANY LPAREN FIELDNAME RPAREN ;
 group : NOT? LPAREN expression RPAREN ;
-existence : fields EXISTS ;
+existence : EXISTS fields;
 expression : andStatement | orStatement | queryTerm ;
 andStatement : queryTerm (AND queryTerm)+ ;
 orStatement : queryTerm (OR queryTerm)+ ;
