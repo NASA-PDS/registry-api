@@ -92,20 +92,21 @@ jobs:
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |
-                    git clone --quiet https://github.com/NASA-PDS/registry.git
-                    cd registry/docker/certs
-                    ./generate-certs.sh
-                    cd ..
-                    docker image inspect nasapds/registry-api-service:latest >/dev/null
-                    docker compose \
+                  .github/workflows/integration_tests.sh --verify
+                    #git clone --quiet https://github.com/NASA-PDS/registry.git
+                    #cd registry/docker/certs
+                    #./generate-certs.sh
+                    #cd ..
+                    #docker image inspect nasapds/registry-api-service:latest >/dev/null
+                    #docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
                         up --quiet-pull --detach
                     # --abort-on-container-exit 
                     #echo "===== Docker logs ====="
                     #docker compose logs --no-color
-                    docker compose \
-                        --ansi never --profile int-registry-batch-loader --project-name registry \
-                        run --rm --no-TTY reg-api-integration-test-with-wait
+                    #docker compose \
+                    #    --ansi never --profile int-registry-batch-loader --project-name registry \
+                    #    run --rm --no-TTY reg-api-integration-test-with-wait
 
             -
                 name: Set up Python 3
