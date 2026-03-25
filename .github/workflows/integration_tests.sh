@@ -97,7 +97,7 @@ else
         status=$(double_check_logfile "$rdir"/integration_tests.rpt.txt)
     cd "$bdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
-    #[ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
+    [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
 fi
 
 echo "Status: $status"
