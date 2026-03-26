@@ -85,7 +85,17 @@ if [ "$1" == "--verify" ]; then
     cd "$tdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
     diff "$bdir"/last_integration_test.json "$tdir"/last_integration_test.json \
-        || status=failure    
+        || status=failure
+    if [ "$status" == "failure" ]
+    then
+        echo "If you are reading this in the github actions log, then it seems "
+        echo "this test cannot verify that this registry-api repository branch "
+        echo "has been successfully tested. The first step at resolving this "
+        echo "message is to run the script .github/workflows/integration_tests.sh "
+        echo "locally. If it is successful, then commit all changes and push. "
+        echo "Otherwise, fix any problems demonstrated from running the tests, "
+        echo "then commit and push all changes when the script is successful."
+    fi
 else
     rm -f "$bdir"/last_integration_test.json
     cd "$rdir" || exit 1
