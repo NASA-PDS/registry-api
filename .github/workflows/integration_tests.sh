@@ -14,6 +14,14 @@ build() {
     docker build --build-arg api_jar="$jar_file" -t nasapds/registry-api-service:latest -f docker/Dockerfile .
 }
 
+clean() {
+    docker compose \
+           --ansi never \
+           --profile int-registry-batch-loader \
+           --project-name registry \
+           down ${IT_CLEANSE}
+}    
+
 double_check_logfile() {
     grep -Eq "[[:space:]]*#[[:space:]]+failure[[:space:]]+detail" "$1" \
         && echo "failure" || echo "success"
@@ -38,18 +46,14 @@ run() {
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           up --quiet-pull --detach || return 5
+           up --detach --quiet-pull || return 5
     docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
            run --rm --no-TTY reg-api-integration-test-with-wait
     status=$?
-    docker compose \
-           --ansi never \
-           --profile int-registry-batch-loader \
-           --project-name registry \
-           down
+    clean
     # shellcheck disable=SC2086 # because we need to return an int
     return $status
 }
@@ -99,6 +103,7 @@ if [ "$1" == "--verify" ]; then
 else
     rm -f "$bdir"/last_integration_test.json
     cd "$rdir" || exit 1
+    clean || exit 2
     build || exit 3
     cd "$tdir"/registry || exit 1
     run 2>&1 | tee "$rdir"/integration_tests.rpt.txt \
