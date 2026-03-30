@@ -19,7 +19,7 @@ clean() {
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           down ${IT_CLEANSE}
+           down ${IT_CLEANSE:---rmi all}
 }    
 
 double_check_logfile() {
