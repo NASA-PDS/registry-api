@@ -95,10 +95,10 @@ public class Antlr4SearchListener extends SearchBaseListener {
       }
     } else {
       String fn = SearchUtil.jsonPropertyToOpenProperty(fieldname);
-      if (this.fieldNames.contains(fn) ) {
+      if (this.knownFieldNames.contains(fn)) {
         this.fieldNames.add(fn);
       } else {
-        throw new ParseCancellationException("The request '" + fieldname + "' does match any field names in the LDD.");
+        throw new ParseCancellationException("The request '" + fieldname + "' does not match any field names in the LDD.");
       }
     }
     this.isAnyWildcard = ctx.ALL() == null && this.fieldNames.size() > 1; 
