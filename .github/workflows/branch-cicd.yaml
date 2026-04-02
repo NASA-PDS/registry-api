@@ -89,6 +89,10 @@ jobs:
                     push: false
                     load: true
                     tags: nasapds/registry-api-service:latest
+
+            -
+              name: Install jq
+              uses: dcarbone/install-jq-action@v3
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |

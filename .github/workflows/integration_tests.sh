@@ -117,6 +117,8 @@ if [ "$1" == "--verify" ]; then
         echo "locally. If it is successful, then commit all changes and push. "
         echo "Otherwise, fix any problems demonstrated from running the tests, "
         echo "then commit and push all changes when the script is successful."
+    else
+        echo "Verified tests completed and successful"
     fi
 else
     rm -f "$bdir"/last_integration_test.json
