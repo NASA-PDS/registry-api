@@ -23,8 +23,10 @@ clean() {
 }    
 
 double_check_logfile() {
+    [ ! -s "$1" ] || return 1
     grep -Eq "[[:space:]]*#[[:space:]]+failure[[:space:]]+detail" "$1" \
-        && echo "failure" || echo "success"
+        && return 2
+    return 0
 }
 
 record() {
@@ -109,7 +111,8 @@ else
     run 2>&1 | tee "$rdir"/integration_tests.rpt.txt \
         && status=success || status=failure
     [ "$status" == "success" ] && \
-        status=$(double_check_logfile "$rdir"/integration_tests.rpt.txt)
+        status=$(double_check_logfile "$rdir"/integration_tests.rpt.txt \
+                     && echo "success" || echo "failure")
     cd "$bdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
     [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
