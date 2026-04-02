@@ -98,9 +98,14 @@ if [ "$1" == "--verify" ]; then
     then
         if [ "$files" == ".github/workflows/last_integration_test.json" ]
         then
-            if [ $(git diff -U0 $SHA1 $SHA2 | grep "^[+-]" | grep -v "^---" | grep -v "^+++" | grep -v "api_gitrev" | wc -l) == 0 ]
-            then
-                status=$(jq -r '.status' "$bdir"/last_integration_test.json)
+            if [ -s "$files" ]
+               then
+                   if [ $(git diff -U0 $SHA1 $SHA2 | grep "^[+-]" | grep -v "^---" | grep -v "^+++" | grep -v "api_gitrev" | wc -l) == 0 ]
+                   then
+                       status=$(jq -r '.status' "$bdir"/last_integration_test.json)
+                   fi
+            else
+                echo "Reporting file is empty"
             fi
         else
             echo "made more changes in the JSON script than just hte version"
