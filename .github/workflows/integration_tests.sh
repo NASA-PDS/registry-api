@@ -4,6 +4,7 @@
 #
 # docker - builds the registry api image, uses compose to run a host of services
 # git clones registry repo
+# jq - bash JSON tool
 # mvn - to build the jar file for the current source registry api source code
 # "shellcheck" - linter to keep this script clean
 #
@@ -87,11 +88,26 @@ reg_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
 
 if [ "$1" == "--verify" ]; then
     echo "Running in VERIFY mode..."
-    status=success
+    status=failure
     cd "$tdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
-    diff "$bdir"/last_integration_test.json "$tdir"/last_integration_test.json \
-        || status=failure
+    cd "$rdir"
+    test_key=$(jq -r '.api_gitrev' "$bdir"/last_integration_test.json | sed 's/+$//')
+    files=$(git diff --name-only -r "$test_key")
+    if [ $(echo "$files" | wc -l) -eq 1 ]
+    then
+        if [ "$files" == ".github/workflows/last_integration_test.json" ]
+        then
+            if [ $(git diff -U0 $SHA1 $SHA2 | grep "^[+-]" | grep -v "^---" | grep -v "^+++" | grep -v "api_gitrev" | wc -l) == 0 ]
+            then
+                status=$(jq -r '.status' "$bdir"/last_integration_test.json)
+            fi
+        else
+            echo "made more changes in the JSON script than just hte version"
+        fi
+    else
+        echo "commit contains edits beyond those of integration_tests.sh"
+    fi
     if [ "$status" == "failure" ]
     then
         echo "If you are reading this in the github actions log, then it seems "
