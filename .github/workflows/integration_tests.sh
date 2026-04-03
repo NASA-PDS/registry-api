@@ -148,8 +148,7 @@ else
     clean || exit 2
     build || exit 3
     cd "$tdir"/registry || exit 1
-    set -o pipefail
-    run 2>&1 | tee "$rdir"/integration_tests.rpt.txt \
+    ( set -o pipefail ; run 2>&1 | tee "$rdir"/integration_tests.rpt.txt ) \
         && status=success || status=failure
     [ "$status" == "success" ] && \
         status=$(double_check_logfile "$rdir"/integration_tests.rpt.txt \
