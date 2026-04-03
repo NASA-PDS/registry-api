@@ -150,10 +150,13 @@ else
     cd "$tdir"/registry || exit 1
     ( set -o pipefail ; run 2>&1 | tee "$rdir"/integration_tests.rpt.txt ) \
         && status=success || status=failure
-    [ "$status" == "success" ] && \
-        status=$(double_check_logfile "$rdir"/integration_tests.rpt.txt \
-                     && echo "success" || echo "failure") || \
-            echo "docker run did not return success"
+    if [ "$status" == "success" ]
+    then
+        double_check_logfile "$rdir"/integration_tests.rpt.txt \
+            || status=failure
+    else
+        echo "docker run did not return success"
+    fi
     cd "$bdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
     [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
