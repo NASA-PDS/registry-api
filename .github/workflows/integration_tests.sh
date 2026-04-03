@@ -138,13 +138,22 @@ if [ "$1" == "--verify" ]; then
     if [ "$status" == "failure" ]
     then
         echo
-        echo "If you are reading this in the github actions log, then it seems "
-        echo "this test cannot verify that this registry-api repository branch "
-        echo "has been successfully tested. The first step at resolving this "
-        echo "message is to run the script .github/workflows/integration_tests.sh "
-        echo "locally. If it is successful, then commit all changes and push. "
-        echo "Otherwise, fix any problems demonstrated from running the tests, "
+        echo "If you are reading this in the github actions log, then it seems"
+        echo "this test cannot verify that this registry-api repository branch"
+        echo "has been successfully tested. The first step at resolving this"
+        echo "message is to run the script .github/workflows/integration_tests.sh"
+        echo "locally. If it is successful, then commit all changes and push."
+        echo "Otherwise, fix any problems demonstrated from running the tests,"
         echo "then commit and push all changes when the script is successful."
+        echo "Once commited, run this script again to generate the single file"
+        echo "last_integration_test.json, commit it, and push it."
+        echo
+        echo "Note: there are timing tests that can cause temporary failures."
+        echo "      If those failures occur, just run the script again until"
+        echo "      a success is achived."
+        echo
+        echo "Note: to determine if the latest commit will pass, run the script"
+        echo "      with 'integration_tests.sh --verify'"
     else
         echo "Verified tests completed and successful"
     fi
