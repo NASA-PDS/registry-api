@@ -25,7 +25,7 @@ clean() {
 }    
 
 double_check_logfile() {
-    [ ! -s "$1" ] || return 1
+    [ -s "$1" ] || return 1
     grep -Eq "[[:space:]]*#[[:space:]]+failure[[:space:]]+detail" "$1" \
         && return 2
     return 0
@@ -102,6 +102,12 @@ if [ "$1" == "--verify" ]; then
         then
             if [ -s "$files" ]
             then
+                # do a one line diff from last test run
+                # look at additions or subtractions
+                # ignore --- and +++ because those are the filenames
+                # ignore the api_gitrev because that must be different
+                # count all other changes
+                # if there are none, then status is meaningful
                 # shellcheck disable=SC2126 # because simpler to understand
                 if [ $(git diff -U0 -r "$test_key" | \
                            grep "^[+-]" | \
@@ -134,7 +140,6 @@ if [ "$1" == "--verify" ]; then
         echo "Verified tests completed and successful"
     fi
 else
-    rm -f "$bdir"/last_integration_test.json
     cd "$rdir" || exit 1
     clean || exit 2
     build || exit 3
@@ -143,7 +148,8 @@ else
         && status=success || status=failure
     [ "$status" == "success" ] && \
         status=$(double_check_logfile "$rdir"/integration_tests.rpt.txt \
-                     && echo "success" || echo "failure")
+                     && echo "success" || echo "failure") || \
+            echo "docker run did not return success"
     cd "$bdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
     [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
