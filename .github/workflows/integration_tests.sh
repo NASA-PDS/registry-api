@@ -121,18 +121,23 @@ if [ "$1" == "--verify" ]; then
                            wc -l) == 0 ]
                 then
                     status=$(jq -r '.status' "$bdir"/last_integration_test.json)
+                    echo "Found the I&T test to be: ${status}"
+                else
+                    git diff -r "$test_key"
                 fi
             else
                 echo "Reporting file is empty"
             fi
         else
-            echo "made more changes in the JSON script than just hte version"
+            echo "the file changed was not for I&T: $files"
         fi
     else
-        echo "commit contains edits beyond those of integration_tests.sh"
+        echo "commit contains edits beyond those of last_integration_test.json"
+        echo "files changed: $files"
     fi
     if [ "$status" == "failure" ]
     then
+        echo
         echo "If you are reading this in the github actions log, then it seems "
         echo "this test cannot verify that this registry-api repository branch "
         echo "has been successfully tested. The first step at resolving this "
