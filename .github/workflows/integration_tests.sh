@@ -25,6 +25,7 @@ clean() {
 }    
 
 double_check_logfile() {
+    echo "everything looked ok, so double check postman logs"
     [ -s "$1" ] || { echo "$1 is an empty file"; return 1; }
     grep -Eq "[[:space:]]*#[[:space:]]+failure[[:space:]]+detail" "$1" \
         && { echo "postman log file reported failures" ; return 2; }
@@ -46,17 +47,20 @@ run() {
     ( cd certs || exit 1 ; ./generate-certs.sh )
     export REG_API_IMAGE=nasapds/registry-api-service:latest
     docker image inspect nasapds/registry-api-service:latest >/dev/null
+    echo "launch services"
     docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
            up --detach --quiet-pull || return 5
+    echo "launch tests"
     docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
            run --rm --no-TTY reg-api-integration-test-with-wait
     status=$?
+    echo "run status: ${status}"
     clean
     # shellcheck disable=SC2086 # because we need to return an int
     return $status
@@ -144,6 +148,7 @@ else
     clean || exit 2
     build || exit 3
     cd "$tdir"/registry || exit 1
+    set -o pipefail
     run 2>&1 | tee "$rdir"/integration_tests.rpt.txt \
         && status=success || status=failure
     [ "$status" == "success" ] && \
