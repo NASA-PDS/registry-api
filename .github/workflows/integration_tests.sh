@@ -16,6 +16,7 @@ build() {
 }
 
 clean() {
+    # shellcheck disable=SC2086 # for correct docker interpretation
     docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
@@ -91,19 +92,26 @@ if [ "$1" == "--verify" ]; then
     status=failure
     cd "$tdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
-    cd "$rdir"
+    cd "$rdir" || exit 1
     test_key=$(jq -r '.api_gitrev' "$bdir"/last_integration_test.json | sed 's/+$//')
     files=$(git diff --name-only -r "$test_key")
+    # shellcheck disable=SC2046 # because comparing integers
     if [ $(echo "$files" | wc -l) -eq 1 ]
     then
         if [ "$files" == ".github/workflows/last_integration_test.json" ]
         then
             if [ -s "$files" ]
-               then
-                   if [ $(git diff -U0 $SHA1 $SHA2 | grep "^[+-]" | grep -v "^---" | grep -v "^+++" | grep -v "api_gitrev" | wc -l) == 0 ]
-                   then
-                       status=$(jq -r '.status' "$bdir"/last_integration_test.json)
-                   fi
+            then
+                # shellcheck disable=SC2126 # because simpler to understand
+                if [ $(git diff -U0 -r "$test_key" | \
+                           grep "^[+-]" | \
+                           grep -v "^---" | \
+                           grep -v "^+++" | \
+                           grep -v "api_gitrev" | \
+                           wc -l) == 0 ]
+                then
+                    status=$(jq -r '.status' "$bdir"/last_integration_test.json)
+                fi
             else
                 echo "Reporting file is empty"
             fi
