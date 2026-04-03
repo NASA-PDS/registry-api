@@ -25,9 +25,9 @@ clean() {
 }    
 
 double_check_logfile() {
-    [ -s "$1" ] || return 1
+    [ -s "$1" ] || { echo "$1 is an empty file"; return 1; }
     grep -Eq "[[:space:]]*#[[:space:]]+failure[[:space:]]+detail" "$1" \
-        && return 2
+        && { echo "postman log file reported failures" ; return 2; }
     return 0
 }
 
