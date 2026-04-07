@@ -101,7 +101,7 @@ jobs:
                     docker compose logs --no-color
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
-                        up --quiet-pull  --abort-on-container-exit --detach 
+                        up --quiet-pull --detach 
                     # --abort-on-container-exit 
                     docker compose \
                         --ansi never --profile int-registry-batch-loader --project-name registry \
