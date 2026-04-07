@@ -425,34 +425,16 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   public ResponseEntity<Object> productMembersMembers(String identifier,
       List<String> userRequestedFields, Integer limit, String q, List<String> sort,
       List<String> searchAfter, List<String> facetFields, Integer facetLimit)
-      throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
-      BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
+      throws DeprecatedEndPointException {
 
-    // TODO: This functionality is currently deprecated and requires reimplementation or removal
 
-    try {
-      PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
-      PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
-      PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
+    throw new DeprecatedEndPointException(
+        "This endpoint is deprecated and does not work anymore. It will be removed in a future release.\n"
+            + "\n" + "Please call `/{id}/members` instead, as follows:\n"
+            + "              1. Get the collection members of the bundle {id} with a first call.\n"
+            + "              2. Use the collection ids found and get their products by calling the `/{coll_id}/members` for each.");
 
-      RegistrySearchRequestBuilder searchRequestBuilder =
-          new RegistrySearchRequestBuilder(this.connectionContext);
 
-      if (productClass.isBundle()) {
-        searchRequestBuilder.matchMembers(lidvid);
-        searchRequestBuilder.onlyBasicProducts();
-      } else {
-        throw new BadRequestException(
-            "productMembers endpoint is only valid for products with Product_Class '"
-                + PdsProductClasses.Product_Bundle + "' (got '" + productClass + "')");
-      }
-
-      return searchAndTransform(userRequestedFields, List.of(), limit, q, sort, searchAfter,
-          facetFields, facetLimit, searchRequestBuilder);
-
-    } catch (IOException | OpenSearchException e) {
-      throw new UnhandledException(e);
-    }
   }
 
   /**
@@ -586,8 +568,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws NotFoundException, UnhandledException, SortSearchAfterMismatchException,
       BadRequestException, AcceptFormatNotSupportedException, UnparsableQParamException {
-
-    // TODO: This functionality is currently deprecated and requires reimplementation or removal
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
