@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-04-02)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-04-07)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
@@ -12,7 +12,6 @@
 **Improvements:**
 
 - As a user, I want the exists operator to be prepended to the query [\#727](https://github.com/NASA-PDS/registry-api/issues/727)
-- Update registry API `/members/members` algorithm per deprecation of `parent_bundle_identifier` metadata non-aggregate products [\#699](https://github.com/NASA-PDS/registry-api/issues/699)
 
 **Defects:**
 
@@ -88,11 +87,8 @@
 - As a user, I want to apply an additional query filter \(`q=`\) to the `/classes/{class}` result set [\#493](https://github.com/NASA-PDS/registry-api/issues/493)
 - As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of/member-of` result set [\#492](https://github.com/NASA-PDS/registry-api/issues/492)
 - As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of` result set [\#491](https://github.com/NASA-PDS/registry-api/issues/491)
-- As a user, I want to apply an additional query filter \(`q=`\) to members of the members of an aggregate product \(`/products/{identifier}/members/members`\) [\#490](https://github.com/NASA-PDS/registry-api/issues/490)
 - As a user, by default, I want to search for the latest versions of all products on the `/classes/{class}` endpoint unless explicitly requested [\#488](https://github.com/NASA-PDS/registry-api/issues/488)
-- As a user, by default, I want to search only for the latest versions of all products on the `/products/{identifier}/member-of/member-of` endpoint [\#487](https://github.com/NASA-PDS/registry-api/issues/487)
 - As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/member-of` endpoint [\#486](https://github.com/NASA-PDS/registry-api/issues/486)
-- As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members/members` endpoint [\#485](https://github.com/NASA-PDS/registry-api/issues/485)
 - As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members` endpoint [\#484](https://github.com/NASA-PDS/registry-api/issues/484)
 - As a user, I want to filter the products by any available PDS4 property using a combination of comparison, logical, and precedence grouping operators [\#469](https://github.com/NASA-PDS/registry-api/issues/469)
 - As a user, I want to get all product versions associated to one lid [\#436](https://github.com/NASA-PDS/registry-api/issues/436)
