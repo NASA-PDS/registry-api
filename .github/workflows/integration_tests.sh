@@ -24,6 +24,17 @@ clean() {
            down ${IT_CLEANSE:---rmi all}
 }    
 
+deep_archive() {
+    cd "$tdir" || return 1
+    python3 -m venv "$tdir"/da
+    # shellcheck disable=SC1091 # cannot find dynamically created script
+    source "$tdir"/da/bin/activate
+    git clone --quiet https://github.com/NASA-PDS/deep-archive.git
+    cd deep-archive || return 1
+    pip install .
+    pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
+}
+
 double_check_logfile() {
     echo "everything looked ok, so double check postman logs"
     [ -s "$1" ] || { echo "$1 is an empty file"; return 1; }
@@ -54,12 +65,17 @@ run() {
            --project-name registry \
            up --detach --quiet-pull || return 5
     echo "launch tests"
-    docker compose \
+    if docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
            run --rm --no-TTY reg-api-integration-test-with-wait
-    status=$?
+    then
+        deep_archive
+        status=$?
+    else
+        status=1
+    fi
     echo "run status: ${status}"
     clean
     # shellcheck disable=SC2086 # because we need to return an int
@@ -83,14 +99,23 @@ bdir=$(dirname "$(realpath "$0")")
 rdir=$(realpath "$bdir/../..")
 cd "$rdir" || exit 1
 api_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
+branchname=$(git branch --show-current)
+branchname=${branchname/issue/api}
+branchname=${branchname/_/-}
 tdir=$(mktemp -d)
 # The EXIT pseudo-signal covers normal exits, errors, and interruptions (Ctrl+C)
 trap 'rm -rf "$tdir"' EXIT
+export tdir
 cd "$tdir" || exit 1
 git clone --quiet https://github.com/NASA-PDS/registry.git
 cd registry || exit 1
 reg_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
-
+if git show-ref --verify --quiet refs/remotes/origin/"$branchname"
+then
+    git switch "$branchname"
+fi
+echo "registry being used"
+git status
 if [ "$1" == "--verify" ]; then
     echo "Running in VERIFY mode..."
     status=failure
@@ -169,7 +194,7 @@ else
         double_check_logfile "$rdir"/integration_tests.rpt.txt \
             || status=failure
     else
-        echo "docker run did not return success"
+        echo "docker run or deep archive did not return success"
     fi
     cd "$bdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
