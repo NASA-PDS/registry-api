@@ -429,12 +429,16 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       List<String> searchAfter, List<String> facetFields, Integer facetLimit)
       throws DeprecatedEndPointException {
 
+    String message =
+        """
+            This endpoint is deprecated and does not work anymore. It will be removed in a future release.
 
-    throw new DeprecatedEndPointException(
-        "This endpoint is deprecated and does not work anymore. It will be removed in a future release.\n"
-            + "\n" + "Please call `/{id}/members` instead, as follows:\n"
-            + "              1. Get the collection members of the bundle {id} with a first call.\n"
-            + "              2. Use the collection ids found and get their products by calling the `/{coll_id}/members` for each.");
+            Please call `/{id}/members` instead, as follows:
+                          1. Get the collection members of the bundle {id} with a first call.
+                          2. Use the collection ids found and get their products by calling the `/{coll_id}/members` for each.
+            """;
+
+    throw new DeprecatedEndPointException(message);
 
 
   }
@@ -576,7 +580,6 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
       PdsProductClasses productClass = resolveProductClass(pdsIdentifier);
       PdsLidVid lidvid = resolveIdentifierToLidvid(pdsIdentifier);
 
-      Stream<PdsLidVid> parentIdStream;
       List<PdsLidVid> greatParentIds;
       if (productClass.isBasicProduct()) {
 
