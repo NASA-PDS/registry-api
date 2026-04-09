@@ -558,7 +558,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
   private Stream<PdsLidVid> safeResolveLidVidsFromAncestor(PdsLidVid obj) {
     try {
       return resolveLidVidsFromProductField(obj, OPS_PROVENANCE_OPS_ANCESTOR_REFS).stream();
-    } catch (Exception e) {
+    } catch (OpenSearchException | IOException | NotFoundException | UnhandledException e) {
       throw new RuntimeException(e);
     }
   }
