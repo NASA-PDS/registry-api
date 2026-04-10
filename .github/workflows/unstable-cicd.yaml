@@ -119,7 +119,7 @@ jobs:
                     platforms: linux/amd64,linux/arm64
                     push: true
                     tags: | 
-                        ghcr.io/${{LOWER_GHCR_REPO}}:develop
+                        ghcr.io/${{env.LOWER_GHCR_REPO}}:develop
                         ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
