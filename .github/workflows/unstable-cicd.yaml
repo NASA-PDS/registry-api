@@ -117,11 +117,13 @@ jobs:
             -
                 name: Tag Docker image for GHCR
                 run: |
-                    docker tag ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop ghcr.io/${{ lower(github.repository) }}:develop
+                    REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+                    docker tag ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop ghcr.io/${REPO_LOWER}:develop
             -
                 name: Push Docker image
                 run: |
-                    docker push ghcr.io/${{ lower(github.repository) }}:develop
+                    REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+                    docker push ghcr.io/${REPO_LOWER}:develop
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |
