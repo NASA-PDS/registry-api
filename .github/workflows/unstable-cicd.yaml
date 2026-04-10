@@ -47,8 +47,6 @@ jobs:
         name: 🧩 Unstable Assembly
         runs-on: ubuntu-latest
         if: github.actor != 'pdsen-ci'
-        env:
-            LOWER_GHCR_REPO: $(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
         steps:
             -
                 name: 💳 Checkout
@@ -109,6 +107,9 @@ jobs:
                 with:
                     username: ${{secrets.DOCKERHUB_USERNAME}}
                     password: ${{secrets.DOCKERHUB_TOKEN}}
+            -
+                name: Set lowercase repo name
+                run: echo "LOWER_GHCR_REPO=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
             -
                 name: 🧱 Image Construction and Publication
                 uses: docker/build-push-action@v7
