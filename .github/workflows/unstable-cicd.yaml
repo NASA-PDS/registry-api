@@ -107,6 +107,21 @@ jobs:
                     platforms: linux/amd64,linux/arm64
                     push: true
                     tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop
+            # also push the image to GHCR to synchronize with AWS ECR
+            # we don't pull from docker hub as the AWS Pull Through Cache requires authentication
+            # and don't have an organization account to manage read-only logins for the cache
+            -
+                name: Log in to GHCR
+                run: |
+                    echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            -
+                name: Build Docker image
+                run: |
+                    docker build -t ghcr.io/${{ github.repository }}:latest .
+            -
+                name: Push Docker image
+                run: |
+                    docker push ghcr.io/${{ github.repository }}:latest
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |
