@@ -106,6 +106,7 @@ jobs:
                     build-args: api_jar=${{steps.jarrer.outputs.jar_file}}
                     platforms: linux/amd64,linux/arm64
                     push: true
+                    load: true
                     tags: ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop
             # also push the image to GHCR to synchronize with AWS ECR
             # we don't pull from docker hub as the AWS Pull Through Cache requires authentication
