@@ -96,10 +96,11 @@ jobs:
             # we want to publish the docker image ""locally" to GHCR as the AWS Pull Through Cache requires authentication
             # and we don't have an organization account to manage read-only logins for the cache
             -
-                name: Log in to GHCR
-                run: |
-                    echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
+                name: 💳 GHCR Identification
+                uses: docker/login-action@v4
+                with:
+                    username: ${{github.actor}}
+                    password: ${{secrets.GITHUB_TOKEN}}
             -
                 name: 🧱 Image Construction and Publication
                 uses: docker/build-push-action@v7
@@ -116,7 +117,7 @@ jobs:
                 uses: docker/login-action@v4
                 with:
                     username: ${{secrets.DOCKERHUB_USERNAME}}
-                    password: ${{secrets.DOCKERHUB_TOKEN}}-
+                    password: ${{secrets.DOCKERHUB_TOKEN}}
             -
                 name: Tag Docker image for Docker hub
                 run: |
