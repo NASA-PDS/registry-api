@@ -109,13 +109,13 @@ export tdir
 cd "$tdir" || exit 1
 git clone --quiet https://github.com/NASA-PDS/registry.git
 cd registry || exit 1
-reg_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
 if git show-ref --verify --quiet refs/remotes/origin/"$branchname"
 then
     git switch "$branchname"
 fi
 echo "registry being used"
 git status
+reg_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
 if [ "$1" == "--verify" ]; then
     echo "Running in VERIFY mode..."
     status=failure
