@@ -115,13 +115,13 @@ jobs:
                 run: |
                     echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             -
-                name: Build Docker image
+                name: Tag Docker image for GHCR
                 run: |
-                    docker build -t ghcr.io/${{ github.repository }}:latest .
+                    docker tag ${{secrets.DOCKERHUB_USERNAME}}/registry-api-service:develop ghcr.io/${{ lower(github.repository) }}:develop
             -
                 name: Push Docker image
                 run: |
-                    docker push ghcr.io/${{ github.repository }}:latest
+                    docker push ghcr.io/${{ lower(github.repository) }}:develop
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |
