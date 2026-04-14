@@ -321,6 +321,14 @@ paths:
         - 2. product references
       summary: |
         returns all of the members of the members of the given lid/lidvid
+      deprecated: true
+      description: |
+              ⚠️ This endpoint is deprecated and does not work anymore. It will be removed in a future release.\n\n
+
+              Please call `/{id}/members` instead, as follows:\n
+              1. Get the collection members of the bundle {id} with a first call.\n
+              2. Use the collection ids found and get their products by calling the `/{coll_id}/members` for each.\n
+
       operationId: product-members-members
       responses:
         '200':

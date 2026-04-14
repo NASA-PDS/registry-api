@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-03-19)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-04-14)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
@@ -11,10 +11,13 @@
 
 **Improvements:**
 
+- As a user, I want the exists operator to be prepended to the query [\#727](https://github.com/NASA-PDS/registry-api/issues/727)
 - Update registry API `/members/members` algorithm per deprecation of `parent_bundle_identifier` metadata non-aggregate products [\#699](https://github.com/NASA-PDS/registry-api/issues/699)
 
 **Defects:**
 
+- Investigate and fix skipped `product/{id}/member*` integration tests [\#748](https://github.com/NASA-PDS/registry-api/issues/748) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- A query to pds.nasa.gov does not respond the same as a query to pds.mcp.nasa.gov [\#742](https://github.com/NASA-PDS/registry-api/issues/742) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - API in production is unstable and returns 500 errors [\#716](https://github.com/NASA-PDS/registry-api/issues/716) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Inconsistent support for `application/vnd.nasa.pds.pds4+json` response format [\#705](https://github.com/NASA-PDS/registry-api/issues/705) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - API search results using "search-after" returns empty \[data\] block even though I can find the product by lidvid [\#677](https://github.com/NASA-PDS/registry-api/issues/677) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -86,11 +89,8 @@
 - As a user, I want to apply an additional query filter \(`q=`\) to the `/classes/{class}` result set [\#493](https://github.com/NASA-PDS/registry-api/issues/493)
 - As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of/member-of` result set [\#492](https://github.com/NASA-PDS/registry-api/issues/492)
 - As a user, I want to apply an additional query filter \(`q=`\) to the `/products/{identifier}/member-of` result set [\#491](https://github.com/NASA-PDS/registry-api/issues/491)
-- As a user, I want to apply an additional query filter \(`q=`\) to members of the members of an aggregate product \(`/products/{identifier}/members/members`\) [\#490](https://github.com/NASA-PDS/registry-api/issues/490)
 - As a user, by default, I want to search for the latest versions of all products on the `/classes/{class}` endpoint unless explicitly requested [\#488](https://github.com/NASA-PDS/registry-api/issues/488)
-- As a user, by default, I want to search only for the latest versions of all products on the `/products/{identifier}/member-of/member-of` endpoint [\#487](https://github.com/NASA-PDS/registry-api/issues/487)
 - As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/member-of` endpoint [\#486](https://github.com/NASA-PDS/registry-api/issues/486)
-- As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members/members` endpoint [\#485](https://github.com/NASA-PDS/registry-api/issues/485)
 - As a user, by default, I want to search for only the latest versions of all products on the `/products/{identifier}/members` endpoint [\#484](https://github.com/NASA-PDS/registry-api/issues/484)
 - As a user, I want to filter the products by any available PDS4 property using a combination of comparison, logical, and precedence grouping operators [\#469](https://github.com/NASA-PDS/registry-api/issues/469)
 - As a user, I want to get all product versions associated to one lid [\#436](https://github.com/NASA-PDS/registry-api/issues/436)

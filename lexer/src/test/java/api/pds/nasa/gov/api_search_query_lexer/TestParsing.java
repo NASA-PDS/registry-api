@@ -119,7 +119,7 @@ public class TestParsing {
 
   @Test
   void testFieldExistence() {
-    String queryString = "apple exists";
+    String queryString = "exists apple";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
@@ -138,7 +138,7 @@ public class TestParsing {
 
   @Test
   void testParenFieldExistence() {
-    String queryString = "(apple exists)";
+    String queryString = "(exists apple)";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
@@ -156,7 +156,7 @@ public class TestParsing {
 
   @Test
   void testWildExistence() {
-    String queryString = "*.apple exists";
+    String queryString = "exists *.apple";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
@@ -175,7 +175,7 @@ public class TestParsing {
 
   @Test
   void testParenWildExistence() {
-    String queryString = "(*apple exists)";
+    String queryString = "(exists *apple)";
     CodePointCharStream input = CharStreams.fromString(queryString);
     SearchLexer lex = new SearchLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lex);
