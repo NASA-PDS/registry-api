@@ -88,7 +88,7 @@ jobs:
                     build-args: api_jar=${{steps.jarrer.outputs.jar_file}}
                     push: false
                     load: true
-                    tags: nasapds/registry-api-service:latest
+                    tags: nasapds/registry-api-service:develop
             -
                 name: ∫ Integration tests … hold onto your hats, pardners
                 run: |
@@ -96,15 +96,17 @@ jobs:
                     cd registry/docker/certs
                     ./generate-certs.sh
                     cd ..
-                    docker image inspect nasapds/registry-api-service:latest >/dev/null
+                    docker image inspect nasapds/registry-api-service:develop >/dev/null
+
+                    export COMPOSE_PROJECT_NAME=registry
+                    export REG_API_IMAGE=nasapds/registry-api-service:develop
                     docker compose \
-                        --ansi never --profile int-registry-batch-loader --project-name registry \
-                        up --quiet-pull --detach
-                    # --abort-on-container-exit 
-                    #echo "===== Docker logs ====="
-                    #docker compose logs --no-color
+                        --ansi never --profile int-registry-batch-loader --project-name ${COMPOSE_PROJECT_NAME} \
+                        up --quiet-pull --detach 
+                    echo "===== Docker logs ====="
+                    docker compose logs --no-color                    
                     docker compose \
-                        --ansi never --profile int-registry-batch-loader --project-name registry \
+                        --ansi never --profile int-registry-batch-loader --project-name ${COMPOSE_PROJECT_NAME} \
                         run --rm --no-TTY reg-api-integration-test-with-wait
 
             -

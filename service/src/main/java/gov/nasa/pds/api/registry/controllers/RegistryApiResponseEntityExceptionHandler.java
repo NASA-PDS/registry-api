@@ -92,5 +92,10 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
     return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(value = {DeprecatedEndPointException.class})
+  public ResponseEntity<Object> deprecatedEndPoint(DeprecatedEndPointException ex,
+      WebRequest request) {
+    return genericExceptionHandler(ex, request, "", HttpStatus.GONE);
+  }
 
 }
