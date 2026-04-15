@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-04-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-04-15)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
@@ -17,6 +17,8 @@
 **Defects:**
 
 - Investigate and fix skipped `product/{id}/member*` integration tests [\#748](https://github.com/NASA-PDS/registry-api/issues/748) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- Integration tests in unstable build suite do not pass when run locally [\#745](https://github.com/NASA-PDS/registry-api/issues/745) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+- Unstable build does not complete on develop branch due to GitHub Actions runner timeout [\#744](https://github.com/NASA-PDS/registry-api/issues/744) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - A query to pds.nasa.gov does not respond the same as a query to pds.mcp.nasa.gov [\#742](https://github.com/NASA-PDS/registry-api/issues/742) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - API in production is unstable and returns 500 errors [\#716](https://github.com/NASA-PDS/registry-api/issues/716) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Inconsistent support for `application/vnd.nasa.pds.pds4+json` response format [\#705](https://github.com/NASA-PDS/registry-api/issues/705) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
