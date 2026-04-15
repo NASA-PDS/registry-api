@@ -87,3 +87,6 @@ application-*.properties
 
 # macOS specific stuff
 .DS_Store
+
+# reports to help separate testing from actions due to limited resources
+*.rpt.txt
