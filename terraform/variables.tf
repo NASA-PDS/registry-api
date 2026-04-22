@@ -49,7 +49,7 @@ variable "ecs_task_execution_role" {
   description = "ECS task execution role"
 }
 
-variable "aws_fg_image" {
+variable "registry_api_docker_image" {
   description = "AWS image name for Fargate"
 }
 
@@ -69,4 +69,34 @@ variable "aws_fg_ram_units" {
 
 variable "aws_acm_certificate_arn" {
   description = "ACM SSL Certificate for the load balancer"
+}
+
+variable "tenant" {
+  description = "Tenant identifier (e.g., en, ge, stac)"
+  default     = "en"
+}
+
+variable "venue" {
+  type        = string
+  description = "Deployment venue/environment identifier (e.g., pds-cds-dev, pds-cds-prod)"
+}
+
+variable "cicd"  {
+  description = "CICD identifier tag value (e.g., iac, jenkins, github-actions)"
+  type        = string
+  default     = "iac"
+}
+
+# Component Configuration
+variable "component_name" {
+  type        = string
+  description = "Component/repository name used for SSM parameter prefixes"
+  default     = "registry"
+}
+
+
+variable "managedby"  {
+    description = "Tag value for owner managing the resource (E.g. for PDS Team we have PDS Team Email Distro)"
+    type        = string
+    default     = "nasa-pds/pds-cds-infra"
 }
