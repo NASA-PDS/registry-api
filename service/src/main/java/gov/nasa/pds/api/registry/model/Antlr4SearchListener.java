@@ -24,6 +24,7 @@ import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.RangeQuery;
 import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery;
+import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
 
 
 public class Antlr4SearchListener extends SearchBaseListener {
@@ -179,9 +180,12 @@ public class Antlr4SearchListener extends SearchBaseListener {
     }
     for (String left : this.fieldNames) {
       if (this.operator == operation.eq || this.operator == operation.ne) {
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
         FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
         MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
-        comparatorQuery = matchQueryBuilder.toQuery();
+        TermQuery termQueryBulidler = new TermQuery.Builder().field(left).value(fieldValue).build();
+        boolQueryBuilder.should(matchQueryBuilder.toQuery(), termQueryBulidler.toQuery());
+        comparatorQuery = boolQueryBuilder.build().toQuery();
 
         if (this.operator == operation.ne) {
           comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
@@ -215,7 +219,6 @@ public class Antlr4SearchListener extends SearchBaseListener {
     } else {
       this.queryBuilder.should(wild.build().toQuery());
     }
-
   }
 
   @Override
@@ -225,7 +228,6 @@ public class Antlr4SearchListener extends SearchBaseListener {
       wild.minimumShouldMatch("1");
     }
     for (String fieldName : this.fieldNames) {
-      log.error("************************* field name: " + fieldName);
       if (this.isAnyWildcard) {
         wild.should(new ExistsQuery.Builder().field(fieldName).build().toQuery());
       } else {
