@@ -1,12 +1,16 @@
 package gov.nasa.pds.api.registry;
 
 import java.lang.IllegalArgumentException;
+import org.opensearch.spring.boot.autoconfigure.OpenSearchRestHighLevelClientAutoConfiguration;
+import org.opensearch.spring.boot.autoconfigure.data.OpenSearchDataAutoConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,13 +21,26 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 // add other resolver endpoints
 
 @SpringBootApplication(exclude = {
-    org.opensearch.spring.boot.autoconfigure.OpenSearchRestHighLevelClientAutoConfiguration.class
+    // 1. Prevents the 'elasticsearchTemplate' creation error you are seeing
+    ElasticsearchDataAutoConfiguration.class,
+    // 2. Prevents conflict with OpenSearch repositories
+    ElasticsearchRepositoriesAutoConfiguration.class,
+    // 3. Resolves the 'opensearchClient' name collision
+    OpenSearchRestHighLevelClientAutoConfiguration.class,
+    // 4. Prevents the elasticsearchTemplate alias conflict in 2.x
+    OpenSearchDataAutoConfiguration.class 
+
 })
 @OpenAPIDefinition
 @EnableScheduling
-@ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration",
-    "gov.nasa.pds.api.registry.controllers", "gov.nasa.pds.api.registry.model",
-    "gov.nasa.pds.api.registry.search", "gov.nasa.pds.api.registry.util", "javax.servlet.http"})
+@ComponentScan(basePackages = {
+    "gov.nasa.pds.api.registry.configuration",
+    "gov.nasa.pds.api.registry.controllers",
+    "gov.nasa.pds.api.registry.model",
+    "gov.nasa.pds.api.registry.search",
+    "gov.nasa.pds.api.registry.util"
+    // jakarta.servlet.http is loaded and configured automatically with springboot 3
+    })
 public class SpringBootMain implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootMain.class);
