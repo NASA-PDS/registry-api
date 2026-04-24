@@ -7,11 +7,13 @@ import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.model.PropertiesListInner;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -50,9 +52,16 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   private operation operator = null;
 
-  public Antlr4SearchListener(ConnectionContext connectionContext) {
+  public Antlr4SearchListener(@NotNull ConnectionContext connectionContext) {
     super();
     this.connectionContext = connectionContext;
+  }
+  
+  // for testing purposes only
+  public Antlr4SearchListener(List<String> knownFieldNames) {
+    super();
+    this.connectionContext = null;
+    this.knownFieldNames.addAll(knownFieldNames);
   }
 
 

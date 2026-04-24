@@ -20,7 +20,7 @@ class ResponseTransformerRegistryTest {
 
     String format = "text/html";
     String expectedFormatterClassName =
-        "gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject";
+        "gov.nasa.pds.api.registry.model.transformers.PdsProductTransformer";
     String foundFormatterClassName;
 
     try {
@@ -58,7 +58,7 @@ class ResponseTransformerRegistryTest {
 
     String format = "text/ms+word,text/html";
     String expectedFormatterClassName =
-        "gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject";
+        "gov.nasa.pds.api.registry.model.transformers.PdsProductTransformer";
     String foundFormatterClassName;
 
     try {
@@ -80,7 +80,7 @@ class ResponseTransformerRegistryTest {
 
     String format = "text/ms+word,text/html ,anything/something";
     String expectedFormatterClassName =
-        "gov.nasa.pds.api.registry.model.api_responses.PdsProductBusinessObject";
+        "gov.nasa.pds.api.registry.model.transformers.PdsProductTransformer";
     String foundFormatterClassName;
 
     try {
