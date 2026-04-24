@@ -16,7 +16,9 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 // add archive status filter
 // add other resolver endpoints
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+    org.opensearch.spring.boot.autoconfigure.OpenSearchRestHighLevelClientAutoConfiguration.class
+})
 @OpenAPIDefinition
 @EnableScheduling
 @ComponentScan(basePackages = {"gov.nasa.pds.api.registry.configuration",
