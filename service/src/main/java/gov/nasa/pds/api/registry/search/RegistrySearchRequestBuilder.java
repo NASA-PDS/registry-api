@@ -300,7 +300,9 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
      * need to be handled specfically. Method stringValue() implies yes
      * FieldValue.Builder().stringValue(fieldValue).build()); }
      */
-    this.searchAfter(searchAfterValues);
+    this.searchAfter(searchAfterValues.stream()
+        .map(FieldValue::of)
+        .toList());
 
 
     return this;

@@ -62,7 +62,7 @@ public class HitIterator implements Iterable<Map<String, Object>>, Iterator<Map<
   @Override
   public boolean hasNext() {
     return this.currentBatch == null ? false
-        : (this.at + this.page * this.size) < this.currentBatch.getTotalHits().value;
+        : (this.at + this.page * this.size) < this.currentBatch.getTotalHits().value();
   }
 
   @Override
