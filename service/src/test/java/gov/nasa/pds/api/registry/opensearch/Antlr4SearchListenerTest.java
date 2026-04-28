@@ -63,8 +63,7 @@ class Antlr4SearchListenerTest {
     ParseTree tree = par.query();
     // Walk it and attach our listener
     ParseTreeWalker walker = new ParseTreeWalker();
-    Antlr4SearchListener listener = this.listener;
-    walker.walk(listener, tree);
+    walker.walk(this.listener, tree);
 
     // System.out.println ("query string: " + query);
     // System.out.println("query tree: " + tree.toStringTree(par));
@@ -81,10 +80,21 @@ class Antlr4SearchListenerTest {
     Assertions.assertEquals(1, query.must().size());
     Query matchQuery = (Query) query.must().get(0);
     Assertions.assertEquals(Query.Kind.Bool, matchQuery._kind());
-    // Assertions.assertEquals(Query.Kind.Match, matchQuery._kind());
-    // Assertions.assertEquals((matchQuery).field(), "pds:Time_Coordinates/pds:stop_date_time");
-
-
+    query = matchQuery.bool();
+    Assertions.assertEquals(1, query.must().size());
+    matchQuery = (Query) query.must().get(0);
+    Assertions.assertEquals(Query.Kind.Bool, matchQuery._kind());
+    query = matchQuery.bool();
+    boolean match = false;
+    boolean term = false;
+    Assertions.assertEquals(2, query.should().size());
+    for (int i = 0 ; i < 2 ; i++) {
+      matchQuery = (Query) query.should().get(i);
+      match = match || Query.Kind.Match == matchQuery._kind();
+      term = term  || Query.Kind.Term == matchQuery._kind();
+    }
+    Assertions.assertTrue(match);
+    Assertions.assertTrue(term);
   }
 
 

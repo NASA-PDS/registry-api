@@ -45,13 +45,13 @@
   <name>Registry API Service</name>
 
   <properties>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Keep your base boot version -->
-    <spring-boot-version>3.2.12</spring-boot-version>
+    <spring-boot-version>3.5.12</spring-boot-version>
     <!-- Explicitly aligning Framework to fix the checkFlag error -->
-    <spring-framework.version>6.1.14</spring-framework.version>
-    <jackson-version>2.17.2</jackson-version>
+    <spring-framework.version>6.2.14</spring-framework.version>
+    <jackson-version>2.19.1</jackson-version>
     <awssdk-version>2.31.54</awssdk-version>
   </properties>
 
@@ -324,13 +324,12 @@
           <imageName>nasapds/registry-api-service</imageName>
           <image>
             <env>
-              <BP_JVM_VERSION>17</BP_JVM_VERSION>
+              <BP_JVM_VERSION>21</BP_JVM_VERSION>
               <BPE_APPEND_JAVA_TOOL_OPTIONS>-XX:MaxDirectMemorySize=1G</BPE_APPEND_JAVA_TOOL_OPTIONS>
             </env>
           </image>
         </configuration>
       </plugin>
-      <!-- Other plugins remain the same -->
     </plugins>
   </build>
 </project>
