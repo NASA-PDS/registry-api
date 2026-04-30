@@ -3,11 +3,6 @@ variable "node_name_abbr" {
   default="en"
 }
 
-variable "venue" {
-  description = "Deployment venue (prod, test, dev)"
-  default = "delta"
-}
-
 variable "aws_region" {
   description = "AWS Region"
   default = "us-west-2"
@@ -19,7 +14,7 @@ variable "spring_boot_args" {
 
 variable "aws_profile" {
   description = "AWS profile"
-  default = "default"
+  default = ""
 }
 
 variable "aws_fg_vpc" {
@@ -71,32 +66,17 @@ variable "aws_acm_certificate_arn" {
   description = "ACM SSL Certificate for the load balancer"
 }
 
-variable "tenant" {
-  description = "Tenant identifier (e.g., en, ge, stac)"
-  default     = "en"
-}
-
-variable "venue" {
-  type        = string
-  description = "Deployment venue/environment identifier (e.g., pds-cds-dev, pds-cds-prod)"
-}
-
-variable "cicd"  {
-  description = "CICD identifier tag value (e.g., iac, jenkins, github-actions)"
-  type        = string
-  default     = "iac"
-}
-
-# Component Configuration
 variable "component_name" {
-  type        = string
-  description = "Component/repository name used for SSM parameter prefixes"
-  default     = "registry"
+    description = "Component this subcomponents belongs to"
+    type        = string
+    default = "registry"
 }
 
-
-variable "managedby"  {
-    description = "Tag value for owner managing the resource (E.g. for PDS Team we have PDS Team Email Distro)"
-    type        = string
-    default     = "nasa-pds/pds-cds-infra"
+variable "common_tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default = {
+    Project     = "registry"
+    ManagedBy   = "terraform"
+  }
 }

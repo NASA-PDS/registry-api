@@ -1,13 +1,4 @@
 locals {
-  tags = {
-    tenant = var.tenant
-    cicd = var.cicd
-    managedby = var.managedby
-    venue = var.venue
-    component = var.component_name
-    subcomponent = "registry-api"
-
-  }
 
   # Concatenate the load balancer domain to spring boot args
   spring_boot_args_with_host = "${var.spring_boot_args} --server.authorizedForwardedHost=${aws_lb.registry-api-lb.dns_name}"
@@ -28,7 +19,7 @@ resource "aws_lb" "registry-api-lb" {
     enabled = true
   }
 
-  tags = local.tags
+  tags = var.common_tags
 }
 
 
@@ -50,6 +41,8 @@ resource "aws_lb_target_group" "pds-registry-api-target-group" {
     matcher = "200"
     interval = 300
   }
+
+  tags = var.common_tags
 }
 
 resource "aws_lb_listener" "registry-api-ld-listener" {
@@ -61,6 +54,7 @@ resource "aws_lb_listener" "registry-api-ld-listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
   }
+  tags = var.common_tags
 }
 
 resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
@@ -92,7 +86,7 @@ resource "aws_ecr_pull_through_cache_rule" "ghcr" {
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
   name = "/ecs/pds-registry-api-task"
 
-  tags = local.tags
+  tags = var.common_tags
 }
 
 
@@ -148,14 +142,14 @@ EOF
   # This is required for Fargate containers
   network_mode = "awsvpc"
 
-  tags = local.tags
+  tags = var.common_tags
 }
 
 # Define the cluster
 resource "aws_ecs_cluster" "pds-registry-api-ecs" {
   name = "pds-registry-api-cluster"
 
-  tags = local.tags
+  tags = var.common_tags
 }
 
 
@@ -170,7 +164,7 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
-    container_name   = "pds-${var.venue}-reg-container"
+    container_name   = "registry-api-container"
     container_port   = "80"
   }
 
@@ -180,6 +174,6 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
     subnets = var.aws_fg_subnets
   }
 
-  tags = local.tags
+  tags = var.common_tags
 }
 

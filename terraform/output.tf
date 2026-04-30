@@ -6,7 +6,7 @@ locals {
 
 
 resource "aws_ssm_parameter" "load_balancer_domain" {
-  name  = "${ssm_prefix}/api-load-balancer-domain"
+  name  = "${local.ssm_prefix}/api-load-balancer-domain"
   type  = "String"
   overwrite   = true
   value = aws_lb.registry-api-lb.dns_name

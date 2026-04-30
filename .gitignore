@@ -65,6 +65,9 @@ src/test/temp/
 
 # terraform
 .terraform/
+terraform/*.tfvars
+!terraform/*.tfvars.example
+terraform/.terraform.lock.hcl
 
 # other stuff
 *.xpr
