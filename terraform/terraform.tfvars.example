@@ -14,6 +14,10 @@ aws_acm_certificate_arn = "arn:aws:acm:<aws-region>:<aws-account-id>:certificate
 ecs_task_role = "arn:aws:iam::<aws-account-id>:role/<task-role-name>"
 ecs_task_execution_role = "arn:aws:iam::<aws-account-id>:role/<task-execution-role-name>"
 
+# GitHub credentials for ECR pull through cache
+github_username = "<github-username>"
+github_token    = "<github-personal-access-token>"
+
 # Common tags applied to all resources
 common_tags = {
   tenant      = "<tenant>"

@@ -80,3 +80,18 @@ variable "common_tags" {
     ManagedBy   = "terraform"
   }
 }
+
+variable "github_username" {
+  description = "GitHub username for ECR pull through cache"
+}
+
+variable "github_token" {
+  description = "GitHub personal access token for ECR pull through cache"
+  sensitive   = true
+}
+
+variable "create_github_secret_credentials" {
+  description = "Set to 1 to create the GitHub credentials secret in Secrets Manager (and wire it to the ECR pull through cache rule). Set to 0 to skip creation, e.g. when the secret already exists or is managed elsewhere."
+  type        = number
+  default     = 1
+}
