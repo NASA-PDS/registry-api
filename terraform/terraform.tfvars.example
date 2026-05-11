@@ -18,6 +18,8 @@ ecs_task_execution_role = "arn:aws:iam::<aws-account-id>:role/<task-execution-ro
 github_username = "<github-username>"
 github_token    = "<github-personal-access-token>"
 
+cloudfront_dns = "www.example.com"
+
 # Common tags applied to all resources
 common_tags = {
   tenant      = "<tenant>"

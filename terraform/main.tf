@@ -1,7 +1,7 @@
 locals {
 
   # Concatenate the load balancer domain to spring boot args
-  spring_boot_args_with_host = "${var.spring_boot_args} --server.authorizedForwardedHost=${aws_lb.registry-api-lb.dns_name}"
+  spring_boot_args_with_host = "${var.spring_boot_args} --server.authorizedForwardedHost=${aws_lb.registry-api-lb.dns_name},${var.cloudfront_dns}"
 }
 
 resource "aws_lb" "registry-api-lb" {

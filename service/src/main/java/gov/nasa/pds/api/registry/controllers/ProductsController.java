@@ -620,7 +620,7 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     try {
       pdsProductClass = PdsProductClasses.fromSwaggerName(propertyClass);
     } catch (IllegalArgumentException err) {
-      throw new BadRequestException(err.getMessage());
+      throw new NotFoundException(err.getMessage());
     }
 
     RegistrySearchRequestBuilder searchRequestBuilder =

@@ -95,3 +95,7 @@ variable "create_github_secret_credentials" {
   type        = number
   default     = 1
 }
+
+variable "cloudfront_dns" {
+  description = "DNS of the cloudfront distribution giving access to the API"
+}
