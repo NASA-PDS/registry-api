@@ -90,12 +90,6 @@ variable "github_token" {
   sensitive   = true
 }
 
-variable "create_github_secret_credentials" {
-  description = "Set to 1 to create the GitHub credentials secret in Secrets Manager (and wire it to the ECR pull through cache rule). Set to 0 to skip creation, e.g. when the secret already exists or is managed elsewhere."
-  type        = number
-  default     = 1
-}
-
 variable "cloudfront_dns" {
   description = "DNS of the cloudfront distribution giving access to the API"
 }
