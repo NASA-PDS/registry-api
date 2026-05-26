@@ -1,5 +1,11 @@
+locals {
+
+  # Concatenate the load balancer domain to spring boot args
+  spring_boot_args_with_host = "${var.spring_boot_args} --server.authorizedForwardedHost=${aws_lb.registry-api-lb.dns_name},${var.cloudfront_dns}"
+}
+
 resource "aws_lb" "registry-api-lb" {
-  name               = "registry-api-lb-new"
+  name               = "registry-api-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = var.aws_fg_security_groups
@@ -9,26 +15,17 @@ resource "aws_lb" "registry-api-lb" {
 
   access_logs {
     bucket  = var.aws_s3_bucket_logs_id
-    prefix  = "registry-api-lb"
+    prefix  = "registry/registry-api-lb"
     enabled = true
   }
 
-  tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
-    Charlie = "registry"
-  }
+  tags = var.common_tags
 }
 
-resource "aws_ssm_parameter" "load_balancer_domain" {
-  name  = "/pds/registry/load-balancer-domain"
-  type  = "String"
-  overwrite   = true
-  value = aws_lb.registry-api-lb.dns_name
-}
+
 
 resource "aws_lb_target_group" "pds-registry-api-target-group" {
-  name        = "pds-${var.venue}-registry-tgt"
+  name        = "pds-registry-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -44,6 +41,8 @@ resource "aws_lb_target_group" "pds-registry-api-target-group" {
     matcher = "200"
     interval = 300
   }
+
+  tags = var.common_tags
 }
 
 resource "aws_lb_listener" "registry-api-ld-listener" {
@@ -55,6 +54,7 @@ resource "aws_lb_listener" "registry-api-ld-listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
   }
+  tags = var.common_tags
 }
 
 resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
@@ -75,44 +75,64 @@ resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
   }
 }
 
-# Define the cluster
-resource "aws_ecs_cluster" "pds-registry-api-ecs" {
-  name = "pds-${var.venue}-registry-api-ecs"
 
-  tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
-    Charlie = "registry"
-  }
+# Credentials for ECR pull through cache from GHCR
+resource "aws_secretsmanager_secret" "github_ecr_credentials" {
+  count = var.create_github_secret_credentials
+
+  name = "ecr-pullthroughcache/github-credentials"
+  tags = var.common_tags
 }
 
-# Do we need individual dev/test/prod repositories?
-# I don't think we do, but then we need to use prod account instead of the dev account, would that work ?
-data "aws_ecr_repository" "pds-registry-api-service" {
-  name = "pds-registry-api-service"
+resource "aws_secretsmanager_secret_version" "github_ecr_credentials" {
+  count = var.create_github_secret_credentials
+
+  secret_id     = aws_secretsmanager_secret.github_ecr_credentials[count.index].id
+  secret_string = jsonencode({
+    username = var.github_username
+    accessToken    = var.github_token
+  })
+}
+
+# Look up the secret when it is not created by this script
+data "aws_secretsmanager_secret" "github_ecr_credentials" {
+  count = 1 - var.create_github_secret_credentials
+  name  = "ecr-pullthroughcache/github-credentials"
+}
+
+locals {
+  github_ecr_credentials_arn = var.create_github_secret_credentials == 1 ? aws_secretsmanager_secret.github_ecr_credentials[0].arn : data.aws_secretsmanager_secret.github_ecr_credentials[0].arn
+}
+
+# Add a Pull Through Cache rule for GHCR
+resource "aws_ecr_pull_through_cache_rule" "ghcr" {
+  ecr_repository_prefix = "ghcr"
+  upstream_registry_url = "ghcr.io"
+  credential_arn        = local.github_ecr_credentials_arn
+}
+
+resource "aws_ecr_repository" "ghcr_registry_api" {
+    name = "ghcr/nasa-pds/registry-api"
+    tags = var.common_tags
 }
 
 # Log groups hold logs from our app.
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
-  name = "/ecs/pds-${var.venue}-registry-api-svc-task"
+  name = "/ecs/pds-registry-api-task"
 
-  tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
-    Charlie = "registry"
-  }
+  tags = var.common_tags
 }
 
 
 # The task definition for app.
 resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
-  family = "pds-${var.venue}-registry-api-svc-task"
+  family = "pds-registry-api-task"
 
   container_definitions = <<EOF
   [
     {
-      "name": "pds-${var.venue}-reg-container",
-      "image": "${var.aws_fg_image}",
+      "name": "registry-api-container",
+      "image": "${var.registry_api_docker_image}",
       "portMappings": [
         {
           "containerPort": 80
@@ -138,7 +158,7 @@ resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
       },
       "environment": [
         {"name": "SERVER_PORT", "value": "80"},
-        {"name": "SPRING_BOOT_APP_ARGS", "value": "${var.spring_boot_args}"}
+        {"name": "SPRING_BOOT_APP_ARGS", "value": "${local.spring_boot_args_with_host}"}
       ]
     }
   ]
@@ -149,25 +169,27 @@ EOF
   task_role_arn      = var.ecs_task_role
 
   # These are the minimum values for Fargate containers.
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = var.aws_fg_cpu_units
+  memory                   = var.aws_fg_ram_units
   requires_compatibilities = ["FARGATE"]
 
   # This is required for Fargate containers
   network_mode = "awsvpc"
 
-  tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
-    Charlie = "registry"
-  }
+  tags = var.common_tags
 }
 
+# Define the cluster
+resource "aws_ecs_cluster" "pds-registry-api-ecs" {
+  name = "pds-registry-api-cluster"
+
+  tags = var.common_tags
+}
 
 
 # The main service.
 resource "aws_ecs_service" "pds-registry-reg-service" {
-  name            = "pds-${var.venue}-registry-api-service"
+  name            = "pds-registry-api-service"
   task_definition = aws_ecs_task_definition.pds-registry-ecs-task.arn
   cluster         = aws_ecs_cluster.pds-registry-api-ecs.id
   launch_type     = "FARGATE"
@@ -176,7 +198,7 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
-    container_name   = "pds-${var.venue}-reg-container"
+    container_name   = "registry-api-container"
     container_port   = "80"
   }
 
@@ -186,9 +208,8 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
     subnets = var.aws_fg_subnets
   }
 
-  tags = {
-    Alfa = var.node_name_abbr
-    Bravo = var.venue
-    Charlie = "registry"
-  }
+  tags = var.common_tags
+
+  depends_on = [aws_ecr_repository.ghcr_registry_api, aws_ecr_pull_through_cache_rule.ghcr]
 }
+

@@ -1,0 +1,12 @@
+# Example backend configuration for S3
+# Copy this file to backend-config.tfvars and customize the values
+# Initialize with: terraform init -backend-config=backend-config.tfvars
+
+bucket         = "my-terraform-state-bucket"
+key            = "registry/opensearch/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "terraform-state-lock"
+encrypt        = true
+
+# Optional: Use a specific profile
+# profile = "my-aws-profile"

@@ -24,18 +24,22 @@ These interfaces are going to be used a arguments of the terraform scripts.
 
 ## Deploy
 
+Initialize the parameters, starting from the terraform.tfvars.example file provided.
+
+Copy it:
+
+    cp terraform.tfvars.example terraform.tfvars
+
+And update the values.
+
 
 Run the terraform scripts:
 
+
+
+
 ```
-    terraform apply \
-        -var 'ecs_task_role=your-task-role-arn' \
-        -var 'ecs_task_execution_role=your-task-execution-role-arn' \
-        -var 'venue=your-venue' \
-        -var 'aws_fg_vpc=your-vpc-arn' \
-        -var 'aws_fg_security_groups=["your security group, e.g. sg-1223455..."]' \
-        -var 'aws_fg_subnets=["your subnet e.g. subnet-1234..."]' \
-        -var 'aws_fg_image=your-docker-image-available-on-ECR' \
-        -var 'aws_acm_certificate_arn=ssl certificate for the load balancer listener' \
-        -var 'spring_boot_args=--openSearch.host=your-opensearch-url-without-http --openSearch.CCSEnabled=true --openSearch.username=our-username-empty-for-opensearch-serverless --openSearch.disciplineNodes=the-prefixes-of-the-registry-indices-in-opensearch --registry.service.version=the-version-of-the-api-to-be-displayed-in-the-application'
+    terraform init -backend-config=backend-config.tfvars
+    terraform plan
+    terraform apply
 ```
