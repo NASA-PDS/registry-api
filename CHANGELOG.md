@@ -1,11 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-04-28)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-05-26)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
 **Requirements:**
 
+- As a user, I want the exists operator to match OpenSearch's native behavior for all fields [\#712](https://github.com/NASA-PDS/registry-api/issues/712)
 - As a user, I want to search by a full/unique hierarchical path for a specific attribute [\#611](https://github.com/NASA-PDS/registry-api/issues/611)
 - As a user, I want to query for documents where a specific search field exists in the document [\#406](https://github.com/NASA-PDS/registry-api/issues/406)
 
@@ -16,6 +17,7 @@
 
 **Defects:**
 
+- When a request /classes/{product class} does not match an existing product class, I want a 404 error. [\#767](https://github.com/NASA-PDS/registry-api/issues/767) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Investigate and fix skipped `product/{id}/member*` integration tests [\#748](https://github.com/NASA-PDS/registry-api/issues/748) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Integration tests in unstable build suite do not pass when run locally [\#745](https://github.com/NASA-PDS/registry-api/issues/745) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
 - Unstable build does not complete on develop branch due to GitHub Actions runner timeout [\#744](https://github.com/NASA-PDS/registry-api/issues/744) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
