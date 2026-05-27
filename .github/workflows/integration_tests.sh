@@ -60,13 +60,14 @@ run() {
     docker image inspect nasapds/registry-api-service:latest >/dev/null
     echo "launch services"
     docker compose \
-           --ansi never \
+           --ansi always \
            --profile int-registry-batch-loader \
            --project-name registry \
-           up --detach --quiet-pull || return 5
+           up || return 5
+    # --detach  --quiet-pull
     echo "launch tests"
     if docker compose \
-           --ansi never \
+           --ansi always \
            --profile int-registry-batch-loader \
            --project-name registry \
            run --rm --no-TTY reg-api-integration-test-with-wait
