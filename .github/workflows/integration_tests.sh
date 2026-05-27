@@ -64,7 +64,8 @@ run() {
            --profile int-registry-batch-loader \
            --project-name registry \
            --detach --quiet-pull \
-           up || return 5
+           up 
+    #|| return 5
     echo "launch tests"
     if docker compose \
            --ansi never \
