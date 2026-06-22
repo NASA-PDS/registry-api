@@ -11,7 +11,8 @@
 
 build() {
     mvn --quiet clean package
-    jar_file="$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT)?\.jar')"
+    jar_file="$(find ./service/target/ -maxdepth 1 -name 'registry-api-service-*.jar')"
+    echo "jar file to be used in docker image: $jar_file"
     docker build --build-arg api_jar="$jar_file" -t nasapds/registry-api-service:latest -f docker/Dockerfile .
 }
 
@@ -63,15 +64,15 @@ run() {
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           --detach --quiet-pull \
-           up 
-    #|| return 5
+           up --detach --quiet-pull || return 5
     echo "launch tests"
-    if docker compose \
+    docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           run --rm --no-TTY reg-api-integration-test-with-wait
+           run --rm --no-TTY reg-api-integration-test-with-wait \
+           | tee "$rdir"/integration_test_results.txt
+    if [ "${PIPESTATUS[0]}" -eq 0 ]
     then
         deep_archive
         status=$?
@@ -107,8 +108,7 @@ rdir=$(realpath "$bdir/../..")
 cd "$rdir" || exit 1
 api_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
 branchname=$(git branch --show-current)
-branchname=${branchname/issue/api}
-branchname=${branchname/_/-}
+branchname=${branchname/issue_/api-}
 tdir=$(mktemp -d)
 # The EXIT pseudo-signal covers normal exits, errors, and interruptions (Ctrl+C)
 trap 'rm -rf "$tdir"' EXIT
@@ -116,8 +116,9 @@ export tdir
 cd "$tdir" || exit 1
 git clone --quiet https://github.com/NASA-PDS/registry.git
 cd registry || exit 1
-if git show-ref --verify --quiet refs/remotes/origin/"$branchname"
+if git show-ref --quiet --verify refs/remotes/origin/"$branchname"
 then
+    echo "switching to branch $branchname for registry repo"
     git switch "$branchname"
 fi
 echo "registry being used"
@@ -198,14 +199,18 @@ else
         && status=success || status=failure
     if [ "$status" == "success" ]
     then
-        double_check_logfile "$rdir"/integration_tests.rpt.txt \
+        double_check_logfile "$rdir"/integration_test_results.txt \
             || status=failure
     else
         echo "docker run or deep archive did not return success"
     fi
     cd "$bdir" || exit 1
     record "$api_gitrev" "$reg_gitrev" "$status"
-    [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
+    if [ "$status" == "success" ]
+    then
+        rm "$rdir"/integration_tests.rpt.txt
+        rm "$rdir"/integration_test_results.txt
+    fi
 fi
 
 echo "Status: $status"
