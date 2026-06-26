@@ -32,6 +32,11 @@ deep_archive() {
     git clone --quiet https://github.com/NASA-PDS/deep-archive.git
     cd deep-archive || return 1
     pip install .
+    if [ "$(python3 -c "import sys; print(sys.version_info.minor)")" -gt 12 ]
+    then
+        echo "Python 3.$MINOR_VERSION detected. Upgrading zope.interface..."
+        pip install --upgrade "zope.interface>=8.0.0"
+    fi
     pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
 }
 
