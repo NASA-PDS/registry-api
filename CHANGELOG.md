@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-05-26)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-06-29)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
 
@@ -154,7 +154,6 @@
 **Requirements:**
 
 - As a user, I want my API request to execute successfully even when the registry contains corrupted documents [\#361](https://github.com/NASA-PDS/registry-api/issues/361)
-- As a PDS operator, I want to know the health of the registry API service [\#336](https://github.com/NASA-PDS/registry-api/issues/336)
 
 **Defects:**
 
