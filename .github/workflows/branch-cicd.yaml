@@ -92,7 +92,7 @@ jobs:
 
             -
               name: Install jq
-              uses: dcarbone/install-jq-action@v3
+              uses: dcarbone/install-jq-action@v4
 
             -
                 name: ∫ Integration and deep archive tests … hold onto your hats, pardners
