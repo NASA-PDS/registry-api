@@ -134,8 +134,6 @@ public class TestParsing {
     Assertions.assertNull(listener.strval);
     Assertions.assertEquals("apple", listener.fields.get(0));
   }
-
-
   @Test
   void testParenFieldExistence() {
     String queryString = "(exists apple)";

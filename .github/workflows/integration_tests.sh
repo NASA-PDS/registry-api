@@ -11,7 +11,9 @@
 
 build() {
     mvn --quiet clean package
-    jar_file="$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT)?\.jar')"
+    jar_file="$(find ./service/target/ -maxdepth 1 -name 'registry-api-service-*.jar')"
+    echo "jar file: $jar_file"
+    [ -s "$jar_file" ] || { echo "jar file not found or empty"; return 1; }
     docker build --build-arg api_jar="$jar_file" -t nasapds/registry-api-service:latest -f docker/Dockerfile .
 }
 
@@ -26,12 +28,17 @@ clean() {
 
 deep_archive() {
     cd "$tdir" || return 1
-    python3 -m venv "$tdir"/da
+    python3.12 -m venv "$tdir"/da
     # shellcheck disable=SC1091 # cannot find dynamically created script
     source "$tdir"/da/bin/activate
     git clone --quiet https://github.com/NASA-PDS/deep-archive.git
     cd deep-archive || return 1
     pip install .
+    if [ "$(python3 -c "import sys; print(sys.version_info.minor)")" -gt 12 ]
+    then
+        echo "Python 3.$MINOR_VERSION detected. Upgrading zope.interface..."
+        pip install --upgrade "zope.interface>=8.0.0"
+    fi
     pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
 }
 
@@ -55,6 +62,7 @@ EOF
 
 run() {
     cd docker || exit 1
+    ddir=$(pwd)
     ( cd certs || exit 1 ; ./generate-certs.sh )
     export REG_API_IMAGE=nasapds/registry-api-service:latest
     docker image inspect nasapds/registry-api-service:latest >/dev/null
@@ -63,13 +71,22 @@ run() {
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           up --detach --quiet-pull || return 5
+           up --detach --quiet-pull || {
+        echo "--- docker compose ps ---"
+        docker compose --ansi never --project-name registry ps -a
+        if $verbose; then
+            echo "--- docker compose logs ---"
+            docker compose --ansi never --project-name registry logs
+        fi
+        return 5
+    }
     echo "launch tests"
     if docker compose \
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           run --rm --no-TTY reg-api-integration-test-with-wait
+           run --rm --no-TTY reg-api-integration-test-with-wait \
+           2>&1 | tee "$rdir/integration_test_results.txt"
     then
         deep_archive
         status=$?
@@ -77,23 +94,34 @@ run() {
         status=1
     fi
     echo "run status: ${status}"
+    cd "$ddir" || return 1
+    echo "--- docker compose ps ---"
+    docker compose --ansi never --project-name registry ps -a
+    if $verbose; then
+        echo "--- docker compose logs ---"
+        docker compose \
+               --ansi never \
+               --profile int-registry-batch-loader \
+               --project-name registry \
+               logs
+    fi
     clean
     # shellcheck disable=SC2086 # because we need to return an int
     return $status
 }
 
-if [ $# -gt 1 ]
-then
-    echo "Usage: $0 [--verify]"
-    exit 1
-fi
-
-if [ $# -eq 1 ] && [ "$1" != "--verify" ]
-then
-    echo "Error: Invalid argument '$1'"
-    echo "Usage: $0 [--verify]"
-    exit 1
-fi
+verbose=false
+verify=false
+for arg in "$@"; do
+    case "$arg" in
+        --verbose) verbose=true ;;
+        --verify)  verify=true ;;
+        *)
+            echo "Error: Invalid argument '$arg'"
+            echo "Usage: $0 [--verify] [--verbose]"
+            exit 1 ;;
+    esac
+done
 
 bdir=$(dirname "$(realpath "$0")")
 rdir=$(realpath "$bdir/../..")
@@ -103,6 +131,7 @@ branchname=$(git branch --show-current)
 branchname=${branchname/issue/api}
 branchname=${branchname/_/-}
 tdir=$(mktemp -d)
+echo "temporary directory: $tdir"
 # The EXIT pseudo-signal covers normal exits, errors, and interruptions (Ctrl+C)
 trap 'rm -rf "$tdir"' EXIT
 export tdir
@@ -116,7 +145,7 @@ fi
 echo "registry being used"
 git status
 reg_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
-if [ "$1" == "--verify" ]; then
+if $verify; then
     echo "Running in VERIFY mode..."
     status=failure
     cd "$tdir" || exit 1
