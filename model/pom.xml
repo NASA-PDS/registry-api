@@ -138,7 +138,7 @@
 	<dependency>
 	    <groupId>jakarta.servlet</groupId>
 	    <artifactId>jakarta.servlet-api</artifactId>
-	    <version>6.0.0</version>
+	    <version>6.1.0</version>
 	    <scope>provided</scope>
 	</dependency>
 
@@ -180,7 +180,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
-      <version>2.18.2</version>
+      <version>2.19.1</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.joschi.jackson/jackson-datatype-threetenbp -->
@@ -200,7 +200,7 @@
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.13.0</version>
+      <version>2.14.0</version>
     </dependency>
 
 

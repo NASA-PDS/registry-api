@@ -5,12 +5,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import gov.nasa.pds.api.registry.model.exceptions.UnauthorizedForwardedHostException;
 import gov.nasa.pds.api.registry.model.exceptions.UnknownQueryParameterException;
-import io.micrometer.core.instrument.util.StringEscapeUtils;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,7 +44,7 @@ public class SecurityValidationFilter implements HandlerInterceptor {
       if (!ALLOWED_QUERY_PARAMETERS.contains(paramName)) {
         throw new UnknownQueryParameterException(
             "Query parameter not enumerated in SecurityValidationFilter.ALLOWED_QUERY_PARAMETERS: "
-                + paramName);
+                + Encode.forHtml(paramName));
       }
     }
 

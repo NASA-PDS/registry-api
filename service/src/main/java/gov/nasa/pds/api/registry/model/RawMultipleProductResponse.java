@@ -1,7 +1,6 @@
 package gov.nasa.pds.api.registry.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import gov.nasa.pds.model.SummaryFacet;
 import org.opensearch.client.opensearch.core.SearchResponse;
@@ -31,7 +30,7 @@ public class RawMultipleProductResponse {
           });
         } else if (aggregate.isLterms()) {
           aggregate.lterms().buckets().array().forEach(bucket -> {
-            facet.putCountsItem(bucket.key(), Math.toIntExact(bucket.docCount()));
+            facet.putCountsItem(bucket.key().toString(), Math.toIntExact(bucket.docCount()));
           });
         }
 

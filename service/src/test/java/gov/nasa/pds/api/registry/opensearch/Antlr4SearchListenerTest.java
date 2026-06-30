@@ -18,8 +18,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
-
-
+import java.util.Arrays;
 import gov.nasa.pds.api.registry.lexer.SearchLexer;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.api.registry.model.Antlr4SearchListener;
@@ -44,7 +43,14 @@ class Antlr4SearchListenerTest {
 
   @BeforeEach
   void setUp() {
-    listener = new Antlr4SearchListener(null);
+    listener = new Antlr4SearchListener(Arrays.asList(
+        "lid",
+        "pds:Time_Coordinates.pds:stop_date_time",
+        "ref_lid_target",
+        "timestamp",
+        "timestamp_A",
+        "timestamp_B"
+        ));
   }
 
 
@@ -57,8 +63,7 @@ class Antlr4SearchListenerTest {
     ParseTree tree = par.query();
     // Walk it and attach our listener
     ParseTreeWalker walker = new ParseTreeWalker();
-    Antlr4SearchListener listener = new Antlr4SearchListener(null);
-    walker.walk(listener, tree);
+    walker.walk(this.listener, tree);
 
     // System.out.println ("query string: " + query);
     // System.out.println("query tree: " + tree.toStringTree(par));
@@ -74,10 +79,22 @@ class Antlr4SearchListenerTest {
     // TODO: add asserts
     Assertions.assertEquals(1, query.must().size());
     Query matchQuery = (Query) query.must().get(0);
-    Assertions.assertEquals(Query.Kind.Match, matchQuery._kind());
-    // Assertions.assertEquals((matchQuery).field(), "pds:Time_Coordinates/pds:stop_date_time");
-
-
+    Assertions.assertEquals(Query.Kind.Bool, matchQuery._kind());
+    query = matchQuery.bool();
+    Assertions.assertEquals(1, query.must().size());
+    matchQuery = (Query) query.must().get(0);
+    Assertions.assertEquals(Query.Kind.Bool, matchQuery._kind());
+    query = matchQuery.bool();
+    boolean match = false;
+    boolean term = false;
+    Assertions.assertEquals(2, query.should().size());
+    for (int i = 0 ; i < 2 ; i++) {
+      matchQuery = (Query) query.should().get(i);
+      match = match || Query.Kind.Match == matchQuery._kind();
+      term = term  || Query.Kind.Term == matchQuery._kind();
+    }
+    Assertions.assertTrue(match);
+    Assertions.assertTrue(term);
   }
 
 

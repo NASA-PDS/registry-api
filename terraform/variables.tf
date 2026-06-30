@@ -3,11 +3,6 @@ variable "node_name_abbr" {
   default="en"
 }
 
-variable "venue" {
-  description = "Deployment venue (prod, test, dev)"
-  default = "delta"
-}
-
 variable "aws_region" {
   description = "AWS Region"
   default = "us-west-2"
@@ -19,7 +14,7 @@ variable "spring_boot_args" {
 
 variable "aws_profile" {
   description = "AWS profile"
-  default = "default"
+  default = ""
 }
 
 variable "aws_fg_vpc" {
@@ -49,6 +44,13 @@ variable "ecs_task_execution_role" {
   description = "ECS task execution role"
 }
 
+<<<<<<< HEAD
+=======
+variable "registry_api_docker_image" {
+  description = "AWS image name for Fargate"
+}
+
+>>>>>>> develop
 variable "aws_s3_bucket_logs_id" {
   description = "AWS S3 bucket with the logs"
 }
@@ -65,4 +67,32 @@ variable "aws_fg_ram_units" {
 
 variable "aws_acm_certificate_arn" {
   description = "ACM SSL Certificate for the load balancer"
+}
+
+variable "component_name" {
+    description = "Component this subcomponents belongs to"
+    type        = string
+    default = "registry"
+}
+
+variable "common_tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default = {
+    Project     = "registry"
+    ManagedBy   = "terraform"
+  }
+}
+
+variable "github_username" {
+  description = "GitHub username for ECR pull through cache"
+}
+
+variable "github_token" {
+  description = "GitHub personal access token for ECR pull through cache"
+  sensitive   = true
+}
+
+variable "cloudfront_dns" {
+  description = "DNS of the cloudfront distribution giving access to the API"
 }

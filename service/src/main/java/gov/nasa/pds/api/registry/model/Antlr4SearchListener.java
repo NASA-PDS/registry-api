@@ -7,11 +7,13 @@ import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
 import gov.nasa.pds.model.PropertiesListInner;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -24,6 +26,7 @@ import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.RangeQuery;
 import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery;
+import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
 
 
 public class Antlr4SearchListener extends SearchBaseListener {
@@ -49,9 +52,16 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   private operation operator = null;
 
-  public Antlr4SearchListener(ConnectionContext connectionContext) {
+  public Antlr4SearchListener(@NotNull ConnectionContext connectionContext) {
     super();
     this.connectionContext = connectionContext;
+  }
+  
+  // for testing purposes only
+  public Antlr4SearchListener(List<String> knownFieldNames) {
+    super();
+    this.connectionContext = null;
+    this.knownFieldNames.addAll(knownFieldNames);
   }
 
 
@@ -73,16 +83,16 @@ public class Antlr4SearchListener extends SearchBaseListener {
     if (ctx.ANY() != null) {
       fieldname = ctx.ANY().getText();
     }
-    if (fieldname.contains("*")) {
-      if (this.knownFieldNames.isEmpty()) {
-        try {
-          for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
-            this.knownFieldNames.add(property.getProperty());
-          }
-        } catch (OpenSearchException | IOException e) {
-          log.error("Could not load the mapping(s) from opensearch; meaning 'wildcarding' will not work", e);
+    if (this.knownFieldNames.isEmpty()) {
+      try {
+        for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
+          this.knownFieldNames.add(property.getProperty());
         }
+      } catch (OpenSearchException | IOException e) {
+        throw new IllegalStateException("Could not load the mapping(s) from opensearch; meaning 'q=' with field names will not work", e);
       }
+    }
+    if (fieldname.contains("*")) {
       String theKey = fieldname.replace(".", "\\.").replace("*", ".*");
       Pattern regex = Pattern.compile(theKey);
       for (String fn : this.knownFieldNames.stream()
@@ -94,7 +104,11 @@ public class Antlr4SearchListener extends SearchBaseListener {
         throw new ParseCancellationException("Wildcarding request '" + fieldname + "' cannot match any field names in the LDD using regular expression " + theKey);
       }
     } else {
-      this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fieldname));
+      if (this.knownFieldNames.contains(fieldname)) {
+        this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fieldname));
+      } else {
+        throw new ParseCancellationException("The request '" + fieldname + "' does not match any field name in the LDD.");
+      }
     }
     this.isAnyWildcard = ctx.ALL() == null && this.fieldNames.size() > 1; 
   }
@@ -175,9 +189,12 @@ public class Antlr4SearchListener extends SearchBaseListener {
     }
     for (String left : this.fieldNames) {
       if (this.operator == operation.eq || this.operator == operation.ne) {
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
         FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
         MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
-        comparatorQuery = matchQueryBuilder.toQuery();
+        TermQuery termQueryBulidler = new TermQuery.Builder().field(left).value(fieldValue).build();
+        boolQueryBuilder.should(matchQueryBuilder.toQuery(), termQueryBulidler.toQuery());
+        comparatorQuery = boolQueryBuilder.build().toQuery();
 
         if (this.operator == operation.ne) {
           comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
@@ -211,7 +228,6 @@ public class Antlr4SearchListener extends SearchBaseListener {
     } else {
       this.queryBuilder.should(wild.build().toQuery());
     }
-
   }
 
   @Override
@@ -221,7 +237,6 @@ public class Antlr4SearchListener extends SearchBaseListener {
       wild.minimumShouldMatch("1");
     }
     for (String fieldName : this.fieldNames) {
-      log.error("************************* field name: " + fieldName);
       if (this.isAnyWildcard) {
         wild.should(new ExistsQuery.Builder().field(fieldName).build().toQuery());
       } else {

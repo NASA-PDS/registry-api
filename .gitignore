@@ -65,6 +65,9 @@ src/test/temp/
 
 # terraform
 .terraform/
+terraform/*.tfvars
+!terraform/*.tfvars.example
+!.terraform.lock.hcl
 
 # other stuff
 *.xpr
@@ -87,3 +90,6 @@ application-*.properties
 
 # macOS specific stuff
 .DS_Store
+
+# reports to help separate testing from actions due to limited resources
+*.rpt.txt
