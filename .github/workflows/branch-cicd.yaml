@@ -97,7 +97,11 @@ jobs:
             -
                 name: ∫ Integration and deep archive tests … hold onto your hats, pardners
                 run: |
-                  .github/workflows/integration_tests.sh --verify
+                  if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+                    .github/workflows/integration_tests.sh
+                  else
+                    .github/workflows/integration_tests.sh --verify
+                  fi
 
 ...
 

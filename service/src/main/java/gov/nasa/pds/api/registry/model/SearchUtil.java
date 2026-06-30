@@ -22,7 +22,7 @@ public class SearchUtil {
 
   private static String fnArch;
   @Value("${registry.field.name.architecture}")
-  public void setFnArch(String fnArch) {
+  static public void setFnArch(String fnArch) {
     SearchUtil.fnArch = fnArch;
   }
 
