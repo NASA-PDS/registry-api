@@ -8,20 +8,30 @@ import java.util.List;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import gov.nasa.pds.api.registry.exceptions.UnsupportedSearchProperty;
 import gov.nasa.pds.model.Metadata;
 import gov.nasa.pds.model.PdsProduct;
 import gov.nasa.pds.model.Reference;
 
+@Component
 public class SearchUtil {
 
   private static final Logger log = LoggerFactory.getLogger(SearchUtil.class);
 
-  static public String jsonPropertyToOpenProperty(String jsonProperty) {
-    return jsonProperty.replace(".", "/");
+  private static String fnArch;
+  @Value("${registry.field.name.architecture}")
+  public static void setFnArch(String fnArch) {
+    SearchUtil.fnArch = fnArch;
   }
 
-  static public String[] jsonPropertyToOpenProperty(String[] jsonProperties) {
+  public static String jsonPropertyToOpenProperty(String jsonProperty) {
+    if (SearchUtil.fnArch == null || SearchUtil.fnArch.equalsIgnoreCase("flat")) return jsonProperty.replace(".", "/");
+    return jsonProperty;
+  }
+
+  public static String[] jsonPropertyToOpenProperty(String[] jsonProperties) {
     if (jsonProperties != null && jsonProperties.length > 0) {
       for (int i = 0; i < jsonProperties.length; i++) {
         jsonProperties[i] = jsonPropertyToOpenProperty(jsonProperties[i]);
@@ -30,7 +40,7 @@ public class SearchUtil {
     return jsonProperties;
   }
 
-  static public List<String> jsonPropertyToOpenProperty(List<String> jsonProperties) {
+  public static List<String> jsonPropertyToOpenProperty(List<String> jsonProperties) {
     if (jsonProperties != null && jsonProperties.size() > 0) {
       for (int i = 0; i < jsonProperties.size(); i++) {
         jsonProperties.set(i, jsonPropertyToOpenProperty(jsonProperties.get(i)));
@@ -39,13 +49,13 @@ public class SearchUtil {
     return jsonProperties;
   }
 
-  static public String openPropertyToJsonProperty(String openProperty)
+  public static String openPropertyToJsonProperty(String openProperty)
       throws UnsupportedSearchProperty {
-
-    return openProperty.replace('/', '.');
+    if (SearchUtil.fnArch == null || SearchUtil.fnArch.equalsIgnoreCase("flat")) return openProperty.replace('/', '.');
+    return openProperty;
   }
 
-  static private void addReference(ArrayList<Reference> to, String ID, URL baseURL) {
+  private static void addReference(ArrayList<Reference> to, String ID, URL baseURL) {
     Reference reference = new Reference();
     reference.setId(ID);
 
@@ -76,7 +86,7 @@ public class SearchUtil {
     to.add(reference);
   }
 
-  static private PdsProduct addPropertiesFromESEntity(PdsProduct product, EntityProduct ep,
+  private static PdsProduct addPropertiesFromESEntity(PdsProduct product, EntityProduct ep,
       URL baseURL) {
     product.setId(ep.getLidVid());
     product.setType(ep.getProductClass());
@@ -145,7 +155,7 @@ public class SearchUtil {
     return product;
   }
 
-  static public PdsProduct entityProductToAPIProduct(EntityProduct ep, URL baseURL) {
+  public static PdsProduct entityProductToAPIProduct(EntityProduct ep, URL baseURL) {
     log.debug("convert EntityProduct (ep) to API object without XML label");
 
     PdsProduct product = new PdsProduct();

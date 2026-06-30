@@ -298,6 +298,12 @@
       <artifactId>antlr4-runtime</artifactId>
       <version>4.13.2</version>
     </dependency>
+    <!-- security -->
+    <dependency>
+	    <groupId>org.owasp.encoder</groupId>
+    	<artifactId>encoder</artifactId>
+    	<version>1.4.0</version>
+	</dependency>
   </dependencies>
 
   <build>

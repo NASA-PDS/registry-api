@@ -44,10 +44,13 @@ variable "ecs_task_execution_role" {
   description = "ECS task execution role"
 }
 
+<<<<<<< HEAD
+=======
 variable "registry_api_docker_image" {
   description = "AWS image name for Fargate"
 }
 
+>>>>>>> develop
 variable "aws_s3_bucket_logs_id" {
   description = "AWS S3 bucket with the logs"
 }
