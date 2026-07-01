@@ -85,7 +85,7 @@ run() {
            --ansi never \
            --profile int-registry-batch-loader \
            --project-name registry \
-           run --rm --no-TTY reg-api-integration-test-with-wait \
+           run --rm --no-TTY reg-api-integration-test \
            2>&1 | tee "$rdir/integration_test_results.txt"
     then
         deep_archive
