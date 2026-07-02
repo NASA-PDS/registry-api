@@ -44,13 +44,10 @@ variable "ecs_task_execution_role" {
   description = "ECS task execution role"
 }
 
-<<<<<<< HEAD
-=======
 variable "registry_api_docker_image" {
   description = "AWS image name for Fargate"
 }
 
->>>>>>> develop
 variable "aws_s3_bucket_logs_id" {
   description = "AWS S3 bucket with the logs"
 }
@@ -84,13 +81,25 @@ variable "common_tags" {
   }
 }
 
-variable "github_username" {
-  description = "GitHub username for ECR pull through cache"
+variable "create_github_secret_credentials" {
+  description = "Whether to create GitHub secret credentials (1) or not (0)"
+  type        = number
+  default     = 0
 }
 
+# TODO remove as the ECR cache it is used for does not work, 
+# besides we would like to configure it in a infra module instead of this specific registry-api module
+variable "github_username" {
+  description = "GitHub username for ECR pull through cache"
+  default = ""
+}
+
+# TODO remove as the ECR cache it is used for does not work, 
+# besides we would like to configure it in a infra module instead of this specific registry-api module
 variable "github_token" {
   description = "GitHub personal access token for ECR pull through cache"
   sensitive   = true
+  default = ""
 }
 
 variable "cloudfront_dns" {
