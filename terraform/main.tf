@@ -8,7 +8,7 @@ resource "aws_lb" "registry-api-lb" {
   name               = "registry-api-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = var.aws_fg_security_groups
+  security_groups    = var.aws_lb_security_groups
   subnets            = var.aws_lb_subnets
 
   enable_deletion_protection = false
@@ -126,7 +126,8 @@ resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
 
 # The task definition for app.
 resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
-  family = "pds-registry-api-task"
+  family       = "pds-registry-api-task"
+  skip_destroy = true
 
   container_definitions = <<EOF
   [

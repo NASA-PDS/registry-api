@@ -26,6 +26,11 @@ variable "aws_fg_security_groups" {
   type = list(string)
 }
 
+variable "aws_lb_security_groups" {
+  description = "AWS Security groups for Fargate"
+  type = list(string)
+}
+
 variable "aws_fg_subnets" {
   description = "AWS Subnets for Fargate"
   type = list(string)
