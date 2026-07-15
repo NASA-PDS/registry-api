@@ -1,11 +1,11 @@
 variable "node_name_abbr" {
   description = "Node name abbreviation"
-  default="en"
+  default     = "en"
 }
 
 variable "aws_region" {
   description = "AWS Region"
-  default = "us-west-2"
+  default     = "us-west-2"
 }
 
 variable "spring_boot_args" {
@@ -14,7 +14,7 @@ variable "spring_boot_args" {
 
 variable "aws_profile" {
   description = "AWS profile"
-  default = ""
+  default     = ""
 }
 
 variable "aws_fg_vpc" {
@@ -23,22 +23,22 @@ variable "aws_fg_vpc" {
 
 variable "aws_fg_security_groups" {
   description = "AWS Security groups for Fargate"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "aws_lb_security_groups" {
   description = "AWS Security groups for Fargate"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "aws_fg_subnets" {
   description = "AWS Subnets for Fargate"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "aws_lb_subnets" {
   description = "AWS Subnets for the load balancer"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "ecs_task_role" {
@@ -59,12 +59,12 @@ variable "aws_s3_bucket_logs_id" {
 
 variable "aws_fg_cpu_units" {
   description = "CPU Units for fargate"
-  default = 256
+  default     = 256
 }
 
 variable "aws_fg_ram_units" {
   description = "RAM Units for Fargate"
-  default = 512
+  default     = 512
 }
 
 variable "aws_acm_certificate_arn" {
@@ -72,17 +72,17 @@ variable "aws_acm_certificate_arn" {
 }
 
 variable "component_name" {
-    description = "Component this subcomponents belongs to"
-    type        = string
-    default = "registry"
+  description = "Component this subcomponents belongs to"
+  type        = string
+  default     = "registry"
 }
 
 variable "common_tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
   default = {
-    Project     = "registry"
-    ManagedBy   = "terraform"
+    Project   = "registry"
+    ManagedBy = "terraform"
   }
 }
 
@@ -96,7 +96,7 @@ variable "create_github_secret_credentials" {
 # besides we would like to configure it in a infra module instead of this specific registry-api module
 variable "github_username" {
   description = "GitHub username for ECR pull through cache"
-  default = ""
+  default     = ""
 }
 
 # TODO remove as the ECR cache it is used for does not work, 
@@ -104,7 +104,7 @@ variable "github_username" {
 variable "github_token" {
   description = "GitHub personal access token for ECR pull through cache"
   sensitive   = true
-  default = ""
+  default     = ""
 }
 
 variable "cloudfront_dns" {
