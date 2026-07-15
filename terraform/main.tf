@@ -8,7 +8,7 @@ resource "aws_lb" "registry-api-lb" {
   name               = "registry-api-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = var.aws_fg_security_groups
+  security_groups    = var.aws_lb_security_groups
   subnets            = var.aws_lb_subnets
 
   enable_deletion_protection = false
@@ -36,9 +36,9 @@ resource "aws_lb_target_group" "pds-registry-api-target-group" {
   }
 
   health_check {
-    enabled = true
-    path    = "/health"
-    matcher = "200"
+    enabled  = true
+    path     = "/health"
+    matcher  = "200"
     interval = 300
   }
 
@@ -62,7 +62,7 @@ resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
 
   action {
     type             = "forward"
-    target_group_arn =  aws_lb_target_group.pds-registry-api-target-group.arn
+    target_group_arn = aws_lb_target_group.pds-registry-api-target-group.arn
   }
 
   # no condition for now
@@ -70,7 +70,7 @@ resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
   # used for multiple back-end service
   condition {
     path_pattern {
-      values           = ["/*"]
+      values = ["/*"]
     }
   }
 }
@@ -87,10 +87,10 @@ resource "aws_secretsmanager_secret" "github_ecr_credentials" {
 resource "aws_secretsmanager_secret_version" "github_ecr_credentials" {
   count = var.create_github_secret_credentials
 
-  secret_id     = aws_secretsmanager_secret.github_ecr_credentials[count.index].id
+  secret_id = aws_secretsmanager_secret.github_ecr_credentials[count.index].id
   secret_string = jsonencode({
-    username = var.github_username
-    accessToken    = var.github_token
+    username    = var.github_username
+    accessToken = var.github_token
   })
 }
 
@@ -112,8 +112,8 @@ resource "aws_ecr_pull_through_cache_rule" "ghcr" {
 }
 
 resource "aws_ecr_repository" "ghcr_registry_api" {
-    name = "ghcr/nasa-pds/registry-api"
-    tags = var.common_tags
+  name = "ghcr/nasa-pds/registry-api"
+  tags = var.common_tags
 }
 
 # Log groups hold logs from our app.
@@ -126,7 +126,8 @@ resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
 
 # The task definition for app.
 resource "aws_ecs_task_definition" "pds-registry-ecs-task" {
-  family = "pds-registry-api-task"
+  family       = "pds-registry-api-task"
+  skip_destroy = true
 
   container_definitions = <<EOF
   [
@@ -204,8 +205,8 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups = var.aws_fg_security_groups
-    subnets = var.aws_fg_subnets
+    security_groups  = var.aws_fg_security_groups
+    subnets          = var.aws_fg_subnets
   }
 
   tags = var.common_tags
