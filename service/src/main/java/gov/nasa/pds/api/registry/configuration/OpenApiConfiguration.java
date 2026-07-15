@@ -22,9 +22,10 @@ public class OpenApiConfiguration {
   @Bean
   public OpenAPI customOpenAPI() {
     OpenAPI customOpenAPI = new OpenAPI()
-        .info(new Info().title("PDS Registry Search API")
-            .description(
-                "RestFul web API provided to search all classes of products in the PDS registries.")
+        .info(new Info().title("PDS Registry Search API").description(
+            "Registry API enabling advanced search on PDS data and metadata. The API provides end-points to search for bundles, collections and any PDS products with advanced search queries. It also enables to browse the archive hierarchically downward (e.g. collection/s products) or upward (e.g. bundles containing a product).\n"
+                + "    Property values are cast to string in responses due to limitations of JSON typing, and should be interpreted by the client/user according to the data dictionary.\n"
+                + "    As a result of the string cast, some missing values might be found as \"null\".")
             .version(this.version)
             .contact(new Contact().name("Contact PDS Engineering Node Support")
                 .email("pds_operator@jpl.nasa.gov"))

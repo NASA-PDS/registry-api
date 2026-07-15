@@ -1,0 +1,234 @@
+#! /usr/bin/env bash
+#
+# requires: docker, git, mvn, and shellcheck
+#
+# docker - builds the registry api image, uses compose to run a host of services
+# git clones registry repo
+# jq - bash JSON tool
+# mvn - to build the jar file for the current source registry api source code
+# "shellcheck" - linter to keep this script clean
+#
+
+build() {
+    mvn --quiet clean package
+    jar_file="$(find ./service/target/ -maxdepth 1 -name 'registry-api-service-*.jar')"
+    echo "jar file: $jar_file"
+    [ -s "$jar_file" ] || { echo "jar file not found or empty"; return 1; }
+    docker build --build-arg api_jar="$jar_file" -t nasapds/registry-api-service:latest -f docker/Dockerfile .
+}
+
+clean() {
+    # shellcheck disable=SC2086 # for correct docker interpretation
+    docker compose \
+           --ansi never \
+           --profile int-registry-batch-loader \
+           --project-name registry \
+           down ${IT_CLEANSE:---rmi all}
+}    
+
+deep_archive() {
+    cd "$tdir" || return 1
+    python3.12 -m venv "$tdir"/da
+    # shellcheck disable=SC1091 # cannot find dynamically created script
+    source "$tdir"/da/bin/activate
+    git clone --quiet https://github.com/NASA-PDS/deep-archive.git
+    cd deep-archive || return 1
+    pip install .
+    if [ "$(python3 -c "import sys; print(sys.version_info.minor)")" -gt 12 ]
+    then
+        echo "Python 3.$MINOR_VERSION detected. Upgrading zope.interface..."
+        pip install --upgrade "zope.interface>=8.0.0"
+    fi
+    pds-deep-registry-archive -u http://localhost:8080 -s PDS_ENG urn:nasa:pds:insight_rad::2.1 --debug
+}
+
+double_check_logfile() {
+    echo "everything looked ok, so double check postman logs"
+    [ -s "$1" ] || { echo "$1 is an empty file"; return 1; }
+    grep -Eq "[[:space:]]*#[[:space:]]+failure[[:space:]]+detail" "$1" \
+        && { echo "postman log file reported failures" ; return 2; }
+    return 0
+}
+
+record() {
+    cat > last_integration_test.json <<EOF
+{
+  "api_gitrev": "$1",
+  "reg_gitrev": "$2",
+  "status": "$3"
+}
+EOF
+}
+
+run() {
+    cd docker || exit 1
+    ddir=$(pwd)
+    ( cd certs || exit 1 ; ./generate-certs.sh )
+    export REG_API_IMAGE=nasapds/registry-api-service:latest
+    docker image inspect nasapds/registry-api-service:latest >/dev/null
+    echo "launch services"
+    docker compose \
+           --ansi never \
+           --profile int-registry-batch-loader \
+           --project-name registry \
+           up --detach --quiet-pull || {
+        echo "--- docker compose ps ---"
+        docker compose --ansi never --project-name registry ps -a
+        if $verbose; then
+            echo "--- docker compose logs ---"
+            docker compose --ansi never --project-name registry logs
+        fi
+        return 5
+    }
+    echo "launch tests"
+    if docker compose \
+           --ansi never \
+           --profile int-registry-batch-loader \
+           --project-name registry \
+           run --rm --no-TTY reg-api-integration-test \
+           2>&1 | tee "$rdir/integration_test_results.txt"
+    then
+        deep_archive
+        status=$?
+    else
+        status=1
+    fi
+    echo "run status: ${status}"
+    cd "$ddir" || return 1
+    echo "--- docker compose ps ---"
+    docker compose --ansi never --project-name registry ps -a
+    if $verbose; then
+        echo "--- docker compose logs ---"
+        docker compose \
+               --ansi never \
+               --profile int-registry-batch-loader \
+               --project-name registry \
+               logs
+    fi
+    clean
+    # shellcheck disable=SC2086 # because we need to return an int
+    return $status
+}
+
+verbose=false
+verify=false
+for arg in "$@"; do
+    case "$arg" in
+        --verbose) verbose=true ;;
+        --verify)  verify=true ;;
+        *)
+            echo "Error: Invalid argument '$arg'"
+            echo "Usage: $0 [--verify] [--verbose]"
+            exit 1 ;;
+    esac
+done
+
+bdir=$(dirname "$(realpath "$0")")
+rdir=$(realpath "$bdir/../..")
+cd "$rdir" || exit 1
+api_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
+branchname=$(git branch --show-current)
+branchname=${branchname/issue/api}
+branchname=${branchname/_/-}
+tdir=$(mktemp -d)
+echo "temporary directory: $tdir"
+# The EXIT pseudo-signal covers normal exits, errors, and interruptions (Ctrl+C)
+trap 'rm -rf "$tdir"' EXIT
+export tdir
+cd "$tdir" || exit 1
+git clone --quiet https://github.com/NASA-PDS/registry.git
+cd registry || exit 1
+if git show-ref --verify --quiet refs/remotes/origin/"$branchname"
+then
+    git switch "$branchname"
+fi
+echo "registry being used"
+git status
+reg_gitrev=$(git describe --always --abbrev=40 --dirty='+' --exclude '*')
+if $verify; then
+    echo "Running in VERIFY mode..."
+    status=failure
+    cd "$tdir" || exit 1
+    record "$api_gitrev" "$reg_gitrev" "$status"
+    cd "$rdir" || exit 1
+    test_key=$(jq -r '.api_gitrev' "$bdir"/last_integration_test.json | sed 's/+$//')
+    files=$(git diff --name-only -r "$test_key")
+    # shellcheck disable=SC2046 # because comparing integers
+    if [ $(echo "$files" | wc -l) -eq 1 ]
+    then
+        if [ "$files" == ".github/workflows/last_integration_test.json" ]
+        then
+            if [ -s "$files" ]
+            then
+                # do a one line diff from last test run
+                # look at additions or subtractions
+                # ignore --- and +++ because those are the filenames
+                # ignore the api_gitrev because that must be different
+                # count all other changes
+                # if there are none, then status is meaningful
+                # shellcheck disable=SC2126 # because simpler to understand
+                if [ $(git diff -U0 -r "$test_key" | \
+                           grep "^[+-]" | \
+                           grep -v "^---" | \
+                           grep -v "^+++" | \
+                           grep -v "api_gitrev" | \
+                           wc -l) == 0 ]
+                then
+                    status=$(jq -r '.status' "$bdir"/last_integration_test.json)
+                    echo "Found the I&T test to be: ${status}"
+                else
+                    git diff -r "$test_key"
+                fi
+            else
+                echo "Reporting file is empty"
+            fi
+        else
+            echo "the file changed was not for I&T: $files"
+        fi
+    else
+        echo "commit contains edits beyond those of last_integration_test.json"
+        echo "files changed: $files"
+    fi
+    if [ "$status" == "failure" ]
+    then
+        echo
+        echo "If you are reading this in the github actions log, then it seems"
+        echo "this test cannot verify that this registry-api repository branch"
+        echo "has been successfully tested. The first step at resolving this"
+        echo "message is to run the script .github/workflows/integration_tests.sh"
+        echo "locally. If it is successful, then commit all changes and push."
+        echo "Otherwise, fix any problems demonstrated from running the tests,"
+        echo "then commit and push all changes when the script is successful."
+        echo "Once commited, run this script again to generate the single file"
+        echo "last_integration_test.json, commit it, and push it."
+        echo
+        echo "Note: there are timing tests that can cause temporary failures."
+        echo "      If those failures occur, just run the script again until"
+        echo "      a success is achived."
+        echo
+        echo "Note: to determine if the latest commit will pass, run the script"
+        echo "      with 'integration_tests.sh --verify'"
+    else
+        echo "Verified tests completed and successful"
+    fi
+else
+    cd "$rdir" || exit 1
+    clean || exit 2
+    build || exit 3
+    cd "$tdir"/registry || exit 1
+    ( set -o pipefail ; run 2>&1 | tee "$rdir"/integration_tests.rpt.txt ) \
+        && status=success || status=failure
+    if [ "$status" == "success" ]
+    then
+        double_check_logfile "$rdir"/integration_tests.rpt.txt \
+            || status=failure
+    else
+        echo "docker run or deep archive did not return success"
+    fi
+    cd "$bdir" || exit 1
+    record "$api_gitrev" "$reg_gitrev" "$status"
+    [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
+fi
+
+echo "Status: $status"
+[ "$status" == "success" ] && exit 0 || exit 1

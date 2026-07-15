@@ -9,7 +9,7 @@ For more information, please visit https://nasa-pds.github.io/registry-api-servi
 
 ## Prerequisites
 
-This software requires open jdk 17.
+This software requires open jdk 25.
 
 ## Administrator
 
@@ -32,7 +32,16 @@ Note, the registry index in elasticSearch is hard-coded. It need to be `registry
 
     mvn clean
     mvn install
+    cd service
     mvn spring-boot:run
+    
+  The API will now be accessible on (by default) https://localhost:8080
+
+  With a specific configuration profile you can run the application with a specific configuration. Define a dedicated application.properties, for example application-dev.properties that does not need to be committed on git. Launch it as follows:
+
+    mvn -Dspring-boot.run.profiles=dev spring-boot:run
+    
+    
 
 👉 **Note:** in order to run in this way, you will need to modify the `spring-boot-starter-thymeleaf` dependency by pinning it to version `1.5.1.RELEASE` and excluding the `logback-classic` artifact in the `pom.xml` file as follows:
 

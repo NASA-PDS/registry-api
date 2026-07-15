@@ -4,7 +4,7 @@ package gov.nasa.pds.api.registry.controllers;
 import java.util.Set;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
-
+import org.owasp.encoder.Encode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-  private String errorDisclaimerHeader = "An error occured.\n";
   private String errorDisclaimerFooter =
       "For assistance, forward this error message to pds-operator@jpl.nasa.gov";
 
@@ -34,7 +33,7 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
     String bodyOfResponse =
         status.toString() + "\n Request " + requestDescription + " failed with message:\n"
             + errorDescription + "(ref:" + errorIdentifier + ")\n" + errorDisclaimerFooter;
-    return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), status, request);
+    return handleExceptionInternal(ex, Encode.forHtml(bodyOfResponse), new HttpHeaders(), status, request);
 
   }
 
@@ -92,5 +91,10 @@ public class RegistryApiResponseEntityExceptionHandler extends ResponseEntityExc
     return genericExceptionHandler(ex, request, "", HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(value = {DeprecatedEndPointException.class})
+  public ResponseEntity<Object> deprecatedEndPoint(DeprecatedEndPointException ex,
+      WebRequest request) {
+    return genericExceptionHandler(ex, request, "", HttpStatus.GONE);
+  }
 
 }

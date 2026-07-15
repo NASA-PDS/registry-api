@@ -1,0 +1,30 @@
+aws_region="<aws-region>"
+spring_boot_args="--openSearch.host=<opensearch-collection-id>.<aws-region>.aoss.amazonaws.com --openSearch.CCSEnabled=true --openSearch.username='' --openSearch.disciplineNodes=en,geo --registry.service.version=1.0.0"
+aws_s3_bucket_logs_id="<s3-logs-bucket-name>"
+
+registry_api_docker_image="<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com/ghcr/nasa-pds/registry-api:develop"
+
+# network stuff
+# TODO have them in the pds infra, save in SSM parameters
+aws_fg_vpc = "vpc-<vpc-id>"
+aws_fg_security_groups = ["sg-<security-group-id>"]
+aws_fg_subnets = ["subnet-<subnet-id-1>","subnet-<subnet-id-2>"]
+aws_lb_subnets = ["subnet-<lb-subnet-id-1>", "subnet-<lb-subnet-id-2>"]
+aws_acm_certificate_arn = "arn:aws:acm:<aws-region>:<aws-account-id>:certificate/<certificate-id>"
+ecs_task_role = "arn:aws:iam::<aws-account-id>:role/<task-role-name>"
+ecs_task_execution_role = "arn:aws:iam::<aws-account-id>:role/<task-execution-role-name>"
+
+# GitHub credentials for ECR pull through cache
+github_username = "<github-username>"
+github_token    = "<github-personal-access-token>"
+
+cloudfront_dns = "www.example.com"
+
+# Common tags applied to all resources
+common_tags = {
+  tenant      = "<tenant>"
+  venue       = "<venue>"
+  component   = "registry"
+  cicd        = "iac"
+  managedby   = "<your-email>"
+}

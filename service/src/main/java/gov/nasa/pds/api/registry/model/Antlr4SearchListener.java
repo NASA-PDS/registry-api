@@ -2,33 +2,32 @@ package gov.nasa.pds.api.registry.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import gov.nasa.pds.api.registry.ConnectionContext;
+import gov.nasa.pds.api.registry.controllers.ProductsController;
 import gov.nasa.pds.api.registry.lexer.SearchBaseListener;
 import gov.nasa.pds.api.registry.lexer.SearchParser;
-
+import gov.nasa.pds.model.PropertiesListInner;
+import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.opensearch.OpenSearchException;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
+import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.RangeQuery;
 import org.opensearch.client.opensearch._types.query_dsl.SimpleQueryStringQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermsQueryField;
-import org.opensearch.client.opensearch._types.query_dsl.TermsSetQuery;
-import org.opensearch.client.opensearch._types.query_dsl.WildcardQuery;
-import org.opensearch.client.opensearch._types.query_dsl.Operator;
-import org.opensearch.index.query.RangeQueryBuilder;
-import org.opensearch.index.query.SimpleQueryStringBuilder;
-import org.opensearch.index.query.TermQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
+
 
 public class Antlr4SearchListener extends SearchBaseListener {
   enum conjunctions {
@@ -41,27 +40,84 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
   private static final Logger log = LoggerFactory.getLogger(Antlr4SearchListener.class);
 
+  private boolean isAnyWildcard = true;
   private BoolQuery.Builder queryBuilder = new BoolQuery.Builder();
   private conjunctions conjunction = conjunctions.AND; // DEFAULT
 
-  final private Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
-  final private Deque<conjunctions> stack_conjunction = new ArrayDeque<conjunctions>();
+  private final ArrayList<String> fieldNames = new ArrayList<String>();
+  private final ConnectionContext connectionContext;
+  private final Deque<BoolQuery.Builder> stackQueryBuilders = new ArrayDeque<BoolQuery.Builder>();
+  private final Deque<conjunctions> stackConjunction = new ArrayDeque<conjunctions>();
+  private final Set<String> knownFieldNames = new HashSet<String>();
 
   private operation operator = null;
 
-  public Antlr4SearchListener() {
+  public Antlr4SearchListener(@NotNull ConnectionContext connectionContext) {
     super();
+    this.connectionContext = connectionContext;
+  }
+  
+  // for testing purposes only
+  public Antlr4SearchListener(List<String> knownFieldNames) {
+    super();
+    this.connectionContext = null;
+    this.knownFieldNames.addAll(knownFieldNames);
   }
 
 
   @Override
-  public void exitQuery(SearchParser.QueryContext ctx) {}
-
+  public void enterFields(SearchParser.FieldsContext ctx) {
+    this.fieldNames.clear();
+    this.isAnyWildcard = true;
+  }
+  
+  @Override
+  public void exitFields(SearchParser.FieldsContext ctx) {
+    String fieldname = "";
+    if (ctx.FIELDNAME() != null) {
+      fieldname = ctx.FIELDNAME().getText();
+    }
+    if (ctx.ALL() != null ) {
+      fieldname = ctx.ALL().getText();
+    }
+    if (ctx.ANY() != null) {
+      fieldname = ctx.ANY().getText();
+    }
+    if (this.knownFieldNames.isEmpty()) {
+      try {
+        for (PropertiesListInner property : ProductsController.productPropertiesList(this.connectionContext).getBody()) {
+          this.knownFieldNames.add(property.getProperty());
+        }
+      } catch (OpenSearchException | IOException e) {
+        throw new IllegalStateException("Could not load the mapping(s) from opensearch; meaning 'q=' with field names will not work", e);
+      }
+    }
+    if (fieldname.contains("*")) {
+      String theKey = fieldname.replace(".", "\\.").replace("*", ".*");
+      Pattern regex = Pattern.compile(theKey);
+      for (String fn : this.knownFieldNames.stream()
+          .filter(s -> regex.matcher(s).matches())
+          .toList()) {
+        this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fn));
+      }
+      if (this.fieldNames.isEmpty()) {
+        throw new ParseCancellationException("Wildcarding request '" + fieldname + "' cannot match any field names in the LDD using regular expression " + theKey);
+      }
+    } else {
+      if (this.knownFieldNames.contains(fieldname)) {
+        this.fieldNames.add(SearchUtil.jsonPropertyToOpenProperty(fieldname));
+      } else {
+        throw new ParseCancellationException("The request '" + fieldname + "' does not match any field name in the LDD.");
+      }
+    }
+    this.isAnyWildcard = ctx.ALL() == null && this.fieldNames.size() > 1; 
+  }
+  
   @Override
   public void enterGroup(SearchParser.GroupContext ctx) {
     log.debug("Enter Group");
 
-    this.stack_conjunction.push(this.conjunction);
+    this.stackConjunction.push(this.conjunction);
     this.conjunction = conjunctions.AND; // DEFAULT
 
     this.stackQueryBuilders.push(this.queryBuilder);
@@ -75,7 +131,7 @@ public class Antlr4SearchListener extends SearchBaseListener {
     log.debug("Exit Group");
 
     BoolQuery.Builder upperBoolQueryBuilder = this.stackQueryBuilders.pop();
-    this.conjunction = this.stack_conjunction.pop();
+    this.conjunction = this.stackConjunction.pop();
 
     Query innerQuery = this.queryBuilder.build().toQuery();
     if (ctx.NOT() != null) {
@@ -112,16 +168,12 @@ public class Antlr4SearchListener extends SearchBaseListener {
 
 
   @Override
-  public void enterComparison(SearchParser.ComparisonContext ctx) {}
-
-  @Override
   public void exitComparison(SearchParser.ComparisonContext ctx) {
     log.debug("Exit comparison");
-    final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
 
+    BoolQuery.Builder wild = new BoolQuery.Builder();
     String right;
     Query comparatorQuery = null;
-
 
     if (ctx.NUMBER() != null) {
       right = ctx.NUMBER().getSymbol().getText();
@@ -132,74 +184,98 @@ public class Antlr4SearchListener extends SearchBaseListener {
       throw new ParseCancellationException(
           "A right component (literal) of a comparison is neither a number or a string. Number and String are the only types supported for literals.");
     }
-
-    if (this.operator == operation.eq || this.operator == operation.ne) {
-
-
-      FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
-
-      MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
-
-      comparatorQuery = matchQueryBuilder.toQuery();
-
-      if (this.operator == operation.ne) {
-        comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
-      }
-
-
-
-    } else {
-      RangeQuery.Builder rangeQueryBuilder = new RangeQuery.Builder();
-
-      rangeQueryBuilder = rangeQueryBuilder.field(left);
-
-      if (this.operator == operation.ge)
-        rangeQueryBuilder.gte(JsonData.of(right));
-      else if (this.operator == operation.gt)
-        rangeQueryBuilder.gt(JsonData.of(right));
-      else if (this.operator == operation.le)
-        rangeQueryBuilder.lte(JsonData.of(right));
-      else if (this.operator == operation.lt)
-        rangeQueryBuilder.lt(JsonData.of(right));
-      else {
-        throw new ParseCancellationException("Operator " + this.operator.name()
-            + " is not supported. Supported comparison operators are eq, ne, gt, gte, lt, lte.");
-      }
-
-      comparatorQuery = rangeQueryBuilder.build().toQuery();
-
+    if (this.isAnyWildcard) {
+      wild.minimumShouldMatch("1");
     }
+    for (String left : this.fieldNames) {
+      if (this.operator == operation.eq || this.operator == operation.ne) {
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
+        FieldValue fieldValue = new FieldValue.Builder().stringValue(right).build();
+        MatchQuery matchQueryBuilder = new MatchQuery.Builder().field(left).query(fieldValue).build();
+        TermQuery termQueryBulidler = new TermQuery.Builder().field(left).value(fieldValue).build();
+        boolQueryBuilder.should(matchQueryBuilder.toQuery(), termQueryBulidler.toQuery());
+        comparatorQuery = boolQueryBuilder.build().toQuery();
 
+        if (this.operator == operation.ne) {
+          comparatorQuery = new BoolQuery.Builder().mustNot(comparatorQuery).build().toQuery();
+        }
+      } else {
+        RangeQuery.Builder rangeQueryBuilder = new RangeQuery.Builder();
+        rangeQueryBuilder = rangeQueryBuilder.field(left);
+
+        if (this.operator == operation.ge)
+          rangeQueryBuilder.gte(JsonData.of(right));
+        else if (this.operator == operation.gt)
+          rangeQueryBuilder.gt(JsonData.of(right));
+        else if (this.operator == operation.le)
+          rangeQueryBuilder.lte(JsonData.of(right));
+        else if (this.operator == operation.lt)
+          rangeQueryBuilder.lt(JsonData.of(right));
+        else {
+          throw new ParseCancellationException("Operator " + this.operator.name()
+          + " is not supported. Supported comparison operators are eq, ne, gt, gte, lt, lte.");
+        }
+        comparatorQuery = rangeQueryBuilder.build().toQuery();
+      }
+      if (this.isAnyWildcard) {
+        wild.should(comparatorQuery);
+      } else {
+        wild.must(comparatorQuery);
+      }
+    }
     if (this.conjunction == conjunctions.AND) {
-      this.queryBuilder.must(comparatorQuery);
+      this.queryBuilder.must(wild.build().toQuery());
     } else {
-      this.queryBuilder.should(comparatorQuery);
+      this.queryBuilder.should(wild.build().toQuery());
     }
-
   }
 
   @Override
-  public void enterLikeComparison(SearchParser.LikeComparisonContext ctx) {}
+  public void exitExistence(SearchParser.ExistenceContext ctx) {
+    BoolQuery.Builder wild = new BoolQuery.Builder();
+    if (this.isAnyWildcard) {
+      wild.minimumShouldMatch("1");
+    }
+    for (String fieldName : this.fieldNames) {
+      if (this.isAnyWildcard) {
+        wild.should(new ExistsQuery.Builder().field(fieldName).build().toQuery());
+      } else {
+        wild.must(new ExistsQuery.Builder().field(fieldName).build().toQuery());
+      }
+    }
+    if (this.conjunction == conjunctions.AND) {
+      this.queryBuilder.must(wild.build().toQuery());
+    } else {
+      this.queryBuilder.should(wild.build().toQuery());
+    }
+  }
 
   @Override
   public void exitLikeComparison(SearchParser.LikeComparisonContext ctx) {
     log.debug("Exit likeComparison");
-    final String left = SearchUtil.jsonPropertyToOpenProperty(ctx.FIELD().getSymbol().getText());
 
+    BoolQuery.Builder wild = new BoolQuery.Builder();
     String right = ctx.STRINGVAL().getText();
-    // remove quotes
-    right = right.replaceAll("^\"|\"$", "");
+    right = right.replaceAll("^\"|\"$", "");  // remove the quotes
 
-    SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
-        .query(right).fuzzyMaxExpansions(0).build();
-
-    Query query = simpleQueryString.toQuery();
-    log.debug("Exit Like comparison: left member is " + left + " right member is " + right);
-
+    if (this.isAnyWildcard) {
+      wild.minimumShouldMatch("1");
+    }
+    for (String left : this.fieldNames) {
+      SimpleQueryStringQuery simpleQueryString = new SimpleQueryStringQuery.Builder().fields(left)
+          .query(right).fuzzyMaxExpansions(0).build();
+      if (this.isAnyWildcard) {
+        wild.should(simpleQueryString.toQuery());
+      } else {
+        wild.must(simpleQueryString.toQuery());
+      }
+      log.debug("Exit Like comparison: left member is {} right member is {}", left, right);
+    }
+    
     if (this.conjunction == conjunctions.AND) {
-      this.queryBuilder.must(query);
+      this.queryBuilder.must(wild.build().toQuery());
     } else {
-      this.queryBuilder.should(query);
+      this.queryBuilder.should(wild.build().toQuery());
     }
 
   }

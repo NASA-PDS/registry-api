@@ -11,9 +11,8 @@ public class HealthController implements HealthApi {
 
   @Override
   public ResponseEntity<Map<String, Object>> health() {
-    // To Be Completed
-    return new ResponseEntity<>(HttpStatus.OK);
-
+    Map<String, Object> response = Map.of("status", "ok");
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
 }

@@ -1,5 +1,4 @@
 provider "aws" {
-  version = "~> 3.0"
   region  = var.aws_region
   profile = var.aws_profile
 }
@@ -12,7 +11,12 @@ terraform {
   # using environment variables (as shown) or explicit values.
   # See https://stackoverflow.com/questions/63048738/how-to-declare-variables-for-s3-backend-in-terraform
   #
-  backend "s3" {
-    bucket = "pds-infra"
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.52.0"
+    }
   }
 }

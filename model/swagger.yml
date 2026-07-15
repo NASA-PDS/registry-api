@@ -2,10 +2,12 @@ openapi: 3.0.0
 info:
   description: |
     Registry API enabling advanced search on PDS data and metadata. The API provides end-points to search for bundles, collections and any PDS products with advanced search queries. It also enables to browse the archive hierarchically downward (e.g. collection/s products) or upward (e.g. bundles containing a product).
-  version: 1.3.0
+    Property values are cast to string in responses due to limitations of JSON typing, and should be interpreted by the client/user according to the data dictionary.
+    As a result of the string cast, some missing values might be found as "null".
   title: PDS Registry Search API
   termsOfService: 'http://pds.nasa.gov'
   contact:
+    name: "Contact PDS Engineering Node Support"
     email: pds-operator@jpl.nasa.gov
   license:
     name: Apache 2.0
@@ -319,6 +321,14 @@ paths:
         - 2. product references
       summary: |
         returns all of the members of the members of the given lid/lidvid
+      deprecated: true
+      description: |
+              ⚠️ This endpoint is deprecated and does not work anymore. It will be removed in a future release.\n\n
+
+              Please call `/{id}/members` instead, as follows:\n
+              1. Get the collection members of the bundle {id} with a first call.\n
+              2. Use the collection ids found and get their products by calling the `/{coll_id}/members` for each.\n
+
       operationId: product-members-members
       responses:
         '200':
@@ -664,7 +674,7 @@ components:
           schema:
             $ref: '#/components/schemas/errorMessage'
     Plural:
-      description: Successful request
+      description: Successful request.
       content:
         "*":
           schema:
