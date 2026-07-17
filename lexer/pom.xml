@@ -50,8 +50,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <!-- configure the versions you want to use here -->
     <antlr4.version>4.13.2</antlr4.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-  
   </properties>
   <dependencies>
     <dependency>
