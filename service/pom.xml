@@ -45,6 +45,7 @@
   <name>Registry API Service</name>
 
   <properties>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Keep your base boot version -->
     <spring-boot-version>3.5.12</spring-boot-version>

@@ -44,6 +44,7 @@
   <name>Registry API Model</name>
   <description>PDS Registry API Controllers and Responses Models</description>
   <properties>
+    <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
