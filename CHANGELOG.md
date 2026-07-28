@@ -1,8 +1,8 @@
 # Changelog
 
-## [release/1.7.2](https://github.com/NASA-PDS/registry-api/tree/release/1.7.2) (2026-07-28)
+## [v1.7.2](https://github.com/NASA-PDS/registry-api/tree/v1.7.2) (2026-07-28)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.1...release/1.7.2)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.1...v1.7.2)
 
 ## [release/1.7.1](https://github.com/NASA-PDS/registry-api/tree/release/1.7.1) (2026-07-28)
 
