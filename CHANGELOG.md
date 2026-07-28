@@ -1,11 +1,16 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-07-15)
+## [release/1.7.2](https://github.com/NASA-PDS/registry-api/tree/release/1.7.2) (2026-07-28)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.1...release/1.7.2)
+
+## [release/1.7.1](https://github.com/NASA-PDS/registry-api/tree/release/1.7.1) (2026-07-28)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...release/1.7.1)
 
 **Requirements:**
 
+- As a data user, I want documentation on how XML attributes are represented across PDS API response formats [\#791](https://github.com/NASA-PDS/registry-api/issues/791)
 - As a user, I want the exists operator to match OpenSearch's native behavior for all fields [\#712](https://github.com/NASA-PDS/registry-api/issues/712)
 - As a user, I want to search by a full/unique hierarchical path for a specific attribute [\#611](https://github.com/NASA-PDS/registry-api/issues/611)
 - As a user, I want to query for documents where a specific search field exists in the document [\#406](https://github.com/NASA-PDS/registry-api/issues/406)
