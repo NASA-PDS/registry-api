@@ -235,7 +235,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   }
 
   public RegistrySearchRequestBuilder matchMembers(PdsLidVid identifier) {
-    return this.matchField("ops:Provenance/ops:ancestor_refs", identifier);
+    return this.matchField("ops:Registry_Sweepers/ops:ancestor_refs", identifier);
   }
 
   public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,

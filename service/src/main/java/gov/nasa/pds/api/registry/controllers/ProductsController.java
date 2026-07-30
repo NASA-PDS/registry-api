@@ -53,7 +53,7 @@ import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
 // corresponding controllers
 public class ProductsController implements ProductsApi, ClassesApi, PropertiesApi {
 
-  private static final String OPS_PROVENANCE_OPS_ANCESTOR_REFS = "ops:Provenance/ops:ancestor_refs";
+  private static final String OPS_PROVENANCE_OPS_ANCESTOR_REFS = "ops:Registry_Sweepers/ops:ancestor_refs";
 
   @Override
   // TODO: Remove this when the common controller code is refactored out - it is only necessary
