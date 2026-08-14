@@ -64,8 +64,8 @@ run() {
     cd docker || exit 1
     ddir=$(pwd)
     ( cd certs || exit 1 ; ./generate-certs.sh )
-    export REG_API_IMAGE=nasapds/registry-api-service:latest
-    docker image inspect nasapds/registry-api-service:latest >/dev/null
+    export REG_API_IMAGE=nasapds/registry-api-service:${registry_api_tag:-latest}
+    docker image inspect "nasapds/registry-api-service:${registry_api_tag:-latest}" >/dev/null
     echo "launch services"
     docker compose \
            --ansi never \
@@ -110,15 +110,35 @@ run() {
     return $status
 }
 
+registry_api_tag=""
+registry_branch=""
 verbose=false
 verify=false
 for arg in "$@"; do
     case "$arg" in
         --verbose) verbose=true ;;
         --verify)  verify=true ;;
+        --registry-branch=*)   registry_branch="${arg#--registry-branch=}" ;;
+        --registry-api-tag=*)  registry_api_tag="${arg#--registry-api-tag=}" ;;
         *)
             echo "Error: Invalid argument '$arg'"
-            echo "Usage: $0 [--verify] [--verbose]"
+            echo "Usage: $0 [--verify] [--verbose] [--registry-branch=<branch>] [--registry-api-tag=<tag>]"
+            echo
+            echo "Options:"
+            echo "  --verify                       Verify that the last integration test result is"
+            echo "                                 still valid for the current commit (no re-run)."
+            echo "  --verbose                      Print docker compose logs after the test run."
+            echo "  --registry-branch=<branch>     Check out the given branch of NASA-PDS/registry"
+            echo "                                 for the integration tests instead of the default"
+            echo "                                 behaviour, which auto-selects a branch whose name"
+            echo "                                 matches the current registry-api branch (falling"
+            echo "                                 back to the registry default branch when no match"
+            echo "                                 is found)."
+            echo "  --registry-api-tag=<tag>       Use the given Docker Hub tag for the registry-api"
+            echo "                                 service image (nasapds/registry-api-service:<tag>)"
+            echo "                                 instead of building the image from the current"
+            echo "                                 source. When this option is set the Maven build and"
+            echo "                                 docker build steps are skipped."
             exit 1 ;;
     esac
 done
@@ -136,10 +156,16 @@ echo "temporary directory: $tdir"
 trap 'rm -rf "$tdir"' EXIT
 export tdir
 cd "$tdir" || exit 1
+echo "Cloning NASA-PDS/registry repository into temporary directory: $tdir"
 git clone --quiet https://github.com/NASA-PDS/registry.git
 cd registry || exit 1
-if git show-ref --verify --quiet refs/remotes/origin/"$branchname"
+if [ -n "$registry_branch" ]
 then
+    echo "Switching to requested registry branch: $registry_branch"
+    git switch "$registry_branch"
+elif git show-ref --verify --quiet refs/remotes/origin/"$branchname"
+then
+    echo "Switching to matching registry branch: $branchname"
     git switch "$branchname"
 fi
 echo "registry being used"
@@ -214,7 +240,7 @@ if $verify; then
 else
     cd "$rdir" || exit 1
     clean || exit 2
-    build || exit 3
+    [ -z "$registry_api_tag" ] && { build || exit 3; }
     cd "$tdir"/registry || exit 1
     ( set -o pipefail ; run 2>&1 | tee "$rdir"/integration_tests.rpt.txt ) \
         && status=success || status=failure
