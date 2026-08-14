@@ -82,6 +82,8 @@ public class SecurityValidationFilter implements HandlerInterceptor {
       String serverName = request.getServerName();
       log.debug("Servername is {}", serverName);
       if (!authorizedServerName(serverName)) {
+        log.error("Server cannot be proxied from {} but from {}", serverName,
+                this.authorizedForwardedHosts);
         throw new UnauthorizedForwardedHostException("Server cannot be proxied from " + serverName);
       }
     }

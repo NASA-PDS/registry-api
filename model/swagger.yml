@@ -5,6 +5,7 @@ info:
     Property values are cast to string in responses due to limitations of JSON typing, and should be interpreted by the client/user according to the data dictionary.
     As a result of the string cast, some missing values might be found as "null".
   title: PDS Registry Search API
+  version: 1.7.0
   termsOfService: 'http://pds.nasa.gov'
   contact:
     name: "Contact PDS Engineering Node Support"
