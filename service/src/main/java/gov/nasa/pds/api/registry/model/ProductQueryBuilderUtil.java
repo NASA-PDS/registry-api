@@ -64,7 +64,7 @@ public class ProductQueryBuilderUtil {
   }
 
   public static void addHistoryStopband(BoolQueryBuilder boolQuery) {
-    boolQuery.mustNot(QueryBuilders.existsQuery("ops:Provenance/ops:superseded_by"));
+    boolQuery.mustNot(QueryBuilders.existsQuery("ops:Registry_Sweepers/ops:superseded_by"));
   }
 
   public static void addPresetCriteria(BoolQueryBuilder boolQuery, GroupConstraint presetCriteria) {

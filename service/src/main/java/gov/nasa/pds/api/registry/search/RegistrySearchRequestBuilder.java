@@ -235,7 +235,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   }
 
   public RegistrySearchRequestBuilder matchMembers(PdsLidVid identifier) {
-    return this.matchField("ops:Provenance/ops:ancestor_refs", identifier);
+    return this.matchField("ops:Registry_Sweepers/ops:ancestor_refs", identifier);
   }
 
   public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
@@ -409,7 +409,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   public RegistrySearchRequestBuilder excludeSupersededProducts() {
 
     ExistsQuery supersededByExists =
-        new ExistsQuery.Builder().field("ops:Provenance/ops:superseded_by").build();
+        new ExistsQuery.Builder().field("ops:Registry_Sweepers/ops:superseded_by").build();
 
     this.queryBuilder.mustNot(supersededByExists.toQuery());
 
