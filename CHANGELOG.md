@@ -1,12 +1,20 @@
 # Changelog
 
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-08-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2...«unknown»)
+
+**Defects:**
+
+- Investigate 429 error received by SBNPSI from the Search API [\#803](https://github.com/NASA-PDS/registry-api/issues/803) [[s.medium](https://github.com/NASA-PDS/registry-api/labels/s.medium)]
+
+**Other closed issues:**
+
+- Update api references for new sweepers metadata schema [\#806](https://github.com/NASA-PDS/registry-api/issues/806)
+
 ## [v1.7.2](https://github.com/NASA-PDS/registry-api/tree/v1.7.2) (2026-07-28)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.1...v1.7.2)
-
-## [release/1.7.1](https://github.com/NASA-PDS/registry-api/tree/release/1.7.1) (2026-07-28)
-
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...release/1.7.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...v1.7.2)
 
 **Requirements:**
 
