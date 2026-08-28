@@ -77,44 +77,44 @@ resource "aws_lb_listener_rule" "pds-registry-forward-rule" {
 
 
 # Credentials for ECR pull through cache from GHCR
-resource "aws_secretsmanager_secret" "github_ecr_credentials" {
-  count = var.create_github_secret_credentials
+#resource "aws_secretsmanager_secret" "github_ecr_credentials" {
+#  count = var.create_github_secret_credentials
+#
+#  name = "ecr-pullthroughcache/github-credentials"
+#  tags = var.common_tags
+#}
 
-  name = "ecr-pullthroughcache/github-credentials"
-  tags = var.common_tags
-}
-
-resource "aws_secretsmanager_secret_version" "github_ecr_credentials" {
-  count = var.create_github_secret_credentials
-
-  secret_id = aws_secretsmanager_secret.github_ecr_credentials[count.index].id
-  secret_string = jsonencode({
-    username    = var.github_username
-    accessToken = var.github_token
-  })
-}
+#resource "aws_secretsmanager_secret_version" "github_ecr_credentials" {
+#  count = var.create_github_secret_credentials
+#
+#  secret_id = aws_secretsmanager_secret.github_ecr_credentials[count.index].id
+#  secret_string = jsonencode({
+#    username    = var.github_username
+#    accessToken = var.github_token
+#  })
+#}
 
 # Look up the secret when it is not created by this script
-data "aws_secretsmanager_secret" "github_ecr_credentials" {
-  count = 1 - var.create_github_secret_credentials
-  name  = "ecr-pullthroughcache/github-credentials"
-}
+#data "aws_secretsmanager_secret" "github_ecr_credentials" {
+#  count = 1 - var.create_github_secret_credentials
+#  name  = "ecr-pullthroughcache/github-credentials"
+#}
 
-locals {
-  github_ecr_credentials_arn = var.create_github_secret_credentials == 1 ? aws_secretsmanager_secret.github_ecr_credentials[0].arn : data.aws_secretsmanager_secret.github_ecr_credentials[0].arn
-}
+#locals {
+#  github_ecr_credentials_arn = var.create_github_secret_credentials == 1 ? aws_secretsmanager_secret.github_ecr_credentials[0].arn : data.aws_secretsmanager_secret.github_ecr_credentials[0].arn
+#}
 
 # Add a Pull Through Cache rule for GHCR
-resource "aws_ecr_pull_through_cache_rule" "ghcr" {
-  ecr_repository_prefix = "ghcr"
-  upstream_registry_url = "ghcr.io"
-  credential_arn        = local.github_ecr_credentials_arn
-}
+#resource "aws_ecr_pull_through_cache_rule" "ghcr" {
+#  ecr_repository_prefix = "ghcr"
+#  upstream_registry_url = "ghcr.io"
+#  credential_arn        = local.github_ecr_credentials_arn
+#}
 
-resource "aws_ecr_repository" "ghcr_registry_api" {
-  name = "ghcr/nasa-pds/registry-api"
-  tags = var.common_tags
-}
+#resource "aws_ecr_repository" "ghcr_registry_api" {
+#  name = "ghcr/nasa-pds/registry-api"
+#  tags = var.common_tags
+#}
 
 # Log groups hold logs from our app.
 resource "aws_cloudwatch_log_group" "pds-registry-log-group" {
@@ -211,6 +211,6 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
 
   tags = var.common_tags
 
-  depends_on = [aws_ecr_repository.ghcr_registry_api, aws_ecr_pull_through_cache_rule.ghcr]
+  #depends_on = [aws_ecr_repository.ghcr_registry_api, aws_ecr_pull_through_cache_rule.ghcr]
 }
 
