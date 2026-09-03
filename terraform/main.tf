@@ -170,7 +170,5 @@ resource "aws_ecs_service" "pds-registry-reg-service" {
   }
 
   tags = var.common_tags
-
-  #depends_on = [aws_ecr_repository.ghcr_registry_api, aws_ecr_pull_through_cache_rule.ghcr]
 }
 
