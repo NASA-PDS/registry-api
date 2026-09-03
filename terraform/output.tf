@@ -14,6 +14,7 @@ resource "aws_ssm_parameter" "load_balancer_domain" {
   name        = "${local.ssm_prefix}/load-balancer-domain"
   description = "Registry API load balancer domain"
   type        = "String"
+  overwrite   = true
   value       = aws_lb.registry-api-lb.dns_name
   tags        = var.common_tags
 }
