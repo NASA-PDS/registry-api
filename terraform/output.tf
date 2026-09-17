@@ -16,4 +16,5 @@ resource "aws_ssm_parameter" "load_balancer_domain" {
   type        = "String"
   value       = aws_lb.registry-api-lb.dns_name
   tags        = var.common_tags
+  overwrite   = true
 }
