@@ -1,8 +1,16 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-08-14)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-09-17)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...«unknown»)
+
+**Defects:**
+
+- Inconsistent membership support for bundles -\> collections, collections -\> members [\#717](https://github.com/NASA-PDS/registry-api/issues/717) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+## [v1.7.2-deploy](https://github.com/NASA-PDS/registry-api/tree/v1.7.2-deploy) (2026-08-14)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2...v1.7.2-deploy)
 
 **Defects:**
 
