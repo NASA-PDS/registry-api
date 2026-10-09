@@ -1,12 +1,15 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-09-17)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-10-09)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...«unknown»)
 
 **Defects:**
 
+- Collection /members endpoint does not return complete member count for `mars2020_navcam_ops_stereo:data` collection [\#829](https://github.com/NASA-PDS/registry-api/issues/829) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- /members endpoint does not return all collections referenced in bundle ref\_lid\_collection [\#720](https://github.com/NASA-PDS/registry-api/issues/720) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Inconsistent membership support for bundles -\> collections, collections -\> members [\#717](https://github.com/NASA-PDS/registry-api/issues/717) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+- all members of a collection are not found [\#701](https://github.com/NASA-PDS/registry-api/issues/701) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 
 ## [v1.7.2-deploy](https://github.com/NASA-PDS/registry-api/tree/v1.7.2-deploy) (2026-08-14)
 
