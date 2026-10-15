@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
+import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 import gov.nasa.pds.api.registry.util.LoggingAspect;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -315,17 +316,27 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
    * @param fieldNames
    */
   public RegistrySearchRequestBuilder fieldsFromStrings(List<String> fieldNames) {
-    // We want everything if the user did not request any specific fields
+    // Filter _source to explicitly-requested fields.  If nothing was explicitly requested, return all fields except
+    // BLOB fields, as these are suspected to cause problematic memory use in edge-cases.
+
+    SourceFilter sourceFilter;
     if ((fieldNames != null) && (!fieldNames.isEmpty())) {
       log.info("restricting list of fields requested from OpenSearch.");
       List<String> openSearchField =
           fieldNames.stream().map(SearchUtil::jsonPropertyToOpenProperty).toList();
 
-      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
-      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
-
-      this.source(limitedSourceCfg);
+      sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
+    } else {
+      //      Exclude BLOB fields unless explicitly requested
+      sourceFilter = new SourceFilter.Builder()
+              .excludes(PdsPropertyConstants.XML_BLOB.toOpenPropertyString(),
+                      PdsPropertyConstants.JSON_BLOB.toOpenPropertyString())
+              .build();
     }
+
+    SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
+    this.source(limitedSourceCfg);
+
     return this;
   }
 
@@ -337,17 +348,26 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
    * @param pdsProperties
    */
   public RegistrySearchRequestBuilder fieldsFromPdsProperties(List<PdsProperty> pdsProperties) {
-    // We want everything if the user did not request any specific fields
+    // Filter _source to explicitly-requested fields.  If nothing was explicitly requested, return all fields except
+    // BLOB fields, as these are suspected to cause problematic memory use in edge-cases.
+
+    SourceFilter sourceFilter;
     if ((pdsProperties != null) && (!pdsProperties.isEmpty())) {
       log.info("restricting list of fields requested from OpenSearch.");
       List<String> openSearchField =
           pdsProperties.stream().map(PdsProperty::toOpenPropertyString).toList();
-
-      SourceFilter sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
-      SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
-
-      this.source(limitedSourceCfg);
+      sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
+    } else {
+//      Exclude BLOB fields unless explicitly requested
+      sourceFilter = new SourceFilter.Builder()
+              .excludes(PdsPropertyConstants.XML_BLOB.toOpenPropertyString(),
+                      PdsPropertyConstants.JSON_BLOB.toOpenPropertyString())
+              .build();
     }
+
+    SourceConfig limitedSourceCfg = new SourceConfig.Builder().filter(sourceFilter).build();
+    this.source(limitedSourceCfg);
+
     return this;
   }
 
