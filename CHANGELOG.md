@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-10-09)
+## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-10-15)
 
 [Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...«unknown»)
 
@@ -10,6 +10,10 @@
 - /members endpoint does not return all collections referenced in bundle ref\_lid\_collection [\#720](https://github.com/NASA-PDS/registry-api/issues/720) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Inconsistent membership support for bundles -\> collections, collections -\> members [\#717](https://github.com/NASA-PDS/registry-api/issues/717) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - all members of a collection are not found [\#701](https://github.com/NASA-PDS/registry-api/issues/701) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
+
+**Other closed issues:**
+
+- Interim fix: add JVM heap cap and fast-fail flag to ECS task definition to stabilize API while \#832 is resolved [\#833](https://github.com/NASA-PDS/registry-api/issues/833) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 
 ## [v1.7.2-deploy](https://github.com/NASA-PDS/registry-api/tree/v1.7.2-deploy) (2026-08-14)
 
