@@ -1,5 +1,6 @@
 {
-  "api_gitrev": "8d991cfdf675d0c1cbd2176c497d6d6e6c042764",
-  "reg_gitrev": "9adde83d314cd9d465f5b5ddfbd5417d1288a16b",
-  "status": "success"
+
+  "api_gitrev": "48347f000901c3f01cee1f5b9d95f3a06f0d758d+",
+  "reg_gitrev": "da043b9a45bae57b91f9ddb71e2905f8a04391d6",
+  "status": "failure"
 }
