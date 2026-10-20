@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
+import gov.nasa.pds.api.registry.model.properties.FieldSelection;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import gov.nasa.pds.api.registry.util.LoggingAspect;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -106,8 +107,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
    * Applies a common set of constraints and other build options which generally apply to any
    * endpoint which queries OpenSearch for a result-set of multiple products.
    * 
-   * @param includePdsProperties - which properties to include in the results (JSON format, not
-   *        OpenSearch format)
+   * @param fieldSelection - which properties to fetch from, and not to fetch from, OpenSearch
    * @param queryString - a querystring (q=) to constrain the result-set by
    * @param keywords - a set of keyword matches to apply for text search - not implemented: detailed
    *        design and code to be done.
@@ -119,11 +119,11 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
    * @param excludeSupersededProducts - whether to exclude superseded products from the result set
    */
   public RegistrySearchRequestBuilder applyMultipleProductsDefaults(
-      List<PdsProperty> includePdsProperties, String queryString, List<String> keywords,
+      FieldSelection fieldSelection, String queryString, List<String> keywords,
       Integer pageSize, List<String> sortFieldNames, List<String> searchAfterFieldValues,
       List<String> facetFields, Integer facetLimit, Boolean excludeSupersededProducts)
       throws UnparsableQParamException, SortSearchAfterMismatchException {
-    this.fieldsFromPdsProperties(includePdsProperties).constrainByQueryString(queryString)
+    this.fieldsFromSelection(fieldSelection).constrainByQueryString(queryString)
         .addKeywordsParam(keywords).addPropertyFacets(facetFields, facetLimit)
         .paginate(pageSize, sortFieldNames, searchAfterFieldValues);
 
@@ -348,6 +348,39 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
       this.source(limitedSourceCfg);
     }
+    return this;
+  }
+
+
+
+  /**
+   * Restricts the _source fetched from OpenSearch to the included properties (everything if none),
+   * minus the excluded properties. The selection is applied as is, no rule is applied here.
+   *
+   * @param selection the properties to fetch and not to fetch
+   */
+  public RegistrySearchRequestBuilder fieldsFromSelection(FieldSelection selection) {
+    List<String> included =
+        selection.included().stream().map(PdsProperty::toOpenPropertyString).toList();
+    List<String> excluded =
+        selection.excluded().stream().map(PdsProperty::toOpenPropertyString).toList();
+
+    // We want everything if there is nothing to include or exclude
+    if (included.isEmpty() && excluded.isEmpty()) {
+      return this;
+    }
+
+    log.info("restricting list of fields requested from OpenSearch, included: {}, excluded: {}",
+        included, excluded);
+    SourceFilter.Builder sourceFilterBuilder = new SourceFilter.Builder();
+    if (!included.isEmpty()) {
+      sourceFilterBuilder.includes(included);
+    }
+    if (!excluded.isEmpty()) {
+      sourceFilterBuilder.excludes(excluded);
+    }
+
+    this.source(new SourceConfig.Builder().filter(sourceFilterBuilder.build()).build());
     return this;
   }
 

@@ -12,6 +12,7 @@ import gov.nasa.pds.api.base.PropertiesApi;
 import gov.nasa.pds.api.registry.model.exceptions.*;
 import gov.nasa.pds.api.registry.model.identifiers.PdsLidVid;
 import gov.nasa.pds.api.registry.model.identifiers.PdsProductClasses;
+import gov.nasa.pds.api.registry.model.properties.FieldSelection;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,12 +121,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
     ResponseTransformerImpl transformer = getTransformerInstance();
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
         : userRequestedFields.stream().map(PdsProperty::new).toList();
-    List<PdsProperty> allRequiredProperties =
-        transformer.getRequestedFields(userRequestedPdsProperty);
+    FieldSelection fieldSelection = transformer.getFieldSelection(userRequestedPdsProperty);
 
     try {
       SearchRequest searchRequest =
-          searchRequestBuilder.applyMultipleProductsDefaults(allRequiredProperties, q, keywords,
+          searchRequestBuilder.applyMultipleProductsDefaults(fieldSelection, q, keywords,
               limit, sort, searchAfter, facetFields, facetLimit, true).build();
 
       SearchResponse<HashMap> searchResponse =
@@ -156,16 +156,15 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
         : userRequestedFields.stream().map(PdsProperty::new).toList();
-    List<PdsProperty> allRequiredProperties =
-        transformer.getRequestedFields(userRequestedPdsProperty);
+    FieldSelection fieldSelection = transformer.getFieldSelection(userRequestedPdsProperty);
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
 
       if (pdsIdentifier.isLidvid()) {
-        product = this.getLidVid(pdsIdentifier, allRequiredProperties);
+        product = this.getLidVid(pdsIdentifier, fieldSelection);
       } else {
-        product = this.getLatestLidVid(pdsIdentifier, allRequiredProperties);
+        product = this.getLatestLidVid(pdsIdentifier, fieldSelection);
       }
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
@@ -189,12 +188,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
         : userRequestedFields.stream().map(PdsProperty::new).toList();
-    List<PdsProperty> allRequiredProperties =
-        transformer.getRequestedFields(userRequestedPdsProperty);
+    FieldSelection fieldSelection = transformer.getFieldSelection(userRequestedPdsProperty);
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
-      product = this.getLatestLidVid(pdsIdentifier, allRequiredProperties);
+      product = this.getLatestLidVid(pdsIdentifier, fieldSelection);
     } catch (IOException | OpenSearchException e) {
       throw new UnhandledException(e);
     }
@@ -221,21 +219,20 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
     List<PdsProperty> userRequestedPdsProperty = userRequestedFields == null ? null
         : userRequestedFields.stream().map(PdsProperty::new).toList();
-    List<PdsProperty> allRequiredProperties =
-        transformer.getRequestedFields(userRequestedPdsProperty);
+    FieldSelection fieldSelection = transformer.getFieldSelection(userRequestedPdsProperty);
 
     try {
       PdsProductIdentifier pdsIdentifier = PdsProductIdentifier.fromString(identifier);
 
       if (pdsIdentifier.isLidvid()) {
         HashMap<String, Object> singleProductKVP =
-            this.getLidVid(pdsIdentifier, allRequiredProperties);
+            this.getLidVid(pdsIdentifier, fieldSelection);
         response = new RawMultipleProductResponse(singleProductKVP);
 
       } else {
         limit = (limit == null) ? DEFAULT_LIMIT : limit;
         response =
-            this.getAllLidVid(pdsIdentifier, allRequiredProperties, limit, sort, searchAfter);
+            this.getAllLidVid(pdsIdentifier, fieldSelection, limit, sort, searchAfter);
       }
 
 
@@ -266,10 +263,10 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLidVid(PdsProductIdentifier identifier,
-      List<PdsProperty> pdsProperties) throws OpenSearchException, IOException, NotFoundException {
+      FieldSelection fieldSelection) throws OpenSearchException, IOException, NotFoundException {
 
     SearchRequest searchRequest = new RegistrySearchRequestBuilder(this.connectionContext)
-        .matchLidvid(identifier).fieldsFromPdsProperties(pdsProperties).build();
+        .matchLidvid(identifier).fieldsFromSelection(fieldSelection).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -289,11 +286,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   @SuppressWarnings("unchecked")
   private HashMap<String, Object> getLatestLidVid(PdsProductIdentifier identifier,
-      List<PdsProperty> pdsProperties) throws OpenSearchException, IOException, NotFoundException {
+      FieldSelection fieldSelection) throws OpenSearchException, IOException, NotFoundException {
 
     SearchRequest searchRequest =
         new RegistrySearchRequestBuilder(this.connectionContext).matchLid(identifier)
-            .fieldsFromPdsProperties(pdsProperties).excludeSupersededProducts().build();
+            .fieldsFromSelection(fieldSelection).excludeSupersededProducts().build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see
@@ -313,12 +310,12 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
 
   private RawMultipleProductResponse getAllLidVid(PdsProductIdentifier identifier,
-      List<PdsProperty> pdsProperties, Integer limit, List<String> sort, List<String> searchAfter)
+      FieldSelection fieldSelection, Integer limit, List<String> sort, List<String> searchAfter)
       throws OpenSearchException, IOException, NotFoundException, SortSearchAfterMismatchException {
 
     SearchRequest searchRequest =
         new RegistrySearchRequestBuilder(this.connectionContext).matchLid(identifier)
-            .fieldsFromPdsProperties(pdsProperties).paginate(limit, sort, searchAfter).build();
+            .fieldsFromSelection(fieldSelection).paginate(limit, sort, searchAfter).build();
 
     // useless to detail here that the HashMap is parameterized <String, Object>
     // because of compilation features, see

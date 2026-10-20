@@ -3,7 +3,7 @@
 # Initialize with: terraform init -backend-config=backend-config.tfvars
 
 bucket         = "my-terraform-state-bucket"
-key            = "registry/opensearch/terraform.tfstate"
+key            = "registry_aoss/opensearch/terraform.tfstate"
 region         = "us-east-1"
 dynamodb_table = "terraform-state-lock"
 encrypt        = true
