@@ -51,6 +51,12 @@ import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
   private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
+                                                         
+  public static final String OPS_REGISTRY_SWEEPERS_OPS_ANCESTOR_REFS = "ops:Provenance/ops:ancestor_refs";
+      // to be become next "ops:Registry_Sweepers/ops:ancestor_refs";
+
+  public static final String OPS_REGISTRY_SWEEPERS_OPS_SUPERSEDED_BY = "ops:Provenance/ops:superseded_by";
+  // to become next "ops:Registry_Sweepers/ops:superseded_by";
 
   private ConnectionContext connectionContext;
   private List<String> registryIndices;
@@ -235,7 +241,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   }
 
   public RegistrySearchRequestBuilder matchMembers(PdsLidVid identifier) {
-    return this.matchField("ops:Registry_Sweepers/ops:ancestor_refs", identifier);
+    return this.matchField(OPS_REGISTRY_SWEEPERS_OPS_ANCESTOR_REFS, identifier);
   }
 
   public RegistrySearchRequestBuilder paginate(Integer pageSize, List<String> sortFieldNames,
@@ -442,7 +448,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
   public RegistrySearchRequestBuilder excludeSupersededProducts() {
 
     ExistsQuery supersededByExists =
-        new ExistsQuery.Builder().field("ops:Registry_Sweepers/ops:superseded_by").build();
+        new ExistsQuery.Builder().field(OPS_REGISTRY_SWEEPERS_OPS_SUPERSEDED_BY).build();
 
     this.queryBuilder.mustNot(supersededByExists.toQuery());
 
