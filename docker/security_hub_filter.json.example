@@ -1,0 +1,8 @@
+{
+  "ResourceId": [
+    {
+      "Value": "<URI>/<digest>",
+      "Comparison": "EQUALS"
+    }
+  ]
+}

@@ -46,3 +46,19 @@ For example on AWS, with OpenSearch serverless as a back-end:
 
     SPRING_BOOT_APP_ARGS=--openSearch.host=<your opensearch serverless URL> --openSearch.CCSEnabled=true --openSearch.username="" --openSearch.disciplineNodes=atm-delta,en-delta --registry.service.version=1.5.0-SNAPSHOT
     SERVER_PORT=80
+
+
+## Export vulnerabilities from AWS Security=Hub
+
+Update the file security_hub_filter.example with the URI / digest of the docker image to be scanned on ECR.
+
+Apply your credential for the AWS account where the image is hosted and run:
+
+    % aws securityhub get-findings \
+      --region us-west-2 \
+      --filters file:///Users/loubrieu/git/registry-api/docker/security_hub_filter.json \
+      --output json \
+      > findings.json
+
+      
+
