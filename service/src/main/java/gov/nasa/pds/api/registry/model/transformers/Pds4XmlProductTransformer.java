@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.nasa.pds.api.registry.model.properties.FieldSelection;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 
@@ -20,11 +21,11 @@ public class Pds4XmlProductTransformer extends Pds4ProductTransformer {
 
 
   @Override
-  public List<PdsProperty> getRequestedFields(List<PdsProperty> userRequestFields) {
+  public FieldSelection getFieldSelection(List<PdsProperty> userRequestedFields) {
     log.info("User Requested Fields are ignored with this transformer");
     List<PdsProperty> fields = new ArrayList<PdsProperty>(REQUIRED_FIELDS);
     fields.add(PdsPropertyConstants.XML_BLOB);
-    return fields;
+    return new FieldSelection(fields, List.of());
 
   }
 }

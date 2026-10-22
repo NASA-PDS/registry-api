@@ -69,11 +69,6 @@ public abstract class ResponseTransformerImpl implements ResponseTransformer {
   }
 
   @Override
-  public List<PdsProperty> getRequestedFields(List<PdsProperty> userRequestFields) {
-    return userRequestFields;
-  }
-
-  @Override
   public Object transform(RawMultipleProductResponse input, List<PdsProperty> fields) {
     // TODO Auto-generated method stub
     return null;

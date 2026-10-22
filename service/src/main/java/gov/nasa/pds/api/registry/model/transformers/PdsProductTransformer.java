@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import gov.nasa.pds.api.registry.model.EntityProduct;
 import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
 import gov.nasa.pds.api.registry.model.SearchUtil;
+import gov.nasa.pds.api.registry.model.properties.FieldSelection;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 import gov.nasa.pds.api.registry.util.LogExecutionTime;
@@ -36,15 +37,20 @@ public class PdsProductTransformer extends ResponseTransformerImpl {
       List.of(PdsPropertyConstants.XML_BLOB, PdsPropertyConstants.JSON_BLOB);
 
   @Override
-  public List<PdsProperty> getRequestedFields(List<PdsProperty> userRequestFields) {
-    if (userRequestFields != null && !userRequestFields.isEmpty()) {
+  public FieldSelection getFieldSelection(List<PdsProperty> userRequestedFields) {
+    if (userRequestedFields != null && !userRequestedFields.isEmpty()) {
       List<PdsProperty> allFields = new ArrayList<PdsProperty>(REQUIRED_FIELDS);
-      allFields.addAll(userRequestFields);
-      return new ArrayList<PdsProperty>(new TreeSet<PdsProperty>(allFields));
+      allFields.addAll(userRequestedFields);
+      List<PdsProperty> included = new ArrayList<PdsProperty>(new TreeSet<PdsProperty>(allFields));
+
+      // a property which is explicitly requested by the user is not excluded
+      List<PdsProperty> excluded =
+          EXCLUDED_PROPERTIES.stream().filter(p -> !userRequestedFields.contains(p)).toList();
+      return new FieldSelection(included, excluded);
     } else {
-      // if the user did not specify anything, everything will be returned
-      // we want to keep it like that
-      return null;
+      // if the user did not specify anything, everything but the excluded properties
+      // will be returned
+      return new FieldSelection(List.of(), EXCLUDED_PROPERTIES);
     }
   }
 

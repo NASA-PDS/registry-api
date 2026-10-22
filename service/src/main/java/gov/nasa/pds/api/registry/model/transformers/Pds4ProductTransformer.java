@@ -43,12 +43,6 @@ public abstract class Pds4ProductTransformer extends ResponseTransformerImpl {
   }
 
   @Override
-  public List<PdsProperty> getRequestedFields(List<PdsProperty> userRequestFields) {
-    return userRequestFields;
-  }
-
-
-  @Override
   @LogExecutionTime
   public Object transform(RawMultipleProductResponse input, List<PdsProperty> pdsProperties) {
     List<Pds4Product> list = new ArrayList<>();

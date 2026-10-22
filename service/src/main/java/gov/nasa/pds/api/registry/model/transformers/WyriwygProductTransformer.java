@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 
 import gov.nasa.pds.api.registry.model.RawMultipleProductResponse;
+import gov.nasa.pds.api.registry.model.properties.FieldSelection;
 import gov.nasa.pds.api.registry.model.properties.PdsProperty;
 import gov.nasa.pds.api.registry.model.properties.PdsPropertyConstants;
 import gov.nasa.pds.api.registry.util.LogExecutionTime;
@@ -30,17 +31,27 @@ public class WyriwygProductTransformer extends ResponseTransformerImpl {
   private static final List<PdsProperty> EXCLUDED_PROPERTIES =
       List.of(PdsPropertyConstants.XML_BLOB, PdsPropertyConstants.JSON_BLOB);
 
+  @Override
+  public FieldSelection getFieldSelection(List<PdsProperty> userRequestedFields) {
+    // a property which is explicitly requested by the user is not excluded
+    List<PdsProperty> excluded = userRequestedFields == null ? EXCLUDED_PROPERTIES
+        : EXCLUDED_PROPERTIES.stream().filter(p -> !userRequestedFields.contains(p)).toList();
+    return new FieldSelection(userRequestedFields, excluded);
+  }
+
   private WyriwygProduct generateWyriwygProduct(Map<String, Object> hit,
       List<PdsProperty> includedFields) {
     WyriwygProduct product = new WyriwygProduct();
     PdsProperty pdsProperty;
     List<String> includedFieldJsonStrings = includedFields == null ? null
         : includedFields.stream().map(PdsProperty::toJsonPropertyString).toList();
+    boolean userRequestedFields = includedFields != null && !includedFields.isEmpty();
     for (Entry<String, Object> pair : hit.entrySet()) {
       WyriwygProductKeyValuePair kvp = new WyriwygProductKeyValuePair();
       pdsProperty = new PdsProperty(pair.getKey());
-      if (!EXCLUDED_PROPERTIES.contains(pdsProperty) && (includedFields == null
-          || includedFields.isEmpty() || includedFields.contains(pdsProperty))) {
+      // the excluded properties are only returned when explicitly requested by the user
+      if (userRequestedFields ? includedFields.contains(pdsProperty)
+          : !EXCLUDED_PROPERTIES.contains(pdsProperty)) {
         log.debug(
             "In this case we keep the property in the response, it is not excluded and request implicitly or explicitelly by the user");
         kvp.setKey(pdsProperty.toJsonPropertyString());
