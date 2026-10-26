@@ -4,7 +4,6 @@ server.port=8080
 server.use-forward-headers=true
 
 #spring.jackson.date-format=io.swagger.RFC3339DateFormat
-spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
 
 debug=true
 logging.level.root = DEBUG

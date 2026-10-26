@@ -14,7 +14,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import gov.nasa.pds.api.registry.view.CsvErrorMessageSerializer;
@@ -59,15 +58,14 @@ public class WebMVCConfig implements WebMvcConfigurer {
         .addResourceLocations("classpath:/swagger-ui/");
     registry.addResourceHandler(contextPath + "swagger-ui/index.htm*")
         .addResourceLocations("classpath:/swagger-ui/");
+    // springdoc 3 maps /swagger-ui/*index.html to its default page, which is more specific than the
+    // pattern above and would hide the PDS page. A path variable restricted to index.html ranks
+    // above that wildcard pattern. A plain exact path cannot be used: a resource handler derives the
+    // file name from the variable part of the pattern, and an exact path has none (404).
+    registry.addResourceHandler(contextPath + "swagger-ui/{page:index\\.html}")
+        .addResourceLocations("classpath:/swagger-ui/");
 
 
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  public void configurePathMatch(PathMatchConfigurer configurer) {
-    // this is important to avoid that parameters (e.g lidvid) are truncated after .
-    configurer.setUseSuffixPatternMatch(false);
   }
 
   /**
