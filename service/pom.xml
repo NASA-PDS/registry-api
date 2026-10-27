@@ -48,10 +48,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Keep your base boot version -->
     <spring-boot-version>3.5.12</spring-boot-version>
+    <!-- override Spring Boot BOM managed version -->
+    <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
     <!-- Explicitly aligning Framework to fix the checkFlag error -->
     <spring-framework.version>6.2.14</spring-framework.version>
     <jackson-version>2.19.1</jackson-version>
     <awssdk-version>2.31.54</awssdk-version>
+
+
   </properties>
 
   <dependencyManagement>
