@@ -61,7 +61,7 @@ jobs:
                 name: ☕️ Set up OpenJDK
                 uses: actions/setup-java@v6
                 with:
-                    distribution: 'adopt'
+                    distribution: 'temurin'
                     java-version: ${{matrix.java-version}}
             -
                 name: 🩺 Unit tests
