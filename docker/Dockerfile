@@ -41,7 +41,7 @@
 # Normally we'd prefer Alpine Linux, but JDK 11 isn't available with it, so
 # we go with a slim Debian. Debian's good too.
 
-FROM tomcat:jre25-temurin-noble
+FROM eclipse-temurin:25-jre-noble
 
 
 # API JAR file
