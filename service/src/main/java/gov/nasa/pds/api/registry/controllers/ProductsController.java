@@ -53,8 +53,6 @@ import gov.nasa.pds.api.registry.model.transformers.ResponseTransformerRegistry;
 // corresponding controllers
 public class ProductsController implements ProductsApi, ClassesApi, PropertiesApi {
 
-  private static final String OPS_PROVENANCE_OPS_ANCESTOR_REFS = "ops:Registry_Sweepers/ops:ancestor_refs";
-
   @Override
   // TODO: Remove this when the common controller code is refactored out - it is only necessary
   // because additional
@@ -537,9 +535,11 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
       List<PdsLidVid> parentIds;
       if (productClass.isCollection()) {
-        parentIds = resolveLidVidsFromProductField(lidvid, OPS_PROVENANCE_OPS_ANCESTOR_REFS);
+        parentIds = resolveLidVidsFromProductField(lidvid,
+            RegistrySearchRequestBuilder.OPS_REGISTRY_SWEEPERS_OPS_ANCESTOR_REFS);
       } else if (productClass.isBasicProduct()) {
-        parentIds = resolveLidVidsFromProductField(lidvid, OPS_PROVENANCE_OPS_ANCESTOR_REFS);
+        parentIds = resolveLidVidsFromProductField(lidvid,
+            RegistrySearchRequestBuilder.OPS_REGISTRY_SWEEPERS_OPS_ANCESTOR_REFS);
       } else {
         throw new BadRequestException(
             "productMembersOf endpoint is not valid for products with Product_Class '"
@@ -561,7 +561,8 @@ public class ProductsController implements ProductsApi, ClassesApi, PropertiesAp
 
   private Stream<PdsLidVid> safeResolveLidVidsFromAncestor(PdsLidVid obj) {
     try {
-      return resolveLidVidsFromProductField(obj, OPS_PROVENANCE_OPS_ANCESTOR_REFS).stream();
+      return resolveLidVidsFromProductField(obj,
+          RegistrySearchRequestBuilder.OPS_REGISTRY_SWEEPERS_OPS_ANCESTOR_REFS).stream();
     } catch (OpenSearchException | IOException | NotFoundException | UnhandledException e) {
       throw new RuntimeException(e);
     }
