@@ -51,6 +51,12 @@ import gov.nasa.pds.api.registry.model.identifiers.PdsProductIdentifier;
 public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
 
   private static final Logger log = LoggerFactory.getLogger(RegistrySearchRequestBuilder.class);
+
+  // Properties which are big, and which are therefore left out of the _source fetched from
+  // OpenSearch unless the user explicitly requests them
+  private static final List<String> BIG_PROPERTIES_EXCLUDED_UNLESS_REQUESTED =
+      List.of(PdsPropertyConstants.XML_BLOB.toOpenPropertyString(),
+          PdsPropertyConstants.JSON_BLOB.toOpenPropertyString());
                                                          
   public static final String OPS_REGISTRY_SWEEPERS_OPS_ANCESTOR_REFS = "ops:Provenance/ops:ancestor_refs";
       // to be become next "ops:Registry_Sweepers/ops:ancestor_refs";
@@ -335,8 +341,7 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
     } else {
       //      Exclude BLOB fields unless explicitly requested
       sourceFilter = new SourceFilter.Builder()
-              .excludes(PdsPropertyConstants.XML_BLOB.toOpenPropertyString(),
-                      PdsPropertyConstants.JSON_BLOB.toOpenPropertyString())
+              .excludes(BIG_PROPERTIES_EXCLUDED_UNLESS_REQUESTED)
               .build();
     }
 
@@ -364,10 +369,9 @@ public class RegistrySearchRequestBuilder extends SearchRequest.Builder {
           pdsProperties.stream().map(PdsProperty::toOpenPropertyString).toList();
       sourceFilter = new SourceFilter.Builder().includes(openSearchField).build();
     } else {
-//      Exclude BLOB fields unless explicitly requested
+      //      Exclude BLOB fields unless explicitly requested
       sourceFilter = new SourceFilter.Builder()
-              .excludes(PdsPropertyConstants.XML_BLOB.toOpenPropertyString(),
-                      PdsPropertyConstants.JSON_BLOB.toOpenPropertyString())
+              .excludes(BIG_PROPERTIES_EXCLUDED_UNLESS_REQUESTED)
               .build();
     }
 
