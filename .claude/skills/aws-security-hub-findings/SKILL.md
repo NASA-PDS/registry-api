@@ -95,8 +95,7 @@ Priorities:
 Usual action types:
 - rebuild the image on a current base image with `--pull` and `apt-get upgrade`, or choose a smaller base image to reduce OS findings structurally;
 - stop shipping unused components (such as the standalone Tomcat);
-- bump Spring Boot to the latest 3.5.x patch. The project imports the Spring Boot BOM, so overriding versions needs explicit `dependencyManagement` entries (ahead of the BOM import) instead of a property;
-- upgrade or remove individual libraries (for example Thymeleaf);
+- upgrade Spring Boot to the latest supported patch release on the project's current major line. The project imports the Spring Boot BOM, so overriding versions needs explicit `dependencyManagement` entries (ahead of the BOM import) instead of a property;
 - suppress accepted risks in Security Hub with a written reason instead of leaving them `NEW`.
 
 Also include:
