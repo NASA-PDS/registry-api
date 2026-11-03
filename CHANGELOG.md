@@ -6,6 +6,7 @@
 
 **Defects:**
 
+- Registry API productList fetches blob fields into heap causing OOM crash loop in ECS [\#832](https://github.com/NASA-PDS/registry-api/issues/832) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Received 503 errors from the API in production [\#830](https://github.com/NASA-PDS/registry-api/issues/830) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Collection /members endpoint does not return complete member count for `mars2020_navcam_ops_stereo:data` collection [\#829](https://github.com/NASA-PDS/registry-api/issues/829) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Products endpoint returns multiple versions of the same LID in a single query [\#788](https://github.com/NASA-PDS/registry-api/issues/788) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
