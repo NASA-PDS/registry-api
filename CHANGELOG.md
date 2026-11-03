@@ -1,11 +1,12 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/registry-api/tree/«unknown») (2026-11-03)
+## [release/1.7.4](https://github.com/NASA-PDS/registry-api/tree/release/1.7.4) (2026-11-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...«unknown»)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...release/1.7.4)
 
 **Defects:**
 
+- Registry API productList fetches blob fields into heap causing OOM crash loop in ECS [\#832](https://github.com/NASA-PDS/registry-api/issues/832) [[s.critical](https://github.com/NASA-PDS/registry-api/labels/s.critical)]
 - Received 503 errors from the API in production [\#830](https://github.com/NASA-PDS/registry-api/issues/830) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Collection /members endpoint does not return complete member count for `mars2020_navcam_ops_stereo:data` collection [\#829](https://github.com/NASA-PDS/registry-api/issues/829) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
 - Products endpoint returns multiple versions of the same LID in a single query [\#788](https://github.com/NASA-PDS/registry-api/issues/788) [[s.high](https://github.com/NASA-PDS/registry-api/labels/s.high)]
@@ -32,7 +33,15 @@
 
 ## [v1.7.2](https://github.com/NASA-PDS/registry-api/tree/v1.7.2) (2026-07-28)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...v1.7.2)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.2...v1.7.2)
+
+## [release/1.7.2](https://github.com/NASA-PDS/registry-api/tree/release/1.7.2) (2026-07-28)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.1...release/1.7.2)
+
+## [release/1.7.1](https://github.com/NASA-PDS/registry-api/tree/release/1.7.1) (2026-07-28)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.6.2...release/1.7.1)
 
 **Requirements:**
 
@@ -65,7 +74,11 @@
 
 ## [v1.6.2](https://github.com/NASA-PDS/registry-api/tree/v1.6.2) (2025-07-09)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/1.6.1...v1.6.2)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.2...v1.6.2)
+
+## [release/1.6.2](https://github.com/NASA-PDS/registry-api/tree/release/1.6.2) (2025-07-09)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/1.6.1...release/1.6.2)
 
 ## [1.6.1](https://github.com/NASA-PDS/registry-api/tree/1.6.1) (2025-07-09)
 
@@ -81,7 +94,11 @@
 
 ## [v1.6.0](https://github.com/NASA-PDS/registry-api/tree/v1.6.0) (2025-06-26)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.5.0...v1.6.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.6.0...v1.6.0)
+
+## [release/1.6.0](https://github.com/NASA-PDS/registry-api/tree/release/1.6.0) (2025-06-25)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.5.0...release/1.6.0)
 
 **Requirements:**
 
@@ -111,7 +128,11 @@
 
 ## [v1.5.0](https://github.com/NASA-PDS/registry-api/tree/v1.5.0) (2024-09-03)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...v1.5.0)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.5.0...v1.5.0)
+
+## [release/1.5.0](https://github.com/NASA-PDS/registry-api/tree/release/1.5.0) (2024-09-03)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.1...release/1.5.0)
 
 **Requirements:**
 
@@ -156,7 +177,11 @@
 
 ## [v1.4.1](https://github.com/NASA-PDS/registry-api/tree/v1.4.1) (2024-02-29)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...v1.4.1)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.4.1...v1.4.1)
+
+## [release/1.4.1](https://github.com/NASA-PDS/registry-api/tree/release/1.4.1) (2024-02-29)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.4.0...release/1.4.1)
 
 **Defects:**
 
