@@ -46,41 +46,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Keep your base boot version -->
-    <spring-boot-version>3.5.12</spring-boot-version>
-    <!-- Explicitly aligning Framework to fix the checkFlag error -->
-    <spring-framework.version>6.2.14</spring-framework.version>
-    <jackson-version>2.19.1</jackson-version>
     <awssdk-version>2.31.54</awssdk-version>
   </properties>
 
+  <!-- The Spring Boot BOM (Spring Framework, Tomcat, Jackson...) is imported in the parent pom -->
   <dependencyManagement>
     <dependencies>
-      <!-- 1. Force Spring Framework to 6.2.17 to resolve NoSuchMethodError -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${spring-framework.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- 2. Spring Boot BOM manages starters and common dependencies -->
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring-boot-version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- 3. Jackson BOM to ensure all jackson modules match -->
-      <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
-        <artifactId>jackson-bom</artifactId>
-        <version>${jackson-version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- 4. AWS BOM to ensure all AWS modules match -->
+      <!-- AWS BOM to ensure all AWS modules match -->
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>bom</artifactId>
@@ -93,44 +65,27 @@
 
   <dependencies>
     <!-- Spring Boot Starters (Versions now managed by BOM) -->
+    <!-- Spring Boot 4 renamed spring-boot-starter-web to spring-boot-starter-webmvc -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-    </dependency>
 
-    <!-- Spring Data (Version managed by Spring Boot BOM/Framework BOM) -->
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
-    </dependency>
-
-    <!-- OpenAPI / Swagger (Versions still manual) -->
+    <!-- OpenAPI / Swagger (springdoc 3.x is the line for Spring Boot 4; versions still manual).
+         The swagger-core version comes from springdoc. -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.8.4</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-common</artifactId>
-      <version>2.8.4</version>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-core</artifactId>
-      <version>2.2.28</version>
+      <version>3.1.1</version>
     </dependency>
 
     <!-- Validation & Annotations (Versions managed by Boot BOM) -->
@@ -200,9 +155,10 @@
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
     </dependency>
+    <!-- Spring Boot 4 renamed spring-boot-starter-aop to spring-boot-starter-aspectj (used by LoggingAspect) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-aop</artifactId>
+      <artifactId>spring-boot-starter-aspectj</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -213,11 +169,6 @@
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opensearch.client</groupId>
-      <artifactId>spring-data-opensearch-starter</artifactId>
-      <version>1.4.0</version> <!-- Version compatible with Spring Boot 3.x -->
     </dependency>
     <!-- get other parent project dependencies -->
     <dependency>
@@ -316,7 +267,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${spring-boot-version}</version>
+        <version>${spring-boot.version}</version>
         <executions>
           <execution>
             <goals>
