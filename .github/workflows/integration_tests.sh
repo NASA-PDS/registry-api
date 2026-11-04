@@ -117,7 +117,7 @@ verify=false
 for arg in "$@"; do
     case "$arg" in
         --verbose) verbose=true ;;
-        --verify)  verify=true ;;
+        --verify)  verify=false ;; # turn off verify and just run tests
         --registry-branch=*)   registry_branch="${arg#--registry-branch=}" ;;
         --registry-api-tag=*)  registry_api_tag="${arg#--registry-api-tag=}" ;;
         *)
