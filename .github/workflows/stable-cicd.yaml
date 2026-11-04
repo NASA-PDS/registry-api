@@ -69,7 +69,7 @@ jobs:
                     restore-keys: pds-${{runner.os}}-mvn-
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@stable
+                uses: NASA-PDS/roundup-action@rc_branch_commit_stable_versions
                 with:
                     assembly: stable
                     maven-doc-phases: package
