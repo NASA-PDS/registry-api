@@ -252,7 +252,7 @@ else
         echo "docker run or deep archive did not return success"
     fi
     cd "$bdir" || exit 1
-    record "$api_gitrev" "$reg_gitrev" "$status"
+    # record "$api_gitrev" "$reg_gitrev" "$status"
     [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
 fi
 
