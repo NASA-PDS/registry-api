@@ -49,7 +49,7 @@ Go through this file line-by-line and replace the template values with your own.
     <properties>
         <project-name>Registry API</project-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <spring-framework-version>6.2.18</spring-framework-version>
     </properties>
 
