@@ -1,8 +1,24 @@
 # Changelog
 
-## [release/1.7.4](https://github.com/NASA-PDS/registry-api/tree/release/1.7.4) (2026-11-03)
+## [release/1.7.7](https://github.com/NASA-PDS/registry-api/tree/release/1.7.7) (2026-11-04)
 
-[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...release/1.7.4)
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.7-rc.3...release/1.7.7)
+
+## [v1.7.7-rc.3](https://github.com/NASA-PDS/registry-api/tree/v1.7.7-rc.3) (2026-11-04)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.7-rc.2...v1.7.7-rc.3)
+
+## [v1.7.7-rc.2](https://github.com/NASA-PDS/registry-api/tree/v1.7.7-rc.2) (2026-11-03)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.4...v1.7.7-rc.2)
+
+## [v1.7.4](https://github.com/NASA-PDS/registry-api/tree/v1.7.4) (2026-11-03)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/release/1.7.7-rc.0...v1.7.4)
+
+## [release/1.7.7-rc.0](https://github.com/NASA-PDS/registry-api/tree/release/1.7.7-rc.0) (2026-11-03)
+
+[Full Changelog](https://github.com/NASA-PDS/registry-api/compare/v1.7.2-deploy...release/1.7.7-rc.0)
 
 **Defects:**
 
