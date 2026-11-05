@@ -69,7 +69,7 @@ jobs:
                     restore-keys: pds-${{runner.os}}-mvn-
             -
                 name: 🤠 Roundup
-                uses: NASA-PDS/roundup-action@stable
+                uses: NASA-PDS/roundup-action@rc_branch_commit_stable_versions
                 with:
                     assembly: stable
                     maven-doc-phases: package
@@ -85,7 +85,7 @@ jobs:
                 name: 🫙 Jar and Tag Determination
                 id: jartag
                 run: |
-                    echo "jar_file=$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT)?\.jar')" >> $GITHUB_OUTPUT
+                    echo "jar_file=$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT|-rc\.[0-9]+)?\.jar')" >> $GITHUB_OUTPUT
                     echo "image_tag=$(echo ${{github.ref}} | awk -F/ '{print $NF}')" >> $GITHUB_OUTPUT
             -
                 name: 💳 Docker Hub Identification
