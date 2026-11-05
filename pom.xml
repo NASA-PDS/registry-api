@@ -49,7 +49,7 @@ Go through this file line-by-line and replace the template values with your own.
     <properties>
         <project-name>Registry API</project-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <!-- Single place for the Spring versions: the Spring Boot BOM manages Spring Framework, Tomcat, Jackson... -->
         <spring-boot.version>4.0.9</spring-boot.version>
     </properties>
