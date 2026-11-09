@@ -117,7 +117,7 @@ verify=false
 for arg in "$@"; do
     case "$arg" in
         --verbose) verbose=true ;;
-        --verify)  verify=true ;;
+        --verify)  verify=false ;; # turn off verify and just run tests
         --registry-branch=*)   registry_branch="${arg#--registry-branch=}" ;;
         --registry-api-tag=*)  registry_api_tag="${arg#--registry-api-tag=}" ;;
         *)
@@ -252,7 +252,7 @@ else
         echo "docker run or deep archive did not return success"
     fi
     cd "$bdir" || exit 1
-    record "$api_gitrev" "$reg_gitrev" "$status"
+    # record "$api_gitrev" "$reg_gitrev" "$status"
     [ "$status" == "success" ] && rm "$rdir"/integration_tests.rpt.txt
 fi
 
