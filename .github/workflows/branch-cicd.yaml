@@ -89,6 +89,20 @@ jobs:
                     push: false
                     load: true
                     tags: nasapds/registry-api-service:develop
+            # Report-only for now: findings are listed in the log but do not fail the build. Once the existing
+            # findings are resolved, set ``exit-code`` to '1' to block pull requests that introduce fixable
+            # CRITICAL or HIGH vulnerabilities. The Trivy action is pinned to a commit rather than a tag.
+            -
+                name: 🔍 Container Vulnerability Scan
+                uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
+                with:
+                    image-ref: nasapds/registry-api-service:develop
+                    scanners: vuln
+                    vuln-type: os,library
+                    severity: CRITICAL,HIGH
+                    ignore-unfixed: true
+                    format: table
+                    exit-code: '0'
 
             -
               name: Install jq
