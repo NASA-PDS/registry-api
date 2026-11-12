@@ -1,0 +1,95 @@
+# 🏃‍♀️ Continuous Integration: Published Image Vulnerability Scan
+# =============================================================
+#
+# Scans the published Registry API images with Trivy for known vulnerabilities in
+# the operating system packages and the Java libraries inside the image. New CVEs
+# are published daily, so images that were clean when built can start reporting
+# findings later; this scheduled scan finds them without waiting for the next
+# release.
+#
+# Findings are uploaded to the repository's Security → Code scanning tab. Dependabot
+# does not cover OS packages, so this is the place to see them alongside the
+# findings AWS reports for the copy of the image in ECR.
+#
+# The images scanned here:
+#
+# * ``ghcr.io/nasa-pds/registry-api:develop`` – the image the AWS pull-through cache mirrors
+# * ``nasapds/registry-api-service:latest`` – the image distributed on Docker Hub
+
+
+---
+
+name: 🔍 Published image vulnerability scan
+
+
+# Driving Event
+# -------------
+#
+# A weekly schedule and manual runs.
+
+on:
+    schedule:
+        - cron: '17 6 * * 1'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+
+# What to Do
+# ----------
+
+jobs:
+    published-image-scan:
+        name: 🐳 Scan ${{matrix.image}}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: read
+            security-events: write
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    -
+                        image: ghcr.io/nasa-pds/registry-api:develop
+                        category: ghcr-develop
+                    -
+                        image: nasapds/registry-api-service:latest
+                        category: dockerhub-latest
+
+        steps:
+            -
+                name: 💳 GHCR Identification
+                uses: docker/login-action@v4
+                with:
+                    registry: ghcr.io
+                    username: ${{github.actor}}
+                    password: ${{secrets.GITHUB_TOKEN}}
+            # The Trivy action is pinned to a commit rather than a tag; a vulnerability scanner runs with
+            # access to the image contents and the job token, so it should not follow a movable reference.
+            # Dependabot's github-actions ecosystem keeps this pin current.
+            -
+                name: 🔍 Vulnerability Scan
+                uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
+                with:
+                    image-ref: ${{matrix.image}}
+                    scanners: vuln
+                    vuln-type: os,library
+                    severity: CRITICAL,HIGH
+                    ignore-unfixed: true
+                    limit-severities-for-sarif: true
+                    format: sarif
+                    output: trivy-results.sarif
+                    exit-code: '0'
+            -
+                name: 📤 Upload to Code Scanning
+                uses: github/codeql-action/upload-sarif@v4.39.1
+                with:
+                    sarif_file: trivy-results.sarif
+                    category: container-${{matrix.category}}
+
+...
+
+# -*- mode: yaml; indent: 4; fill-column: 120; coding: utf-8 -*-
