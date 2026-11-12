@@ -280,7 +280,7 @@
           <imageName>nasapds/registry-api-service</imageName>
           <image>
             <env>
-              <BP_JVM_VERSION>21</BP_JVM_VERSION>
+              <BP_JVM_VERSION>25</BP_JVM_VERSION>
               <BPE_APPEND_JAVA_TOOL_OPTIONS>-XX:MaxDirectMemorySize=1G</BPE_APPEND_JAVA_TOOL_OPTIONS>
             </env>
           </image>
