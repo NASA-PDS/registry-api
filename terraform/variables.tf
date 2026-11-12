@@ -86,27 +86,6 @@ variable "common_tags" {
   }
 }
 
-variable "create_github_secret_credentials" {
-  description = "Whether to create GitHub secret credentials (1) or not (0)"
-  type        = number
-  default     = 0
-}
-
-# TODO remove as the ECR cache it is used for does not work, 
-# besides we would like to configure it in a infra module instead of this specific registry-api module
-variable "github_username" {
-  description = "GitHub username for ECR pull through cache"
-  default     = ""
-}
-
-# TODO remove as the ECR cache it is used for does not work, 
-# besides we would like to configure it in a infra module instead of this specific registry-api module
-variable "github_token" {
-  description = "GitHub personal access token for ECR pull through cache"
-  sensitive   = true
-  default     = ""
-}
-
 variable "cloudfront_dns" {
   description = "DNS of the cloudfront distribution giving access to the API"
 }

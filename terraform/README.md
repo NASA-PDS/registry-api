@@ -15,7 +15,7 @@ To run, the registry API needs to be interfaced with external components which a
 - **subnets**
 - an EC2 **load balancer** and a **listener**
 - a **security group** for the ECS cluster authorizing inbound rules from the load - - balancer on port 80. Outbound to anywhere.
-- a **docker image** on ECR
+- an **ECR repository** containing the registry-api Docker image. The repository and image are managed outside this Terraform configuration and must be created and populated before deployment. Set `registry_api_docker_image` in `terraform.tfvars` to the full image URI.
 - an **Opensearch** service containing indices registry, registry-refs, possibly prefixed per discipline, e.g. atm-registry, atm-registry-refs, geo-registry,...
 
 
