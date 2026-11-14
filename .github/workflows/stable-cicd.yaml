@@ -75,7 +75,7 @@ jobs:
                     maven-doc-phases: package
                     # TODO: Remove
                     maven-stable-artifact-phases: clean,install,deploy
-                    packages: openjdk21
+                    packages: openjdk25
                 env:
                     central_portal_username: ${{secrets.CENTRAL_REPOSITORY_USERNAME}}
                     central_portal_token: ${{secrets.CENTRAL_REPOSITORY_TOKEN}}
@@ -85,7 +85,7 @@ jobs:
                 name: 🫙 Jar and Tag Determination
                 id: jartag
                 run: |
-                    echo "jar_file=$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT)?\.jar')" >> $GITHUB_OUTPUT
+                    echo "jar_file=$(find ./service/target/ -maxdepth 1 -regextype posix-extended -regex '.*/registry-api-service-[0-9]+\.[0-9]+\.[0-9]+(-SNAPSHOT|-rc\.[0-9]+)?\.jar')" >> $GITHUB_OUTPUT
                     echo "image_tag=$(echo ${{github.ref}} | awk -F/ '{print $NF}')" >> $GITHUB_OUTPUT
             -
                 name: 💳 Docker Hub Identification

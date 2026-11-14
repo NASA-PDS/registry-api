@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
   <parent>
     <groupId>gov.nasa.pds</groupId>
     <artifactId>registry-api</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.8.0-SNAPSHOT</version>
   </parent>
 
   <groupId>gov.nasa.pds.registry-api</groupId>
@@ -50,8 +50,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <!-- configure the versions you want to use here -->
     <antlr4.version>4.13.2</antlr4.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-  
   </properties>
   <dependencies>
     <dependency>
@@ -77,12 +75,10 @@ POSSIBILITY OF SUCH DAMAGE.
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
 		<artifactId>junit-jupiter-api</artifactId>
-		<version>5.7.0</version>
 	</dependency>
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
 		<artifactId>junit-jupiter-engine</artifactId>
-		<version>5.7.0</version>
 	</dependency>
 	
 
