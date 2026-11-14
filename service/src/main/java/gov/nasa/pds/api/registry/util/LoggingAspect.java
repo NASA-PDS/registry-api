@@ -1,6 +1,7 @@
 package gov.nasa.pds.api.registry.util;
 
 
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,6 +13,9 @@ import org.slf4j.LoggerFactory;
 @Aspect
 @Component
 public class LoggingAspect {
+  /** A control character (CR, LF, tab, NUL, ESC, NEL, ...) or a Unicode line/paragraph separator. */
+  public static final Pattern CONTROL_OR_SEPARATOR = Pattern.compile("[\\p{Cc}\\p{Zl}\\p{Zp}]");
+
   private Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
 
@@ -23,8 +27,9 @@ public class LoggingAspect {
   public static String sanitizeForLog(String input) {
     if (input == null)
       return null;
-    return input.replaceAll("\\u001B\\[[;\\d]*[ -/]*[@-~]", "") // ANSI escape
-        .replaceAll("[\\p{Cc}\\p{Zl}\\p{Zp}]", "_"); // Control chars, line/paragraph separators
+    return CONTROL_OR_SEPARATOR
+        .matcher(input.replaceAll("\\u001B\\[[;\\d]*[ -/]*[@-~]", "")) // ANSI escape
+        .replaceAll("_");
   }
 
 
