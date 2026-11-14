@@ -23,7 +23,7 @@ public class LoggingAspect {
   public static String sanitizeForLog(String input) {
     if (input == null)
       return null;
-    return input.replaceAll("[\\x1b\\u001B]\\[[;\\d]*[ -/]*[@-~]", "") // ANSI escape
+    return input.replaceAll("\\u001B\\[[;\\d]*[ -/]*[@-~]", "") // ANSI escape
         .replaceAll("[\\p{Cc}\\p{Zl}\\p{Zp}]", "_"); // Control chars, line/paragraph separators
   }
 

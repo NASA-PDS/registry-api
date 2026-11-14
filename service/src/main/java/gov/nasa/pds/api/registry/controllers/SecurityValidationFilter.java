@@ -65,11 +65,11 @@ public class SecurityValidationFilter implements HandlerInterceptor {
         log.debug("investigating header {} for cache poisoning risks", headerName);
         if (CACHE_POISONING_HEADER_TARGETS.contains(headerName.toLowerCase())) {
           proxyHostName = request.getHeader(headerName);
-          log.debug("Risk of cache poisoning on header with value {}",
-              LoggingAspect.sanitizeForLog(proxyHostName));
+          String loggableProxyHostName = LoggingAspect.sanitizeForLog(proxyHostName);
+          log.debug("Risk of cache poisoning on header with value {}", loggableProxyHostName);
           if (!authorizedServerName(proxyHostName)) {
-            log.error("Server cannot be proxied from {} but from {}",
-                LoggingAspect.sanitizeForLog(proxyHostName), this.authorizedForwardedHosts);
+            log.error("Server cannot be proxied from {} but from {}", loggableProxyHostName,
+                this.authorizedForwardedHosts);
             throw new UnauthorizedForwardedHostException(
                 "Server cannot be proxied from " + proxyHostName);
           } else {
@@ -82,10 +82,11 @@ public class SecurityValidationFilter implements HandlerInterceptor {
       // since the forwarded-headers might be consumed by spring-boot at earlier stage we also
       // control the following value
       String serverName = request.getServerName();
-      log.debug("Servername is {}", LoggingAspect.sanitizeForLog(serverName));
+      String loggableServerName = LoggingAspect.sanitizeForLog(serverName);
+      log.debug("Servername is {}", loggableServerName);
       if (!authorizedServerName(serverName)) {
-        log.error("Server cannot be proxied from {} but from {}",
-            LoggingAspect.sanitizeForLog(serverName), this.authorizedForwardedHosts);
+        log.error("Server cannot be proxied from {} but from {}", loggableServerName,
+            this.authorizedForwardedHosts);
         throw new UnauthorizedForwardedHostException("Server cannot be proxied from " + serverName);
       }
     }

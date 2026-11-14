@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.registry.model.exceptions;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -8,7 +9,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,12 +20,10 @@ class RegistryApiExceptionTest {
   private ListAppender<ILoggingEvent> appender;
 
   @BeforeEach
-  void attachAppender() throws InterruptedException {
+  void attachAppender() {
     // Tests may run concurrently with the first SLF4J initialization, during which loggers are
     // temporary substitutes: wait until the Logback context is up.
-    while (!(LoggerFactory.getILoggerFactory() instanceof LoggerContext)) {
-      Thread.sleep(10);
-    }
+    await().until(() -> LoggerFactory.getILoggerFactory() instanceof LoggerContext);
     logger = (Logger) LoggerFactory.getLogger(RegistryApiException.class);
     appender = new ListAppender<>();
     appender.start();
@@ -40,7 +38,7 @@ class RegistryApiExceptionTest {
   /** Messages logged for the given exception (other tests may log concurrently). */
   private List<String> loggedFor(RegistryApiException ex) {
     return appender.list.stream().map(ILoggingEvent::getFormattedMessage)
-        .filter(message -> message.startsWith(ex.getUuid())).collect(Collectors.toList());
+        .filter(message -> message.startsWith(ex.getUuid())).toList();
   }
 
   @Test

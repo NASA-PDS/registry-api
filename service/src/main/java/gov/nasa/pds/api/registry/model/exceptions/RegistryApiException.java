@@ -24,7 +24,8 @@ public class RegistryApiException extends ServletException {
     this.uuid = uuidObj.toString();
 
     // msg may embed request input (identifiers, parameters), keep it from forging log lines
-    log.info(this.uuid + " " + LoggingAspect.sanitizeForLog(msg));
+    String loggableMsg = LoggingAspect.sanitizeForLog(msg);
+    log.info("{} {}", this.uuid, loggableMsg);
 
 
 
