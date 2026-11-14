@@ -15,11 +15,16 @@ public class LoggingAspect {
   private Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
 
+  /**
+   * Neutralize user-controlled text before it is written to the logs so it cannot forge log lines:
+   * ANSI escape sequences are removed, and every remaining control character (CR, LF, tab, NEL,
+   * ...) and Unicode line/paragraph separator is replaced by an underscore.
+   */
   public static String sanitizeForLog(String input) {
     if (input == null)
       return null;
-    return input.replaceAll("[\n\r\t]", "_") // Replace newlines and tabs
-        .replaceAll("[\\x1b\\u001B]\\[[;\\d]*[ -/]*[@-~]", ""); // ANSI escape
+    return input.replaceAll("[\\x1b\\u001B]\\[[;\\d]*[ -/]*[@-~]", "") // ANSI escape
+        .replaceAll("[\\p{Cc}\\p{Zl}\\p{Zp}]", "_"); // Control chars, line/paragraph separators
   }
 
 

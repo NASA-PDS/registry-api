@@ -1,5 +1,6 @@
 package gov.nasa.pds.api.registry.model.exceptions;
 
+import gov.nasa.pds.api.registry.util.LoggingAspect;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,8 @@ public class RegistryApiException extends ServletException {
     UUID uuidObj = UUID.randomUUID();
     this.uuid = uuidObj.toString();
 
-    log.info(this.uuid + " " + msg);
+    // msg may embed request input (identifiers, parameters), keep it from forging log lines
+    log.info(this.uuid + " " + LoggingAspect.sanitizeForLog(msg));
 
 
 
